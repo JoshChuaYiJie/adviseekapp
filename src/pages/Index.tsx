@@ -5,6 +5,7 @@ import SocialLoginButton from "@/components/SocialLoginButton";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import InteractiveLogo from "@/components/InteractiveLogo";
 
 const Index = () => {
   const [email, setEmail] = useState("");
@@ -38,10 +39,12 @@ const Index = () => {
         <div>
           {/* Logo */}
           <div className="flex items-center gap-3 mb-12">
-            <div className="h-10 w-10 rounded-full bg-primary-gradient flex items-center justify-center overflow-hidden">
-              <img src="/lovable-uploads/91e13e22-0c4e-4bb8-be3b-a16cac3f5b22.png" alt="Logo" className="h-12 w-12 object-cover" />
-            </div>
-            <h1 className="font-bold text-xl">Radiant<span className="text-accent">.AI</span></h1>
+            <InteractiveLogo 
+              src="/lovable-uploads/91e13e22-0c4e-4bb8-be3b-a16cac3f5b22.png" 
+              alt="Adviseek Logo" 
+              className="h-10 w-10 rounded-full overflow-hidden" 
+            />
+            <h1 className="font-bold text-xl">Adviseek<span className="text-accent">.SG</span></h1>
           </div>
 
           {/* Auth Section */}
@@ -156,7 +159,7 @@ const Index = () => {
         
         {/* Footer */}
         <div className="mt-auto pt-8">
-          <div className="text-sm mb-4">Available now on iOS and Android</div>
+          <div className="text-sm mb-4">For Singapore Students, Grades 10-12</div>
           
           <div className="flex space-x-3">
             <a href="#" className="block">
@@ -186,12 +189,18 @@ const Index = () => {
       <div className="hidden md:block md:w-7/12 lg:w-8/12 xl:w-2/3 bg-primary-gradient">
         <div className="h-full w-full relative overflow-hidden">
           <img 
-            src="https://images.unsplash.com/photo-1551651653-c5186a1fbba2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMjA3fDB8MXxzZWFyY2h8MXx8amVsbHlmaXNoJTIwZ2xvd2luZ3x8MHx8fHwxNjI0MzYwNDc0&ixlib=rb-4.0.3&q=80&w=1800" 
-            alt="Glowing Jellyfish" 
-            className="h-full w-full object-cover"
+            src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1800&q=80" 
+            alt="Singapore University Campus" 
+            className="h-full w-full object-cover" 
           />
-          <div className="absolute bottom-4 right-4 text-white/80 text-xs">
-            'Bioluminescent Ballet' by RadiantAI
+          <div className="absolute inset-0 bg-black/10 flex flex-col justify-end p-8">
+            <div className="max-w-md">
+              <h2 className="text-white text-3xl font-bold mb-4">Navigate Your Path to Top Singapore Universities</h2>
+              <p className="text-white/80 text-lg">Personalized guidance for NUS, NTU, and SMU admissions</p>
+            </div>
+            <div className="absolute bottom-4 right-4 text-white/80 text-xs">
+              © 2025 Adviseek
+            </div>
           </div>
         </div>
       </div>

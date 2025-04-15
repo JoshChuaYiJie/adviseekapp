@@ -96,7 +96,17 @@
   }
 }
 
+@keyframes sparkle {
+  0% {
+    opacity: 1;
+    transform: rotate(var(--angle)) translateX(0px);
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(var(--angle)) translateX(40px);
+  }
+}
+
 ::-webkit-scrollbar {
   display: none;
 }
-
