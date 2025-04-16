@@ -1,10 +1,10 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { useToast } from "@/hooks/use-toast";
 import { useQuiz } from '@/contexts/QuizContext';
-import { Recommendation, Module } from '@/integrations/supabase/client';
+import { Module } from '@/integrations/supabase/client';
 import { RecommendationsSkeleton } from './RecommendationsSkeleton';
 import { SelectionModal } from './SelectionModal';
 
@@ -15,7 +15,15 @@ interface RecommendationsDisplayProps {
 
 export const RecommendationsDisplay: React.FC<RecommendationsDisplayProps> = ({ onBack, onReset }) => {
   const { toast } = useToast();
-  const { recommendations, isLoading, error, rateModule, userFeedback, refineRecommendations, getFinalSelections, finalSelections } = useQuiz();
+  const { 
+    recommendations, 
+    isLoading, 
+    error, 
+    rateModule, 
+    userFeedback, 
+    refineRecommendations, 
+    getFinalSelections
+  } = useQuiz();
   
   const [modalOpen, setModalOpen] = useState(false);
   const [selections, setSelections] = useState<{module: Module, reason: string}[]>([]);
@@ -30,16 +38,14 @@ export const RecommendationsDisplay: React.FC<RecommendationsDisplayProps> = ({ 
   
   // Handle rating changes
   const handleRatingChange = (moduleId: number, rating: number) => {
-    if (rateModule) {  // Check if rateModule function exists before calling
-      rateModule(moduleId, rating);
-    }
+    rateModule(moduleId, rating);
   };
   
   // Handle showing final selections
   const handleShowSelections = async () => {
-    const selections = await getFinalSelections();
-    if (selections && selections.length > 0) {
-      setSelections(selections);
+    const selectionsResult = await getFinalSelections();
+    if (selectionsResult && selectionsResult.length > 0) {
+      setSelections(selectionsResult);
       setModalOpen(true);
     } else {
       toast({
@@ -88,7 +94,7 @@ export const RecommendationsDisplay: React.FC<RecommendationsDisplayProps> = ({ 
                 Back
               </Button>
               <Button 
-                onClick={() => refineRecommendations && refineRecommendations()}
+                onClick={() => refineRecommendations()}
                 disabled={ratedModulesCount < 5}
               >
                 Refine Recommendations
