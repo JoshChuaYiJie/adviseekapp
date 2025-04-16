@@ -2,7 +2,6 @@
 import { useState } from 'react';
 import { Module } from '@/integrations/supabase/client';
 import { fromTable, getUserId } from '../utils/databaseHelpers';
-import { PostgrestResponse } from '@supabase/supabase-js';
 import { useToast } from '@/hooks/use-toast';
 
 export interface Recommendation {
@@ -58,7 +57,7 @@ export const useRecommendations = (modules: Module[]) => {
   // Load user feedback (ratings)
   const loadUserFeedback = async (userId: string) => {
     try {
-      // Use explicit typing for the query result to avoid deep type instantiation
+      // Define explicit type for feedback items
       interface FeedbackItem { module_id: number; rating: number }
       
       const { data, error } = await fromTable('user_feedback')
@@ -72,7 +71,9 @@ export const useRecommendations = (modules: Module[]) => {
       // Convert array to object mapping moduleId -> rating
       const feedbackObj: Record<number, number> = {};
       if (data) {
-        (data as FeedbackItem[]).forEach(item => {
+        // Cast data to the correct type with explicit type assertion
+        const typedData = data as unknown as FeedbackItem[];
+        typedData.forEach(item => {
           feedbackObj[item.module_id] = item.rating;
         });
       }
@@ -103,7 +104,7 @@ export const useRecommendations = (modules: Module[]) => {
         throw new Error(`Failed to load recommendations: ${error.message}`);
       }
       
-      // Transform data to match our format
+      // Transform data to match our format with explicit typing
       const formattedRecs = data ? (data as any[]).map((rec: any) => ({
         module_id: rec.module_id,
         reason: rec.reason,
