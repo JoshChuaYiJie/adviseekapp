@@ -1,8 +1,6 @@
-
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { supabase, Module, QuizQuestion, Recommendation, UserFeedback } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-// Remove the incorrect import for PostgrestQueryBuilder
 
 // Define types for our context
 interface QuizContextType {

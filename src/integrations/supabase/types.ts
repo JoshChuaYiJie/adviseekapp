@@ -9,7 +9,188 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      modules: {
+        Row: {
+          aus_cus: number
+          course_code: string
+          description: string | null
+          id: number
+          semester: string
+          title: string
+          university: string
+        }
+        Insert: {
+          aus_cus: number
+          course_code: string
+          description?: string | null
+          id?: number
+          semester: string
+          title: string
+          university: string
+        }
+        Update: {
+          aus_cus?: number
+          course_code?: string
+          description?: string | null
+          id?: number
+          semester?: string
+          title?: string
+          university?: string
+        }
+        Relationships: []
+      }
+      quiz_questions: {
+        Row: {
+          id: number
+          options: Json | null
+          question_text: string
+          question_type: string
+          section: string
+        }
+        Insert: {
+          id?: number
+          options?: Json | null
+          question_text: string
+          question_type: string
+          section: string
+        }
+        Update: {
+          id?: number
+          options?: Json | null
+          question_text?: string
+          question_type?: string
+          section?: string
+        }
+        Relationships: []
+      }
+      recommendations: {
+        Row: {
+          created_at: string
+          id: number
+          module_id: number
+          reason: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          module_id: number
+          reason: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          module_id?: number
+          reason?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recommendations_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "modules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_feedback: {
+        Row: {
+          created_at: string
+          id: number
+          module_id: number
+          rating: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          module_id: number
+          rating: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          module_id?: number
+          rating?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_feedback_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "modules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_responses: {
+        Row: {
+          created_at: string
+          id: number
+          question_id: number
+          response: string | null
+          response_array: Json | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          question_id: number
+          response?: string | null
+          response_array?: Json | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          question_id?: number
+          response?: string | null
+          response_array?: Json | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_responses_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "quiz_questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_selections: {
+        Row: {
+          created_at: string
+          id: number
+          module_id: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          module_id: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          module_id?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_selections_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "modules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
