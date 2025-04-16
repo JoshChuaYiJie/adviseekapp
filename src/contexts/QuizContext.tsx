@@ -2,7 +2,7 @@
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { supabase, Module, QuizQuestion, Recommendation, UserFeedback } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import type { PostgrestQueryBuilder } from '@supabase/supabase-js';
+// Remove the incorrect import for PostgrestQueryBuilder
 
 // Define types for our context
 interface QuizContextType {
@@ -55,8 +55,8 @@ export const useQuiz = () => useContext(QuizContext);
 
 // Use type assertion to get around the type issues with Supabase client
 const fromTable = <T extends string>(table: T) => {
-  // @ts-ignore - Use any type to bypass the type checking for Supabase client
-  return supabase.from(table) as PostgrestQueryBuilder<any, any, any>;
+  // Use any type to bypass the type checking for Supabase client
+  return supabase.from(table) as any;
 };
 
 // Provider component
