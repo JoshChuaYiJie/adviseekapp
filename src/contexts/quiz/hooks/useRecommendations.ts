@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Module } from '@/integrations/supabase/client';
 import { getUserId } from '../utils/databaseHelpers';
@@ -13,7 +12,8 @@ import {
   getFinalSelectionsUtil
 } from '../utils/recommendationUtils';
 
-export { Recommendation } from '../types/recommendationTypes';
+// Fix: Changed 'export { Recommendation }' to 'export type { Recommendation }'
+export type { Recommendation } from '../types/recommendationTypes';
 
 export const useRecommendations = (modules: Module[]) => {
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
