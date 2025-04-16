@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -14,7 +15,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { supabase } from "@/integrations/supabase/client";
 import AuthHeader from "@/components/auth/AuthHeader";
 import AuthFooter from "@/components/auth/AuthFooter";
 import InteractiveLogo from "@/components/InteractiveLogo";
@@ -29,7 +30,6 @@ const Index = () => {
   const [loginError, setLoginError] = useState<string | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
-  const supabase = useSupabaseClient();
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
