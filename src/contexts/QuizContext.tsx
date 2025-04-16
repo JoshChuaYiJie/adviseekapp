@@ -113,9 +113,9 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
             throw new Error(`Failed to load new questions: ${newError.message}`);
           }
           
-          setQuestions(newQuestions || []);
+          setQuestions(newQuestions as QuizQuestion[] || []);
         } else {
-          setQuestions(existingQuestions);
+          setQuestions(existingQuestions as QuizQuestion[]);
         }
         
         // Load modules
@@ -281,9 +281,11 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
       
       // Convert array to object mapping moduleId -> rating
       const feedbackObj: Record<number, number> = {};
-      (data || []).forEach((item: UserFeedback) => {
-        feedbackObj[item.module_id] = item.rating;
-      });
+      if (data) {
+        (data as UserFeedback[]).forEach((item) => {
+          feedbackObj[item.module_id] = item.rating;
+        });
+      }
       
       setUserFeedback(feedbackObj);
     } catch (err) {
@@ -312,11 +314,11 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
       }
       
       // Transform data to match our format
-      const formattedRecs = (data || []).map((rec: any) => ({
+      const formattedRecs = data ? (data as any[]).map((rec: any) => ({
         module_id: rec.module_id,
         reason: rec.reason,
-        module: rec.modules
-      }));
+        module: rec.modules as Module
+      })) : [];
       
       setRecommendations(formattedRecs);
       
@@ -488,7 +490,7 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
           throw new Error(`Failed to load modules: ${error.message}`);
         }
         
-        setModules(data || []);
+        setModules(data as Module[] || []);
         return;
       }
       
@@ -512,7 +514,7 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
         
         return {
           id: index + 1,
-          university: "SMU",
+          university: "SMU" as const,
           course_code: courseCode,
           title: title,
           aus_cus: aus_cus,
@@ -537,7 +539,7 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
         throw new Error(`Failed to load saved modules: ${loadError.message}`);
       }
       
-      setModules(savedModules || []);
+      setModules(savedModules as Module[] || []);
     } catch (err) {
       console.error("Error loading modules:", err);
       setError(err instanceof Error ? err.message : "Failed to load modules");
