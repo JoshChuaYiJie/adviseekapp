@@ -1,5 +1,6 @@
+
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
-import { supabase, Module, QuizQuestion, Recommendation, UserFeedback } from '@/integrations/supabase/client';
+import { supabase, TableName, Module, QuizQuestion, Recommendation, UserFeedback } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
 // Define types for our context
@@ -52,9 +53,8 @@ const QuizContext = createContext<QuizContextType>({
 export const useQuiz = () => useContext(QuizContext);
 
 // Use type assertion to get around the type issues with Supabase client
-const fromTable = <T extends string>(table: T) => {
-  // Use any type to bypass the type checking for Supabase client
-  return supabase.from(table) as any;
+const fromTable = (table: TableName) => {
+  return supabase.from(table);
 };
 
 // Provider component

@@ -7,6 +7,8 @@ const SUPABASE_URL = "https://gtatdbpfopsxkrkgvqiv.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd0YXRkYnBmb3BzeGtya2d2cWl2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ3MzI2NDUsImV4cCI6MjA2MDMwODY0NX0.0yv0L-NC5moCSZ2wgsvsP7DepwxNZYTnFhopOArxOdI";
 
 // Define custom database types for our tables
+export type TableName = "modules" | "quiz_questions" | "recommendations" | "user_feedback" | "user_responses" | "user_selections";
+
 export type QuizQuestion = {
   id: number;
   section: "Interest" | "Feasibility" | "Career Goals" | "Learning Style";
