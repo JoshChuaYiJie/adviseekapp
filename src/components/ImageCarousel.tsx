@@ -30,10 +30,10 @@ const ImageCarousel = ({ images, interval = 5000 }: ImageCarouselProps) => {
   }, [images]);
 
   return (
-    <Carousel className="w-full h-full" selectedIndex={currentIndex}>
+    <Carousel className="w-full h-full">
       <CarouselContent>
         {images.map((image, index) => (
-          <CarouselItem key={index}>
+          <CarouselItem key={index} className={index === currentIndex ? "block" : "hidden"}>
             <div className="h-full w-full relative overflow-hidden">
               <img 
                 src={image.src} 
