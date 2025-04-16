@@ -1,3 +1,4 @@
+
 import { Module } from '@/integrations/supabase/client';
 import { fromTable, getUserId } from './databaseHelpers';
 import { FeedbackItem, Recommendation } from '../types/recommendationTypes';
@@ -41,10 +42,10 @@ export const loadUserFeedbackUtil = async (userId: string) => {
     throw new Error(`Failed to load ratings: ${error.message}`);
   }
   
-  // Fix: Simplified type handling to avoid excessive instantiation
+  // Fixed type handling to avoid excessive instantiation
   const feedbackObj: Record<number, number> = {};
   if (data) {
-    // Use a simpler type assertion to avoid infinite type instantiation
+    // Using simple any[] type to avoid infinite type instantiation
     (data as any[]).forEach(item => {
       feedbackObj[item.module_id] = item.rating;
     });

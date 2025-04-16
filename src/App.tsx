@@ -9,23 +9,30 @@ import NotFound from "./pages/NotFound";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import UniversitySelection from "./pages/UniversitySelection";
+import PickAI from "./pages/PickAI";
+import Recommendations from "./pages/Recommendations";
+import { QuizProvider } from "@/contexts/QuizContext";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner position="top-right" />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/university-selection" element={<UniversitySelection />} />
-          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="/terms-of-service" element={<TermsOfService />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+      <QuizProvider>
+        <Toaster />
+        <Sonner position="top-right" />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/university-selection" element={<UniversitySelection />} />
+            <Route path="/pickAI" element={<PickAI />} />
+            <Route path="/recommendations" element={<Recommendations />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-of-service" element={<TermsOfService />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </QuizProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

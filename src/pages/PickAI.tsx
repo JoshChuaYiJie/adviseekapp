@@ -1,0 +1,368 @@
+
+import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
+import { useQuiz } from "@/contexts/QuizContext";
+
+// Component for a question with fade-in animation
+const Question = ({ 
+  question, 
+  id, 
+  index, 
+  value, 
+  onChange, 
+  onVisible, 
+  onIntersect 
+}: { 
+  question: any, 
+  id: string, 
+  index: number, 
+  value: any, 
+  onChange: (value: any) => void,
+  onVisible: () => void,
+  onIntersect: (isIntersecting: boolean, index: number) => void 
+}) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+  const [otherText, setOtherText] = useState("");
+  const [otherDialogOpen, setOtherDialogOpen] = useState(false);
+
+  // For managing the intersection observer
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          onIntersect(entry.isIntersecting, index);
+          if (entry.isIntersecting && !isVisible) {
+            setIsVisible(true);
+            onVisible();
+          }
+        });
+      },
+      { threshold: 0.3 }
+    );
+
+    if (ref.current) {
+      observer.observe(ref.current);
+    }
+
+    return () => {
+      if (ref.current) {
+        observer.unobserve(ref.current);
+      }
+    };
+  }, [index, onIntersect, onVisible, isVisible]);
+
+  // Handle "Other" option for multi-select and single-select
+  const handleOptionChange = (option: string, checked: boolean = true) => {
+    if (option === "Other" && checked) {
+      setOtherDialogOpen(true);
+      return;
+    }
+
+    if (question.question_type === "multi-select") {
+      const currentValues = value || [];
+      const newValues = checked 
+        ? [...currentValues, option] 
+        : currentValues.filter(v => v !== option);
+      onChange(newValues);
+    } else {
+      onChange(option);
+    }
+  };
+
+  // Handle confirmation of "Other" option
+  const handleOtherConfirm = () => {
+    if (!otherText) return;
+    
+    if (question.question_type === "multi-select") {
+      const currentValues = value || [];
+      if (!currentValues.includes("Other")) {
+        onChange([...currentValues, `Other: ${otherText}`]);
+      } else {
+        const filteredValues = currentValues.filter(v => !v.startsWith("Other:"));
+        onChange([...filteredValues, `Other: ${otherText}`]);
+      }
+    } else {
+      onChange(`Other: ${otherText}`);
+    }
+    
+    setOtherDialogOpen(false);
+  };
+
+  const renderQuestionContent = () => {
+    switch (question.question_type) {
+      case "single-select":
+        return (
+          <RadioGroup 
+            value={value || ""} 
+            onValueChange={handleOptionChange}
+            className="space-y-3 mt-2"
+          >
+            {question.options?.map((option: string) => (
+              <div key={option} className="flex items-center space-x-3">
+                <RadioGroupItem id={`${id}-${option}`} value={option} />
+                <Label htmlFor={`${id}-${option}`} className="text-lg">{option}</Label>
+              </div>
+            ))}
+          </RadioGroup>
+        );
+      
+      case "multi-select":
+        const selectedValues = value || [];
+        return (
+          <div className="space-y-3 mt-2">
+            <div className="flex items-center text-sm text-blue-500 mb-1">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+              Pick multiple options
+            </div>
+            
+            {question.options?.map((option: string) => (
+              <div key={option} className="flex items-center space-x-3">
+                <Checkbox 
+                  id={`${id}-${option}`} 
+                  checked={option === "Other" 
+                    ? selectedValues.some(v => v.startsWith("Other:"))
+                    : selectedValues.includes(option)
+                  }
+                  onCheckedChange={(checked) => handleOptionChange(option, !!checked)} 
+                />
+                <Label htmlFor={`${id}-${option}`} className="text-lg">{option}</Label>
+              </div>
+            ))}
+          </div>
+        );
+      
+      case "text":
+        return (
+          <Input 
+            type="text"
+            value={value || ""}
+            onChange={(e) => onChange(e.target.value)}
+            placeholder="Type your answer here..."
+            className="mt-4"
+          />
+        );
+      
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <>
+      <div 
+        ref={ref}
+        className={`min-h-screen flex flex-col justify-center p-8 md:p-16 transition-all duration-700
+          ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-20"}`}
+      >
+        <h2 className="text-3xl font-bold mb-4">{question.section}</h2>
+        <div className="max-w-3xl bg-white/5 backdrop-blur-md p-8 rounded-lg border border-white/10 shadow-xl">
+          <h3 className="text-2xl font-semibold mb-6">{question.question_text}</h3>
+          {renderQuestionContent()}
+        </div>
+      </div>
+
+      <Dialog open={otherDialogOpen} onOpenChange={setOtherDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Please specify "Other" option</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <Input
+              placeholder="Please specify your answer"
+              value={otherText}
+              onChange={(e) => setOtherText(e.target.value)}
+              className="w-full"
+              autoFocus
+            />
+            <div className="flex justify-end">
+              <Button type="button" onClick={handleOtherConfirm}>Confirm</Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+};
+
+const PickAI = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const { 
+    questions, 
+    isLoading, 
+    error, 
+    responses, 
+    handleResponse, 
+    submitResponses 
+  } = useQuiz();
+  
+  const [visibleCount, setVisibleCount] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [groupedQuestions, setGroupedQuestions] = useState<Record<string, any[]>>({});
+  const [orderedSections, setOrderedSections] = useState<string[]>([]);
+  const [submitting, setSubmitting] = useState(false);
+  const questionsRef = useRef<HTMLDivElement>(null);
+
+  // Group questions by section
+  useEffect(() => {
+    const grouped: Record<string, any[]> = {};
+    const sections: string[] = [];
+    
+    questions.forEach(question => {
+      if (!grouped[question.section]) {
+        grouped[question.section] = [];
+        sections.push(question.section);
+      }
+      grouped[question.section].push(question);
+    });
+    
+    setGroupedQuestions(grouped);
+    setOrderedSections(sections);
+  }, [questions]);
+
+  // Handle question becoming visible
+  const handleQuestionVisible = () => {
+    setVisibleCount(prev => prev + 1);
+  };
+
+  // Handle question intersection
+  const handleIntersect = (isIntersecting: boolean, index: number) => {
+    if (isIntersecting) {
+      setCurrentIndex(index);
+    }
+  };
+
+  // Calculate progress percentage
+  const progress = questions.length > 0 
+    ? Math.min(100, (visibleCount / questions.length) * 100) 
+    : 0;
+
+  // Find first unanswered question
+  const findFirstUnansweredQuestion = () => {
+    for (let i = 0; i < questions.length; i++) {
+      const question = questions[i];
+      if (!responses[question.id]) {
+        const questionElement = document.getElementById(`question-${question.id}`);
+        if (questionElement) {
+          questionElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          toast({
+            title: "Question required",
+            description: "Please answer all questions before submitting.",
+            variant: "destructive",
+          });
+          return false;
+        }
+      }
+    }
+    return true;
+  };
+
+  // Handle form submission
+  const handleSubmit = async () => {
+    // Check if all questions are answered
+    if (!findFirstUnansweredQuestion()) {
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      await submitResponses();
+      navigate("/recommendations");
+    } catch (error) {
+      console.error("Error submitting responses:", error);
+      toast({
+        title: "Submission Error",
+        description: "There was a problem submitting your responses. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-[#141414] to-[#242424] text-white flex flex-col items-center justify-center p-8">
+        <div className="animate-spin w-12 h-12 border-t-2 border-blue-500 border-r-2 rounded-full mb-4"></div>
+        <h2 className="text-xl font-medium">Loading questions...</h2>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-[#141414] to-[#242424] text-white flex flex-col items-center justify-center p-8">
+        <h2 className="text-2xl font-bold text-red-500 mb-4">Error</h2>
+        <p className="mb-8">{error}</p>
+        <Button onClick={() => navigate(-1)}>Go Back</Button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-[#141414] to-[#242424] text-white">
+      {/* Fixed progress header */}
+      <div className="sticky top-0 z-50 bg-[#0a0a0a]/80 backdrop-blur-md border-b border-white/10 p-4">
+        <div className="container mx-auto">
+          <div className="mb-2 flex justify-between items-center">
+            <h1 className="text-xl font-bold">Module Selection Quiz</h1>
+            <span className="text-sm font-medium">
+              {currentIndex + 1} of {questions.length} Questions
+            </span>
+          </div>
+          <Progress value={progress} className="h-2" />
+        </div>
+      </div>
+
+      {/* Questions */}
+      <div ref={questionsRef}>
+        {orderedSections.map(section => (
+          groupedQuestions[section]?.map((question, idx) => (
+            <div key={question.id} id={`question-${question.id}`}>
+              <Question
+                question={question}
+                id={`question-${question.id}`}
+                index={idx}
+                value={responses[question.id]}
+                onChange={(value) => handleResponse(question.id, value)}
+                onVisible={handleQuestionVisible}
+                onIntersect={handleIntersect}
+              />
+            </div>
+          ))
+        ))}
+      </div>
+
+      {/* Submit button */}
+      <div className="sticky bottom-8 flex justify-center w-full z-40 mt-8 mb-16">
+        <Button 
+          onClick={handleSubmit} 
+          disabled={submitting}
+          size="lg"
+          className="bg-blue-600 hover:bg-blue-700 text-white py-6 px-12 text-lg rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-105"
+        >
+          {submitting ? (
+            <>
+              <span className="animate-spin mr-2">↻</span> Submitting...
+            </>
+          ) : (
+            'Submit Answers'
+          )}
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+export default PickAI;
