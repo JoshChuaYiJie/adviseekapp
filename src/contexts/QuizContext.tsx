@@ -1,7 +1,7 @@
-
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { supabase, TableName, Module, QuizQuestion, Recommendation, UserFeedback } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { PostgrestResponse } from '@supabase/supabase-js';
 
 // Define types for our context
 interface QuizContextType {
@@ -113,7 +113,7 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
             throw new Error(`Failed to load new questions: ${newError.message}`);
           }
           
-          setQuestions(newQuestions as QuizQuestion[] || []);
+          setQuestions((newQuestions as QuizQuestion[]) || []);
         } else {
           setQuestions(existingQuestions as QuizQuestion[]);
         }
@@ -168,7 +168,7 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
       
       // Save responses to database
       const { error: responseError } = await fromTable('user_responses')
-        .upsert(formattedResponses, { onConflict: 'user_id,question_id' });
+        .insert(formattedResponses);
       
       if (responseError) {
         throw new Error(`Failed to save responses: ${responseError.message}`);
@@ -247,7 +247,7 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
           user_id: userId,
           module_id: moduleId,
           rating: rating
-        }, { onConflict: 'user_id,module_id' });
+        });
       
       if (error) {
         // Revert state change if there was an error
@@ -271,9 +271,12 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
   // Load user feedback (ratings)
   const loadUserFeedback = async (userId: string) => {
     try {
-      const { data, error } = await fromTable('user_feedback')
+      // Use explicit typing for the query result to avoid deep type instantiation
+      const result: PostgrestResponse<{module_id: number; rating: number}> = await fromTable('user_feedback')
         .select('module_id, rating')
-        .eq('user_id', userId);
+        .eq('user_id', userId) as any;
+      
+      const { data, error } = result;
       
       if (error) {
         throw new Error(`Failed to load ratings: ${error.message}`);
@@ -282,9 +285,7 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
       // Convert array to object mapping moduleId -> rating
       const feedbackObj: Record<number, number> = {};
       if (data) {
-        // Type assertion to fix the error with UserFeedback[]
-        const feedbackData = data as unknown as { module_id: number; rating: number }[];
-        feedbackData.forEach(item => {
+        data.forEach(item => {
           feedbackObj[item.module_id] = item.rating;
         });
       }
