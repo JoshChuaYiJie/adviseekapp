@@ -282,7 +282,9 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
       // Convert array to object mapping moduleId -> rating
       const feedbackObj: Record<number, number> = {};
       if (data) {
-        (data as UserFeedback[]).forEach((item) => {
+        // Type assertion to fix the error with UserFeedback[]
+        const feedbackData = data as unknown as { module_id: number; rating: number }[];
+        feedbackData.forEach(item => {
           feedbackObj[item.module_id] = item.rating;
         });
       }
