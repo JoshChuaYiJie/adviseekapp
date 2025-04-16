@@ -1,7 +1,7 @@
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
-import { useInterval } from "@/hooks/useInterval";
+import { useImageCarousel } from "@/hooks/useImageCarousel";
 
 type Image = {
   src: string;
@@ -14,20 +14,7 @@ interface ImageCarouselProps {
 }
 
 const ImageCarousel = ({ images, interval = 5000 }: ImageCarouselProps) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  // Custom hook to handle intervals
-  useInterval(() => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
-  }, interval);
-
-  useEffect(() => {
-    // Preload images for smoother transitions
-    images.forEach((image) => {
-      const img = new Image();
-      img.src = image.src;
-    });
-  }, [images]);
+  const { currentIndex, goToSlide } = useImageCarousel(images, interval);
 
   return (
     <Carousel className="w-full h-full">
@@ -61,7 +48,7 @@ const ImageCarousel = ({ images, interval = 5000 }: ImageCarouselProps) => {
             className={`h-2 rounded-full transition-all ${
               currentIndex === index ? "w-8 bg-white" : "w-2 bg-white/50"
             }`}
-            onClick={() => setCurrentIndex(index)}
+            onClick={() => goToSlide(index)}
             aria-label={`Go to slide ${index + 1}`}
           />
         ))}
