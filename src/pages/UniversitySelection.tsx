@@ -40,19 +40,19 @@ const universities = [
     id: "nus",
     name: "NUS",
     description: "NUS is known for its strong emphasis on research and innovation, particularly in science, technology, and medicine.",
-    image: "https://images.unsplash.com/photo-1574236170880-28803ab57f4d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1800&q=80"
+    image: "/course-logos/NUS.png"
   },
   {
     id: "ntu",
     name: "NTU",
     description: "NTU is renowned for its engineering and business programs, with a beautiful campus featuring modern architecture.",
-    image: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1800&q=80"
+    image: "/course-logos/NTU.png"
   },
   {
     id: "smu",
     name: "SMU",
     description: "SMU offers specialized programs in business, law, and social sciences with a city campus in the heart of Singapore.",
-    image: "https://images.unsplash.com/photo-1596005554384-d293674c91d7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1800&q=80"
+    image: "/course-logos/SMU.png"
   }
 ];
 
