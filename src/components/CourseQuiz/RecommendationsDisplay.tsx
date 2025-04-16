@@ -1,0 +1,158 @@
+
+import React, { useState, useEffect } from 'react';
+import { Button } from "@/components/ui/button";
+import { Slider } from "@/components/ui/slider";
+import { useToast } from "@/hooks/use-toast";
+import { useQuiz } from '@/contexts/QuizContext';
+import { Recommendation, Module } from '@/integrations/supabase/client';
+import { RecommendationsSkeleton } from './RecommendationsSkeleton';
+import { SelectionModal } from './SelectionModal';
+
+interface RecommendationsDisplayProps {
+  onBack: () => void;
+  onReset: () => void;
+}
+
+export const RecommendationsDisplay: React.FC<RecommendationsDisplayProps> = ({ onBack, onReset }) => {
+  const { toast } = useToast();
+  const { recommendations, isLoading, error, rateModule, userFeedback, refineRecommendations, getFinalSelections, finalSelections } = useQuiz();
+  
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selections, setSelections] = useState<{module: Module, reason: string}[]>([]);
+  
+  // Count rated modules
+  const ratedModulesCount = Object.keys(userFeedback).length;
+  
+  // Get current rating for a module
+  const getRating = (moduleId: number): number => {
+    return userFeedback[moduleId] || 0;
+  };
+  
+  // Handle rating changes
+  const handleRatingChange = (moduleId: number, rating: number) => {
+    if (rateModule) {  // Check if rateModule function exists before calling
+      rateModule(moduleId, rating);
+    }
+  };
+  
+  // Handle showing final selections
+  const handleShowSelections = async () => {
+    const selections = await getFinalSelections();
+    if (selections && selections.length > 0) {
+      setSelections(selections);
+      setModalOpen(true);
+    } else {
+      toast({
+        title: "No Selections Available",
+        description: "Rate more modules to get course selections.",
+        variant: "destructive",
+      });
+    }
+  };
+  
+  if (isLoading) return <RecommendationsSkeleton />;
+  
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center p-8 min-h-[60vh]">
+        <h2 className="text-2xl font-bold text-red-600">Error Loading Recommendations</h2>
+        <p className="mt-4 text-gray-700">{error}</p>
+        <Button onClick={onBack} className="mt-8">Go Back</Button>
+      </div>
+    );
+  }
+  
+  if (!recommendations || recommendations.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center p-8 min-h-[60vh]">
+        <h2 className="text-2xl font-bold">No Recommendations Available</h2>
+        <p className="mt-4 text-gray-700">We couldn't generate recommendations based on your responses.</p>
+        <Button onClick={onBack} className="mt-8">Go Back</Button>
+      </div>
+    );
+  }
+  
+  return (
+    <div className="flex flex-col min-h-screen bg-white">
+      {/* Header */}
+      <header className="sticky top-0 bg-white shadow-md p-4 z-10">
+        <div className="container mx-auto">
+          <h1 className="text-2xl font-bold text-center">Your Course Recommendations</h1>
+          <div className="flex justify-between items-center mt-2">
+            <div className="text-sm text-gray-600">{ratedModulesCount}/{recommendations.length} modules rated</div>
+            <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                onClick={onBack}
+              >
+                Back
+              </Button>
+              <Button 
+                onClick={() => refineRecommendations && refineRecommendations()}
+                disabled={ratedModulesCount < 5}
+              >
+                Refine Recommendations
+              </Button>
+              <Button 
+                onClick={handleShowSelections}
+                disabled={ratedModulesCount < 5}
+              >
+                Confirm Selection
+              </Button>
+            </div>
+          </div>
+        </div>
+      </header>
+      
+      {/* Recommendations Grid */}
+      <div className="container mx-auto py-8 px-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {recommendations.map((rec) => (
+            <div 
+              key={rec.module_id} 
+              className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-all hover:scale-[1.02]"
+            >
+              <h3 className="font-bold text-xl mb-2">{rec.module?.title}</h3>
+              <div className="text-sm text-gray-600 mb-2">
+                {rec.module?.course_code} • {rec.module?.university} • {rec.module?.aus_cus} AU/CU • {rec.module?.semester}
+              </div>
+              <p className="text-gray-800 mb-4 text-sm">{rec.module?.description || "No description available."}</p>
+              <p className="text-gray-700 italic text-sm mb-4">{rec.reason}</p>
+              
+              <div className="mt-4">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium">Rate this module</span>
+                  <span className="text-sm font-medium">{getRating(rec.module_id)}/10</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-xs">1</span>
+                  <Slider
+                    value={[getRating(rec.module_id)]}
+                    min={1}
+                    max={10}
+                    step={1}
+                    onValueChange={([value]) => handleRatingChange(rec.module_id, value)}
+                    className="flex-1"
+                    aria-label={`Rate module ${rec.module?.course_code}, 1 to 10`}
+                  />
+                  <span className="text-xs">10</span>
+                </div>
+                <div className="flex justify-between text-xs text-gray-500 mt-1">
+                  <span>Not at all</span>
+                  <span>I love it</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      
+      <SelectionModal 
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        selections={selections}
+        onStartOver={onReset}
+      />
+    </div>
+  );
+};

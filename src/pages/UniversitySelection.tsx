@@ -11,6 +11,9 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { BookOpen, ChevronRight } from "lucide-react";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { CourseQuizContainer } from "@/components/CourseQuiz/CourseQuizContainer";
+import { QuizProvider } from "@/contexts/QuizContext";
 
 // Styles for Jekflix theme overlay effects
 const pixelsOverlay = {
@@ -81,6 +84,7 @@ const schools = [
 const UniversitySelection = () => {
   const [selectedUniversity, setSelectedUniversity] = useState(universities[0]);
   const [selectedSchool, setSelectedSchool] = useState(schools[0]);
+  const [quizOpen, setQuizOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleUniversityChange = (value: string) => {
@@ -98,7 +102,7 @@ const UniversitySelection = () => {
   };
 
   const handleHelpMePick = () => {
-    alert("Feature to help you pick is coming soon!");
+    setQuizOpen(true);
   };
 
   const handleNext = () => {
@@ -190,6 +194,15 @@ const UniversitySelection = () => {
       <footer className="py-4 px-6 text-center text-sm text-gray-500 bg-[#0c0c0c]">
         © 2025 Adviseek - All rights reserved
       </footer>
+
+      {/* Course Quiz Dialog */}
+      <Dialog open={quizOpen} onOpenChange={setQuizOpen}>
+        <DialogContent className="max-w-5xl p-0 bg-white text-black overflow-hidden">
+          <QuizProvider>
+            <CourseQuizContainer onClose={() => setQuizOpen(false)} />
+          </QuizProvider>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
