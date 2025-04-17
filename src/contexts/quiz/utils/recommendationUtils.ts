@@ -45,7 +45,6 @@ export const loadUserFeedbackUtil = async (userId: string) => {
   const feedbackObj: Record<number, number> = {};
   
   if (data && Array.isArray(data)) {
-    // Use type guard to ensure we're dealing with proper data
     data.forEach((item: any) => {
       if (item && typeof item.module_id === 'number' && typeof item.rating === 'number') {
         feedbackObj[item.module_id] = item.rating;
@@ -76,6 +75,7 @@ export const loadRecommendationsUtil = async (userId: string): Promise<Recommend
   
   if (!data) return [];
   
+  // Use type assertion to avoid infinite recursion
   return data.map((rec: any) => ({
     module_id: rec.module_id,
     reason: rec.reason,
