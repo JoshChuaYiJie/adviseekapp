@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,6 +6,7 @@ import AuthSection from "@/components/auth/AuthSection";
 import { FileText, BookOpen, Video, DollarSign, School } from "lucide-react";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import UserMenu from "@/components/UserMenu";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -265,9 +265,13 @@ const Index = () => {
           </button>
         </nav>
         
-        {/* Upgrade button */}
-        <div className="p-4 mt-auto border-t border-gray-200">
-          <button className="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-white bg-blue-100 text-blue-800 rounded-md hover:bg-blue-200">
+        {/* User menu and upgrade button */}
+        <div className="p-4 mt-auto border-t border-gray-200 space-y-2">
+          <UserMenu user={user} />
+          <button 
+            onClick={() => navigate("/pricing")} 
+            className="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-white bg-blue-100 text-blue-800 rounded-md hover:bg-blue-200"
+          >
             <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M7 11l5-5 5 5"/>
               <path d="M7 17l5-5 5 5"/>
