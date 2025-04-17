@@ -42,11 +42,12 @@ export const loadUserFeedbackUtil = async (userId: string) => {
     throw new Error(`Failed to load ratings: ${error.message}`);
   }
   
-  // Using Record type for feedback to avoid infinite type instantiation
+  // Fix: Use a simple Record type instead of the problematic type instantiation
   const feedbackObj: Record<number, number> = {};
   
   if (data) {
-    data.forEach((item: { module_id: number; rating: number }) => {
+    // Fix: Type the data explicitly to avoid type inference issues
+    (data as Array<{ module_id: number; rating: number }>).forEach(item => {
       feedbackObj[item.module_id] = item.rating;
     });
   }
