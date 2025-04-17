@@ -8,11 +8,13 @@ import { AppliedProgrammes } from "@/components/sections/AppliedProgrammes";
 import { MyResume } from "@/components/sections/MyResume";
 import { ApplyNow } from "@/components/sections/ApplyNow";
 import AuthSection from "@/components/auth/AuthSection";
+import { useNavigate } from "react-router-dom";
 
 const Index = () => {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [selectedSection, setSelectedSection] = useState("applied-programmes");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const checkUser = async () => {

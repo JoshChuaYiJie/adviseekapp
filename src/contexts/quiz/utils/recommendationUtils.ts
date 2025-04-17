@@ -1,6 +1,5 @@
 
 import { Module } from '@/integrations/supabase/client';
-import { QuizQuestion } from '@/integrations/supabase/client';
 import { supabase } from '@/integrations/supabase/client';
 import { Recommendation, ModuleSelection } from '../types/recommendationTypes';
 
@@ -20,6 +19,12 @@ interface ModuleWeighting {
   weight: number;
 }
 
+// Define QuizQuestion interface to match what's used in the function
+interface QuizQuestion {
+  id: number;
+  weight?: number; // Make weight optional since we're providing a default
+}
+
 export const calculateRecommendations = (
   moduleRatings: ModuleRating[],
   userResponses: UserResponse[],
@@ -34,7 +39,7 @@ export const calculateRecommendations = (
       return;
     }
 
-    const weight = question.weight ?? 1;
+    const weight = question.weight ?? 1; // Use nullish coalescing to provide default weight
 
     moduleRatings.forEach((moduleRating) => {
       const moduleCode = moduleRating.moduleCode;
