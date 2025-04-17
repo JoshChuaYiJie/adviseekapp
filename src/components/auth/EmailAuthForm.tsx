@@ -1,9 +1,11 @@
 
 import { useState } from "react";
-import { Input } from "@/components/ui/input";
+import { useNavigate } from "react-router-dom";
+import { AlertCircle, ArrowLeft, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
-import { Link } from "react-router-dom";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
 interface EmailAuthFormProps {
@@ -14,17 +16,17 @@ interface EmailAuthFormProps {
 const EmailAuthForm = ({ email, onBack }: EmailAuthFormProps) => {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
+  const navigate = useNavigate();
 
-  const handleEmailLogin = async () => {
-    if (!email.trim() || !password.trim()) {
-      toast.error("Please enter both email and password");
-      return;
-    }
-
+  const handleSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
     setIsLoading(true);
 
     try {
-      // Try to sign in with email and password
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -32,33 +34,30 @@ const EmailAuthForm = ({ email, onBack }: EmailAuthFormProps) => {
 
       if (error) {
         if (error.message.includes("Invalid login credentials")) {
-          // Since we can't directly check if a user exists, we attempt to sign in
-          // and use the error message to determine if the account exists
-          toast.error("Invalid credentials. If you don't have an account, please sign up.", {
-            action: {
-              label: "Sign Up",
-              onClick: handleSignUp,
-            },
-          });
+          setError("Invalid email or password. Please try again.");
         } else {
-          toast.error(error.message);
+          setError(error.message);
         }
-      } else if (data.user) {
-        toast.success("Login successful!");
+        return;
       }
-    } catch (err) {
-      toast.error(`An unexpected error occurred: ${(err as Error).message}`);
+
+      if (data?.user) {
+        toast({
+          title: "Success!",
+          description: "You have successfully signed in.",
+        });
+        navigate("/"); // Redirect to home page after successful login
+      }
+    } catch (error: any) {
+      setError(error.message || "An unexpected error occurred");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleSignUp = async () => {
-    if (!email.trim() || !password.trim()) {
-      toast.error("Please enter both email and password");
-      return;
-    }
-
+  const handleSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
     setIsLoading(true);
 
     try {
@@ -67,16 +66,30 @@ const EmailAuthForm = ({ email, onBack }: EmailAuthFormProps) => {
         password,
         options: {
           emailRedirectTo: window.location.origin,
-        }
+        },
       });
 
       if (error) {
-        toast.error(error.message);
-      } else {
-        toast.success("Sign up successful! Please check your email to verify your account.");
+        setError(error.message);
+        return;
       }
-    } catch (err) {
-      toast.error(`An unexpected error occurred: ${(err as Error).message}`);
+
+      if (data?.user) {
+        toast({
+          title: "Account created!",
+          description: data.user.identities?.length === 0
+            ? "You already have an account. Please sign in."
+            : "Your account has been created successfully.",
+        });
+        
+        if (data.user.identities?.length !== 0) {
+          navigate("/"); // Redirect to home page after successful signup
+        } else {
+          setIsSignUp(false); // Switch back to signin if account already exists
+        }
+      }
+    } catch (error: any) {
+      setError(error.message || "An unexpected error occurred");
     } finally {
       setIsLoading(false);
     }
@@ -84,57 +97,69 @@ const EmailAuthForm = ({ email, onBack }: EmailAuthFormProps) => {
 
   return (
     <div className="space-y-4">
-      <button onClick={onBack} className="flex items-center gap-1 text-sm text-accent hover:underline mb-2">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="rotate-180">
-          <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
-        Back
-      </button>
-      
-      <div>
-        <label className="text-sm font-medium">Email</label>
-        <div className="flex items-center gap-2 mt-1 bg-black/5 px-3 py-2 rounded-md">
-          <span>{email}</span>
-          <button onClick={onBack} className="text-xs text-accent">
-            Change
-          </button>
-        </div>
+      <div className="flex items-center">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="mr-2 p-0 h-auto"
+          onClick={onBack}
+        >
+          <ArrowLeft className="h-4 w-4" />
+        </Button>
+        <h3 className="text-lg font-semibold">{isSignUp ? "Create Account" : "Sign In"}</h3>
       </div>
 
-      <div className="space-y-1">
-        <label className="text-sm font-medium">Password</label>
-        <Input 
-          type="password"
-          placeholder="Enter your password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="bg-transparent border border-gray-700/20"
-        />
-      </div>
-      
-      <div className="flex gap-3">
-        <Button 
-          onClick={handleEmailLogin}
-          className="w-full bg-primary-gradient text-white"
-          disabled={isLoading}
-        >
-          Login
+      {error && (
+        <div className="bg-red-50 p-3 rounded-md flex items-start">
+          <AlertCircle className="h-5 w-5 text-red-600 mr-2 flex-shrink-0 mt-0.5" />
+          <p className="text-sm text-red-600">{error}</p>
+        </div>
+      )}
+
+      <form onSubmit={isSignUp ? handleSignUp : handleSignIn} className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="email">Email</Label>
+          <Input
+            id="email"
+            type="email"
+            value={email}
+            disabled
+            className="bg-gray-50"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="password">Password</Label>
+          <Input
+            id="password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="••••••••"
+            required
+            autoFocus
+          />
+        </div>
+        <Button type="submit" className="w-full" disabled={isLoading}>
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              {isSignUp ? "Creating Account..." : "Signing In..."}
+            </>
+          ) : (
+            <>{isSignUp ? "Create Account" : "Sign In"}</>
+          )}
         </Button>
-        <Button 
-          onClick={handleSignUp}
-          variant="outline"
-          className="w-full"
-          disabled={isLoading}
+      </form>
+
+      <div className="text-center pt-2">
+        <button
+          onClick={() => setIsSignUp(!isSignUp)}
+          className="text-sm text-blue-600 hover:underline"
         >
-          Sign Up
-        </Button>
-      </div>
-      
-      <div className="text-xs text-gray-500 text-center">
-        By continuing, you agree to our 
-        <Link to="/terms-of-service" className="text-accent hover:underline mx-1">Terms of Service</Link> 
-        and 
-        <Link to="/privacy-policy" className="text-accent hover:underline mx-1">Privacy Policy</Link>
+          {isSignUp
+            ? "Already have an account? Sign In"
+            : "Don't have an account? Sign Up"}
+        </button>
       </div>
     </div>
   );

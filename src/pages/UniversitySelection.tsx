@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { 
   Select, 
@@ -76,19 +77,23 @@ const schools = [
 
 const UniversitySelection = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  
   const [selectedUniversity, setSelectedUniversity] = useState(() => {
-    return location.state?.university ? 
-      universities.find(uni => uni.id === location.state.university) || universities[0] 
-      : universities[0];
+    // Check if we have pre-filled data from navigation state
+    if (location.state?.university) {
+      return universities.find(uni => uni.id === location.state.university) || universities[0];
+    }
+    return universities[0];
   });
   
   const [selectedSchool, setSelectedSchool] = useState(() => {
-    return location.state?.school ? 
-      schools.find(sch => sch.id === location.state.school) || schools[0] 
-      : schools[0];
+    // Check if we have pre-filled data from navigation state
+    if (location.state?.school) {
+      return schools.find(sch => sch.id === location.state.school) || schools[0];
+    }
+    return schools[0];
   });
-
-  const navigate = useNavigate();
 
   const handleUniversityChange = (value: string) => {
     const university = universities.find(uni => uni.id === value);

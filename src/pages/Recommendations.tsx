@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -57,7 +58,9 @@ const Recommendations = () => {
         await refineRecommendations();
       }
 
-      if ((Object.keys(userFeedback).length + 1) % 30 === 0) {
+      // Check if the user has rated a multiple of 30 modules
+      const newCount = Object.keys(userFeedback).length + 1;
+      if (newCount % 30 === 0) {
         setShowSuggestion(true);
       }
     } catch (err) {
@@ -78,7 +81,7 @@ const Recommendations = () => {
   const handleAcceptSuggestion = () => {
     navigate("/university-selection", { 
       state: { 
-        university: "NUS",
+        university: "nus",
         school: "computing"
       } 
     });
@@ -178,7 +181,7 @@ const Recommendations = () => {
           />
         )}
 
-        {currentModule && (
+        {!showSuggestion && !showProgramme && currentModule && (
           <div className="w-full max-w-md mt-8">
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm">Not interested</span>

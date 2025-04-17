@@ -57,7 +57,7 @@ export const loadUserFeedbackUtil = async (userId: string) => {
 };
 
 // Load recommendations
-export const loadRecommendationsUtil = async (userId: string) => {
+export const loadRecommendationsUtil = async (userId: string): Promise<Recommendation[]> => {
   const { data, error } = await fromTable('recommendations')
     .select(`
       id,
