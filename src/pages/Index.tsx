@@ -4,15 +4,25 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import AuthSection from "@/components/auth/AuthSection";
-import { Home as HomeIcon, School, BarChart, BookOpen, GraduationCap, Users } from "lucide-react";
+import { FileText, BookOpen, Video, DollarSign, School } from "lucide-react";
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 
 const Index = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  
+  const [selectedSection, setSelectedSection] = useState("applied-programmes");
+  const [selectedUniversity, setSelectedUniversity] = useState("");
+  const [programme, setProgramme] = useState("");
+  const [appliedProgrammes, setAppliedProgrammes] = useState<Array<{
+    logo: string;
+    school: string;
+    course: string;
+    extras?: string;
+  }>>([]);
+
   useEffect(() => {
-    // Check if user is logged in
     const checkUser = async () => {
       const { data } = await supabase.auth.getSession();
       setUser(data.session?.user || null);
@@ -21,7 +31,6 @@ const Index = () => {
     
     checkUser();
     
-    // Subscribe to auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         setUser(session?.user || null);
@@ -32,20 +41,21 @@ const Index = () => {
       subscription.unsubscribe();
     };
   }, []);
-  
+
   const handleAddUniversity = () => {
-    if (!user) {
-      navigate("/authorization");
-    } else {
-      navigate("/university-selection");
-    }
+    if (!selectedUniversity || !programme) return;
+    
+    const newProgramme = {
+      logo: `/school-logos/${selectedUniversity}.png`,
+      school: selectedUniversity,
+      course: programme,
+    };
+    
+    setAppliedProgrammes([...appliedProgrammes, newProgramme]);
+    setSelectedUniversity("");
+    setProgramme("");
   };
-  
-  const handleGiveFeedback = () => {
-    // Placeholder for feedback functionality
-    alert("Thank you for your interest in providing feedback!");
-  };
-  
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -53,13 +63,133 @@ const Index = () => {
       </div>
     );
   }
-  
-  // If not logged in, show the auth section
+
   if (!user) {
     return <AuthSection />;
   }
-  
-  // If logged in, show the home page
+
+  const renderContent = () => {
+    switch (selectedSection) {
+      case "applied-programmes":
+        return (
+          <div className="space-y-6">
+            <div className="space-y-4">
+              <Select value={selectedUniversity} onValueChange={setSelectedUniversity}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select a university" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="NUS">NUS</SelectItem>
+                  <SelectItem value="NTU">NTU</SelectItem>
+                  <SelectItem value="SMU">SMU</SelectItem>
+                </SelectContent>
+              </Select>
+              
+              {selectedUniversity && (
+                <input
+                  type="text"
+                  value={programme}
+                  onChange={(e) => setProgramme(e.target.value)}
+                  placeholder="Enter programme name"
+                  className="w-full px-3 py-2 border rounded-md"
+                />
+              )}
+              
+              <Button onClick={handleAddUniversity}>Add University</Button>
+              <Button 
+                variant="outline" 
+                onClick={() => navigate("/pickAI")}
+                className="ml-4"
+              >
+                What is my ideal programme?
+              </Button>
+            </div>
+
+            {appliedProgrammes.length > 0 && (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>University</TableHead>
+                    <TableHead>School</TableHead>
+                    <TableHead>Course</TableHead>
+                    <TableHead>Additional Info</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {appliedProgrammes.map((prog, idx) => (
+                    <TableRow key={idx}>
+                      <TableCell>
+                        <img src={prog.logo} alt={prog.school} className="h-12 w-12 object-contain" />
+                      </TableCell>
+                      <TableCell>{prog.school}</TableCell>
+                      <TableCell>{prog.course}</TableCell>
+                      <TableCell>{prog.extras || "-"}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </div>
+        );
+      
+      case "my-resume":
+        return (
+          <div className="space-y-6">
+            <div className="border-2 border-dashed rounded-lg p-8 text-center">
+              <p>Drop your resume here or click to upload</p>
+              <input type="file" className="hidden" />
+            </div>
+            
+            <div>
+              <h3 className="text-lg font-semibold">Don't have an optimized resume? Build one now!</h3>
+              <p className="text-sm text-gray-600 mt-1">
+                Our proprietary AI model will build one specifically catered to your desired programme
+              </p>
+              <Button 
+                onClick={() => navigate("/resumebuilder")} 
+                className="mt-4"
+              >
+                Build your resume
+              </Button>
+            </div>
+
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Document</TableHead>
+                  <TableHead>Uploaded on</TableHead>
+                  <TableHead>Applying to</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {/* Add rows when documents are uploaded */}
+              </TableBody>
+            </Table>
+          </div>
+        );
+      
+      case "apply-now":
+        return (
+          <div className="space-y-4">
+            <Select>
+              <SelectTrigger>
+                <SelectValue placeholder="Pick a university" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="NUS">NUS</SelectItem>
+                <SelectItem value="NTU">NTU</SelectItem>
+                <SelectItem value="SMU">SMU</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        );
+      
+      default:
+        return <p>Placeholder</p>;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex">
       {/* Sidebar */}
@@ -67,37 +197,72 @@ const Index = () => {
         {/* Logo */}
         <div className="p-4 border-b border-gray-200">
           <div className="flex items-center">
-            <span className="text-2xl font-bold text-purple-600">Sups</span>
+            <span className="text-2xl font-bold text-purple-600">Adviseek</span>
             <span className="ml-1 px-2 py-0.5 text-xs font-semibold bg-yellow-400 text-yellow-800 rounded">FREE</span>
           </div>
         </div>
         
         {/* Navigation */}
         <nav className="flex-1 p-4 space-y-1">
-          <a href="#" className="flex items-center px-3 py-2 text-sm font-medium rounded-md bg-gray-100 text-gray-900">
-            <HomeIcon className="mr-3 h-5 w-5 text-gray-500" />
-            My Colleges
-          </a>
-          <a href="#" className="flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-100 hover:text-gray-900">
+          <button
+            onClick={() => setSelectedSection("applied-programmes")}
+            className={`flex items-center w-full px-3 py-2 text-sm font-medium rounded-md ${
+              selectedSection === "applied-programmes" 
+                ? "bg-gray-100 text-gray-900" 
+                : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+            }`}
+          >
             <School className="mr-3 h-5 w-5 text-gray-500" />
-            Activities
-          </a>
-          <a href="#" className="flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-100 hover:text-gray-900">
+            Applied Programmes
+          </button>
+          
+          <button
+            onClick={() => setSelectedSection("my-resume")}
+            className={`flex items-center w-full px-3 py-2 text-sm font-medium rounded-md ${
+              selectedSection === "my-resume" 
+                ? "bg-gray-100 text-gray-900" 
+                : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+            }`}
+          >
+            <FileText className="mr-3 h-5 w-5 text-gray-500" />
+            My Resume
+          </button>
+          
+          <button
+            onClick={() => setSelectedSection("apply-now")}
+            className={`flex items-center w-full px-3 py-2 text-sm font-medium rounded-md ${
+              selectedSection === "apply-now" 
+                ? "bg-gray-100 text-gray-900" 
+                : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+            }`}
+          >
             <BookOpen className="mr-3 h-5 w-5 text-gray-500" />
-            Background
-          </a>
-          <a href="#" className="flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-100 hover:text-gray-900">
-            <Users className="mr-3 h-5 w-5 text-gray-500" />
-            Common App
-          </a>
-          <a href="#" className="flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-100 hover:text-gray-900">
-            <BarChart className="mr-3 h-5 w-5 text-gray-500" />
+            Apply Now
+          </button>
+          
+          <button
+            onClick={() => setSelectedSection("mock-interviews")}
+            className={`flex items-center w-full px-3 py-2 text-sm font-medium rounded-md ${
+              selectedSection === "mock-interviews" 
+                ? "bg-gray-100 text-gray-900" 
+                : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+            }`}
+          >
+            <Video className="mr-3 h-5 w-5 text-gray-500" />
+            Mock Interviews
+          </button>
+          
+          <button
+            onClick={() => setSelectedSection("get-paid")}
+            className={`flex items-center w-full px-3 py-2 text-sm font-medium rounded-md ${
+              selectedSection === "get-paid" 
+                ? "bg-gray-100 text-gray-900" 
+                : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+            }`}
+          >
+            <DollarSign className="mr-3 h-5 w-5 text-gray-500" />
             Get Paid
-          </a>
-          <a href="#" className="flex items-center px-3 py-2 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-100 hover:text-gray-900">
-            <GraduationCap className="mr-3 h-5 w-5 text-gray-500" />
-            Professional Consulting
-          </a>
+          </button>
         </nav>
         
         {/* Upgrade button */}
@@ -114,32 +279,12 @@ const Index = () => {
       
       {/* Main content */}
       <main className="flex-1 p-8">
-        {/* Welcome section */}
-        <div className="max-w-2xl mx-auto mt-8">
-          <h1 className="text-2xl font-medium text-gray-800">Welcome, {user.email || "Student"}. Let's get to work.</h1>
+        <div className="max-w-4xl mx-auto">
+          <h1 className="text-2xl font-medium text-gray-800 mb-6">
+            Welcome, {user.email || "Student"}. Let's get to work.
+          </h1>
           
-          {/* Add University button */}
-          <div className="mt-6">
-            <button 
-              onClick={handleAddUniversity}
-              className="w-full px-4 py-3 text-left border border-gray-300 rounded-md hover:border-gray-400 transition-colors"
-            >
-              Add University
-            </button>
-          </div>
-          
-          {/* Request college text */}
-          <p className="text-gray-600 text-center mt-4">Request a college.</p>
-          
-          {/* Feedback button */}
-          <div className="flex justify-center mt-4">
-            <button 
-              onClick={handleGiveFeedback}
-              className="px-6 py-2 text-sm font-medium text-blue-700 border border-blue-700 rounded-md hover:bg-blue-50 transition-colors"
-            >
-              Give Feedback
-            </button>
-          </div>
+          {renderContent()}
         </div>
       </main>
     </div>
