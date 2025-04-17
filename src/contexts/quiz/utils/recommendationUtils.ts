@@ -1,3 +1,4 @@
+
 import { Module } from '@/integrations/supabase/client';
 import { fromTable, getUserId } from './databaseHelpers';
 import { FeedbackItem, Recommendation } from '../types/recommendationTypes';
@@ -43,9 +44,12 @@ export const loadUserFeedbackUtil = async (userId: string) => {
   
   const feedbackObj: Record<number, number> = {};
   
-  if (data) {
-    data.forEach((item: { module_id: number; rating: number }) => {
-      feedbackObj[item.module_id] = item.rating;
+  if (data && Array.isArray(data)) {
+    // Use type guard to ensure we're dealing with proper data
+    data.forEach((item: any) => {
+      if (item && typeof item.module_id === 'number' && typeof item.rating === 'number') {
+        feedbackObj[item.module_id] = item.rating;
+      }
     });
   }
   
