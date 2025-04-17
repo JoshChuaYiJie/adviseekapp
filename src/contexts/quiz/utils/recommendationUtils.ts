@@ -42,12 +42,13 @@ export const loadUserFeedbackUtil = async (userId: string) => {
     throw new Error(`Failed to load ratings: ${error.message}`);
   }
   
-  // Fix: Use a simple Record type instead of the problematic type instantiation
+  // Create a simple Record type to avoid infinite type instantiation
   const feedbackObj: Record<number, number> = {};
   
   if (data) {
-    // Fix: Type the data explicitly to avoid type inference issues
-    (data as Array<{ module_id: number; rating: number }>).forEach(item => {
+    // Use a type assertion with unknown first to avoid direct type conversion errors
+    const typedData = data as unknown as Array<{ module_id: number; rating: number }>;
+    typedData.forEach(item => {
       feedbackObj[item.module_id] = item.rating;
     });
   }
@@ -73,12 +74,21 @@ export const loadRecommendationsUtil = async (userId: string) => {
     throw new Error(`Failed to load recommendations: ${error.message}`);
   }
   
-  // Transform data to match our format with explicit typing
-  return data ? data.map((rec: any) => ({
+  // Transform data to match our format with proper type assertion
+  if (!data) return [];
+  
+  // Use type assertion with unknown first to avoid direct conversion errors
+  const recommendations = (data as unknown as Array<{
+    module_id: number;
+    reason: string;
+    modules: Module;
+  }>).map(rec => ({
     module_id: rec.module_id,
     reason: rec.reason,
-    module: rec.modules as Module
-  })) as Recommendation[] : [];
+    module: rec.modules
+  }));
+  
+  return recommendations as Recommendation[];
 };
 
 // Rate a module
