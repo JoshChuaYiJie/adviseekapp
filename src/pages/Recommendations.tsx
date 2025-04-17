@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -22,41 +21,44 @@ const Recommendations = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [rating, setRating] = useState(5);
   const [showAnimation, setShowAnimation] = useState(false);
+  const [showSuggestion, setShowSuggestion] = useState(false);
+  const [showProgramme, setShowProgramme] = useState(false);
+  const [ratedModulesCount, setRatedModulesCount] = useState(0);
 
   useEffect(() => {
-    // Show the first module with animation
     setShowAnimation(true);
   }, []);
 
-  // Handle rating module
+  useEffect(() => {
+    if (userFeedback) {
+      setRatedModulesCount(Object.keys(userFeedback).length);
+    }
+  }, [userFeedback]);
+
   const handleRate = async () => {
     const currentModule = recommendations[currentIndex];
     if (!currentModule) return;
 
     try {
-      // Fade out the current card
       setShowAnimation(false);
-      
-      // Submit the rating
       await rateModule(currentModule.module_id, rating);
-      
-      // Wait for animation to complete
       await new Promise(resolve => setTimeout(resolve, 500));
       
-      // Move to next module or finish
       if (currentIndex < recommendations.length - 1) {
         setCurrentIndex(prevIndex => prevIndex + 1);
-        setRating(5); // Reset rating to middle value
-        setShowAnimation(true); // Show the next card with animation
+        setRating(5);
+        setShowAnimation(true);
       } else {
-        // All modules rated
         toast({
           title: "All modules rated",
-          description: "Thank you for rating all the modules. You can now refine your selections.",
+          description: "Thank you for rating all the modules.",
         });
         
-        // Optional: Redirect to a summary page or show completion message
         await refineRecommendations();
+      }
+
+      if ((Object.keys(userFeedback).length + 1) % 30 === 0) {
+        setShowSuggestion(true);
       }
     } catch (err) {
       console.error("Error rating module:", err);
@@ -66,6 +68,26 @@ const Recommendations = () => {
         variant: "destructive",
       });
     }
+  };
+
+  const handleViewSuggestion = () => {
+    setShowSuggestion(false);
+    setShowProgramme(true);
+  };
+
+  const handleAcceptSuggestion = () => {
+    navigate("/university-selection", { 
+      state: { 
+        university: "NUS",
+        school: "computing"
+      } 
+    });
+  };
+
+  const handleRateMore = async () => {
+    setShowSuggestion(false);
+    setShowProgramme(false);
+    await refineRecommendations();
   };
 
   if (isLoading) {
@@ -101,7 +123,6 @@ const Recommendations = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#141414] to-[#242424] text-white flex flex-col">
-      {/* Header with progress */}
       <header className="sticky top-0 z-10 bg-[#0a0a0a]/80 backdrop-blur-md border-b border-white/10 p-4">
         <div className="container mx-auto flex justify-between items-center">
           <h1 className="text-2xl font-bold">Module Recommendations</h1>
@@ -119,9 +140,35 @@ const Recommendations = () => {
         </div>
       </header>
 
-      {/* Module rating area */}
       <div className="flex-1 flex flex-col items-center justify-center p-4 md:p-8">
-        {currentModule && (
+        {showSuggestion && (
+          <div className="text-center animate-fade-in">
+            <h2 className="text-3xl font-bold mb-4">Your suggested programme is ready!</h2>
+            <p className="text-lg mb-8">View it now or rate 30 more modules for a more refined suggestion</p>
+            <div className="space-x-4">
+              <Button onClick={handleViewSuggestion}>View suggestion</Button>
+              <Button onClick={handleRateMore}>Rate more modules</Button>
+            </div>
+          </div>
+        )}
+
+        {showProgramme && (
+          <div className="text-center animate-fade-in">
+            <h2 className="text-3xl font-bold mb-4">
+              Your recommended programme is a degree in computer science in NUS with an optional major in economics
+            </h2>
+            <p className="text-lg mb-8">
+              Based on your responses, you demonstrate strong analytical skills and interest in technology.
+              Your learning style and career goals align well with the computer science program at NUS.
+            </p>
+            <div className="space-x-4">
+              <Button onClick={handleAcceptSuggestion}>Accept suggestion</Button>
+              <Button onClick={handleRateMore}>Rate more suggestions</Button>
+            </div>
+          </div>
+        )}
+
+        {!showSuggestion && !showProgramme && currentModule && (
           <ModuleRatingCard
             module={currentModule.module}
             courseCode={currentModule.module?.course_code}
@@ -131,32 +178,32 @@ const Recommendations = () => {
           />
         )}
 
-        {/* Rating slider */}
-        <div className="w-full max-w-md mt-8">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm">Not interested</span>
-            <span className="font-bold text-lg">{rating}/10</span>
-            <span className="text-sm">Very interested</span>
+        {currentModule && (
+          <div className="w-full max-w-md mt-8">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm">Not interested</span>
+              <span className="font-bold text-lg">{rating}/10</span>
+              <span className="text-sm">Very interested</span>
+            </div>
+            <Slider
+              value={[rating]}
+              min={1}
+              max={10}
+              step={1}
+              onValueChange={([value]) => setRating(value)}
+              className="mb-6"
+            />
+            <Button 
+              onClick={handleRate}
+              size="lg"
+              className="w-full bg-transparent border border-white/30 hover:border-white/80 hover:bg-white/10 transition-all hover:scale-105 py-6"
+            >
+              Rate and Continue
+            </Button>
           </div>
-          <Slider
-            value={[rating]}
-            min={1}
-            max={10}
-            step={1}
-            onValueChange={([value]) => setRating(value)}
-            className="mb-6"
-          />
-          <Button 
-            onClick={handleRate}
-            size="lg"
-            className="w-full bg-transparent border border-white/30 hover:border-white/80 hover:bg-white/10 transition-all hover:scale-105 py-6"
-          >
-            Rate and Continue
-          </Button>
-        </div>
+        )}
       </div>
 
-      {/* Footer with progress */}
       <footer className="p-4 text-center text-sm text-gray-400">
         © 2025 Adviseek - All rights reserved
       </footer>

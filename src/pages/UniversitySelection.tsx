@@ -1,6 +1,5 @@
-
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { 
   Select, 
   SelectContent, 
@@ -12,7 +11,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { BookOpen, ChevronRight } from "lucide-react";
 
-// Styles for Jekflix theme overlay effects
 const pixelsOverlay = {
   position: "absolute" as const,
   top: 0,
@@ -34,7 +32,6 @@ const gradientOverlay = {
   zIndex: 2
 };
 
-// University data with descriptions and images
 const universities = [
   {
     id: "nus",
@@ -56,7 +53,6 @@ const universities = [
   }
 ];
 
-// School data with descriptions and images
 const schools = [
   {
     id: "computing",
@@ -79,8 +75,19 @@ const schools = [
 ];
 
 const UniversitySelection = () => {
-  const [selectedUniversity, setSelectedUniversity] = useState(universities[0]);
-  const [selectedSchool, setSelectedSchool] = useState(schools[0]);
+  const location = useLocation();
+  const [selectedUniversity, setSelectedUniversity] = useState(() => {
+    return location.state?.university ? 
+      universities.find(uni => uni.id === location.state.university) || universities[0] 
+      : universities[0];
+  });
+  
+  const [selectedSchool, setSelectedSchool] = useState(() => {
+    return location.state?.school ? 
+      schools.find(sch => sch.id === location.state.school) || schools[0] 
+      : schools[0];
+  });
+
   const navigate = useNavigate();
 
   const handleUniversityChange = (value: string) => {
@@ -102,20 +109,16 @@ const UniversitySelection = () => {
   };
 
   const handleNext = () => {
-    // For now, just show an alert since next-page doesn't exist yet
     alert(`Selected: ${selectedUniversity.name}, ${selectedSchool.name}`);
-    // Future navigation will be: navigate("/next-page");
   };
 
   return (
     <div className="min-h-screen flex flex-col bg-[#141414] text-white">
-      {/* University Selection Section */}
       <section className="relative flex-1 min-h-[50vh]" style={{ backgroundImage: `url(${selectedUniversity.image})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
         <div style={pixelsOverlay}></div>
         <div style={gradientOverlay}></div>
         
         <div className="relative z-10 flex flex-col p-8 h-full">
-          {/* Title in top left corner */}
           <h1 className="text-3xl font-bold text-white mb-auto">Step 1: Select Your Programme</h1>
           
           <div className="max-w-md w-full space-y-6 self-center mt-auto">
@@ -139,7 +142,6 @@ const UniversitySelection = () => {
         </div>
       </section>
       
-      {/* Center buttons */}
       <div className="flex justify-center items-center gap-4 p-4 bg-[#141414] z-10">
         <Button 
           onClick={handleHelpMePick}
@@ -156,7 +158,6 @@ const UniversitySelection = () => {
         </Button>
       </div>
 
-      {/* School Selection Section */}
       <section className="relative flex-1 min-h-[50vh]" style={{ backgroundImage: `url(${selectedSchool.image})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
         <div style={pixelsOverlay}></div>
         <div style={gradientOverlay}></div>
@@ -183,7 +184,6 @@ const UniversitySelection = () => {
         </div>
       </section>
 
-      {/* Footer with copyright */}
       <footer className="py-4 px-6 text-center text-sm text-gray-500 bg-[#0c0c0c]">
         © 2025 Adviseek - All rights reserved
       </footer>

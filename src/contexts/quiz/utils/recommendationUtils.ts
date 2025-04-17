@@ -1,4 +1,3 @@
-
 import { Module } from '@/integrations/supabase/client';
 import { fromTable, getUserId } from './databaseHelpers';
 import { FeedbackItem, Recommendation } from '../types/recommendationTypes';
@@ -42,13 +41,10 @@ export const loadUserFeedbackUtil = async (userId: string) => {
     throw new Error(`Failed to load ratings: ${error.message}`);
   }
   
-  // Create a simple Record type to avoid infinite type instantiation
   const feedbackObj: Record<number, number> = {};
   
   if (data) {
-    // Use a type assertion with unknown first to avoid direct type conversion errors
-    const typedData = data as unknown as Array<{ module_id: number; rating: number }>;
-    typedData.forEach(item => {
+    data.forEach((item: { module_id: number; rating: number }) => {
       feedbackObj[item.module_id] = item.rating;
     });
   }
@@ -74,21 +70,13 @@ export const loadRecommendationsUtil = async (userId: string) => {
     throw new Error(`Failed to load recommendations: ${error.message}`);
   }
   
-  // Transform data to match our format with proper type assertion
   if (!data) return [];
   
-  // Use type assertion with unknown first to avoid direct conversion errors
-  const recommendations = (data as unknown as Array<{
-    module_id: number;
-    reason: string;
-    modules: Module;
-  }>).map(rec => ({
+  return data.map((rec: any) => ({
     module_id: rec.module_id,
     reason: rec.reason,
     module: rec.modules
-  }));
-  
-  return recommendations as Recommendation[];
+  })) as Recommendation[];
 };
 
 // Rate a module
