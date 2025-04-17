@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { useToast } from "@/hooks/use-toast";
 import { useQuiz } from "@/contexts/QuizContext";
 
-// Component for a question with fade-in animation
+// Component for a question with fade-in/fade-out animation
 const Question = ({ 
   question, 
   id, 
@@ -33,6 +33,8 @@ const Question = ({
   const [isVisible, setIsVisible] = useState(false);
   const [otherText, setOtherText] = useState("");
   const [otherDialogOpen, setOtherDialogOpen] = useState(false);
+  const [resultType, setResultType] = useState<string>("");
+  const [showResultDialog, setShowResultDialog] = useState(false);
 
   // For managing the intersection observer
   useEffect(() => {
@@ -60,8 +62,13 @@ const Question = ({
     };
   }, [index, onIntersect, onVisible, isVisible]);
 
-  // Handle "Other" option for multi-select and single-select
   const handleOptionChange = (option: string, checked: boolean = true) => {
+    if (question.id === "academic_results") {
+      setResultType(option);
+      setShowResultDialog(true);
+      return;
+    }
+
     if (option === "Other" && checked) {
       setOtherDialogOpen(true);
       return;
@@ -78,7 +85,11 @@ const Question = ({
     }
   };
 
-  // Handle confirmation of "Other" option
+  const handleResultSubmit = (result: string) => {
+    onChange({ type: resultType, value: result });
+    setShowResultDialog(false);
+  };
+
   const handleOtherConfirm = () => {
     if (!otherText) return;
     
@@ -98,6 +109,29 @@ const Question = ({
   };
 
   const renderQuestionContent = () => {
+    if (question.id === "academic_results") {
+      return (
+        <RadioGroup 
+          value={value?.type || ""} 
+          onValueChange={(val) => handleOptionChange(val)}
+          className="space-y-3 mt-2"
+        >
+          <div className="flex items-center space-x-3">
+            <RadioGroupItem id={`${id}-gpa`} value="GPA" />
+            <Label htmlFor={`${id}-gpa`} className="text-lg">GPA</Label>
+          </div>
+          <div className="flex items-center space-x-3">
+            <RadioGroupItem id={`${id}-rank`} value="Rank Points" />
+            <Label htmlFor={`${id}-rank`} className="text-lg">Rank Points</Label>
+          </div>
+          <div className="flex items-center space-x-3">
+            <RadioGroupItem id={`${id}-other`} value="Other" />
+            <Label htmlFor={`${id}-other`} className="text-lg">Other</Label>
+          </div>
+        </RadioGroup>
+      );
+    }
+
     switch (question.question_type) {
       case "single-select":
         return (
@@ -175,7 +209,7 @@ const Question = ({
       <Dialog open={otherDialogOpen} onOpenChange={setOtherDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Please specify "Other" option</DialogTitle>
+            <DialogTitle>Please specify your answer</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <Input
@@ -188,6 +222,23 @@ const Question = ({
             <div className="flex justify-end">
               <Button type="button" onClick={handleOtherConfirm}>Confirm</Button>
             </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showResultDialog} onOpenChange={setShowResultDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Enter your {resultType}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <Input
+              placeholder={`Enter your ${resultType}`}
+              type={resultType === "GPA" ? "number" : "text"}
+              onChange={(e) => handleResultSubmit(e.target.value)}
+              className="w-full"
+              autoFocus
+            />
           </div>
         </DialogContent>
       </Dialog>
@@ -212,7 +263,25 @@ const PickAI = () => {
   const [groupedQuestions, setGroupedQuestions] = useState<Record<string, any[]>>({});
   const [orderedSections, setOrderedSections] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
   const questionsRef = useRef<HTMLDivElement>(null);
+
+  // Handle scroll progress
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!questionsRef.current) return;
+      
+      const windowHeight = window.innerHeight;
+      const documentHeight = questionsRef.current.scrollHeight;
+      const scrolled = window.scrollY;
+      
+      const progress = Math.min(100, Math.round((scrolled / (documentHeight - windowHeight)) * 100));
+      setScrollProgress(progress);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Group questions by section
   useEffect(() => {
@@ -243,11 +312,6 @@ const PickAI = () => {
     }
   };
 
-  // Calculate progress percentage
-  const progress = questions.length > 0 
-    ? Math.min(100, (visibleCount / questions.length) * 100) 
-    : 0;
-
   // Find first unanswered question
   const findFirstUnansweredQuestion = () => {
     for (let i = 0; i < questions.length; i++) {
@@ -270,7 +334,6 @@ const PickAI = () => {
 
   // Handle form submission
   const handleSubmit = async () => {
-    // Check if all questions are answered
     if (!findFirstUnansweredQuestion()) {
       return;
     }
@@ -317,16 +380,14 @@ const PickAI = () => {
         <div className="container mx-auto">
           <div className="mb-2 flex justify-between items-center">
             <h1 className="text-xl font-bold">Module Selection Quiz</h1>
-            <span className="text-sm font-medium">
-              {currentIndex + 1} of {questions.length} Questions
-            </span>
+            <span className="text-sm font-medium">{scrollProgress}% Complete</span>
           </div>
-          <Progress value={progress} className="h-2" />
+          <Progress value={scrollProgress} className="h-2" />
         </div>
       </div>
 
       {/* Questions */}
-      <div ref={questionsRef}>
+      <div ref={questionsRef} className="pb-20">
         {orderedSections.map(section => (
           groupedQuestions[section]?.map((question, idx) => (
             <div key={question.id} id={`question-${question.id}`}>
@@ -345,7 +406,7 @@ const PickAI = () => {
       </div>
 
       {/* Submit button */}
-      <div className="sticky bottom-8 flex justify-center w-full z-40 mt-8 mb-16">
+      <div className="fixed bottom-8 flex justify-center w-full z-40">
         <Button 
           onClick={handleSubmit} 
           disabled={submitting}
