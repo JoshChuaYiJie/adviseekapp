@@ -13,7 +13,6 @@ import PickAI from "./pages/PickAI";
 import Recommendations from "./pages/Recommendations";
 import { QuizProvider } from "@/contexts/QuizContext";
 import Pricing from "./pages/Pricing";
-import LandingPage from "./pages/LandingPage";
 import FeedbackForm from "./components/FeedbackForm";
 
 const queryClient = new QueryClient();
@@ -27,7 +26,7 @@ const App = () => (
         <FeedbackForm />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<LandingPage />} />
+            <Route path="/" element={<Index />} />
             <Route path="/dashboard" element={<Index />} />
             <Route path="/university-selection" element={<UniversitySelection />} />
             <Route path="/pickAI" element={<PickAI />} />
