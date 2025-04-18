@@ -14,6 +14,9 @@ import Recommendations from "./pages/Recommendations";
 import { QuizProvider } from "@/contexts/QuizContext";
 import Pricing from "./pages/Pricing";
 import FeedbackForm from "./components/FeedbackForm";
+import Settings from "./pages/Settings";
+import ResumeBuilder from "./pages/ResumeBuilder";
+import { ChatWithAI } from "./components/ChatWithAI";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +27,7 @@ const App = () => (
         <Toaster />
         <Sonner position="top-right" />
         <FeedbackForm />
+        <ChatWithAI />
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
@@ -34,6 +38,8 @@ const App = () => (
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-of-service" element={<TermsOfService />} />
             <Route path="/pricing" element={<Pricing />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/resumebuilder" element={<ResumeBuilder />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

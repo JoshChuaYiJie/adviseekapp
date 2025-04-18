@@ -31,6 +31,9 @@ const Index = () => {
       setUser(currentUser);
       
       if (currentUser) {
+        // Save user to localStorage for reference by other components
+        localStorage.setItem('user', JSON.stringify(currentUser));
+        
         // Check if this is a new user by looking for existing selections
         const { data: existingSelections } = await supabase
           .from('user_selections')
@@ -40,16 +43,20 @@ const Index = () => {
           
         // If no selections exist, assume this is a new user
         if (!existingSelections || existingSelections.length === 0) {
-          setShowTutorial(true);
+          // Check if tutorial has been shown before
+          const tutorialCompleted = localStorage.getItem(`tutorial_completed_${currentUser.id}`);
           
-          // Create a record for this user
-          await supabase.from('user_selections').insert({
-            user_id: currentUser.id,
-            module_id: 0 // Using a placeholder value since module_id is required
-          });
+          if (!tutorialCompleted) {
+            setShowTutorial(true);
+            
+            // Create a record for this user
+            await supabase.from('user_selections').insert({
+              user_id: currentUser.id,
+              module_id: 0 // Using a placeholder value since module_id is required
+            });
+          }
         } else {
           // For returning users, we'll show a welcome back message if it's been more than 7 days
-          // We'll use localStorage to track last visit time for now
           const lastVisit = localStorage.getItem(`last_visit_${currentUser.id}`);
           
           if (lastVisit) {
@@ -74,7 +81,14 @@ const Index = () => {
     
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        setUser(session?.user || null);
+        const newUser = session?.user || null;
+        setUser(newUser);
+        
+        if (newUser) {
+          localStorage.setItem('user', JSON.stringify(newUser));
+        } else {
+          localStorage.removeItem('user');
+        }
       }
     );
     
@@ -86,8 +100,7 @@ const Index = () => {
   const handleCloseTutorial = () => {
     setShowTutorial(false);
     
-    // In a real app, we'd store this preference in localStorage for now
-    // since we don't have a user_preferences table
+    // Store tutorial completion status
     if (user) {
       localStorage.setItem(`tutorial_completed_${user.id}`, 'true');
     }

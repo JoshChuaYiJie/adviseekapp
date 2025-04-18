@@ -24,6 +24,7 @@ export const Tutorial = ({ isOpen, onClose, onSkip }: TutorialProps) => {
   const [arrowPosition, setArrowPosition] = useState({ top: 0, left: 0 });
   const [contentPosition, setContentPosition] = useState({ top: 0, left: 0 });
   const [targetElement, setTargetElement] = useState<Element | null>(null);
+  const [waitingForElementClick, setWaitingForElementClick] = useState(false);
 
   const tutorialSteps: Step[] = [
     {
@@ -131,6 +132,24 @@ export const Tutorial = ({ isOpen, onClose, onSkip }: TutorialProps) => {
             left: contentLeft,
             top: contentTop,
           });
+          
+          // Set up click handler if this step requires clicking the element
+          if (tutorialSteps[currentStep]?.requireClick) {
+            setWaitingForElementClick(true);
+            
+            const handleElementClick = () => {
+              setWaitingForElementClick(false);
+              handleNext();
+              element.removeEventListener('click', handleElementClick);
+            };
+            
+            element.addEventListener('click', handleElementClick);
+            return () => {
+              element.removeEventListener('click', handleElementClick);
+            };
+          } else {
+            setWaitingForElementClick(false);
+          }
         } else {
           console.warn(`Element not found for selector: ${currentTargetSelector}`);
         }
@@ -151,7 +170,7 @@ export const Tutorial = ({ isOpen, onClose, onSkip }: TutorialProps) => {
     if (currentStep < tutorialSteps.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
-      onClose();
+      completeAndClose();
     }
   };
 
@@ -159,13 +178,23 @@ export const Tutorial = ({ isOpen, onClose, onSkip }: TutorialProps) => {
     if (onSkip) {
       onSkip();
     } else {
-      onClose();
+      completeAndClose();
     }
+  };
+  
+  const completeAndClose = () => {
+    // Save tutorial completion status
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (user?.id) {
+      localStorage.setItem(`tutorial_completed_${user.id}`, 'true');
+    }
+    onClose();
   };
 
   if (!isOpen) return null;
 
   const progress = ((currentStep + 1) / tutorialSteps.length) * 100;
+  const currentStepData = tutorialSteps[currentStep];
 
   return createPortal(
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
@@ -198,6 +227,7 @@ export const Tutorial = ({ isOpen, onClose, onSkip }: TutorialProps) => {
         style={{
           top: contentPosition.top,
           left: contentPosition.left,
+          maxWidth: "280px", // Ensure the tutorial box isn't too wide
         }}
       >
         <button 
@@ -214,15 +244,22 @@ export const Tutorial = ({ isOpen, onClose, onSkip }: TutorialProps) => {
         
         <Progress value={progress} className="mb-3 h-1" />
         
-        <p className="mb-4">{tutorialSteps[currentStep]?.content}</p>
+        <p className="mb-4">{currentStepData?.content}</p>
         
         <div className="flex justify-between items-center">
           <Button variant="outline" size="sm" onClick={handleSkip}>
             Skip Tutorial
           </Button>
-          <Button size="sm" onClick={handleNext}>
-            {currentStep < tutorialSteps.length - 1 ? "Next" : "Finish"}
-          </Button>
+          
+          {currentStepData?.requireClick ? (
+            <p className="text-sm text-blue-600 font-medium animate-pulse">
+              Click the highlighted element to continue
+            </p>
+          ) : (
+            <Button size="sm" onClick={handleNext}>
+              {currentStep < tutorialSteps.length - 1 ? "Next" : "Finish"}
+            </Button>
+          )}
         </div>
       </div>
     </div>,

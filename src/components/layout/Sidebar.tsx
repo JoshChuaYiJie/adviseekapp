@@ -11,6 +11,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarRail,
 } from "@/components/ui/sidebar";
 import { supabase } from "@/integrations/supabase/client";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -73,6 +74,10 @@ export const AppSidebar = ({ selectedSection, setSelectedSection, user, onReplay
     toast.success("Successfully signed out");
     navigate("/");
   };
+  
+  const handleProfileSettings = () => {
+    navigate("/settings");
+  };
 
   return (
     <ShadcnSidebar>
@@ -129,7 +134,7 @@ export const AppSidebar = ({ selectedSection, setSelectedSection, user, onReplay
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuItem onSelect={() => navigate("/profile")}>
+                <DropdownMenuItem onSelect={handleProfileSettings}>
                   <Settings className="mr-2 h-4 w-4" />
                   <span>Profile Settings</span>
                 </DropdownMenuItem>
@@ -160,6 +165,7 @@ export const AppSidebar = ({ selectedSection, setSelectedSection, user, onReplay
           </Button>
         </div>
       </SidebarFooter>
+      <SidebarRail />
     </ShadcnSidebar>
   );
 };

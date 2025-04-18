@@ -1,14 +1,14 @@
 
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { toast } from "@/components/ui/use-toast";
+import { toast } from "@/components/ui/sonner";
+import { ConsultantApplicationForm } from "@/components/forms/ConsultantApplicationForm"; 
 
 export const GetPaid = () => {
+  const [isFormOpen, setIsFormOpen] = useState(false);
+
   const handleApplyConsultant = () => {
-    // In a real app, this would submit an application or open a form
-    toast({
-      title: "Application Submitted",
-      description: "Your application to become a consultant has been received. We'll review it and get back to you soon!",
-    });
+    setIsFormOpen(true);
   };
 
   return (
@@ -53,6 +53,13 @@ export const GetPaid = () => {
           </div>
         </div>
       </div>
+      
+      {/* Consultant Application Form */}
+      <ConsultantApplicationForm 
+        isOpen={isFormOpen} 
+        onClose={() => setIsFormOpen(false)}
+        userId="placeholder" // In a real implementation, this would be the actual user ID
+      />
     </div>
   );
 };
