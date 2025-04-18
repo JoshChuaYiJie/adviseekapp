@@ -2,6 +2,8 @@
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/button";
+import { X } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 
 interface Step {
   target: string;
@@ -14,9 +16,10 @@ interface Step {
 interface TutorialProps {
   isOpen: boolean;
   onClose: () => void;
+  onSkip?: () => void;
 }
 
-export const Tutorial = ({ isOpen, onClose }: TutorialProps) => {
+export const Tutorial = ({ isOpen, onClose, onSkip }: TutorialProps) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [arrowPosition, setArrowPosition] = useState({ top: 0, left: 0 });
   const [contentPosition, setContentPosition] = useState({ top: 0, left: 0 });
@@ -108,10 +111,25 @@ export const Tutorial = ({ isOpen, onClose }: TutorialProps) => {
             top: rect.top + rect.height / 2,
           });
 
-          // Position the content (adjust based on your UI)
+          // Position the content (adjust based on viewport position)
+          const windowWidth = window.innerWidth;
+          const windowHeight = window.innerHeight;
+          
+          let contentLeft = rect.left + rect.width + 20;
+          let contentTop = rect.top;
+          
+          // Adjust if would go off screen
+          if (contentLeft + 300 > windowWidth) {
+            contentLeft = Math.max(rect.left - 320, 10);
+          }
+          
+          if (contentTop + 200 > windowHeight) {
+            contentTop = Math.max(windowHeight - 220, 10);
+          }
+          
           setContentPosition({
-            left: rect.left + rect.width + 20,
-            top: rect.top,
+            left: contentLeft,
+            top: contentTop,
           });
         } else {
           console.warn(`Element not found for selector: ${currentTargetSelector}`);
@@ -138,53 +156,71 @@ export const Tutorial = ({ isOpen, onClose }: TutorialProps) => {
   };
 
   const handleSkip = () => {
-    onClose();
+    if (onSkip) {
+      onSkip();
+    } else {
+      onClose();
+    }
   };
 
   if (!isOpen) return null;
+
+  const progress = ((currentStep + 1) / tutorialSteps.length) * 100;
 
   return createPortal(
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
       {/* Highlight around target element */}
       {targetElement && (
         <div
-          className="absolute border-2 border-blue-500 rounded-md"
+          className="absolute border-2 border-blue-500 rounded-md z-60 animate-pulse"
           style={{
             top: targetElement.getBoundingClientRect().top - 4,
             left: targetElement.getBoundingClientRect().left - 4,
             width: targetElement.getBoundingClientRect().width + 8,
             height: targetElement.getBoundingClientRect().height + 8,
             boxShadow: "0 0 0 9999px rgba(0, 0, 0, 0.5)",
-            zIndex: 60,
           }}
         />
       )}
 
       {/* Arrow pointing to the element */}
       <div
-        className="absolute w-8 h-8 border-t-2 border-r-2 border-blue-500 transform rotate-45"
+        className="absolute w-8 h-8 border-t-2 border-r-2 border-blue-500 transform rotate-45 z-70"
         style={{
           top: arrowPosition.top - 16,
           left: arrowPosition.left - 16,
-          zIndex: 70,
         }}
       />
 
       {/* Content box */}
       <div
-        className="absolute bg-white p-4 rounded-md shadow-lg max-w-xs"
+        className="absolute bg-white p-4 rounded-md shadow-lg max-w-xs z-70 transition-all duration-300"
         style={{
           top: contentPosition.top,
           left: contentPosition.left,
-          zIndex: 70,
         }}
       >
-        <p>{tutorialSteps[currentStep]?.content}</p>
-        <div className="mt-4 flex justify-between">
-          <Button variant="outline" onClick={handleSkip}>
+        <button 
+          onClick={handleSkip} 
+          className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
+          aria-label="Close tutorial"
+        >
+          <X size={16} />
+        </button>
+        
+        <p className="text-sm mb-2 text-gray-500">
+          Step {currentStep + 1} of {tutorialSteps.length}
+        </p>
+        
+        <Progress value={progress} className="mb-3 h-1" />
+        
+        <p className="mb-4">{tutorialSteps[currentStep]?.content}</p>
+        
+        <div className="flex justify-between items-center">
+          <Button variant="outline" size="sm" onClick={handleSkip}>
             Skip Tutorial
           </Button>
-          <Button onClick={handleNext}>
+          <Button size="sm" onClick={handleNext}>
             {currentStep < tutorialSteps.length - 1 ? "Next" : "Finish"}
           </Button>
         </div>

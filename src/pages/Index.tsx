@@ -11,12 +11,17 @@ import { GetPaid } from "@/components/sections/GetPaid";
 import { Tutorial } from "@/components/Tutorial";
 import AuthSection from "@/components/auth/AuthSection";
 import { useNavigate } from "react-router-dom";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const Index = () => {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [selectedSection, setSelectedSection] = useState("applied-programmes");
   const [showTutorial, setShowTutorial] = useState(false);
+  const [showWelcomeBack, setShowWelcomeBack] = useState(false);
+  const [lastVisit, setLastVisit] = useState<Date | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -25,17 +30,40 @@ const Index = () => {
       const currentUser = data.session?.user || null;
       setUser(currentUser);
       
-      // Check if this is a new user who should see the tutorial
       if (currentUser) {
+        // Check if this is a new user who should see the tutorial
         const { data: existingData } = await supabase
           .from('user_selections')
-          .select('id')
+          .select('id, created_at, last_visit')
           .eq('user_id', currentUser.id)
           .limit(1);
           
         // If no selections exist, assume this is a new user
         if (!existingData || existingData.length === 0) {
           setShowTutorial(true);
+          
+          // Create a record for this user
+          await supabase.from('user_selections').insert({
+            user_id: currentUser.id,
+            last_visit: new Date().toISOString()
+          });
+        } else {
+          // Check if there are new features to show (based on last visit)
+          const lastVisitDate = existingData[0].last_visit ? new Date(existingData[0].last_visit) : null;
+          setLastVisit(lastVisitDate);
+          
+          // Show welcome back if it's been more than 7 days since last visit
+          if (lastVisitDate) {
+            const daysSinceLastVisit = Math.floor((Date.now() - lastVisitDate.getTime()) / (1000 * 60 * 60 * 24));
+            if (daysSinceLastVisit > 7) {
+              setShowWelcomeBack(true);
+            }
+          }
+          
+          // Update last visit time
+          await supabase.from('user_selections').update({
+            last_visit: new Date().toISOString()
+          }).eq('user_id', currentUser.id);
         }
       }
       
@@ -58,8 +86,21 @@ const Index = () => {
   const handleCloseTutorial = () => {
     setShowTutorial(false);
     
-    // In a real app, you'd want to store this preference so the tutorial doesn't show again
-    // await supabase.from('user_preferences').insert({ user_id: user.id, tutorial_completed: true });
+    // In a real app, you'd want to store this preference
+    if (user) {
+      supabase.from('user_preferences').upsert({
+        user_id: user.id,
+        tutorial_completed: true
+      });
+    }
+  };
+
+  const handleReplayTutorial = () => {
+    setShowTutorial(true);
+  };
+
+  const handleCloseWelcomeBack = () => {
+    setShowWelcomeBack(false);
   };
 
   if (loading) {
@@ -97,11 +138,28 @@ const Index = () => {
         <AppSidebar 
           selectedSection={selectedSection} 
           setSelectedSection={setSelectedSection} 
-          user={user} 
+          user={user}
+          onReplayTutorial={handleReplayTutorial}
         />
         
-        <main className="flex-1 p-8">
+        <main className="flex-1 p-8 overflow-auto">
           <div className="max-w-4xl mx-auto">
+            {showWelcomeBack && (
+              <Alert className="mb-6 bg-blue-50">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <AlertTitle>Welcome back!</AlertTitle>
+                    <AlertDescription>
+                      It's been a while since your last visit. We've added some new features to help with your university applications.
+                    </AlertDescription>
+                  </div>
+                  <Button variant="ghost" size="icon" onClick={handleCloseWelcomeBack} className="mt-1">
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              </Alert>
+            )}
+            
             <h1 className="text-2xl font-medium text-gray-800 mb-6">
               Welcome, {user.email || "Student"}. Let's get to work.
             </h1>
@@ -110,7 +168,7 @@ const Index = () => {
         </main>
         
         {showTutorial && (
-          <Tutorial isOpen={true} onClose={handleCloseTutorial} />
+          <Tutorial isOpen={true} onClose={handleCloseTutorial} onSkip={handleCloseTutorial} />
         )}
       </div>
     </SidebarProvider>
