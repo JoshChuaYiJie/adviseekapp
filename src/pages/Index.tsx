@@ -21,7 +21,7 @@ const Index = () => {
   const [selectedSection, setSelectedSection] = useState("applied-programmes");
   const [showTutorial, setShowTutorial] = useState(false);
   const [showWelcomeBack, setShowWelcomeBack] = useState(false);
-  const [lastVisit, setLastVisit] = useState<Date | null>(null);
+  const [lastVisitDate, setLastVisitDate] = useState<Date | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -31,39 +31,39 @@ const Index = () => {
       setUser(currentUser);
       
       if (currentUser) {
-        // Check if this is a new user who should see the tutorial
-        const { data: existingData } = await supabase
+        // Check if this is a new user by looking for existing selections
+        const { data: existingSelections } = await supabase
           .from('user_selections')
-          .select('id, created_at, last_visit')
+          .select('id, created_at')
           .eq('user_id', currentUser.id)
           .limit(1);
           
         // If no selections exist, assume this is a new user
-        if (!existingData || existingData.length === 0) {
+        if (!existingSelections || existingSelections.length === 0) {
           setShowTutorial(true);
           
           // Create a record for this user
           await supabase.from('user_selections').insert({
             user_id: currentUser.id,
-            last_visit: new Date().toISOString()
+            module_id: 0 // Using a placeholder value since module_id is required
           });
         } else {
-          // Check if there are new features to show (based on last visit)
-          const lastVisitDate = existingData[0].last_visit ? new Date(existingData[0].last_visit) : null;
-          setLastVisit(lastVisitDate);
+          // For returning users, we'll show a welcome back message if it's been more than 7 days
+          // We'll use localStorage to track last visit time for now
+          const lastVisit = localStorage.getItem(`last_visit_${currentUser.id}`);
           
-          // Show welcome back if it's been more than 7 days since last visit
-          if (lastVisitDate) {
-            const daysSinceLastVisit = Math.floor((Date.now() - lastVisitDate.getTime()) / (1000 * 60 * 60 * 24));
+          if (lastVisit) {
+            const lastVisitTime = new Date(lastVisit);
+            setLastVisitDate(lastVisitTime);
+            
+            const daysSinceLastVisit = Math.floor((Date.now() - lastVisitTime.getTime()) / (1000 * 60 * 60 * 24));
             if (daysSinceLastVisit > 7) {
               setShowWelcomeBack(true);
             }
           }
           
-          // Update last visit time
-          await supabase.from('user_selections').update({
-            last_visit: new Date().toISOString()
-          }).eq('user_id', currentUser.id);
+          // Update last visit time in localStorage
+          localStorage.setItem(`last_visit_${currentUser.id}`, new Date().toISOString());
         }
       }
       
@@ -86,12 +86,10 @@ const Index = () => {
   const handleCloseTutorial = () => {
     setShowTutorial(false);
     
-    // In a real app, you'd want to store this preference
+    // In a real app, we'd store this preference in localStorage for now
+    // since we don't have a user_preferences table
     if (user) {
-      supabase.from('user_preferences').upsert({
-        user_id: user.id,
-        tutorial_completed: true
-      });
+      localStorage.setItem(`tutorial_completed_${user.id}`, 'true');
     }
   };
 
