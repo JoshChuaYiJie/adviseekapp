@@ -22,13 +22,13 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
+    <BrowserRouter>
       <QuizProvider>
-        <Toaster />
-        <Sonner position="top-right" />
-        <FeedbackForm />
-        <ChatWithAI />
-        <BrowserRouter>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner position="top-right" />
+          <FeedbackForm />
+          <ChatWithAI />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/dashboard" element={<Index />} />
@@ -42,9 +42,9 @@ const App = () => (
             <Route path="/resumebuilder" element={<ResumeBuilder />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
-        </BrowserRouter>
+        </TooltipProvider>
       </QuizProvider>
-    </TooltipProvider>
+    </BrowserRouter>
   </QueryClientProvider>
 );
 
