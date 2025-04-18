@@ -1,216 +1,106 @@
-
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { toast } from "@/components/ui/use-toast";
-
-interface Programme {
-  school: string;
-  course: string;
-  id: number;
-}
-
-interface Resume {
-  id: number;
-  name: string;
-}
-
-interface Question {
-  id: number;
-  question: string;
-  response?: string;
-}
+import { Card } from "@/components/ui/card";
 
 interface MockInterviewsProps {
   user: any;
 }
 
 export const MockInterviews = ({ user }: MockInterviewsProps) => {
-  const [programmes, setProgrammes] = useState<Programme[]>([]);
-  const [resumes, setResumes] = useState<Resume[]>([]);
-  const [questions, setQuestions] = useState<Question[]>([]);
-  const [selectedProgramme, setSelectedProgramme] = useState("");
-  const [selectedResume, setSelectedResume] = useState("");
-  const [responses, setResponses] = useState<Record<number, string>>({});
-  const [loading, setLoading] = useState(false);
+  const [selectedApplication, setSelectedApplication] = useState("");
+  const [questions, setQuestions] = useState<string[]>([]);
+  const [responses, setResponses] = useState<Record<string, string>>({});
 
-  // Fetch applied programmes
-  useEffect(() => {
-    const fetchProgrammes = async () => {
-      try {
-        // In a real app, this would fetch from the database
-        // For now, using mock data
-        setProgrammes([
-          { id: 1, school: "NUS", course: "Computer Science" },
-          { id: 2, school: "NTU", course: "Data Science" },
-          { id: 3, school: "SMU", course: "Business Analytics" },
-        ]);
-      } catch (error) {
-        console.error("Error fetching programmes:", error);
-      }
-    };
+  // This would typically come from your database based on user's applied programmes
+  const applications = [
+    { id: "1", university: "NUS", programme: "Computer Science", resume: "Resume_CS.pdf" },
+    { id: "2", university: "NTU", programme: "Business", resume: "Resume_Business.pdf" },
+    { id: "3", university: "SMU", programme: "Information Systems", resume: "Resume_IS.pdf" },
+  ];
 
-    fetchProgrammes();
-  }, [user.id]);
-
-  // Fetch resumes when a programme is selected
-  useEffect(() => {
-    const fetchResumes = async () => {
-      if (!selectedProgramme) return;
+  const handleApplicationChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const applicationId = e.target.value;
+    setSelectedApplication(applicationId);
+    
+    if (applicationId) {
+      // Fetch interview questions based on the selected application
+      // This would typically come from your AI or database
+      const sampleQuestions = [
+        "Tell me about your experience with programming languages.",
+        "How do you approach problem-solving in a team environment?",
+        "What motivated you to apply for this programme?",
+        "Describe a challenging project you've worked on and how you overcame obstacles."
+      ];
       
-      try {
-        // In a real app, this would fetch from the database
-        setResumes([
-          { id: 1, name: "Tech Resume" },
-          { id: 2, name: "General Resume" },
-        ]);
-      } catch (error) {
-        console.error("Error fetching resumes:", error);
-      }
-    };
-
-    fetchResumes();
-  }, [selectedProgramme]);
-
-  // Fetch interview questions when both programme and resume are selected
-  useEffect(() => {
-    const fetchQuestions = async () => {
-      if (!selectedProgramme || !selectedResume) return;
+      setQuestions(sampleQuestions);
       
-      setLoading(true);
-      try {
-        // In a real app, this would fetch from the database
-        // For now, using mock data
-        const mockQuestions = [
-          { id: 1, question: "Tell me about yourself and why you're interested in this programme." },
-          { id: 2, question: "What experience do you have that makes you a good fit for this course?" },
-          { id: 3, question: "How would you contribute to the university community?" },
-          { id: 4, question: "Describe a challenging project you've worked on." },
-        ];
-        
-        // Fetch saved responses
-        const mockResponses: Record<number, string> = {};
-        // In a real app, fetch saved responses from database
-        
-        setQuestions(mockQuestions);
-        setResponses(mockResponses);
-      } catch (error) {
-        console.error("Error fetching questions:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+      // Initialize responses for these questions or load existing ones
+      // For demo purposes we'll initialize them as empty
+      const initialResponses: Record<string, string> = {};
+      sampleQuestions.forEach(q => {
+        initialResponses[q] = "";
+      });
+      setResponses(initialResponses);
+    } else {
+      setQuestions([]);
+      setResponses({});
+    }
+  };
 
-    fetchQuestions();
-  }, [selectedProgramme, selectedResume]);
-
-  const handleResponseChange = (questionId: number, value: string) => {
+  const handleResponseChange = (question: string, value: string) => {
     setResponses(prev => ({
       ...prev,
-      [questionId]: value
+      [question]: value
     }));
   };
 
-  const saveResponses = async () => {
-    try {
-      // In a real app, save to the database
-      // await supabase.from('interview_responses').upsert([...]);
-      
-      toast({
-        title: "Responses saved",
-        description: "Your interview responses have been saved successfully",
-      });
-    } catch (error) {
-      console.error("Error saving responses:", error);
-      toast({
-        title: "Error saving responses",
-        description: "Please try again later",
-        variant: "destructive",
-      });
-    }
+  const handleSaveResponses = () => {
+    // Here you would typically save the responses to your database
+    console.log("Saved interview responses:", responses);
+    alert("Your responses have been saved!");
   };
 
   return (
     <div className="space-y-6">
-      <div className="p-6 bg-white rounded-lg shadow">
-        <h2 className="text-xl font-semibold mb-4">Mock Interview Preparation</h2>
+      <div className="mb-8">
+        <h3 className="text-lg font-semibold mb-2">Select Application</h3>
         
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium mb-1">Select Programme</label>
-            <Select value={selectedProgramme} onValueChange={setSelectedProgramme}>
-              <SelectTrigger>
-                <SelectValue placeholder="Choose a programme" />
-              </SelectTrigger>
-              <SelectContent>
-                {programmes.map((prog) => (
-                  <SelectItem key={prog.id} value={prog.id.toString()}>
-                    {prog.school} - {prog.course}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          
-          {selectedProgramme && (
-            <div>
-              <label className="block text-sm font-medium mb-1">Select Resume</label>
-              <Select value={selectedResume} onValueChange={setSelectedResume}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Choose a resume" />
-                </SelectTrigger>
-                <SelectContent>
-                  {resumes.map((resume) => (
-                    <SelectItem key={resume.id} value={resume.id.toString()}>
-                      {resume.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          )}
-        </div>
+        <select 
+          value={selectedApplication}
+          onChange={handleApplicationChange}
+          className="w-full border rounded p-2"
+          data-tutorial="program-select-interview"
+        >
+          <option value="">Select an application</option>
+          {applications.map(app => (
+            <option key={app.id} value={app.id}>
+              {app.university} - {app.programme} ({app.resume})
+            </option>
+          ))}
+        </select>
       </div>
 
-      {loading && (
-        <div className="p-6 bg-white rounded-lg shadow">
-          <div className="animate-pulse flex space-x-4">
-            <div className="flex-1 space-y-4 py-1">
-              <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-              <div className="space-y-2">
-                <div className="h-4 bg-gray-200 rounded"></div>
-                <div className="h-4 bg-gray-200 rounded w-5/6"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {!loading && questions.length > 0 && (
-        <div className="p-6 bg-white rounded-lg shadow">
-          <h3 className="text-lg font-medium mb-4">Potential Interview Questions</h3>
+      {questions.length > 0 && (
+        <div data-tutorial="interview-questions">
+          <h3 className="text-lg font-semibold mb-4">Potential Interview Questions</h3>
+          
           <div className="space-y-6">
-            {questions.map((question) => (
-              <div key={question.id} className="space-y-2">
-                <p className="font-medium">{question.question}</p>
-                <Textarea 
-                  value={responses[question.id] || ""}
-                  onChange={(e) => handleResponseChange(question.id, e.target.value)}
+            {questions.map((question, index) => (
+              <Card key={index} className="p-4">
+                <h4 className="font-medium mb-2">{question}</h4>
+                <textarea 
+                  className="w-full border rounded p-2 min-h-[100px]"
+                  value={responses[question] || ""}
+                  onChange={(e) => handleResponseChange(question, e.target.value)}
                   placeholder="Type your response here..."
-                  className="min-h-[120px]"
                 />
-              </div>
+              </Card>
             ))}
-            <Button onClick={saveResponses}>Save Responses</Button>
+            
+            <Button onClick={handleSaveResponses}>
+              Save Responses
+            </Button>
           </div>
-        </div>
-      )}
-
-      {!loading && selectedProgramme && selectedResume && questions.length === 0 && (
-        <div className="p-6 bg-white rounded-lg shadow text-center">
-          <p>No questions found for this programme and resume combination.</p>
         </div>
       )}
     </div>

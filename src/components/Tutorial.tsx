@@ -29,15 +29,15 @@ export const Tutorial = ({ isOpen, onClose }: TutorialProps) => {
       requireClick: true,
     },
     {
-      target: '.border-2.border-dashed', // The drop resume zone
+      target: '[data-tutorial="drop-resume"]',
       content: "Upload your resume here",
     },
     {
-      target: 'button:contains("Build your resume")',
+      target: '[data-tutorial="build-resume"]',
       content: "Alternatively, build your resume with our top-notch templates and proprietary AI",
     },
     {
-      target: 'table', // The resumes table
+      target: 'table',
       content: "View your resumes here, a separate resume for separate programmes maximises your chances!",
     },
     {
@@ -46,17 +46,17 @@ export const Tutorial = ({ isOpen, onClose }: TutorialProps) => {
       requireClick: true,
     },
     {
-      target: 'select:first-child', // University dropdown in Apply Now
+      target: '[data-tutorial="university-select"]',
       content: "Pick which university you want to apply to",
       requireClick: true,
     },
     {
-      target: 'select:nth-child(2)', // Programme dropdown in Apply Now
+      target: '[data-tutorial="program-select"]',
       content: "Pick your desired programme",
       requireClick: true,
     },
     {
-      target: 'h3:contains("Application Questions")',
+      target: '[data-tutorial="application-questions"]',
       content: "Our AI will help you write the best applications!",
     },
     {
@@ -65,12 +65,12 @@ export const Tutorial = ({ isOpen, onClose }: TutorialProps) => {
       requireClick: true,
     },
     {
-      target: 'select:first-child', // Programme dropdown in Mock Interviews
+      target: '[data-tutorial="program-select-interview"]',
       content: "Pick your application",
       requireClick: true,
     },
     {
-      target: 'h3:contains("Potential Interview Questions")',
+      target: '[data-tutorial="interview-questions"]',
       content: "Adviseek AI will create practice questions for you to prepare!",
     },
     {
@@ -79,11 +79,11 @@ export const Tutorial = ({ isOpen, onClose }: TutorialProps) => {
       requireClick: true,
     },
     {
-      target: 'button:contains("Apply Now")', // Apply button in Get Paid section
+      target: '[data-tutorial="apply-consultant"]',
       content: "Apply to be a consultant to help others and earn at the same time!",
     },
     {
-      target: 'button:contains("Upgrade")',
+      target: '[data-tutorial="upgrade-button"]',
       content: "Upgrade for advanced features!",
     },
   ];
@@ -95,24 +95,29 @@ export const Tutorial = ({ isOpen, onClose }: TutorialProps) => {
       const currentTargetSelector = tutorialSteps[currentStep]?.target;
       if (!currentTargetSelector) return;
 
-      // This is a simplified version - in a real app, you'd need more sophisticated selector logic
-      const element = document.querySelector(currentTargetSelector);
-      
-      if (element) {
-        setTargetElement(element);
-        const rect = element.getBoundingClientRect();
+      try {
+        const element = document.querySelector(currentTargetSelector);
         
-        // Position the arrow
-        setArrowPosition({
-          left: rect.left + rect.width / 2,
-          top: rect.top + rect.height / 2,
-        });
+        if (element) {
+          setTargetElement(element);
+          const rect = element.getBoundingClientRect();
+          
+          // Position the arrow
+          setArrowPosition({
+            left: rect.left + rect.width / 2,
+            top: rect.top + rect.height / 2,
+          });
 
-        // Position the content (adjust based on your UI)
-        setContentPosition({
-          left: rect.left + rect.width + 20,
-          top: rect.top,
-        });
+          // Position the content (adjust based on your UI)
+          setContentPosition({
+            left: rect.left + rect.width + 20,
+            top: rect.top,
+          });
+        } else {
+          console.warn(`Element not found for selector: ${currentTargetSelector}`);
+        }
+      } catch (error) {
+        console.error(`Error finding element with selector: ${currentTargetSelector}`, error);
       }
     };
 
@@ -138,7 +143,6 @@ export const Tutorial = ({ isOpen, onClose }: TutorialProps) => {
 
   if (!isOpen) return null;
 
-  // In a real implementation, you'd need to use refs and more sophisticated positioning logic
   return createPortal(
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
       {/* Highlight around target element */}

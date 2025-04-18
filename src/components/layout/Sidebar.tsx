@@ -57,6 +57,7 @@ export const AppSidebar = ({ selectedSection, setSelectedSection, user }: Sideba
                   <SidebarMenuButton
                     onClick={() => setSelectedSection(item.id)}
                     isActive={selectedSection === item.id}
+                    data-id={item.id}
                   >
                     <item.icon className="h-5 w-5" />
                     <span>{item.label}</span>
@@ -80,6 +81,7 @@ export const AppSidebar = ({ selectedSection, setSelectedSection, user }: Sideba
           <button 
             onClick={() => navigate("/pricing")} 
             className="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-white bg-blue-100 text-blue-800 rounded-md hover:bg-blue-200"
+            data-tutorial="upgrade-button"
           >
             <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M7 11l5-5 5 5"/>

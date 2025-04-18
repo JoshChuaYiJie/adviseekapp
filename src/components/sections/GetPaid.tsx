@@ -44,7 +44,7 @@ export const GetPaid = () => {
           </div>
           
           <div className="mt-6">
-            <Button onClick={handleApplyConsultant}>
+            <Button onClick={handleApplyConsultant} data-tutorial="apply-consultant">
               Apply Now
             </Button>
             <p className="text-sm text-gray-500 mt-2">
