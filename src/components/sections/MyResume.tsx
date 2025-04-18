@@ -8,7 +8,7 @@ export const MyResume = () => {
 
   return (
     <div className="space-y-6">
-      <div className="border-2 border-dashed rounded-lg p-8 text-center">
+      <div className="border-2 border-dashed rounded-lg p-8 text-center" data-tutorial="drop-resume">
         <p>Drop your resume here or click to upload</p>
         <input type="file" className="hidden" />
       </div>
@@ -21,6 +21,7 @@ export const MyResume = () => {
         <Button 
           onClick={() => navigate("/resumebuilder")} 
           className="mt-4"
+          data-tutorial="build-resume"
         >
           Build your resume
         </Button>
