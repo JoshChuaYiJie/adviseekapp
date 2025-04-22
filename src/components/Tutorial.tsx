@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
@@ -92,79 +92,96 @@ export const Tutorial = ({ isOpen, onClose, onSkip }: TutorialProps) => {
     },
   ];
 
+  // Memoize the updatePositions function to prevent infinite loops
+  const updatePositions = useCallback(() => {
+    if (!isOpen) return;
+    
+    const currentTargetSelector = tutorialSteps[currentStep]?.target;
+    if (!currentTargetSelector) return;
+
+    try {
+      const element = document.querySelector(currentTargetSelector);
+      
+      if (element) {
+        setTargetElement(element);
+        const rect = element.getBoundingClientRect();
+        
+        // Position the arrow
+        setArrowPosition({
+          left: rect.left + rect.width / 2,
+          top: rect.top + rect.height / 2,
+        });
+
+        // Position the content (adjust based on viewport position)
+        const windowWidth = window.innerWidth;
+        const windowHeight = window.innerHeight;
+        
+        let contentLeft = rect.left + rect.width + 20;
+        let contentTop = rect.top;
+        
+        // Adjust if would go off screen
+        if (contentLeft + 300 > windowWidth) {
+          contentLeft = Math.max(rect.left - 320, 10);
+        }
+        
+        if (contentTop + 200 > windowHeight) {
+          contentTop = Math.max(windowHeight - 220, 10);
+        }
+        
+        setContentPosition({
+          left: contentLeft,
+          top: contentTop,
+        });
+      } else {
+        console.warn(`Element not found for selector: ${currentTargetSelector}`);
+      }
+    } catch (error) {
+      console.error(`Error finding element with selector: ${currentTargetSelector}`, error);
+    }
+  }, [isOpen, currentStep, tutorialSteps]);
+
+  // Set up click handlers for elements requiring clicks
+  useEffect(() => {
+    if (!isOpen || !tutorialSteps[currentStep]?.requireClick) {
+      setWaitingForElementClick(false);
+      return;
+    }
+
+    const currentTargetSelector = tutorialSteps[currentStep]?.target;
+    if (!currentTargetSelector) return;
+
+    try {
+      const element = document.querySelector(currentTargetSelector);
+      
+      if (element) {
+        setWaitingForElementClick(true);
+        
+        const handleElementClick = () => {
+          setWaitingForElementClick(false);
+          handleNext();
+        };
+        
+        element.addEventListener('click', handleElementClick);
+        return () => {
+          element.removeEventListener('click', handleElementClick);
+        };
+      }
+    } catch (error) {
+      console.error(`Error setting click handler for: ${currentTargetSelector}`, error);
+    }
+  }, [isOpen, currentStep, tutorialSteps]);
+
+  // Update positions on initial render, step change, and window resize
   useEffect(() => {
     if (!isOpen) return;
-
-    const updatePositions = () => {
-      const currentTargetSelector = tutorialSteps[currentStep]?.target;
-      if (!currentTargetSelector) return;
-
-      try {
-        const element = document.querySelector(currentTargetSelector);
-        
-        if (element) {
-          setTargetElement(element);
-          const rect = element.getBoundingClientRect();
-          
-          // Position the arrow
-          setArrowPosition({
-            left: rect.left + rect.width / 2,
-            top: rect.top + rect.height / 2,
-          });
-
-          // Position the content (adjust based on viewport position)
-          const windowWidth = window.innerWidth;
-          const windowHeight = window.innerHeight;
-          
-          let contentLeft = rect.left + rect.width + 20;
-          let contentTop = rect.top;
-          
-          // Adjust if would go off screen
-          if (contentLeft + 300 > windowWidth) {
-            contentLeft = Math.max(rect.left - 320, 10);
-          }
-          
-          if (contentTop + 200 > windowHeight) {
-            contentTop = Math.max(windowHeight - 220, 10);
-          }
-          
-          setContentPosition({
-            left: contentLeft,
-            top: contentTop,
-          });
-          
-          // Set up click handler if this step requires clicking the element
-          if (tutorialSteps[currentStep]?.requireClick) {
-            setWaitingForElementClick(true);
-            
-            const handleElementClick = () => {
-              setWaitingForElementClick(false);
-              handleNext();
-              element.removeEventListener('click', handleElementClick);
-            };
-            
-            element.addEventListener('click', handleElementClick);
-            return () => {
-              element.removeEventListener('click', handleElementClick);
-            };
-          } else {
-            setWaitingForElementClick(false);
-          }
-        } else {
-          console.warn(`Element not found for selector: ${currentTargetSelector}`);
-        }
-      } catch (error) {
-        console.error(`Error finding element with selector: ${currentTargetSelector}`, error);
-      }
-    };
-
+    
     updatePositions();
     window.addEventListener("resize", updatePositions);
     
     return () => {
       window.removeEventListener("resize", updatePositions);
     };
-  }, [isOpen, currentStep, tutorialSteps]);
+  }, [isOpen, currentStep, updatePositions]);
 
   const handleNext = () => {
     if (currentStep < tutorialSteps.length - 1) {
