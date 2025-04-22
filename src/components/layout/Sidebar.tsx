@@ -1,5 +1,4 @@
-
-import { School, FileText, BookOpen, Video, DollarSign, Settings, Play, LogOut } from "lucide-react";
+import { School, FileText, BookOpen, Video, DollarSign, Settings, Play, LogOut, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
   Sidebar as ShadcnSidebar,
@@ -56,6 +55,12 @@ const navItems: NavItem[] = [
     icon: DollarSign, 
     id: "get-paid",
     tooltip: "Earn money by helping others with their applications"
+  },
+  { 
+    label: "Community", 
+    icon: Users, 
+    id: "community",
+    tooltip: "Discuss and share your university experiences"
   },
 ];
 
