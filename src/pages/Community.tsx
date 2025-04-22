@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/sonner";
-import { Facebook, Instagram, Telegram, Discord } from "lucide-react";
+import { Facebook, Instagram, Send, MessageCircle } from "lucide-react";
 
 type Post = {
   id: string;
@@ -91,7 +91,7 @@ const CommunityPage: React.FC = () => {
             rel="noopener noreferrer"
             className="hover:bg-soft-gray p-2 rounded-full transition-colors"
           >
-            <Telegram size={32} className="text-[#2AABEE]" />
+            <Send size={32} className="text-[#2AABEE]" />
           </a>
           <a 
             href="https://discord.gg/adviseek" 
@@ -99,7 +99,7 @@ const CommunityPage: React.FC = () => {
             rel="noopener noreferrer"
             className="hover:bg-soft-gray p-2 rounded-full transition-colors"
           >
-            <Discord size={32} className="text-[#5865F2]" />
+            <MessageCircle size={32} className="text-[#5865F2]" />
           </a>
           <a 
             href="https://facebook.com/adviseek" 
