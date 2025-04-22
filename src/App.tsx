@@ -23,8 +23,8 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <BrowserRouter>
-      <QuizProvider>
-        <TooltipProvider>
+      <TooltipProvider>
+        <QuizProvider>
           <Toaster />
           <Sonner position="top-right" />
           <FeedbackForm />
@@ -42,8 +42,8 @@ const App = () => (
             <Route path="/resumebuilder" element={<ResumeBuilder />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
-        </TooltipProvider>
-      </QuizProvider>
+        </QuizProvider>
+      </TooltipProvider>
     </BrowserRouter>
   </QueryClientProvider>
 );
