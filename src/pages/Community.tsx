@@ -1,10 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/sonner";
+import { Facebook, Instagram, Telegram, Discord } from "lucide-react";
 
 type Post = {
   id: string;
@@ -34,7 +34,6 @@ const CommunityPage: React.FC = () => {
 
       if (error) throw error;
 
-      // Fetch user emails for each post
       const postsWithEmails = await Promise.all(
         data.map(async (post) => {
           const { data: userData } = await supabase.auth.getUser(post.user_id);
@@ -80,9 +79,49 @@ const CommunityPage: React.FC = () => {
 
   return (
     <div className="container mx-auto p-6">
+      <div className="mb-6 bg-soft-purple rounded-lg p-6 text-center">
+        <h2 className="text-2xl font-bold mb-4">Join Our Community!</h2>
+        <p className="text-gray-600 mb-4">
+          Stay updated and connect with other students
+        </p>
+        <div className="flex justify-center space-x-4">
+          <a 
+            href="https://t.me/adviseek" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="hover:bg-soft-gray p-2 rounded-full transition-colors"
+          >
+            <Telegram size={32} className="text-[#2AABEE]" />
+          </a>
+          <a 
+            href="https://discord.gg/adviseek" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="hover:bg-soft-gray p-2 rounded-full transition-colors"
+          >
+            <Discord size={32} className="text-[#5865F2]" />
+          </a>
+          <a 
+            href="https://facebook.com/adviseek" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="hover:bg-soft-gray p-2 rounded-full transition-colors"
+          >
+            <Facebook size={32} className="text-[#1877F2]" />
+          </a>
+          <a 
+            href="https://instagram.com/adviseek" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="hover:bg-soft-gray p-2 rounded-full transition-colors"
+          >
+            <Instagram size={32} className="text-[#E1306C]" />
+          </a>
+        </div>
+      </div>
+
       <h1 className="text-3xl font-bold mb-6">Community Discussions</h1>
 
-      {/* Create Post Form */}
       <form onSubmit={handleCreatePost} className="mb-8 p-6 bg-white shadow-md rounded-lg">
         <Input
           placeholder="Post Title"
@@ -101,7 +140,6 @@ const CommunityPage: React.FC = () => {
         <Button type="submit" className="w-full">Create Post</Button>
       </form>
 
-      {/* Posts List */}
       <div className="space-y-4">
         {isLoading ? (
           <p>Loading posts...</p>
