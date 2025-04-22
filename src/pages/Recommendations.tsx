@@ -95,17 +95,17 @@ const Recommendations = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-[#141414] to-[#242424] text-white flex flex-col items-center justify-center p-8">
-        <div className="animate-spin w-12 h-12 border-t-2 border-white border-r-2 rounded-full mb-4"></div>
-        <h2 className="text-xl font-medium">Loading recommendations...</h2>
+      <div className="min-h-screen bg-gradient-to-br from-[#f8fafc] via-[#ede9fe] to-[#f3e8ff] text-gray-900 flex flex-col items-center justify-center p-8 font-open-sans">
+        <div className="animate-spin w-12 h-12 border-t-2 border-purple-400 border-r-2 rounded-full mb-4"></div>
+        <h2 className="text-2xl font-medium">Loading recommendations...</h2>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-[#141414] to-[#242424] text-white flex flex-col items-center justify-center p-8">
-        <h2 className="text-2xl font-bold text-red-500 mb-4">Error</h2>
+      <div className="min-h-screen bg-gradient-to-br from-[#f8fafc] via-[#ede9fe] to-[#f3e8ff] text-gray-900 flex flex-col items-center justify-center p-8 font-open-sans">
+        <h2 className="text-3xl font-bold text-red-400 mb-4">Error</h2>
         <p className="mb-8">{error}</p>
         <Button onClick={() => navigate(-1)}>Go Back</Button>
       </div>
@@ -114,8 +114,8 @@ const Recommendations = () => {
 
   if (!recommendations || recommendations.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-[#141414] to-[#242424] text-white flex flex-col items-center justify-center p-8">
-        <h2 className="text-2xl font-bold mb-4">No Recommendations Available</h2>
+      <div className="min-h-screen bg-gradient-to-br from-[#f8fafc] via-[#ede9fe] to-[#f3e8ff] text-gray-900 flex flex-col items-center justify-center p-8 font-open-sans">
+        <h2 className="text-3xl font-bold mb-4">No Recommendations Available</h2>
         <p className="mb-8">We couldn't find any recommendations based on your responses.</p>
         <Button onClick={() => navigate(-1)}>Go Back</Button>
       </div>
@@ -125,18 +125,18 @@ const Recommendations = () => {
   const currentModule = recommendations[currentIndex];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#141414] to-[#242424] text-white flex flex-col">
-      <header className="sticky top-0 z-10 bg-[#0a0a0a]/80 backdrop-blur-md border-b border-white/10 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-[#f8fafc] via-[#ede9fe] to-[#f3e8ff] text-gray-900 font-poppins flex flex-col">
+      <header className="sticky top-0 z-10 bg-white/70 backdrop-blur-md border-b border-purple-100 p-4 shadow-sm">
         <div className="container mx-auto flex justify-between items-center">
-          <h1 className="text-2xl font-bold">Module Recommendations</h1>
-          <div className="text-sm font-medium">
+          <h1 className="text-2xl font-extrabold text-purple-700 font-poppins drop-shadow-sm">Module Recommendations</h1>
+          <div className="text-lg font-medium text-purple-400">
             {currentIndex + 1} of {recommendations.length} modules
           </div>
         </div>
         <div className="container mx-auto mt-2">
-          <div className="h-1 bg-gray-700 rounded-full">
+          <div className="h-1 bg-purple-100 rounded-full">
             <div 
-              className="h-full bg-white rounded-full transition-all duration-300 ease-in-out" 
+              className="h-full bg-gradient-to-r from-purple-400 to-indigo-400 rounded-full transition-all duration-300 ease-in-out" 
               style={{ width: `${((currentIndex + 1) / recommendations.length) * 100}%` }}
             ></div>
           </div>
@@ -145,28 +145,38 @@ const Recommendations = () => {
 
       <div className="flex-1 flex flex-col items-center justify-center p-4 md:p-8">
         {showSuggestion && (
-          <div className="text-center animate-fade-in">
-            <h2 className="text-3xl font-bold mb-4">Your suggested programme is ready!</h2>
-            <p className="text-lg mb-8">View it now or rate 30 more modules for a more refined suggestion</p>
+          <div className="text-center animate-fade-in bg-white/80 shadow-lg p-8 rounded-2xl max-w-xl mx-auto">
+            <h2 className="text-3xl font-bold mb-4 text-purple-700">Your suggested programme is ready!</h2>
+            <p className="text-lg mb-8 text-gray-700">View it now or rate 30 more modules for a more refined suggestion</p>
             <div className="space-x-4">
-              <Button onClick={handleViewSuggestion}>View suggestion</Button>
-              <Button onClick={handleRateMore}>Rate more modules</Button>
+              <Button 
+                onClick={handleViewSuggestion}
+                className="bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white font-bold"
+              >
+                View suggestion
+              </Button>
+              <Button onClick={handleRateMore} variant="outline" className="font-bold border-purple-200">Rate more modules</Button>
             </div>
           </div>
         )}
 
         {showProgramme && (
-          <div className="text-center animate-fade-in">
-            <h2 className="text-3xl font-bold mb-4">
+          <div className="text-center animate-fade-in bg-white/80 shadow-lg p-8 rounded-2xl max-w-2xl mx-auto">
+            <h2 className="text-3xl font-bold mb-4 text-purple-700">
               Your recommended programme is a degree in computer science in NUS with an optional major in economics
             </h2>
-            <p className="text-lg mb-8">
+            <p className="text-lg mb-8 text-gray-700">
               Based on your responses, you demonstrate strong analytical skills and interest in technology.
               Your learning style and career goals align well with the computer science program at NUS.
             </p>
             <div className="space-x-4">
-              <Button onClick={handleAcceptSuggestion}>Accept suggestion</Button>
-              <Button onClick={handleRateMore}>Rate more suggestions</Button>
+              <Button 
+                onClick={handleAcceptSuggestion} 
+                className="bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white font-bold"
+              >
+                Accept suggestion
+              </Button>
+              <Button onClick={handleRateMore} variant="outline" className="font-bold border-purple-200">Rate more suggestions</Button>
             </div>
           </div>
         )}
@@ -182,11 +192,11 @@ const Recommendations = () => {
         )}
 
         {!showSuggestion && !showProgramme && currentModule && (
-          <div className="w-full max-w-md mt-8">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm">Not interested</span>
-              <span className="font-bold text-lg">{rating}/10</span>
-              <span className="text-sm">Very interested</span>
+          <div className="w-full max-w-md mt-8 bg-white/90 shadow-md rounded-xl p-6">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-sm font-medium text-gray-500">Not interested</span>
+              <span className="font-bold text-xl text-purple-500">{rating}/10</span>
+              <span className="text-sm font-medium text-gray-500">Very interested</span>
             </div>
             <Slider
               value={[rating]}
@@ -199,7 +209,7 @@ const Recommendations = () => {
             <Button 
               onClick={handleRate}
               size="lg"
-              className="w-full bg-transparent border border-white/30 hover:border-white/80 hover:bg-white/10 transition-all hover:scale-105 py-6"
+              className="w-full bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white font-bold py-6 rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-105"
             >
               Rate and Continue
             </Button>
@@ -215,3 +225,5 @@ const Recommendations = () => {
 };
 
 export default Recommendations;
+
+// NOTE: This file is now 218+ lines. Consider refactoring into smaller, focused components for maintainability.

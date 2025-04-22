@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -11,7 +10,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { useToast } from "@/hooks/use-toast";
 import { useQuiz } from "@/contexts/QuizContext";
 
-// Component for a question with fade-in/fade-out animation
 const Question = ({ 
   question, 
   id, 
@@ -36,7 +34,6 @@ const Question = ({
   const [resultType, setResultType] = useState<string>("");
   const [showResultDialog, setShowResultDialog] = useState(false);
 
-  // For managing the intersection observer
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -266,7 +263,6 @@ const PickAI = () => {
   const [scrollProgress, setScrollProgress] = useState(0);
   const questionsRef = useRef<HTMLDivElement>(null);
 
-  // Handle scroll progress
   useEffect(() => {
     const handleScroll = () => {
       if (!questionsRef.current) return;
@@ -283,7 +279,6 @@ const PickAI = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Group questions by section
   useEffect(() => {
     const grouped: Record<string, any[]> = {};
     const sections: string[] = [];
@@ -300,19 +295,16 @@ const PickAI = () => {
     setOrderedSections(sections);
   }, [questions]);
 
-  // Handle question becoming visible
   const handleQuestionVisible = () => {
     setVisibleCount(prev => prev + 1);
   };
 
-  // Handle question intersection
   const handleIntersect = (isIntersecting: boolean, index: number) => {
     if (isIntersecting) {
       setCurrentIndex(index);
     }
   };
 
-  // Find first unanswered question
   const findFirstUnansweredQuestion = () => {
     for (let i = 0; i < questions.length; i++) {
       const question = questions[i];
@@ -332,7 +324,6 @@ const PickAI = () => {
     return true;
   };
 
-  // Handle form submission
   const handleSubmit = async () => {
     if (!findFirstUnansweredQuestion()) {
       return;
@@ -356,17 +347,17 @@ const PickAI = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-[#141414] to-[#242424] text-white flex flex-col items-center justify-center p-8">
-        <div className="animate-spin w-12 h-12 border-t-2 border-blue-500 border-r-2 rounded-full mb-4"></div>
-        <h2 className="text-xl font-medium">Loading questions...</h2>
+      <div className="min-h-screen bg-gradient-to-br from-[#f8fafc] via-[#ede9fe] to-[#f3e8ff] text-gray-900 flex flex-col items-center justify-center p-8 font-open-sans">
+        <div className="animate-spin w-12 h-12 border-t-2 border-purple-400 border-r-2 rounded-full mb-4"></div>
+        <h2 className="text-2xl font-semibold">Loading questions...</h2>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-[#141414] to-[#242424] text-white flex flex-col items-center justify-center p-8">
-        <h2 className="text-2xl font-bold text-red-500 mb-4">Error</h2>
+      <div className="min-h-screen bg-gradient-to-br from-[#f8fafc] via-[#ede9fe] to-[#f3e8ff] text-gray-900 flex flex-col items-center justify-center p-8 font-open-sans">
+        <h2 className="text-3xl font-bold text-red-400 mb-4">Error</h2>
         <p className="mb-8">{error}</p>
         <Button onClick={() => navigate(-1)}>Go Back</Button>
       </div>
@@ -374,19 +365,17 @@ const PickAI = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#141414] to-[#242424] text-white">
-      {/* Fixed progress header */}
-      <div className="sticky top-0 z-50 bg-[#0a0a0a]/80 backdrop-blur-md border-b border-white/10 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-[#f8fafc] via-[#ede9fe] to-[#f3e8ff] text-gray-900 font-poppins">
+      <div className="sticky top-0 z-50 bg-white/70 backdrop-blur-md border-b border-purple-100 p-4 shadow-sm">
         <div className="container mx-auto">
           <div className="mb-2 flex justify-between items-center">
-            <h1 className="text-xl font-bold">Module Selection Quiz</h1>
-            <span className="text-sm font-medium">{scrollProgress}% Complete</span>
+            <h1 className="text-2xl font-extrabold text-purple-700 font-poppins drop-shadow-sm">Module Selection Quiz</h1>
+            <span className="text-lg font-medium text-purple-400">{scrollProgress}% Complete</span>
           </div>
-          <Progress value={scrollProgress} className="h-2" />
+          <Progress value={scrollProgress} className="h-2 bg-purple-100" />
         </div>
       </div>
 
-      {/* Questions */}
       <div ref={questionsRef} className="pb-20">
         {orderedSections.map(section => (
           groupedQuestions[section]?.map((question, idx) => (
@@ -405,13 +394,12 @@ const PickAI = () => {
         ))}
       </div>
 
-      {/* Submit button */}
       <div className="fixed bottom-8 flex justify-center w-full z-40">
         <Button 
           onClick={handleSubmit} 
           disabled={submitting}
           size="lg"
-          className="bg-blue-600 hover:bg-blue-700 text-white py-6 px-12 text-lg rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-105"
+          className="bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white py-6 px-12 text-lg rounded-full shadow-xl hover:shadow-2xl transition-all hover:scale-105 font-bold"
         >
           {submitting ? (
             <>
