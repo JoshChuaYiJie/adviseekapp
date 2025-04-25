@@ -1,4 +1,3 @@
-
 export default {
   // Common
   "app_name": "Adviseek",
@@ -61,17 +60,23 @@ export default {
     "popular": "Popular",
     "my_communities": "My Communities",
     "create_community": "Create Community",
-    "popular_communities": "POPULAR COMMUNITIES"
+    "popular_communities": "POPULAR COMMUNITIES",
+    "comments": "Comments",
+    "write_comment": "Write a comment...",
+    "add_comment": "Add Comment",
+    "no_comments": "No comments yet. Be the first to comment!"
   },
   
   // Achievements
   "achievements": {
     "title": "My Achievements",
-    "description": "Your badges and progress",
-    "total_badges": "Total badges",
-    "unlocked": "Unlocked Badges",
-    "next": "Next Achievements",
-    "no_badges": "No badges unlocked yet",
-    "view_all": "View all badges"
+    "description": "Track your progress and unlock achievements",
+    "total": "Total achievements",
+    "unlocked": "Unlocked",
+    "progress": "Progress",
+    "early_adopter": {
+      "title": "Early Adopter",
+      "description": "Joined during the platform's first month"
+    }
   }
 };

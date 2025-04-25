@@ -1,59 +1,107 @@
+import React, { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import { Auth } from '@supabase/auth-ui-react';
+import { ThemeSupa } from '@supabase/auth-ui-shared';
+import { supabase } from './integrations/supabase/client';
+import Dashboard from './pages/Dashboard';
+import Settings from './pages/Settings';
+import { AppSidebar } from './components/layout/Sidebar';
+import { Toaster } from "@/components/ui/sonner"
+import { useTranslation } from 'react-i18next';
+import CommunityPage from './pages/Community';
+import { PostDetails } from "@/components/community/PostDetails";
+import AchievementsPage from "@/pages/Achievements";
 
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
-import NotFound from "./pages/NotFound";
-import PrivacyPolicy from "./pages/PrivacyPolicy";
-import TermsOfService from "./pages/TermsOfService";
-import UniversitySelection from "./pages/UniversitySelection";
-import PickAI from "./pages/PickAI";
-import Recommendations from "./pages/Recommendations";
-import { QuizProvider } from "@/contexts/QuizContext";
-import Pricing from "./pages/Pricing";
-import FeedbackForm from "./components/FeedbackForm";
-import Settings from "./pages/Settings";
-import ResumeBuilder from "./pages/ResumeBuilder";
-import { ChatWithAI } from "./components/ChatWithAI";
-import Community from "./pages/Community";
-import { ThemeProvider } from "@/contexts/ThemeContext";
+function App() {
+  const [session, setSession] = useState(null);
+  const [selectedSection, setSelectedSection] = useState('applied-programmes');
+  const { t } = useTranslation();
 
-// Import the i18n configuration
-import "./i18n";
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session)
+    })
 
-const queryClient = new QueryClient();
+    supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session)
+    })
+  }, [])
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <ThemeProvider>
-      <BrowserRouter>
-        <TooltipProvider>
-          <QuizProvider>
-            <Toaster />
-            <Sonner position="top-right" />
-            <FeedbackForm />
-            <ChatWithAI />
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/dashboard" element={<Index />} />
-              <Route path="/university-selection" element={<UniversitySelection />} />
-              <Route path="/pickAI" element={<PickAI />} />
-              <Route path="/recommendations" element={<Recommendations />} />
-              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-              <Route path="/terms-of-service" element={<TermsOfService />} />
-              <Route path="/pricing" element={<Pricing />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/resumebuilder" element={<ResumeBuilder />} />
-              <Route path="/community" element={<Community />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </QuizProvider>
-        </TooltipProvider>
-      </BrowserRouter>
-    </ThemeProvider>
-  </QueryClientProvider>
-);
+  return (
+    <Router>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            !session ? (
+              <div className="flex justify-center items-center h-screen">
+                <Auth
+                  supabaseClient={supabase}
+                  appearance={{ theme: ThemeSupa }}
+                  providers={['google', 'github']}
+                  localization={{
+                    variables: {
+                      sign_in: {
+                        email_input_label: t('email_input_label', { ns: 'auth' }),
+                        password_input_label: t('password_input_label', { ns: 'auth' }),
+                      },
+                    },
+                  }}
+                  redirectTo="http://localhost:5173/dashboard"
+                />
+              </div>
+            ) : (
+              <Navigate to="/dashboard" replace />
+            )
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={
+            session ? (
+              <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex">
+                <AppSidebar selectedSection={selectedSection} setSelectedSection={setSelectedSection} user={session.user} />
+                <div className="flex-1 p-4">
+                  <Dashboard selectedSection={selectedSection} />
+                  <Toaster />
+                </div>
+              </div>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          }
+        />
+        <Route
+          path="/settings"
+          element={
+            session ? (
+              <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex">
+                <AppSidebar selectedSection={selectedSection} setSelectedSection={setSelectedSection} user={session.user} />
+                <div className="flex-1 p-4">
+                  <Settings user={session.user} />
+                  <Toaster />
+                </div>
+              </div>
+            ) : (
+              <Navigate to="/" replace />
+            )
+          }
+        />
+        <Route
+          path="/community"
+          element={
+            session ? (
+              <CommunityPage />
+            ) : (
+              <Navigate to="/" replace />
+            )
+          }
+        />
+        <Route path="/community/post/:postId" element={<PostDetails />} />
+        <Route path="/achievements" element={<AchievementsPage />} />
+      </Routes>
+    </Router>
+  );
+}
 
 export default App;

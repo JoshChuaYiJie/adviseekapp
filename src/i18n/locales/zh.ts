@@ -1,4 +1,3 @@
-
 export default {
   // Common
   "app_name": "Adviseek",
@@ -61,17 +60,23 @@ export default {
     "popular": "热门",
     "my_communities": "我的社区",
     "create_community": "创建社区",
-    "popular_communities": "热门社区"
+    "popular_communities": "热门社区",
+    "comments": "评论",
+    "write_comment": "写评论...",
+    "add_comment": "添加评论",
+    "no_comments": "还没有评论。成为第一个评论的人！"
   },
   
   // Achievements
   "achievements": {
     "title": "我的成就",
-    "description": "您的徽章和进度",
-    "total_badges": "徽章总数",
-    "unlocked": "已解锁徽章",
-    "next": "下一个成就",
-    "no_badges": "尚未解锁徽章",
-    "view_all": "查看所有徽章"
+    "description": "跟踪您的进度并解锁成就",
+    "total": "总成就",
+    "unlocked": "已解锁",
+    "progress": "进度",
+    "early_adopter": {
+      "title": "早期采用者",
+      "description": "在平台第一个月加入"
+    }
   }
 };
