@@ -1,11 +1,11 @@
 
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import AppliedProgrammes from '@/components/sections/AppliedProgrammes';
-import MyResume from '@/components/sections/MyResume';
-import ApplyNow from '@/components/sections/ApplyNow';
-import MockInterviews from '@/components/sections/MockInterviews';
-import GetPaid from '@/components/sections/GetPaid';
+import { AppliedProgrammes } from '@/components/sections/AppliedProgrammes';
+import { MyResume } from '@/components/sections/MyResume';
+import { ApplyNow } from '@/components/sections/ApplyNow';
+import { MockInterviews } from '@/components/sections/MockInterviews';
+import { GetPaid } from '@/components/sections/GetPaid';
 
 interface DashboardProps {
   selectedSection: string;

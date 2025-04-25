@@ -7,7 +7,7 @@ import { supabase } from './integrations/supabase/client';
 import Dashboard from './pages/Dashboard';
 import Settings from './pages/Settings';
 import { AppSidebar } from './components/layout/Sidebar';
-import { Toaster } from "@/components/ui/sonner"
+import { Toaster } from "@/components/ui/sonner";
 import { useTranslation } from 'react-i18next';
 import CommunityPage from './pages/Community';
 import { PostDetails } from "@/components/community/PostDetails";
@@ -103,7 +103,7 @@ function App() {
           path="/achievements" 
           element={
             session ? (
-              <AchievementsPage user={session.user} />
+              <AchievementsPage user={session?.user} />
             ) : (
               <Navigate to="/" replace />
             )
