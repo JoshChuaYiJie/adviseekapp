@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { Auth } from '@supabase/auth-ui-react';
@@ -98,7 +99,16 @@ function App() {
           }
         />
         <Route path="/community/post/:postId" element={<PostDetails />} />
-        <Route path="/achievements" element={<AchievementsPage />} />
+        <Route 
+          path="/achievements" 
+          element={
+            session ? (
+              <AchievementsPage user={session.user} />
+            ) : (
+              <Navigate to="/" replace />
+            )
+          } 
+        />
       </Routes>
     </Router>
   );
