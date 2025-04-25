@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,6 +15,8 @@ import { toast } from "@/components/ui/sonner";
 import { ArrowLeft, Moon, Sun, Laptop, Bell, Mail, Languages, Shield, Trash2, KeyRound, BookOpen, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { useTheme } from "@/contexts/ThemeContext";
+import { useTranslation } from "react-i18next";
 
 const profileFormSchema = z.object({
   email: z.string().email(),
@@ -42,9 +43,13 @@ const Settings = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [theme, setTheme] = useState("system");
-  const [language, setLanguage] = useState("english");
+  const { theme, setTheme } = useTheme();
+  const { t, i18n } = useTranslation();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
+  const handleLanguageChange = (value: string) => {
+    i18n.changeLanguage(value);
+  };
 
   // Profile form
   const profileForm = useForm<z.infer<typeof profileFormSchema>>({
@@ -132,26 +137,26 @@ const Settings = () => {
         <Button variant="ghost" size="icon" onClick={() => navigate('/dashboard')} className="mr-2">
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <h1 className="text-2xl font-bold">Account Settings</h1>
+        <h1 className="text-2xl font-bold">{t('settings.title')}</h1>
       </div>
       
       <Tabs defaultValue="profile" className="w-full space-y-6">
         <TabsList className="grid grid-cols-4 mb-6">
           <TabsTrigger value="profile" className="flex items-center gap-2">
             <User className="h-4 w-4" />
-            <span>Profile</span>
+            <span>{t('settings.profile')}</span>
           </TabsTrigger>
           <TabsTrigger value="appearance" className="flex items-center gap-2">
             <Sun className="h-4 w-4" />
-            <span>Appearance</span>
+            <span>{t('settings.appearance')}</span>
           </TabsTrigger>
           <TabsTrigger value="notifications" className="flex items-center gap-2">
             <Bell className="h-4 w-4" />
-            <span>Notifications</span>
+            <span>{t('settings.notifications')}</span>
           </TabsTrigger>
           <TabsTrigger value="account" className="flex items-center gap-2">
             <KeyRound className="h-4 w-4" />
-            <span>Account</span>
+            <span>{t('settings.account')}</span>
           </TabsTrigger>
         </TabsList>
         
@@ -159,7 +164,7 @@ const Settings = () => {
         <TabsContent value="profile">
           <Card>
             <CardHeader>
-              <CardTitle>Profile</CardTitle>
+              <CardTitle>{t('settings.profile')}</CardTitle>
               <CardDescription>
                 Manage your personal information and how it appears to others.
               </CardDescription>
@@ -216,7 +221,7 @@ const Settings = () => {
                   />
                   
                   <div className="flex justify-end">
-                    <Button type="submit">Save Changes</Button>
+                    <Button type="submit">{t('save')}</Button>
                   </div>
                 </form>
               </Form>
@@ -228,14 +233,14 @@ const Settings = () => {
         <TabsContent value="appearance">
           <Card>
             <CardHeader>
-              <CardTitle>Appearance</CardTitle>
+              <CardTitle>{t('settings.appearance')}</CardTitle>
               <CardDescription>
                 Customize how Adviseek looks on your device.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-2">
-                <Label>Theme</Label>
+                <Label>{t('settings.theme.title')}</Label>
                 <div className="flex flex-wrap gap-4">
                   <div className="space-y-2">
                     <Button 
@@ -248,7 +253,7 @@ const Settings = () => {
                       }}
                     >
                       <Sun className="h-5 w-5" />
-                      Light
+                      {t('settings.theme.light')}
                     </Button>
                   </div>
                   <div className="space-y-2">
@@ -262,7 +267,7 @@ const Settings = () => {
                       }}
                     >
                       <Moon className="h-5 w-5" />
-                      Dark
+                      {t('settings.theme.dark')}
                     </Button>
                   </div>
                   <div className="space-y-2">
@@ -276,24 +281,24 @@ const Settings = () => {
                       }}
                     >
                       <Laptop className="h-5 w-5" />
-                      System
+                      {t('settings.theme.system')}
                     </Button>
                   </div>
                 </div>
               </div>
               
               <div className="space-y-2">
-                <Label>Language</Label>
-                <Select value={language} onValueChange={setLanguage}>
+                <Label>{t('settings.language')}</Label>
+                <Select value={i18n.language} onValueChange={handleLanguageChange}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select a language" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="english">English</SelectItem>
-                    <SelectItem value="spanish">Spanish</SelectItem>
-                    <SelectItem value="french">French</SelectItem>
-                    <SelectItem value="german">German</SelectItem>
-                    <SelectItem value="chinese">Chinese</SelectItem>
+                    <SelectItem value="en">{t('settings.languages.english')}</SelectItem>
+                    <SelectItem value="zh">{t('settings.languages.mandarin')}</SelectItem>
+                    <SelectItem value="es">{t('settings.languages.spanish')}</SelectItem>
+                    <SelectItem value="fr">{t('settings.languages.french')}</SelectItem>
+                    <SelectItem value="de">{t('settings.languages.german')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -305,7 +310,7 @@ const Settings = () => {
                   onClick={handleReplayTutorial}
                 >
                   <BookOpen className="h-5 w-5" />
-                  Replay Onboarding Tutorial
+                  {t('settings.replay_tutorial')}
                 </Button>
               </div>
             </CardContent>
@@ -316,7 +321,7 @@ const Settings = () => {
         <TabsContent value="notifications">
           <Card>
             <CardHeader>
-              <CardTitle>Notifications</CardTitle>
+              <CardTitle>{t('settings.notifications')}</CardTitle>
               <CardDescription>
                 Configure how and when you receive notifications.
               </CardDescription>
@@ -400,7 +405,7 @@ const Settings = () => {
         <TabsContent value="account">
           <Card>
             <CardHeader>
-              <CardTitle>Account</CardTitle>
+              <CardTitle>{t('settings.account')}</CardTitle>
               <CardDescription>
                 Manage your account settings and security.
               </CardDescription>

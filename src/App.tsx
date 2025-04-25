@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -17,35 +18,41 @@ import Settings from "./pages/Settings";
 import ResumeBuilder from "./pages/ResumeBuilder";
 import { ChatWithAI } from "./components/ChatWithAI";
 import Community from "./pages/Community";
+import { ThemeProvider } from "@/contexts/ThemeContext";
+
+// Import the i18n configuration
+import "./i18n";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <BrowserRouter>
-      <TooltipProvider>
-        <QuizProvider>
-          <Toaster />
-          <Sonner position="top-right" />
-          <FeedbackForm />
-          <ChatWithAI />
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/dashboard" element={<Index />} />
-            <Route path="/university-selection" element={<UniversitySelection />} />
-            <Route path="/pickAI" element={<PickAI />} />
-            <Route path="/recommendations" element={<Recommendations />} />
-            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-            <Route path="/terms-of-service" element={<TermsOfService />} />
-            <Route path="/pricing" element={<Pricing />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/resumebuilder" element={<ResumeBuilder />} />
-            <Route path="/community" element={<Community />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </QuizProvider>
-      </TooltipProvider>
-    </BrowserRouter>
+    <ThemeProvider>
+      <BrowserRouter>
+        <TooltipProvider>
+          <QuizProvider>
+            <Toaster />
+            <Sonner position="top-right" />
+            <FeedbackForm />
+            <ChatWithAI />
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/dashboard" element={<Index />} />
+              <Route path="/university-selection" element={<UniversitySelection />} />
+              <Route path="/pickAI" element={<PickAI />} />
+              <Route path="/recommendations" element={<Recommendations />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/terms-of-service" element={<TermsOfService />} />
+              <Route path="/pricing" element={<Pricing />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/resumebuilder" element={<ResumeBuilder />} />
+              <Route path="/community" element={<Community />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </QuizProvider>
+        </TooltipProvider>
+      </BrowserRouter>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 

@@ -1,5 +1,7 @@
-import { School, FileText, BookOpen, Video, DollarSign, Settings, Play, LogOut, Users } from "lucide-react";
+
+import { School, FileText, BookOpen, Video, DollarSign, Settings, Play, LogOut, Users, Award } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   Sidebar as ShadcnSidebar,
   SidebarContent,
@@ -25,42 +27,48 @@ interface NavItem {
   tooltip: string;
 }
 
-const navItems: NavItem[] = [
+const getNavItems = (t: any): NavItem[] => [
   { 
-    label: "Applied Programmes", 
+    label: t("navigation.applied_programmes"),
     icon: School, 
     id: "applied-programmes",
     tooltip: "View and manage your university applications"
   },
   { 
-    label: "My Resume", 
+    label: t("navigation.my_resume"), 
     icon: FileText, 
     id: "my-resume",
     tooltip: "Upload or create tailored resumes for applications"
   },
   { 
-    label: "Apply Now", 
+    label: t("navigation.apply_now"), 
     icon: BookOpen, 
     id: "apply-now",
     tooltip: "Start a new university application"
   },
   { 
-    label: "Mock Interviews", 
+    label: t("navigation.mock_interviews"), 
     icon: Video, 
     id: "mock-interviews",
     tooltip: "Practice with AI-generated interview questions"
   },
   { 
-    label: "Get Paid", 
+    label: t("navigation.get_paid"), 
     icon: DollarSign, 
     id: "get-paid",
     tooltip: "Earn money by helping others with their applications"
   },
   { 
-    label: "Community", 
+    label: t("navigation.community"), 
     icon: Users, 
     id: "community",
     tooltip: "Discuss and share your university experiences"
+  },
+  { 
+    label: t("navigation.achievements"), 
+    icon: Award, 
+    id: "achievements",
+    tooltip: "View your badges and progress"
   },
 ];
 
@@ -73,6 +81,8 @@ interface SidebarProps {
 
 export const AppSidebar = ({ selectedSection, setSelectedSection, user, onReplayTutorial }: SidebarProps) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
+  const navItems = getNavItems(t);
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -86,10 +96,10 @@ export const AppSidebar = ({ selectedSection, setSelectedSection, user, onReplay
 
   return (
     <ShadcnSidebar>
-      <div className="p-4 border-b border-gray-200">
+      <div className="p-4 border-b border-gray-200 dark:border-gray-800">
         <div className="flex items-center">
-          <span className="text-2xl font-bold text-black">Adviseek</span>
-          <span className="ml-1 px-2 py-0.5 text-xs font-semibold bg-yellow-400 text-yellow-800 rounded">
+          <span className="text-2xl font-bold text-foreground">Adviseek</span>
+          <span className="ml-1 px-2 py-0.5 text-xs font-semibold bg-yellow-400 text-yellow-800 dark:bg-yellow-500 dark:text-yellow-900 rounded">
             FREE
           </span>
         </div>
@@ -97,7 +107,7 @@ export const AppSidebar = ({ selectedSection, setSelectedSection, user, onReplay
       
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel>{t("navigation.title", "Navigation")}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {navItems.map((item) => (
@@ -105,7 +115,15 @@ export const AppSidebar = ({ selectedSection, setSelectedSection, user, onReplay
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <SidebarMenuButton
-                        onClick={() => setSelectedSection(item.id)}
+                        onClick={() => {
+                          setSelectedSection(item.id);
+                          if (item.id === "community") {
+                            navigate("/community");
+                          } else if (item.id === "achievements") {
+                            // Will implement this navigation later when we have the page
+                            toast.info("Achievements coming soon!");
+                          }
+                        }}
                         isActive={selectedSection === item.id}
                         data-id={item.id}
                       >
@@ -122,14 +140,14 @@ export const AppSidebar = ({ selectedSection, setSelectedSection, user, onReplay
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="mt-auto border-t border-gray-200">
+      <SidebarFooter className="mt-auto border-t border-gray-200 dark:border-gray-800">
         <div className="p-4 space-y-2">
           {user && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="w-full justify-start">
                   <div className="flex items-center">
-                    <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center mr-2">
+                    <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center mr-2">
                       {user.email?.charAt(0).toUpperCase() || "U"}
                     </div>
                     <div className="flex-1 text-left overflow-hidden">
@@ -141,12 +159,12 @@ export const AppSidebar = ({ selectedSection, setSelectedSection, user, onReplay
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuItem onSelect={handleProfileSettings}>
                   <Settings className="mr-2 h-4 w-4" />
-                  <span>Profile Settings</span>
+                  <span>{t("settings.profile")}</span>
                 </DropdownMenuItem>
                 {onReplayTutorial && (
                   <DropdownMenuItem onSelect={onReplayTutorial}>
                     <Play className="mr-2 h-4 w-4" />
-                    <span>Replay Tutorial</span>
+                    <span>{t("settings.replay_tutorial")}</span>
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuSeparator />
@@ -159,14 +177,14 @@ export const AppSidebar = ({ selectedSection, setSelectedSection, user, onReplay
           )}
           <Button 
             onClick={() => navigate("/pricing")} 
-            className="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md"
+            className="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 rounded-md"
             data-tutorial="upgrade-button"
           >
             <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M7 11l5-5 5 5"/>
               <path d="M7 17l5-5 5 5"/>
             </svg>
-            Upgrade to Pro
+            {t("upgrade")}
           </Button>
         </div>
       </SidebarFooter>
