@@ -15,11 +15,7 @@ type Achievement = {
   unlocked: boolean;
 };
 
-interface AchievementsPageProps {
-  user?: any; // Make the user prop optional
-}
-
-const AchievementsPage = ({ user }: AchievementsPageProps) => {
+const AchievementsPage = () => {
   const { t } = useTranslation();
   const [selectedSection, setSelectedSection] = React.useState('achievements');
   
@@ -77,55 +73,49 @@ const AchievementsPage = ({ user }: AchievementsPageProps) => {
   const unlockedAchievements = achievements.filter(achievement => achievement.unlocked);
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex">
-      {user && <AppSidebar selectedSection={selectedSection} setSelectedSection={setSelectedSection} user={user} />}
-      <div className="flex-1 p-4">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex items-center gap-2 mb-6">
-            <Award className="h-8 w-8 text-primary" />
-            <h1 className="text-3xl font-bold">{t('achievements.title')}</h1>
-          </div>
+    <div className="max-w-4xl mx-auto">
+      <div className="flex items-center gap-2 mb-6">
+        <Award className="h-8 w-8 text-primary" />
+        <h1 className="text-3xl font-bold">{t('achievements.title')}</h1>
+      </div>
 
-          <div className="mb-8">
-            <div className="flex items-center justify-between mb-2">
-              <span className="font-medium">{t('achievements.total')}</span>
-              <span className="font-medium">{unlockedAchievements.length} / {achievements.length}</span>
-            </div>
-            <Progress value={(unlockedAchievements.length / achievements.length) * 100} className="h-2" />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {achievements.map((achievement) => (
-              <div
-                key={achievement.id}
-                className={`p-6 rounded-lg border ${
-                  achievement.unlocked
-                    ? 'bg-primary/5 border-primary'
-                    : 'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700'
-                }`}
-              >
-                <div className="flex items-start gap-4">
-                  <div className={`p-3 rounded-full ${
-                    achievement.unlocked ? 'bg-primary/10' : 'bg-gray-100 dark:bg-gray-700'
-                  }`}>
-                    {achievement.icon}
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold mb-1">{achievement.name}</h3>
-                    <p className="text-gray-600 dark:text-gray-300 text-sm mb-3">
-                      {achievement.description}
-                    </p>
-                    <Progress value={achievement.progress} className="h-1.5" />
-                    <span className="text-xs text-gray-500 mt-1 block">
-                      {achievement.progress}% {t('achievements.progress')}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+      <div className="mb-8">
+        <div className="flex items-center justify-between mb-2">
+          <span className="font-medium">{t('achievements.total')}</span>
+          <span className="font-medium">{unlockedAchievements.length} / {achievements.length}</span>
         </div>
-        <Toaster />
+        <Progress value={(unlockedAchievements.length / achievements.length) * 100} className="h-2" />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {achievements.map((achievement) => (
+          <div
+            key={achievement.id}
+            className={`p-6 rounded-lg border ${
+              achievement.unlocked
+                ? 'bg-primary/5 border-primary'
+                : 'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700'
+            }`}
+          >
+            <div className="flex items-start gap-4">
+              <div className={`p-3 rounded-full ${
+                achievement.unlocked ? 'bg-primary/10' : 'bg-gray-100 dark:bg-gray-700'
+              }`}>
+                {achievement.icon}
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold mb-1">{achievement.name}</h3>
+                <p className="text-gray-600 dark:text-gray-300 text-sm mb-3">
+                  {achievement.description}
+                </p>
+                <Progress value={achievement.progress} className="h-1.5" />
+                <span className="text-xs text-gray-500 mt-1 block">
+                  {achievement.progress}% {t('achievements.progress')}
+                </span>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

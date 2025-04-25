@@ -51,7 +51,6 @@ const Settings = () => {
     i18n.changeLanguage(value);
   };
 
-  // Profile form
   const profileForm = useForm<z.infer<typeof profileFormSchema>>({
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
@@ -61,7 +60,6 @@ const Settings = () => {
     },
   });
 
-  // Notifications form
   const notificationsForm = useForm<z.infer<typeof notificationsFormSchema>>({
     resolver: zodResolver(notificationsFormSchema),
     defaultValues: {
@@ -71,7 +69,6 @@ const Settings = () => {
     },
   });
 
-  // Account form
   const accountForm = useForm<z.infer<typeof accountFormSchema>>({
     resolver: zodResolver(accountFormSchema),
     defaultValues: {
@@ -82,7 +79,6 @@ const Settings = () => {
   });
 
   const handleReplayTutorial = () => {
-    // Set tutorial completed to false in localStorage
     if (user) {
       localStorage.removeItem(`tutorial_completed_${user.id}`);
       toast.success("Tutorial enabled. It will show next time you visit the dashboard.");
@@ -110,7 +106,6 @@ const Settings = () => {
 
   const handlePasswordChange = async (data: z.infer<typeof accountFormSchema>) => {
     try {
-      // In a real implementation, we would update the user's password via Supabase
       toast.success("Password updated successfully!");
       accountForm.reset();
     } catch (error) {
@@ -121,7 +116,6 @@ const Settings = () => {
 
   const handleDeleteAccount = async () => {
     try {
-      // In a real implementation, we would delete the user's account via Supabase
       toast.success("Account deleted successfully");
       await supabase.auth.signOut();
       navigate('/');
@@ -160,7 +154,6 @@ const Settings = () => {
           </TabsTrigger>
         </TabsList>
         
-        {/* Profile Tab */}
         <TabsContent value="profile">
           <Card>
             <CardHeader>
@@ -229,7 +222,6 @@ const Settings = () => {
           </Card>
         </TabsContent>
         
-        {/* Appearance Tab */}
         <TabsContent value="appearance">
           <Card>
             <CardHeader>
@@ -317,7 +309,6 @@ const Settings = () => {
           </Card>
         </TabsContent>
         
-        {/* Notifications Tab */}
         <TabsContent value="notifications">
           <Card>
             <CardHeader>
@@ -401,7 +392,6 @@ const Settings = () => {
           </Card>
         </TabsContent>
         
-        {/* Account Tab */}
         <TabsContent value="account">
           <Card>
             <CardHeader>
@@ -461,35 +451,6 @@ const Settings = () => {
                   </div>
                 </form>
               </Form>
-              
-              <div className="border-t pt-4">
-                <h3 className="font-medium text-lg mb-4">Privacy & Export</h3>
-                <div className="flex flex-col gap-4">
-                  <div className="flex flex-row items-center justify-between border p-4 rounded-lg">
-                    <div className="space-y-0.5">
-                      <h4 className="font-medium">Profile Visibility</h4>
-                      <p className="text-sm text-muted-foreground">
-                        Control who can see your profile information.
-                      </p>
-                    </div>
-                    <Select defaultValue="everyone">
-                      <SelectTrigger className="w-[150px]">
-                        <SelectValue placeholder="Select audience" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="everyone">Everyone</SelectItem>
-                        <SelectItem value="connections">Only Connections</SelectItem>
-                        <SelectItem value="none">Private</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <Button variant="outline" className="flex items-center gap-2">
-                    <Shield className="h-4 w-4" />
-                    Export Personal Data
-                  </Button>
-                </div>
-              </div>
               
               <div className="border-t pt-4">
                 <h3 className="font-medium text-lg text-red-600 mb-4">Danger Zone</h3>

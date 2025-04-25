@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 import CommunityPage from './pages/Community';
 import { PostDetails } from "@/components/community/PostDetails";
 import AchievementsPage from "@/pages/Achievements";
+import { SidebarProvider } from "@/components/ui/sidebar";
 
 function App() {
   const [session, setSession] = useState(null);
@@ -43,8 +44,8 @@ function App() {
                   localization={{
                     variables: {
                       sign_in: {
-                        email_input_label: t('email_input_label', { ns: 'auth' }),
-                        password_input_label: t('password_input_label', { ns: 'auth' }),
+                        email_label: t('email_input_label', { ns: 'auth' }),
+                        password_label: t('password_input_label', { ns: 'auth' }),
                       },
                     },
                   }}
@@ -60,13 +61,15 @@ function App() {
           path="/dashboard"
           element={
             session ? (
-              <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex">
-                <AppSidebar selectedSection={selectedSection} setSelectedSection={setSelectedSection} user={session.user} />
-                <div className="flex-1 p-4">
-                  <Dashboard selectedSection={selectedSection} />
-                  <Toaster />
+              <SidebarProvider>
+                <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex w-full">
+                  <AppSidebar selectedSection={selectedSection} setSelectedSection={setSelectedSection} user={session.user} />
+                  <div className="flex-1 p-4">
+                    <Dashboard selectedSection={selectedSection} />
+                    <Toaster />
+                  </div>
                 </div>
-              </div>
+              </SidebarProvider>
             ) : (
               <Navigate to="/" replace />
             )
@@ -76,13 +79,15 @@ function App() {
           path="/settings"
           element={
             session ? (
-              <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex">
-                <AppSidebar selectedSection={selectedSection} setSelectedSection={setSelectedSection} user={session.user} />
-                <div className="flex-1 p-4">
-                  <Settings user={session.user} />
-                  <Toaster />
+              <SidebarProvider>
+                <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex w-full">
+                  <AppSidebar selectedSection={selectedSection} setSelectedSection={setSelectedSection} user={session.user} />
+                  <div className="flex-1 p-4">
+                    <Settings />
+                    <Toaster />
+                  </div>
                 </div>
-              </div>
+              </SidebarProvider>
             ) : (
               <Navigate to="/" replace />
             )
@@ -103,7 +108,15 @@ function App() {
           path="/achievements" 
           element={
             session ? (
-              <AchievementsPage user={session?.user} />
+              <SidebarProvider>
+                <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex w-full">
+                  <AppSidebar selectedSection={selectedSection} setSelectedSection={setSelectedSection} user={session?.user} />
+                  <div className="flex-1 p-4">
+                    <AchievementsPage />
+                    <Toaster />
+                  </div>
+                </div>
+              </SidebarProvider>
             ) : (
               <Navigate to="/" replace />
             )
