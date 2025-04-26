@@ -6,12 +6,14 @@ import { useTranslation } from "react-i18next";
 import { AchievementsSidebar } from "@/components/badges/AchievementsSidebar";
 
 type Achievement = {
-  id: string;
-  type: string;
+  id: number;
+  achievement_key: string;  // Changed from 'type' to 'achievement_key' to match DB
   progress: number;
   max_progress: number;
   unlocked: boolean;
   unlocked_at: string | null;
+  user_id: string;
+  created_at: string;
 };
 
 const Achievements = () => {
@@ -33,6 +35,18 @@ const Achievements = () => {
     fetchAchievements();
   }, []);
 
+  // Map the achievement_key to the correct translation key
+  const getAchievementTranslationKey = (key: string) => {
+    // This mapping converts the database achievement_key to the translation key format
+    const keyMap: Record<string, string> = {
+      'community_contributor': 'community_contributor',
+      'knowledge_seeker': 'knowledge_seeker',
+      'first_milestone': 'first_milestone',
+      'academic_explorer': 'academic_explorer'
+    };
+    return keyMap[key] || key;
+  };
+
   return (
     <div className="flex h-screen bg-background">
       <AchievementsSidebar />
@@ -51,14 +65,18 @@ const Achievements = () => {
               >
                 <div className="flex items-center gap-4">
                   <div className="p-3 rounded-full bg-primary/20">
-                    {achievement.type === 'community_contributor' && <Award className="h-6 w-6 text-primary" />}
-                    {achievement.type === 'knowledge_seeker' && <Star className="h-6 w-6 text-primary" />}
-                    {achievement.type === 'first_milestone' && <Target className="h-6 w-6 text-primary" />}
-                    {achievement.type === 'academic_explorer' && <BookOpen className="h-6 w-6 text-primary" />}
+                    {achievement.achievement_key === 'community_contributor' && <Award className="h-6 w-6 text-primary" />}
+                    {achievement.achievement_key === 'knowledge_seeker' && <Star className="h-6 w-6 text-primary" />}
+                    {achievement.achievement_key === 'first_milestone' && <Target className="h-6 w-6 text-primary" />}
+                    {achievement.achievement_key === 'academic_explorer' && <BookOpen className="h-6 w-6 text-primary" />}
                   </div>
                   <div className="flex-1">
-                    <h3 className="font-semibold">{t(`achievements.${achievement.type}.title`)}</h3>
-                    <p className="text-sm text-muted-foreground">{t(`achievements.${achievement.type}.description`)}</p>
+                    <h3 className="font-semibold">
+                      {t(`achievements.${getAchievementTranslationKey(achievement.achievement_key)}.title`)}
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      {t(`achievements.${getAchievementTranslationKey(achievement.achievement_key)}.description`)}
+                    </p>
                     <div className="mt-2">
                       <div className="h-2 bg-secondary rounded-full overflow-hidden">
                         <div

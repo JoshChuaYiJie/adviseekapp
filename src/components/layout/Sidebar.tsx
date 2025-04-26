@@ -120,8 +120,7 @@ export const AppSidebar = ({ selectedSection, setSelectedSection, user, onReplay
                           if (item.id === "community") {
                             navigate("/community");
                           } else if (item.id === "achievements") {
-                            // Will implement this navigation later when we have the page
-                            toast.info("Achievements coming soon!");
+                            navigate("/achievements");
                           }
                         }}
                         isActive={selectedSection === item.id}
