@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { Auth } from '@supabase/auth-ui-react';
@@ -13,6 +12,7 @@ import CommunityPage from './pages/Community';
 import { PostDetails } from "@/components/community/PostDetails";
 import AchievementsPage from "@/pages/Achievements";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import SignUpPage from './pages/SignUp';
 
 function App() {
   const [session, setSession] = useState(null);
@@ -52,6 +52,16 @@ function App() {
                   redirectTo="http://localhost:5173/dashboard"
                 />
               </div>
+            ) : (
+              <Navigate to="/dashboard" replace />
+            )
+          }
+        />
+        <Route
+          path="/signup"
+          element={
+            !session ? (
+              <SignUpPage />
             ) : (
               <Navigate to="/dashboard" replace />
             )
