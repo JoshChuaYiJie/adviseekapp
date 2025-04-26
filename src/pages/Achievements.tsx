@@ -7,9 +7,9 @@ import { AchievementsSidebar } from "@/components/badges/AchievementsSidebar";
 
 type Achievement = {
   id: number;
-  achievement_key: string;  // Changed from 'type' to 'achievement_key' to match DB
+  achievement_key: string;
   progress: number;
-  max_progress: number;
+  max_progress: number | null; // Making this nullable to match database schema
   unlocked: boolean;
   unlocked_at: string | null;
   user_id: string;
@@ -22,13 +22,19 @@ const Achievements = () => {
 
   useEffect(() => {
     const fetchAchievements = async () => {
-      const { data: achievements, error } = await supabase
+      const { data: achievementsData, error } = await supabase
         .from('achievements')
         .select('*')
         .order('created_at', { ascending: true });
       
-      if (!error && achievements) {
-        setAchievements(achievements);
+      if (!error && achievementsData) {
+        // Ensure max_progress has a default value if it's null from the database
+        const processedAchievements = achievementsData.map(achievement => ({
+          ...achievement,
+          max_progress: achievement.max_progress || 100 // Default to 100 if max_progress is null
+        }));
+        
+        setAchievements(processedAchievements);
       }
     };
 
