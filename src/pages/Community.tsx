@@ -8,7 +8,6 @@ import { Facebook, Instagram, Send, MessageCircle, ArrowLeft } from "lucide-reac
 import { CommunitySidebar } from '@/components/community/CommunitySidebar';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom';
 
 type Post = {
   id: string;
@@ -116,10 +115,6 @@ const CommunityPage: React.FC = () => {
     }
   };
 
-  const handleBackToDashboard = () => {
-    navigate('/dashboard');
-  };
-
   const filteredPosts = posts.filter(post => 
     post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     post.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -136,7 +131,7 @@ const CommunityPage: React.FC = () => {
           <div className="flex items-center justify-between mb-6">
             <Button 
               variant="outline" 
-              onClick={handleBackToDashboard}
+              onClick={() => navigate('/dashboard')}
               className="flex items-center gap-2"
             >
               <ArrowLeft size={16} />
@@ -224,20 +219,17 @@ const CommunityPage: React.FC = () => {
               <p className="text-center text-gray-500 dark:text-gray-400">{t('community.no_posts')}</p>
             ) : (
               filteredPosts.map((post) => (
-                <Link
-                  key={post.id}
-                  to={`/community/post/${post.id}`}
-                  className="block"
+                <div 
+                  key={post.id} 
+                  className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 hover:shadow-lg transition-shadow"
                 >
-                  <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 hover:shadow-lg transition-shadow">
-                    <h2 className="text-xl font-semibold mb-2">{post.title}</h2>
-                    <p className="text-gray-600 dark:text-gray-300 mb-4 line-clamp-3">{post.content}</p>
-                    <div className="text-sm text-gray-500 dark:text-gray-400">
-                      {t('community.posted_by')} {post.user_email || 'Anonymous'} 
-                      {' '} {t('community.on')} {new Date(post.created_at).toLocaleDateString()}
-                    </div>
+                  <h2 className="text-xl font-semibold mb-2">{post.title}</h2>
+                  <p className="text-gray-600 dark:text-gray-300 mb-4">{post.content}</p>
+                  <div className="text-sm text-gray-500 dark:text-gray-400">
+                    {t('community.posted_by')} {post.user_email || 'Anonymous'} 
+                    {' '} {t('community.on')} {new Date(post.created_at).toLocaleDateString()}
                   </div>
-                </Link>
+                </div>
               ))
             )}
           </div>
