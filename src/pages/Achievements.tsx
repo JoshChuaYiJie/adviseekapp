@@ -28,10 +28,11 @@ const Achievements = () => {
         .order('created_at', { ascending: true });
       
       if (!error && achievementsData) {
-        // Ensure max_progress has a default value if it's null from the database
+        // Map database objects to our Achievement type and provide default values for missing fields
         const processedAchievements = achievementsData.map(achievement => ({
           ...achievement,
-          max_progress: achievement.max_progress || 100 // Default to 100 if max_progress is null
+          // Since max_progress doesn't exist in the database, we'll assign default values
+          max_progress: 100 // Default to 100 if max_progress is not present
         }));
         
         setAchievements(processedAchievements);
