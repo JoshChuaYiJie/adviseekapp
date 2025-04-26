@@ -9,6 +9,36 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      achievements: {
+        Row: {
+          achievement_key: string
+          created_at: string
+          id: number
+          progress: number | null
+          unlocked: boolean | null
+          unlocked_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          achievement_key: string
+          created_at?: string
+          id?: number
+          progress?: number | null
+          unlocked?: boolean | null
+          unlocked_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          achievement_key?: string
+          created_at?: string
+          id?: number
+          progress?: number | null
+          unlocked?: boolean | null
+          unlocked_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       community_comments: {
         Row: {
           content: string
@@ -98,6 +128,24 @@ export type Database = {
           semester?: string
           title?: string
           university?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          id: string
+          username: string | null
+        }
+        Insert: {
+          created_at?: string
+          id: string
+          username?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          username?: string | null
         }
         Relationships: []
       }
@@ -261,7 +309,11 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      achievement_type:
+        | "community_contributor"
+        | "knowledge_seeker"
+        | "first_milestone"
+        | "academic_explorer"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -376,6 +428,13 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      achievement_type: [
+        "community_contributor",
+        "knowledge_seeker",
+        "first_milestone",
+        "academic_explorer",
+      ],
+    },
   },
 } as const

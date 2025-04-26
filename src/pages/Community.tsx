@@ -8,6 +8,7 @@ import { Facebook, Instagram, Send, MessageCircle, ArrowLeft } from "lucide-reac
 import { CommunitySidebar } from '@/components/community/CommunitySidebar';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 type Post = {
   id: string;
@@ -56,6 +57,14 @@ const CommunityPage: React.FC = () => {
   const [newPost, setNewPost] = useState({ title: '', content: '' });
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+
+  const handleBackToDashboard = () => {
+    navigate('/');
+    setTimeout(() => {
+      localStorage.setItem('selectedSection', 'applied-programmes');
+      window.dispatchEvent(new Event('storage'));
+    }, 100);
+  };
 
   useEffect(() => {
     fetchPosts();
@@ -131,7 +140,7 @@ const CommunityPage: React.FC = () => {
           <div className="flex items-center justify-between mb-6">
             <Button 
               variant="outline" 
-              onClick={() => navigate('/dashboard')}
+              onClick={handleBackToDashboard}
               className="flex items-center gap-2"
             >
               <ArrowLeft size={16} />
@@ -232,6 +241,14 @@ const CommunityPage: React.FC = () => {
                 </div>
               ))
             )}
+          </div>
+
+          <div className="mt-auto pt-4 border-t text-xs text-muted-foreground">
+            <div className="flex gap-2">
+              <Link to="/privacy-policy" className="hover:underline">Privacy</Link>
+              <Link to="/terms-of-service" className="hover:underline">Terms</Link>
+              <Link to="/help" className="hover:underline">Help</Link>
+            </div>
           </div>
         </div>
       </div>

@@ -72,6 +72,22 @@ export default {
     "unlocked": "已解锁徽章",
     "next": "下一个成就",
     "no_badges": "尚未解锁徽章",
-    "view_all": "查看所有徽章"
+    "view_all": "查看所有徽章",
+    "community_contributor": {
+      "title": "社区贡献者",
+      "description": "在社区创建5个帖子"
+    },
+    "knowledge_seeker": {
+      "title": "求知者",
+      "description": "完成所有入门教程"
+    },
+    "first_milestone": {
+      "title": "第一个里程碑",
+      "description": "申请您的第一所大学"
+    },
+    "academic_explorer": {
+      "title": "学术探索者",
+      "description": "为您的学习计划选择10门课程"
+    }
   }
 };

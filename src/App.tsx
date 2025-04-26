@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -19,9 +18,7 @@ import ResumeBuilder from "./pages/ResumeBuilder";
 import { ChatWithAI } from "./components/ChatWithAI";
 import Community from "./pages/Community";
 import { ThemeProvider } from "@/contexts/ThemeContext";
-
-// Import the i18n configuration
-import "./i18n";
+import Achievements from "./pages/Achievements";
 
 const queryClient = new QueryClient();
 
@@ -47,6 +44,7 @@ const App = () => (
               <Route path="/settings" element={<Settings />} />
               <Route path="/resumebuilder" element={<ResumeBuilder />} />
               <Route path="/community" element={<Community />} />
+              <Route path="/achievements" element={<Achievements />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </QuizProvider>

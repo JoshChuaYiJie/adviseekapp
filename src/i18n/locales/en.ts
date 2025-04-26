@@ -72,6 +72,22 @@ export default {
     "unlocked": "Unlocked Badges",
     "next": "Next Achievements",
     "no_badges": "No badges unlocked yet",
-    "view_all": "View all badges"
+    "view_all": "View all badges",
+    "community_contributor": {
+      "title": "Community Contributor",
+      "description": "Create 5 posts in the community"
+    },
+    "knowledge_seeker": {
+      "title": "Knowledge Seeker",
+      "description": "Complete all onboarding tutorials"
+    },
+    "first_milestone": {
+      "title": "First Milestone",
+      "description": "Apply to your first university"
+    },
+    "academic_explorer": {
+      "title": "Academic Explorer",
+      "description": "Select 10 courses for your study plan"
+    }
   }
 };
