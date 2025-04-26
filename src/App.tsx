@@ -15,6 +15,10 @@ import AchievementsPage from "@/pages/Achievements";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import SignUpPage from './pages/SignUp';
 import { ThemeProvider } from './contexts/ThemeContext';
+import Pricing from './pages/Pricing';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import Terms from './pages/Terms';
+import Help from './pages/Help';
 
 function App() {
   const [session, setSession] = useState(null);
@@ -135,6 +139,10 @@ function App() {
               )
             } 
           />
+          <Route path="/pricing" element={<Pricing />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/help" element={<Help />} />
         </Routes>
       </Router>
     </ThemeProvider>

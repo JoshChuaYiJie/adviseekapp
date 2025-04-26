@@ -116,6 +116,10 @@ const CommunityPage: React.FC = () => {
     }
   };
 
+  const handleBackToDashboard = () => {
+    navigate('/dashboard');
+  };
+
   const filteredPosts = posts.filter(post => 
     post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     post.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -132,7 +136,7 @@ const CommunityPage: React.FC = () => {
           <div className="flex items-center justify-between mb-6">
             <Button 
               variant="outline" 
-              onClick={() => navigate('/dashboard')}
+              onClick={handleBackToDashboard}
               className="flex items-center gap-2"
             >
               <ArrowLeft size={16} />

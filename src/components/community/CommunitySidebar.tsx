@@ -25,9 +25,9 @@ export const CommunitySidebar = () => {
       <div className="mt-auto pt-4 border-t text-xs text-muted-foreground">
         <p>© 2025 Adviseek Communities</p>
         <div className="flex gap-2 mt-1">
-          <a href="#" className="hover:underline">Terms</a>
-          <a href="#" className="hover:underline">Privacy</a>
-          <a href="#" className="hover:underline">Help</a>
+          <Link to="/terms" className="hover:underline">Terms</Link>
+          <Link to="/privacy-policy" className="hover:underline">Privacy</Link>
+          <Link to="/help" className="hover:underline">Help</Link>
         </div>
       </div>
     </div>
