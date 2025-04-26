@@ -1,10 +1,10 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Award, Star, Trophy, Target, BookOpen, Users, Zap } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useTranslation } from 'react-i18next';
-import { AppSidebar } from '@/components/layout/Sidebar';
-import { Toaster } from "@/components/ui/sonner";
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from "@/components/ui/sonner";
 
 type Achievement = {
   id: string;
@@ -13,62 +13,85 @@ type Achievement = {
   icon: React.ReactNode;
   progress: number;
   unlocked: boolean;
+  key: string;
 };
 
 const AchievementsPage = () => {
   const { t } = useTranslation();
-  const [selectedSection, setSelectedSection] = React.useState('achievements');
-  
-  const achievements: Achievement[] = [
+  const [achievements, setAchievements] = useState<Achievement[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const achievementDefinitions: Omit<Achievement, 'progress' | 'unlocked'>[] = [
     {
       id: 'early-adopter',
       name: 'Early Adopter',
       description: 'Joined during the platform\'s first month',
       icon: <Star className="h-12 w-12 text-yellow-500" />,
-      progress: 100,
-      unlocked: true
+      key: 'early_adopter'
     },
     {
       id: 'community-contributor',
       name: 'Community Contributor',
       description: 'Created 5 posts in the community',
       icon: <Users className="h-12 w-12 text-blue-500" />,
-      progress: 60,
-      unlocked: false
+      key: 'community_contributor'
     },
     {
       id: 'knowledge-seeker',
       name: 'Knowledge Seeker',
       description: 'Completed all onboarding tutorials',
       icon: <BookOpen className="h-12 w-12 text-green-500" />,
-      progress: 100,
-      unlocked: true
+      key: 'knowledge_seeker'
     },
     {
       id: 'first-milestone',
       name: 'First Milestone',
       description: 'Applied to your first university',
       icon: <Target className="h-12 w-12 text-purple-500" />,
-      progress: 0,
-      unlocked: false
+      key: 'first_milestone'
     },
     {
       id: 'academic-explorer',
       name: 'Academic Explorer',
       description: 'Selected 10 courses for your study plan',
       icon: <Zap className="h-12 w-12 text-orange-500" />,
-      progress: 30,
-      unlocked: false
-    },
-    {
-      id: 'champion',
-      name: 'Champion',
-      description: 'Got accepted to your dream university',
-      icon: <Trophy className="h-12 w-12 text-amber-500" />,
-      progress: 0,
-      unlocked: false
+      key: 'academic_explorer'
     }
   ];
+
+  useEffect(() => {
+    fetchAchievements();
+  }, []);
+
+  const fetchAchievements = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from('achievements')
+        .select('*')
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      const achievementsWithProgress = achievementDefinitions.map(achievement => {
+        const userAchievement = data?.find(a => a.achievement_key === achievement.key);
+        return {
+          ...achievement,
+          progress: userAchievement?.progress || 0,
+          unlocked: userAchievement?.unlocked || false
+        };
+      });
+
+      setAchievements(achievementsWithProgress);
+    } catch (error) {
+      console.error('Error fetching achievements:', error);
+      toast.error('Failed to load achievements');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const unlockedAchievements = achievements.filter(achievement => achievement.unlocked);
 

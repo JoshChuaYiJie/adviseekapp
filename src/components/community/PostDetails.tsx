@@ -7,12 +7,16 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/sonner";
 import { useTranslation } from 'react-i18next';
 
+type Profile = {
+  username: string;
+};
+
 type Comment = {
   id: string;
   content: string;
   created_at: string;
   user_id: string;
-  user_email?: string;
+  username?: string;
 };
 
 type Post = {
@@ -21,7 +25,7 @@ type Post = {
   content: string;
   user_id: string;
   created_at: string;
-  user_email?: string;
+  username?: string;
   community?: string;
 };
 
@@ -33,15 +37,20 @@ export const PostDetails = () => {
   const [newComment, setNewComment] = useState('');
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    fetchPostAndComments();
-  }, [postId]);
+  const fetchUsername = async (userId: string) => {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('username')
+      .eq('id', userId)
+      .single();
+    
+    return data?.username || `user${userId.substring(0, 4)}`;
+  };
 
   const fetchPostAndComments = async () => {
     if (!postId) return;
     
     try {
-      // Fetch post
       const { data: postData, error: postError } = await supabase
         .from('community_posts')
         .select('*')
@@ -50,12 +59,10 @@ export const PostDetails = () => {
 
       if (postError) throw postError;
 
-      // Get post author email
-      const { data: userData } = await supabase.auth.getUser(postData.user_id);
-      const postWithEmail = { ...postData, user_email: userData.user?.email };
-      setPost(postWithEmail);
+      const username = await fetchUsername(postData.user_id);
+      const postWithUsername = { ...postData, username };
+      setPost(postWithUsername);
 
-      // Fetch comments
       const { data: commentsData, error: commentsError } = await supabase
         .from('community_comments')
         .select('*')
@@ -64,15 +71,14 @@ export const PostDetails = () => {
 
       if (commentsError) throw commentsError;
 
-      // Get comment authors' emails
-      const commentsWithEmails = await Promise.all(
+      const commentsWithUsernames = await Promise.all(
         commentsData.map(async (comment) => {
-          const { data: commentUserData } = await supabase.auth.getUser(comment.user_id);
-          return { ...comment, user_email: commentUserData.user?.email };
+          const username = await fetchUsername(comment.user_id);
+          return { ...comment, username };
         })
       );
 
-      setComments(commentsWithEmails);
+      setComments(commentsWithUsernames);
     } catch (error) {
       toast.error("Failed to fetch post details");
       console.error(error);
@@ -80,6 +86,10 @@ export const PostDetails = () => {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchPostAndComments();
+  }, [postId]);
 
   const handleAddComment = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -119,11 +129,15 @@ export const PostDetails = () => {
   return (
     <div className="max-w-4xl mx-auto p-6">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-6">
-        <h1 className="text-2xl font-bold mb-4">{post.title}</h1>
-        <p className="text-gray-600 dark:text-gray-300 mb-4 whitespace-pre-wrap">{post.content}</p>
-        <div className="text-sm text-gray-500">
-          {t('community.posted_by')} {post.user_email || 'Anonymous'} {t('community.on')} {new Date(post.created_at).toLocaleDateString()}
-        </div>
+        {post && (
+          <>
+            <h1 className="text-2xl font-bold mb-4">{post.title}</h1>
+            <p className="text-gray-600 dark:text-gray-300 mb-4 whitespace-pre-wrap">{post.content}</p>
+            <div className="text-sm text-gray-500">
+              {t('community.posted_by')} {post.username} {t('community.on')} {new Date(post.created_at).toLocaleDateString()}
+            </div>
+          </>
+        )}
       </div>
 
       <div className="mt-8">
@@ -148,7 +162,7 @@ export const PostDetails = () => {
               <div key={comment.id} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
                 <p className="mb-2">{comment.content}</p>
                 <div className="text-sm text-gray-500">
-                  {t('community.posted_by')} {comment.user_email || 'Anonymous'} {t('community.on')} {new Date(comment.created_at).toLocaleDateString()}
+                  {t('community.posted_by')} {comment.username} {t('community.on')} {new Date(comment.created_at).toLocaleDateString()}
                 </div>
               </div>
             ))
