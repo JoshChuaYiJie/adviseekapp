@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { SidebarProvider } from "@/components/ui/sidebar";
@@ -155,7 +156,7 @@ const Index = () => {
         />
         
         <main className={`flex-1 p-8 overflow-auto ${isCurrentlyDark ? 'bg-gray-900 text-white' : ''}`}>
-          <div className="max-w-4xl mx-auto">
+          <div className="w-full">
             {showWelcomeBack && (
               <Alert className={`mb-6 ${isCurrentlyDark ? 'bg-gray-800 text-gray-200 border-gray-700' : 'bg-blue-50'}`}>
                 <div className="flex justify-between items-start">
