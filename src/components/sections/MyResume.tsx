@@ -73,16 +73,16 @@ export const MyResume = () => {
         <Card
           className={`p-6 border-2 border-dashed ${
             isDragActive ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20" : "border-gray-300 dark:border-gray-600"
-          } rounded-lg flex flex-col items-center justify-center text-center h-64`}
+          } rounded-lg flex flex-col items-center justify-center text-center h-64 dark:bg-gray-800`}
           onDragEnter={handleDragEnter}
           onDragLeave={handleDragLeave}
           onDragOver={handleDragOver}
           onDrop={handleDrop}
           data-tutorial="drop-resume"
         >
-          <FileUp className={`h-12 w-12 ${isCurrentlyDark ? "text-gray-400" : "text-gray-400"} mb-4`} />
+          <FileUp className={`h-12 w-12 ${isCurrentlyDark ? "text-gray-300" : "text-gray-400"} mb-4`} />
           <h3 className="text-lg font-medium mb-2">Upload Your Resume</h3>
-          <p className={`text-sm ${isCurrentlyDark ? "text-gray-400" : "text-gray-500"} mb-4`}>
+          <p className={`text-sm ${isCurrentlyDark ? "text-gray-300" : "text-gray-500"} mb-4`}>
             Drag and drop your PDF resume here or click to browse
           </p>
           <label className="cursor-pointer">
@@ -101,13 +101,13 @@ export const MyResume = () => {
 
         <Card
           className={`p-6 border rounded-lg flex flex-col items-center justify-center text-center h-64 ${
-            isCurrentlyDark ? "border-gray-700" : ""
+            isCurrentlyDark ? "border-gray-700 bg-gray-800" : ""
           }`}
           data-tutorial="build-resume"
         >
           <FilePlus className="h-12 w-12 text-blue-500 mb-4" />
           <h3 className="text-lg font-medium mb-2">Build Your Resume</h3>
-          <p className={`text-sm ${isCurrentlyDark ? "text-gray-400" : "text-gray-500"} mb-4`}>
+          <p className={`text-sm ${isCurrentlyDark ? "text-gray-300" : "text-gray-500"} mb-4`}>
             Create a professional resume with our templates and AI assistance
           </p>
           <Button onClick={handleBuildResume}>Build Now</Button>

@@ -1,16 +1,15 @@
 
-// We need to update the ApplyNow section to add data-tutorial attributes 
-// for the Tutorial component to work correctly
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { useTheme } from "@/contexts/ThemeContext";
 
 export const ApplyNow = () => {
   const [selectedUniversity, setSelectedUniversity] = useState("");
   const [selectedProgramme, setSelectedProgramme] = useState("");
   const [questions, setQuestions] = useState<string[]>([]);
   const [responses, setResponses] = useState<Record<string, string>>({});
+  const { isCurrentlyDark } = useTheme();
 
   const universities = ["National University of Singapore", "Nanyang Technological University", "Singapore Management University"];
   
@@ -64,7 +63,7 @@ export const ApplyNow = () => {
 
   return (
     <div className="space-y-6">
-      <div className="mb-8">
+      <div className={`mb-8 p-6 ${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg shadow`}>
         <h3 className="text-lg font-semibold mb-2">Select University and Programme</h3>
         
         <div className="space-y-4">
@@ -73,7 +72,7 @@ export const ApplyNow = () => {
             <select 
               value={selectedUniversity}
               onChange={handleUniversityChange}
-              className="w-full border rounded p-2"
+              className={`w-full border rounded p-2 ${isCurrentlyDark ? 'bg-gray-700 text-white border-gray-600' : ''}`}
               data-tutorial="university-select"
             >
               <option value="">Select University</option>
@@ -89,7 +88,7 @@ export const ApplyNow = () => {
               <select 
                 value={selectedProgramme}
                 onChange={handleProgrammeChange}
-                className="w-full border rounded p-2"
+                className={`w-full border rounded p-2 ${isCurrentlyDark ? 'bg-gray-700 text-white border-gray-600' : ''}`}
                 data-tutorial="program-select"
               >
                 <option value="">Select Programme</option>
@@ -103,15 +102,17 @@ export const ApplyNow = () => {
       </div>
 
       {questions.length > 0 && (
-        <div data-tutorial="application-questions">
+        <div data-tutorial="application-questions" className={`${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} p-6 rounded-lg shadow`}>
           <h3 className="text-lg font-semibold mb-4">Application Questions</h3>
           
           <div className="space-y-6">
             {questions.map((question, index) => (
-              <Card key={index} className="p-4">
+              <Card key={index} className={`p-4 ${isCurrentlyDark ? 'bg-gray-700 border-gray-600' : ''}`}>
                 <h4 className="font-medium mb-2">{question}</h4>
                 <textarea 
-                  className="w-full border rounded p-2 min-h-[100px]"
+                  className={`w-full border rounded p-2 min-h-[100px] ${
+                    isCurrentlyDark ? 'bg-gray-600 text-white border-gray-500' : ''
+                  }`}
                   value={responses[question] || ""}
                   onChange={(e) => handleResponseChange(question, e.target.value)}
                   placeholder="Type your response here..."

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { SidebarProvider } from "@/components/ui/sidebar";
@@ -14,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useTheme } from "@/contexts/ThemeContext";
 
 const Index = () => {
   const [user, setUser] = useState<any>(null);
@@ -23,6 +23,7 @@ const Index = () => {
   const [showWelcomeBack, setShowWelcomeBack] = useState(false);
   const [lastVisitDate, setLastVisitDate] = useState<Date | null>(null);
   const navigate = useNavigate();
+  const { isCurrentlyDark } = useTheme();
 
   useEffect(() => {
     const checkUser = async () => {
@@ -145,7 +146,7 @@ const Index = () => {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen bg-gray-50 flex">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
         <AppSidebar 
           selectedSection={selectedSection} 
           setSelectedSection={setSelectedSection} 
@@ -153,10 +154,10 @@ const Index = () => {
           onReplayTutorial={handleReplayTutorial}
         />
         
-        <main className="flex-1 p-8 overflow-auto">
+        <main className={`flex-1 p-8 overflow-auto ${isCurrentlyDark ? 'bg-gray-900 text-white' : ''}`}>
           <div className="max-w-4xl mx-auto">
             {showWelcomeBack && (
-              <Alert className="mb-6 bg-blue-50">
+              <Alert className={`mb-6 ${isCurrentlyDark ? 'bg-gray-800 text-gray-200 border-gray-700' : 'bg-blue-50'}`}>
                 <div className="flex justify-between items-start">
                   <div>
                     <AlertTitle>Welcome back!</AlertTitle>
@@ -171,7 +172,7 @@ const Index = () => {
               </Alert>
             )}
             
-            <h1 className="text-2xl font-medium text-gray-800 mb-6">
+            <h1 className={`text-2xl font-medium ${isCurrentlyDark ? 'text-white' : 'text-gray-800'} mb-6`}>
               Welcome, {user.email || "Student"}. Let's get to work.
             </h1>
             {renderContent()}

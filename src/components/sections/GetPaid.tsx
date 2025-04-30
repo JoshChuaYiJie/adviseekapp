@@ -3,9 +3,11 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/sonner";
 import { ConsultantApplicationForm } from "@/components/forms/ConsultantApplicationForm"; 
+import { useTheme } from "@/contexts/ThemeContext";
 
 export const GetPaid = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const { isCurrentlyDark } = useTheme();
 
   const handleApplyConsultant = () => {
     setIsFormOpen(true);
@@ -13,7 +15,7 @@ export const GetPaid = () => {
 
   return (
     <div className="space-y-6">
-      <div className="p-6 bg-white rounded-lg shadow">
+      <div className={`p-6 ${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white text-gray-800'} rounded-lg shadow`}>
         <h2 className="text-xl font-semibold mb-4">Earn Money as a Consultant</h2>
         
         <div className="space-y-4">
@@ -23,9 +25,9 @@ export const GetPaid = () => {
             valuable experience and insights.
           </p>
           
-          <div className="bg-blue-50 p-4 rounded-md">
-            <h3 className="text-lg font-medium text-blue-800 mb-2">Benefits of being a consultant:</h3>
-            <ul className="list-disc pl-5 space-y-2 text-blue-700">
+          <div className={`${isCurrentlyDark ? 'bg-blue-900/20' : 'bg-blue-50'} p-4 rounded-md`}>
+            <h3 className={`text-lg font-medium ${isCurrentlyDark ? 'text-blue-300' : 'text-blue-800'} mb-2`}>Benefits of being a consultant:</h3>
+            <ul className={`list-disc pl-5 space-y-2 ${isCurrentlyDark ? 'text-blue-300' : 'text-blue-700'}`}>
               <li>Earn competitive hourly rates for helping others succeed</li>
               <li>Flexible work hours that fit around your studies</li>
               <li>Build your professional network and enhance your resume</li>
@@ -33,9 +35,9 @@ export const GetPaid = () => {
             </ul>
           </div>
           
-          <div className="bg-green-50 p-4 rounded-md">
-            <h3 className="text-lg font-medium text-green-800 mb-2">How it works:</h3>
-            <ol className="list-decimal pl-5 space-y-2 text-green-700">
+          <div className={`${isCurrentlyDark ? 'bg-green-900/20' : 'bg-green-50'} p-4 rounded-md`}>
+            <h3 className={`text-lg font-medium ${isCurrentlyDark ? 'text-green-300' : 'text-green-800'} mb-2`}>How it works:</h3>
+            <ol className={`list-decimal pl-5 space-y-2 ${isCurrentlyDark ? 'text-green-300' : 'text-green-700'}`}>
               <li>Apply to become a consultant after you've been accepted to your programme</li>
               <li>Complete a short training and onboarding process</li>
               <li>Set your availability and connect with students who need help</li>
@@ -47,7 +49,7 @@ export const GetPaid = () => {
             <Button onClick={handleApplyConsultant} data-tutorial="apply-consultant">
               Apply Now
             </Button>
-            <p className="text-sm text-gray-500 mt-2">
+            <p className={`text-sm ${isCurrentlyDark ? 'text-gray-400' : 'text-gray-500'} mt-2`}>
               *You must be enrolled in a university programme to qualify
             </p>
           </div>

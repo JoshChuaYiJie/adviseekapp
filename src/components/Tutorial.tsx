@@ -161,9 +161,9 @@ export const Tutorial = ({ isOpen, onClose, onSkip }: TutorialProps) => {
           handleNext();
         };
         
-        element.addEventListener('click', handleElementClick);
+        element.addEventListener('click', handleElementClick, { capture: true });
         return () => {
-          element.removeEventListener('click', handleElementClick);
+          element.removeEventListener('click', handleElementClick, { capture: true });
         };
       }
     } catch (error) {
@@ -218,7 +218,7 @@ export const Tutorial = ({ isOpen, onClose, onSkip }: TutorialProps) => {
       {/* Highlight around target element */}
       {targetElement && (
         <div
-          className="absolute border-2 border-blue-500 rounded-md z-60 animate-pulse"
+          className="absolute border-2 border-blue-500 rounded-md z-60 animate-pulse pointer-events-none"
           style={{
             top: targetElement.getBoundingClientRect().top - 4,
             left: targetElement.getBoundingClientRect().left - 4,
@@ -231,7 +231,7 @@ export const Tutorial = ({ isOpen, onClose, onSkip }: TutorialProps) => {
 
       {/* Arrow pointing to the element */}
       <div
-        className="absolute w-8 h-8 border-t-2 border-r-2 border-blue-500 transform rotate-45 z-70"
+        className="absolute w-8 h-8 border-t-2 border-r-2 border-blue-500 transform rotate-45 z-70 pointer-events-none"
         style={{
           top: arrowPosition.top - 16,
           left: arrowPosition.left - 16,
@@ -240,7 +240,7 @@ export const Tutorial = ({ isOpen, onClose, onSkip }: TutorialProps) => {
 
       {/* Content box */}
       <div
-        className="absolute bg-white p-4 rounded-md shadow-lg max-w-xs z-70 transition-all duration-300"
+        className="absolute bg-white dark:bg-gray-800 p-4 rounded-md shadow-lg max-w-xs z-70 transition-all duration-300"
         style={{
           top: contentPosition.top,
           left: contentPosition.left,
@@ -249,19 +249,19 @@ export const Tutorial = ({ isOpen, onClose, onSkip }: TutorialProps) => {
       >
         <button 
           onClick={handleSkip} 
-          className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
+          className="absolute top-2 right-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
           aria-label="Close tutorial"
         >
           <X size={16} />
         </button>
         
-        <p className="text-sm mb-2 text-gray-500">
+        <p className="text-sm mb-2 text-gray-500 dark:text-gray-400">
           Step {currentStep + 1} of {tutorialSteps.length}
         </p>
         
         <Progress value={progress} className="mb-3 h-1" />
         
-        <p className="mb-4">{currentStepData?.content}</p>
+        <p className="mb-4 dark:text-white">{currentStepData?.content}</p>
         
         <div className="flex justify-between items-center">
           <Button variant="outline" size="sm" onClick={handleSkip}>
@@ -269,7 +269,7 @@ export const Tutorial = ({ isOpen, onClose, onSkip }: TutorialProps) => {
           </Button>
           
           {currentStepData?.requireClick ? (
-            <p className="text-sm text-blue-600 font-medium animate-pulse">
+            <p className="text-sm text-blue-600 dark:text-blue-400 font-medium animate-pulse">
               Click the highlighted element to continue
             </p>
           ) : (

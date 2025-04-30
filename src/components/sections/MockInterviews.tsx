@@ -1,6 +1,8 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { useTheme } from "@/contexts/ThemeContext";
 
 interface MockInterviewsProps {
   user: any;
@@ -10,6 +12,7 @@ export const MockInterviews = ({ user }: MockInterviewsProps) => {
   const [selectedApplication, setSelectedApplication] = useState("");
   const [questions, setQuestions] = useState<string[]>([]);
   const [responses, setResponses] = useState<Record<string, string>>({});
+  const { isCurrentlyDark } = useTheme();
 
   // This would typically come from your database based on user's applied programmes
   const applications = [
@@ -62,13 +65,13 @@ export const MockInterviews = ({ user }: MockInterviewsProps) => {
 
   return (
     <div className="space-y-6">
-      <div className="mb-8">
+      <div className={`mb-8 p-6 ${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg shadow`}>
         <h3 className="text-lg font-semibold mb-2">Select Application</h3>
         
         <select 
           value={selectedApplication}
           onChange={handleApplicationChange}
-          className="w-full border rounded p-2"
+          className={`w-full border rounded p-2 ${isCurrentlyDark ? 'bg-gray-700 text-white border-gray-600' : 'bg-white'}`}
           data-tutorial="program-select-interview"
         >
           <option value="">Select an application</option>
@@ -81,15 +84,17 @@ export const MockInterviews = ({ user }: MockInterviewsProps) => {
       </div>
 
       {questions.length > 0 && (
-        <div data-tutorial="interview-questions">
+        <div data-tutorial="interview-questions" className={`${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} p-6 rounded-lg shadow`}>
           <h3 className="text-lg font-semibold mb-4">Potential Interview Questions</h3>
           
           <div className="space-y-6">
             {questions.map((question, index) => (
-              <Card key={index} className="p-4">
+              <Card key={index} className={`p-4 ${isCurrentlyDark ? 'bg-gray-700 border-gray-600' : ''}`}>
                 <h4 className="font-medium mb-2">{question}</h4>
                 <textarea 
-                  className="w-full border rounded p-2 min-h-[100px]"
+                  className={`w-full border rounded p-2 min-h-[100px] ${
+                    isCurrentlyDark ? 'bg-gray-600 text-white border-gray-500' : ''
+                  }`}
                   value={responses[question] || ""}
                   onChange={(e) => handleResponseChange(question, e.target.value)}
                   placeholder="Type your response here..."
