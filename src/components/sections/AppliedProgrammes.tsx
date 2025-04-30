@@ -35,8 +35,8 @@ export const AppliedProgrammes = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className={`space-y-4 p-6 ${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg shadow`}>
+    <div className="space-y-6 w-full max-w-full">
+      <div className={`space-y-4 p-6 ${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg shadow w-full`}>
         <Select value={selectedUniversity} onValueChange={setSelectedUniversity}>
           <SelectTrigger className={`w-full ${isCurrentlyDark ? 'bg-gray-700 text-white border-gray-600' : ''}`}>
             <SelectValue placeholder="Select a university" />
@@ -71,7 +71,7 @@ export const AppliedProgrammes = () => {
       </div>
 
       {appliedProgrammes.length > 0 && (
-        <div className={`p-6 ${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg shadow`}>
+        <div className={`p-6 ${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg shadow w-full`}>
           <Table>
             <TableHeader>
               <TableRow>

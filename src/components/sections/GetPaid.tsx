@@ -14,8 +14,8 @@ export const GetPaid = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className={`p-6 ${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white text-gray-800'} rounded-lg shadow`}>
+    <div className="space-y-6 w-full max-w-full">
+      <div className={`p-6 ${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white text-gray-800'} rounded-lg shadow w-full`}>
         <h2 className="text-xl font-semibold mb-4">Earn Money as a Consultant</h2>
         
         <div className="space-y-4">

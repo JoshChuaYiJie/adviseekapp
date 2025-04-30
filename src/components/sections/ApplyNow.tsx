@@ -62,8 +62,8 @@ export const ApplyNow = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className={`mb-8 p-6 ${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg shadow`}>
+    <div className="space-y-6 w-full max-w-full">
+      <div className={`mb-8 p-6 ${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg shadow w-full`}>
         <h3 className="text-lg font-semibold mb-2">Select University and Programme</h3>
         
         <div className="space-y-4">
@@ -102,7 +102,7 @@ export const ApplyNow = () => {
       </div>
 
       {questions.length > 0 && (
-        <div data-tutorial="application-questions" className={`${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} p-6 rounded-lg shadow`}>
+        <div data-tutorial="application-questions" className={`${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} p-6 rounded-lg shadow w-full`}>
           <h3 className="text-lg font-semibold mb-4">Application Questions</h3>
           
           <div className="space-y-6">

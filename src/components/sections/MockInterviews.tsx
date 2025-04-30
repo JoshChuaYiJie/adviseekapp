@@ -64,8 +64,8 @@ export const MockInterviews = ({ user }: MockInterviewsProps) => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className={`mb-8 p-6 ${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg shadow`}>
+    <div className="space-y-6 w-full max-w-full">
+      <div className={`mb-8 p-6 ${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg shadow w-full`}>
         <h3 className="text-lg font-semibold mb-2">Select Application</h3>
         
         <select 
@@ -84,7 +84,7 @@ export const MockInterviews = ({ user }: MockInterviewsProps) => {
       </div>
 
       {questions.length > 0 && (
-        <div data-tutorial="interview-questions" className={`${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} p-6 rounded-lg shadow`}>
+        <div data-tutorial="interview-questions" className={`${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} p-6 rounded-lg shadow w-full`}>
           <h3 className="text-lg font-semibold mb-4">Potential Interview Questions</h3>
           
           <div className="space-y-6">
