@@ -35,11 +35,10 @@ export default {
       "system": "系统"
     },
     "languages": {
-      "english": "英语",
+      "english": "English",
       "mandarin": "中文",
-      "spanish": "西班牙语",
-      "french": "法语",
-      "german": "德语"
+      "malay": "Bahasa Melayu",
+      "tamil": "தமிழ்"
     },
     "replay_tutorial": "重播教程",
     "delete_account": "删除账户"

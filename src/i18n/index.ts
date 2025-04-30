@@ -4,6 +4,8 @@ import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import enTranslation from './locales/en';
 import zhTranslation from './locales/zh';
+import msTranslation from './locales/ms';
+import taTranslation from './locales/ta';
 
 // Initialize i18next
 i18n
@@ -16,6 +18,12 @@ i18n
       },
       zh: {
         translation: zhTranslation
+      },
+      ms: {
+        translation: msTranslation
+      },
+      ta: {
+        translation: taTranslation
       }
     },
     fallbackLng: 'en',

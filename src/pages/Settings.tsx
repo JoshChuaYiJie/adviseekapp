@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -17,6 +18,7 @@ import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useTranslation } from "react-i18next";
+import type { UserSettings } from "@/integrations/supabase/client";
 
 const profileFormSchema = z.object({
   email: z.string().email(),
@@ -42,10 +44,42 @@ const accountFormSchema = z.object({
 const Settings = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<any>(null);
+  const [userSettings, setUserSettings] = useState<UserSettings | null>(null);
   const [loading, setLoading] = useState(true);
   const { theme, setTheme } = useTheme();
   const { t, i18n } = useTranslation();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      setLoading(true);
+      
+      // Get current user
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      
+      if (currentUser) {
+        setUser(currentUser);
+        
+        // Fetch user settings if they exist
+        const { data: userSettingsData, error } = await supabase
+          .from('user_settings')
+          .select('*')
+          .eq('id', currentUser.id)
+          .single();
+        
+        if (userSettingsData) {
+          setUserSettings(userSettingsData);
+        } else if (error && error.code !== 'PGRST116') {
+          // PGRST116 is "Row not found" error, which is expected if the user hasn't set up their settings yet
+          console.error("Error fetching user settings:", error);
+        }
+      }
+      
+      setLoading(false);
+    };
+    
+    fetchUserData();
+  }, []);
 
   const handleLanguageChange = (value: string) => {
     i18n.changeLanguage(value);
@@ -56,20 +90,40 @@ const Settings = () => {
     resolver: zodResolver(profileFormSchema),
     defaultValues: {
       email: user?.email || "",
-      name: "",
-      bio: "",
+      name: userSettings?.name || "",
+      bio: userSettings?.bio || "",
     },
   });
+
+  // Update profile form values when user data loads
+  useEffect(() => {
+    if (user) {
+      profileForm.setValue("email", user.email || "");
+    }
+    if (userSettings) {
+      profileForm.setValue("name", userSettings.name || "");
+      profileForm.setValue("bio", userSettings.bio || "");
+    }
+  }, [user, userSettings, profileForm]);
 
   // Notifications form
   const notificationsForm = useForm<z.infer<typeof notificationsFormSchema>>({
     resolver: zodResolver(notificationsFormSchema),
     defaultValues: {
-      emailNotifications: true,
-      appNotifications: true,
-      newsletterSubscription: false,
+      emailNotifications: userSettings?.email_notifications ?? true,
+      appNotifications: userSettings?.app_notifications ?? true,
+      newsletterSubscription: userSettings?.newsletter_subscription ?? false,
     },
   });
+
+  // Update notification form values when user settings load
+  useEffect(() => {
+    if (userSettings) {
+      notificationsForm.setValue("emailNotifications", userSettings.email_notifications);
+      notificationsForm.setValue("appNotifications", userSettings.app_notifications);
+      notificationsForm.setValue("newsletterSubscription", userSettings.newsletter_subscription);
+    }
+  }, [userSettings, notificationsForm]);
 
   // Account form
   const accountForm = useForm<z.infer<typeof accountFormSchema>>({
@@ -92,29 +146,78 @@ const Settings = () => {
 
   const handleProfileSubmit = async (data: z.infer<typeof profileFormSchema>) => {
     try {
+      if (!user) {
+        toast.error("You must be logged in to update your profile");
+        return;
+      }
+      
+      // Upsert user settings (insert if not exists, update if exists)
+      const { error } = await supabase.from('user_settings').upsert({
+        id: user.id,
+        name: data.name,
+        bio: data.bio,
+      });
+      
+      if (error) {
+        throw error;
+      }
+      
       toast.success("Profile updated successfully!");
-    } catch (error) {
-      toast.error("Failed to update profile");
+      
+      // Update local state
+      setUserSettings(prev => prev ? { ...prev, name: data.name || null, bio: data.bio || null } : null);
+    } catch (error: any) {
+      toast.error("Failed to update profile: " + error.message);
       console.error(error);
     }
   };
 
   const handleNotificationsSubmit = async (data: z.infer<typeof notificationsFormSchema>) => {
     try {
+      if (!user) {
+        toast.error("You must be logged in to update notification preferences");
+        return;
+      }
+      
+      // Upsert user notification preferences
+      const { error } = await supabase.from('user_settings').upsert({
+        id: user.id,
+        email_notifications: data.emailNotifications,
+        app_notifications: data.appNotifications,
+        newsletter_subscription: data.newsletterSubscription,
+      });
+      
+      if (error) {
+        throw error;
+      }
+      
       toast.success("Notification preferences updated!");
-    } catch (error) {
-      toast.error("Failed to update notification preferences");
+      
+      // Update local state
+      setUserSettings(prev => prev ? {
+        ...prev,
+        email_notifications: data.emailNotifications,
+        app_notifications: data.appNotifications,
+        newsletter_subscription: data.newsletterSubscription,
+      } : null);
+    } catch (error: any) {
+      toast.error("Failed to update notification preferences: " + error.message);
       console.error(error);
     }
   };
 
   const handlePasswordChange = async (data: z.infer<typeof accountFormSchema>) => {
     try {
-      // In a real implementation, we would update the user's password via Supabase
+      const { error } = await supabase.auth.updateUser({
+        password: data.newPassword
+      });
+      
+      if (error) throw error;
+      
       toast.success("Password updated successfully!");
       accountForm.reset();
-    } catch (error) {
-      toast.error("Failed to update password");
+    } catch (error: any) {
+      toast.error("Failed to update password: " + error.message);
       console.error(error);
     }
   };
@@ -130,6 +233,14 @@ const Settings = () => {
       console.error(error);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="container mx-auto py-10 flex justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto py-10 max-w-4xl">
@@ -179,8 +290,11 @@ const Settings = () => {
                       <FormItem>
                         <FormLabel>Email Address</FormLabel>
                         <FormControl>
-                          <Input placeholder="your.email@example.com" {...field} />
+                          <Input placeholder="your.email@example.com" {...field} readOnly />
                         </FormControl>
+                        <FormDescription>
+                          This is the email address associated with your account.
+                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -193,7 +307,7 @@ const Settings = () => {
                       <FormItem>
                         <FormLabel>Full Name</FormLabel>
                         <FormControl>
-                          <Input placeholder="Your Name" {...field} />
+                          <Input placeholder="Your Name" {...field} value={field.value || ''} />
                         </FormControl>
                         <FormDescription>
                           This is the name that will be shown on your profile.
@@ -210,7 +324,7 @@ const Settings = () => {
                       <FormItem>
                         <FormLabel>Bio</FormLabel>
                         <FormControl>
-                          <Input placeholder="Tell us about yourself" {...field} />
+                          <Input placeholder="Tell us about yourself" {...field} value={field.value || ''} />
                         </FormControl>
                         <FormDescription>
                           A brief introduction that will be displayed on your profile.
@@ -296,9 +410,8 @@ const Settings = () => {
                   <SelectContent>
                     <SelectItem value="en">{t('settings.languages.english')}</SelectItem>
                     <SelectItem value="zh">{t('settings.languages.mandarin')}</SelectItem>
-                    <SelectItem value="es">{t('settings.languages.spanish')}</SelectItem>
-                    <SelectItem value="fr">{t('settings.languages.french')}</SelectItem>
-                    <SelectItem value="de">{t('settings.languages.german')}</SelectItem>
+                    <SelectItem value="ms">{t('settings.languages.malay')}</SelectItem>
+                    <SelectItem value="ta">{t('settings.languages.tamil')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

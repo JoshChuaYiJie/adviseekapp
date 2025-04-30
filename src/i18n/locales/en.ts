@@ -36,10 +36,9 @@ export default {
     },
     "languages": {
       "english": "English",
-      "mandarin": "Mandarin",
-      "spanish": "Spanish",
-      "french": "French",
-      "german": "German"
+      "mandarin": "中文",
+      "malay": "Bahasa Melayu",
+      "tamil": "தமிழ்"
     },
     "replay_tutorial": "Replay Tutorial",
     "delete_account": "Delete Account"
