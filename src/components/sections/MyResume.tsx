@@ -10,8 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 interface SavedResume {
   id: string;
-  name: string;
-  resumeName: string;
+  name: string | null;
   template_type: string;
   updated_at: string;
 }
@@ -32,7 +31,7 @@ export const MyResume = () => {
         if (session?.session?.user) {
           const { data, error } = await supabase
             .from('resumes')
-            .select('id, name, resumeName, template_type, updated_at')
+            .select('id, name, template_type, updated_at')
             .eq('user_id', session.session.user.id)
             .order('updated_at', { ascending: false });
           
@@ -43,7 +42,6 @@ export const MyResume = () => {
             const formattedResumes = data.map(resume => ({
               id: resume.id,
               name: resume.name || 'Untitled',
-              resumeName: resume.resumeName || 'Untitled Resume',
               template_type: formatTemplateType(resume.template_type),
               updated_at: new Date(resume.updated_at).toLocaleDateString()
             }));
@@ -284,7 +282,7 @@ export const MyResume = () => {
                       <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${
                         isCurrentlyDark ? "text-gray-200" : "text-gray-900"
                       }`}>
-                        {resume.resumeName}
+                        {resume.name}
                       </td>
                       <td className={`px-6 py-4 whitespace-nowrap text-sm ${
                         isCurrentlyDark ? "text-gray-300" : "text-gray-500"
