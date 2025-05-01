@@ -3,8 +3,10 @@ import { UploadResumeCard } from "@/components/resume/UploadResumeCard";
 import { BuildResumeCard } from "@/components/resume/BuildResumeCard";
 import { ResumeTable } from "@/components/resume/ResumeTable";
 import { useResumeManager } from "@/hooks/useResumeManager";
+import { useTranslation } from "react-i18next";
 
 export const MyResume = () => {
+  const { t } = useTranslation();
   const {
     resumeFiles,
     savedResumes,

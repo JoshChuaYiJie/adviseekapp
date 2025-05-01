@@ -20,6 +20,55 @@ export default {
     "achievements": "Achievements"
   },
   
+  // Resume
+  "resume": {
+    "build_title": "Build Your Resume",
+    "build_description": "Create a professional resume with our templates and AI assistance",
+    "build_button": "Build Now",
+    "upload_title": "Upload Resume",
+    "upload_description": "Drag and drop your resume file here",
+    "upload_button": "Upload",
+    "view": "View",
+    "edit": "Edit",
+    "delete": "Delete",
+    "name": "Name",
+    "template": "Template",
+    "last_updated": "Last Updated",
+    "actions": "Actions",
+    "templates": {
+      "basic": "Basic Resume",
+      "stem": "STEM Resume",
+      "business": "Business Resume",
+      "humanities": "Humanities Resume",
+      "creative": "Creative Arts Resume",
+      "health": "Health Sciences Resume",
+      "education": "Education/Public Service Resume"
+    }
+  },
+  
+  // Tutorial
+  "tutorial": {
+    "step": "Step",
+    "of": "of",
+    "skip": "Skip Tutorial",
+    "next": "Next",
+    "finish": "Finish",
+    "my_resume": "Click on My Resume to upload or start building your resume",
+    "upload_resume": "Upload your resume here",
+    "build_resume": "Alternatively, build your resume with our top-notch templates and proprietary AI",
+    "view_resumes": "View your resumes here, a separate resume for separate programmes maximises your chances!",
+    "apply_now": "Click on Apply Now to start your application",
+    "university_select": "Pick which university you want to apply to",
+    "program_select": "Pick your desired programme",
+    "application_questions": "Our AI will help you write the best applications!",
+    "mock_interviews": "Click on Mock Interviews to prepare for your interviews",
+    "program_select_interview": "Pick your application",
+    "interview_questions": "Adviseek AI will create practice questions for you to prepare!",
+    "get_paid": "Want to earn money?",
+    "apply_consultant": "Apply to be a consultant to help others and earn at the same time!",
+    "upgrade": "Upgrade for advanced features!"
+  },
+  
   // Settings
   "settings": {
     "title": "Settings",
@@ -60,7 +109,15 @@ export default {
     "popular": "Popular",
     "my_communities": "My Communities",
     "create_community": "Create Community",
-    "popular_communities": "POPULAR COMMUNITIES"
+    "popular_communities": "POPULAR COMMUNITIES",
+    "join_discussions": "Join discussions with other students"
+  },
+  
+  // Footer
+  "footer": {
+    "terms": "Terms",
+    "privacy": "Privacy",
+    "help": "Help"
   },
   
   // Achievements

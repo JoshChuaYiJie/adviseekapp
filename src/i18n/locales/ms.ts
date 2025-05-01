@@ -20,6 +20,55 @@ export default {
     "achievements": "Pencapaian"
   },
   
+  // Resume
+  "resume": {
+    "build_title": "Bina Resume Anda",
+    "build_description": "Cipta resume profesional dengan templat dan bantuan AI kami",
+    "build_button": "Bina Sekarang",
+    "upload_title": "Muat Naik Resume",
+    "upload_description": "Seret dan lepas fail resume anda di sini",
+    "upload_button": "Muat Naik",
+    "view": "Lihat",
+    "edit": "Sunting",
+    "delete": "Padam",
+    "name": "Nama",
+    "template": "Templat",
+    "last_updated": "Dikemas kini Terakhir",
+    "actions": "Tindakan",
+    "templates": {
+      "basic": "Resume Asas",
+      "stem": "Resume STEM",
+      "business": "Resume Perniagaan",
+      "humanities": "Resume Kemanusiaan",
+      "creative": "Resume Seni Kreatif",
+      "health": "Resume Sains Kesihatan",
+      "education": "Resume Pendidikan/Perkhidmatan Awam"
+    }
+  },
+  
+  // Tutorial
+  "tutorial": {
+    "step": "Langkah",
+    "of": "daripada",
+    "skip": "Langkau Tutorial",
+    "next": "Seterusnya",
+    "finish": "Selesai",
+    "my_resume": "Klik pada Resume Saya untuk memuat naik atau mula membina resume anda",
+    "upload_resume": "Muat naik resume anda di sini",
+    "build_resume": "Sebagai alternatif, bina resume anda dengan templat terbaik kami dan AI proprietari",
+    "view_resumes": "Lihat resume anda di sini, resume berasingan untuk program berasingan memaksimumkan peluang anda!",
+    "apply_now": "Klik pada Mohon Sekarang untuk memulakan permohonan anda",
+    "university_select": "Pilih universiti mana yang anda mahu mohon",
+    "program_select": "Pilih program yang anda inginkan",
+    "application_questions": "AI kami akan membantu anda menulis permohonan terbaik!",
+    "mock_interviews": "Klik pada Temu Duga Latihan untuk bersedia untuk temu duga anda",
+    "program_select_interview": "Pilih permohonan anda",
+    "interview_questions": "Adviseek AI akan mencipta soalan latihan untuk anda bersedia!",
+    "get_paid": "Mahu dapat bayaran?",
+    "apply_consultant": "Mohon untuk menjadi perunding untuk membantu orang lain dan dapat bayaran pada masa yang sama!",
+    "upgrade": "Naik taraf untuk ciri lanjutan!"
+  },
+  
   // Settings
   "settings": {
     "title": "Tetapan",
@@ -60,7 +109,15 @@ export default {
     "popular": "Popular",
     "my_communities": "Komuniti Saya",
     "create_community": "Cipta Komuniti",
-    "popular_communities": "KOMUNITI POPULAR"
+    "popular_communities": "KOMUNITI POPULAR",
+    "join_discussions": "Sertai perbincangan dengan pelajar lain"
+  },
+  
+  // Footer
+  "footer": {
+    "terms": "Terma",
+    "privacy": "Privasi",
+    "help": "Bantuan"
   },
   
   // Achievements

@@ -1,9 +1,9 @@
-
 import { useState, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import { useTranslation } from "react-i18next";
 
 interface Step {
   target: string;
@@ -25,70 +25,71 @@ export const Tutorial = ({ isOpen, onClose, onSkip }: TutorialProps) => {
   const [contentPosition, setContentPosition] = useState({ top: 0, left: 0 });
   const [targetElement, setTargetElement] = useState<Element | null>(null);
   const [waitingForElementClick, setWaitingForElementClick] = useState(false);
+  const { t } = useTranslation();
 
   const tutorialSteps: Step[] = [
     {
       target: '[data-id="my-resume"]',
-      content: "Click on My Resume to upload or start building your resume",
+      content: t("tutorial.my_resume", "Click on My Resume to upload or start building your resume"),
       requireClick: true,
     },
     {
       target: '[data-tutorial="drop-resume"]',
-      content: "Upload your resume here",
+      content: t("tutorial.upload_resume", "Upload your resume here"),
     },
     {
       target: '[data-tutorial="build-resume"]',
-      content: "Alternatively, build your resume with our top-notch templates and proprietary AI",
+      content: t("tutorial.build_resume", "Alternatively, build your resume with our top-notch templates and proprietary AI"),
     },
     {
       target: 'table',
-      content: "View your resumes here, a separate resume for separate programmes maximises your chances!",
+      content: t("tutorial.view_resumes", "View your resumes here, a separate resume for separate programmes maximises your chances!"),
     },
     {
       target: '[data-id="apply-now"]',
-      content: "Click on Apply Now to start your application",
+      content: t("tutorial.apply_now", "Click on Apply Now to start your application"),
       requireClick: true,
     },
     {
       target: '[data-tutorial="university-select"]',
-      content: "Pick which university you want to apply to",
+      content: t("tutorial.university_select", "Pick which university you want to apply to"),
       requireClick: true,
     },
     {
       target: '[data-tutorial="program-select"]',
-      content: "Pick your desired programme",
+      content: t("tutorial.program_select", "Pick your desired programme"),
       requireClick: true,
     },
     {
       target: '[data-tutorial="application-questions"]',
-      content: "Our AI will help you write the best applications!",
+      content: t("tutorial.application_questions", "Our AI will help you write the best applications!"),
     },
     {
       target: '[data-id="mock-interviews"]',
-      content: "Click on Mock Interviews to prepare for your interviews",
+      content: t("tutorial.mock_interviews", "Click on Mock Interviews to prepare for your interviews"),
       requireClick: true,
     },
     {
       target: '[data-tutorial="program-select-interview"]',
-      content: "Pick your application",
+      content: t("tutorial.program_select_interview", "Pick your application"),
       requireClick: true,
     },
     {
       target: '[data-tutorial="interview-questions"]',
-      content: "Adviseek AI will create practice questions for you to prepare!",
+      content: t("tutorial.interview_questions", "Adviseek AI will create practice questions for you to prepare!"),
     },
     {
       target: '[data-id="get-paid"]',
-      content: "Want to earn money?",
+      content: t("tutorial.get_paid", "Want to earn money?"),
       requireClick: true,
     },
     {
       target: '[data-tutorial="apply-consultant"]',
-      content: "Apply to be a consultant to help others and earn at the same time!",
+      content: t("tutorial.apply_consultant", "Apply to be a consultant to help others and earn at the same time!"),
     },
     {
       target: '[data-tutorial="upgrade-button"]',
-      content: "Upgrade for advanced features!",
+      content: t("tutorial.upgrade", "Upgrade for advanced features!"),
     },
   ];
 
@@ -140,7 +141,45 @@ export const Tutorial = ({ isOpen, onClose, onSkip }: TutorialProps) => {
     }
   }, [isOpen, currentStep, tutorialSteps]);
 
-  // Set up click handlers for elements requiring clicks
+  // Function to simulate clicking the highlighted element
+  const simulateElementClick = useCallback(() => {
+    if (!targetElement) return false;
+    
+    try {
+      // Create and dispatch a click event
+      const clickEvent = new MouseEvent('click', {
+        view: window,
+        bubbles: true,
+        cancelable: true
+      });
+      
+      const clicked = targetElement.dispatchEvent(clickEvent);
+      return clicked;
+    } catch (error) {
+      console.error("Error simulating click:", error);
+      return false;
+    }
+  }, [targetElement]);
+
+  // Handle next button click
+  const handleNext = () => {
+    // If this step requires clicking an element, simulate the click
+    if (tutorialSteps[currentStep]?.requireClick) {
+      const clicked = simulateElementClick();
+      if (!clicked) {
+        console.warn("Failed to simulate click on target element");
+      }
+    }
+    
+    // Advance to next step regardless
+    if (currentStep < tutorialSteps.length - 1) {
+      setCurrentStep(currentStep + 1);
+    } else {
+      completeAndClose();
+    }
+  };
+
+  // Set up click handlers for elements requiring clicks (for backward compatibility)
   useEffect(() => {
     if (!isOpen || !tutorialSteps[currentStep]?.requireClick) {
       setWaitingForElementClick(false);
@@ -158,7 +197,7 @@ export const Tutorial = ({ isOpen, onClose, onSkip }: TutorialProps) => {
         
         const handleElementClick = () => {
           setWaitingForElementClick(false);
-          handleNext();
+          setCurrentStep(prev => prev + 1);
         };
         
         element.addEventListener('click', handleElementClick, { capture: true });
@@ -182,14 +221,6 @@ export const Tutorial = ({ isOpen, onClose, onSkip }: TutorialProps) => {
       window.removeEventListener("resize", updatePositions);
     };
   }, [isOpen, currentStep, updatePositions]);
-
-  const handleNext = () => {
-    if (currentStep < tutorialSteps.length - 1) {
-      setCurrentStep(currentStep + 1);
-    } else {
-      completeAndClose();
-    }
-  };
 
   const handleSkip = () => {
     if (onSkip) {
@@ -256,7 +287,7 @@ export const Tutorial = ({ isOpen, onClose, onSkip }: TutorialProps) => {
         </button>
         
         <p className="text-sm mb-2 text-gray-500 dark:text-gray-400">
-          Step {currentStep + 1} of {tutorialSteps.length}
+          {t("tutorial.step", "Step")} {currentStep + 1} {t("tutorial.of", "of")} {tutorialSteps.length}
         </p>
         
         <Progress value={progress} className="mb-3 h-1" />
@@ -265,18 +296,12 @@ export const Tutorial = ({ isOpen, onClose, onSkip }: TutorialProps) => {
         
         <div className="flex justify-between items-center">
           <Button variant="outline" size="sm" onClick={handleSkip}>
-            Skip Tutorial
+            {t("tutorial.skip", "Skip Tutorial")}
           </Button>
           
-          {currentStepData?.requireClick ? (
-            <p className="text-sm text-blue-600 dark:text-blue-400 font-medium animate-pulse">
-              Click the highlighted element to continue
-            </p>
-          ) : (
-            <Button size="sm" onClick={handleNext}>
-              {currentStep < tutorialSteps.length - 1 ? "Next" : "Finish"}
-            </Button>
-          )}
+          <Button size="sm" onClick={handleNext}>
+            {currentStep < tutorialSteps.length - 1 ? t("tutorial.next", "Next") : t("tutorial.finish", "Finish")}
+          </Button>
         </div>
       </div>
     </div>,

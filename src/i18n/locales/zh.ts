@@ -20,6 +20,55 @@ export default {
     "achievements": "成就"
   },
   
+  // Resume
+  "resume": {
+    "build_title": "制作简历",
+    "build_description": "使用我们的模板和AI辅助创建专业简历",
+    "build_button": "立即制作",
+    "upload_title": "上传简历",
+    "upload_description": "拖放简历文件到此处",
+    "upload_button": "上传",
+    "view": "查看",
+    "edit": "编辑",
+    "delete": "删除",
+    "name": "名称",
+    "template": "模板",
+    "last_updated": "最后更新",
+    "actions": "操作",
+    "templates": {
+      "basic": "基础简历",
+      "stem": "STEM简历",
+      "business": "商务简历",
+      "humanities": "人文简历",
+      "creative": "创意艺术简历",
+      "health": "健康科学简历",
+      "education": "教育/公共服务简历"
+    }
+  },
+  
+  // Tutorial
+  "tutorial": {
+    "step": "步骤",
+    "of": "共",
+    "skip": "跳过教程",
+    "next": "下一步",
+    "finish": "完成",
+    "my_resume": "点击我的简历以上传或开始制作简历",
+    "upload_resume": "在此处上传您的简历",
+    "build_resume": "或者，使用我们的优质模板和专有AI创建简历",
+    "view_resumes": "在这里查看您的简历，为不同的项目准备单独的简历可以最大化您的机会！",
+    "apply_now": "点击立即申请开始您的申请",
+    "university_select": "选择您想要申请的大学",
+    "program_select": "选择您想要的项目",
+    "application_questions": "我们的AI将帮助您撰写最好的申请！",
+    "mock_interviews": "点击模拟面试为面试做准备",
+    "program_select_interview": "选择您的申请",
+    "interview_questions": "Adviseek AI将为您创建练习问题，帮助您准备！",
+    "get_paid": "想要赚钱吗？",
+    "apply_consultant": "申请成为顾问，同时帮助他人并赚取收入！",
+    "upgrade": "升级获取高级功能！"
+  },
+  
   // Settings
   "settings": {
     "title": "设置",
@@ -60,7 +109,15 @@ export default {
     "popular": "热门",
     "my_communities": "我的社区",
     "create_community": "创建社区",
-    "popular_communities": "热门社区"
+    "popular_communities": "热门社区",
+    "join_discussions": "加入与其他学生的讨论"
+  },
+  
+  // Footer
+  "footer": {
+    "terms": "条款",
+    "privacy": "隐私",
+    "help": "帮助"
   },
   
   // Achievements
