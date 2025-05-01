@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 interface SavedResume {
   id: string;
   name: string;
+  resumeName: string;
   template_type: string;
   updated_at: string;
 }
@@ -31,7 +32,7 @@ export const MyResume = () => {
         if (session?.session?.user) {
           const { data, error } = await supabase
             .from('resumes')
-            .select('id, name, template_type, updated_at')
+            .select('id, name, resumeName, template_type, updated_at')
             .eq('user_id', session.session.user.id)
             .order('updated_at', { ascending: false });
           
@@ -41,7 +42,8 @@ export const MyResume = () => {
             // Format the data for display
             const formattedResumes = data.map(resume => ({
               id: resume.id,
-              name: resume.name || 'Untitled Resume',
+              name: resume.name || 'Untitled',
+              resumeName: resume.resumeName || 'Untitled Resume',
               template_type: formatTemplateType(resume.template_type),
               updated_at: new Date(resume.updated_at).toLocaleDateString()
             }));
@@ -127,6 +129,11 @@ export const MyResume = () => {
       if (!userId) {
         setResumeFiles(prev => [...prev, ...files]);
         toast.success(`${files.length} resume${files.length > 1 ? 's' : ''} uploaded successfully!`);
+        
+        // For uploaded PDFs, we'll send to the basic resume editor with source=pdf param
+        if (files.length === 1) {
+          navigate("/resumebuilder/basic?source=pdf");
+        }
         return;
       }
       
@@ -134,6 +141,11 @@ export const MyResume = () => {
       // For now, we'll just add the files to the state
       setResumeFiles(prev => [...prev, ...files]);
       toast.success(`${files.length} resume${files.length > 1 ? 's' : ''} uploaded successfully!`);
+      
+      // For uploaded PDFs, we'll send to the basic resume editor with source=pdf param
+      if (files.length === 1) {
+        navigate("/resumebuilder/basic?source=pdf");
+      }
 
     } catch (error) {
       console.error('Error uploading files:', error);
@@ -146,14 +158,18 @@ export const MyResume = () => {
   };
 
   const handleViewResume = (resumeId: string, templateType: string) => {
-    // For view functionality, we'll navigate to the resume builder with the specific ID
-    // The actual viewing logic would be implemented in the resume builder page
+    // For view functionality, navigate to the resume builder with the specific ID
     navigate(`/resumebuilder/${templateType.toLowerCase().replace(' resume', '')}?id=${resumeId}&mode=view`);
   };
 
   const handleEditResume = (resumeId: string, templateType: string) => {
     // Navigate to the specific resume builder with the ID to edit
     navigate(`/resumebuilder/${templateType.toLowerCase().replace(' resume', '')}?id=${resumeId}`);
+  };
+
+  const handleEditPDF = (index: number) => {
+    // For PDF uploads, navigate to the basic resume editor with source=pdf param
+    navigate("/resumebuilder/basic?source=pdf");
   };
 
   return (
@@ -216,7 +232,7 @@ export const MyResume = () => {
                     isCurrentlyDark ? "text-gray-300" : "text-gray-500"
                   } uppercase tracking-wider`}
                 >
-                  Name
+                  Resume Name
                 </th>
                 <th
                   scope="col"
@@ -268,7 +284,7 @@ export const MyResume = () => {
                       <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${
                         isCurrentlyDark ? "text-gray-200" : "text-gray-900"
                       }`}>
-                        {resume.name}
+                        {resume.resumeName}
                       </td>
                       <td className={`px-6 py-4 whitespace-nowrap text-sm ${
                         isCurrentlyDark ? "text-gray-300" : "text-gray-500"
@@ -327,6 +343,7 @@ export const MyResume = () => {
                         <Button 
                           variant="ghost" 
                           size="sm"
+                          onClick={() => navigate("/resumebuilder/basic?source=pdf")}
                           className="flex items-center gap-1"
                         >
                           <Eye className="h-4 w-4" />
@@ -335,6 +352,7 @@ export const MyResume = () => {
                         <Button 
                           variant="ghost" 
                           size="sm"
+                          onClick={() => handleEditPDF(index)}
                           className="flex items-center gap-1"
                         >
                           <Edit className="h-4 w-4" />

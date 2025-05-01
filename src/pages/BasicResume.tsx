@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, Plus, Trash, Download, Save, X } from "lucide-react";
+import { ArrowLeft, Plus, Trash, Download, Save, X, Edit } from "lucide-react";
 import { toast } from "@/components/ui/sonner";
 import { useTheme } from "@/contexts/ThemeContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -29,16 +29,28 @@ interface Activity {
   description: string;
 }
 
+interface Education {
+  id: string;
+  institution: string;
+  dates: string;
+  qualifications: string;
+}
+
+interface Award {
+  id: string;
+  title: string;
+  date: string;
+}
+
 interface ResumeData {
+  resumeName: string;
   name: string;
   phone: string;
   email: string;
   nationality: string;
-  institution: string;
-  educationDates: string;
-  qualifications: string;
+  educationItems: Education[];
   workExperience: WorkExperience[];
-  awards: string;
+  awards: Award[];
   activities: Activity[];
   languages: string;
   interests: string;
@@ -51,14 +63,13 @@ interface ResumeRecord {
   user_id: string;
   template_type: string;
   name: string | null;
+  resumeName: string | null;
   phone: string | null;
   email: string | null;
   nationality: string | null;
-  institution: string | null;
-  education_dates: string | null;
-  qualifications: string | null;
+  educationItems: Education[] | null;
   work_experience: WorkExperience[] | null;
-  awards: string | null;
+  awards: Award[] | null;
   activities: Activity[] | null;
   languages: string | null;
   interests: string | null;
@@ -69,10 +80,13 @@ interface ResumeRecord {
 
 type EditSection = 
   | "personal"
+  | "resumeName"
   | "education"
+  | "educationItem"
   | "workExperience"
   | "workExperienceItem"
   | "awards"
+  | "awardItem"
   | "activities"
   | "activitiesItem"
   | "additional"
@@ -82,6 +96,8 @@ interface EditDialogProps {
   section: EditSection;
   workIndex?: number;
   activityIndex?: number;
+  educationIndex?: number;
+  awardIndex?: number;
   onClose: () => void;
 }
 
@@ -92,15 +108,14 @@ const BasicResume = () => {
   const [user, setUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [resumeData, setResumeData] = useState<ResumeData>({
+    resumeName: "Untitled Resume",
     name: "",
     phone: "",
     email: "",
     nationality: "",
-    institution: "",
-    educationDates: "",
-    qualifications: "",
+    educationItems: [{ id: "education-1", institution: "", dates: "", qualifications: "" }],
     workExperience: [{ id: "work-1", role: "", organization: "", dates: "", description: "" }],
-    awards: "",
+    awards: [{ id: "award-1", title: "", date: "" }],
     activities: [{ id: "activity-1", role: "", organization: "", dates: "", description: "" }],
     languages: "",
     interests: "",
@@ -110,14 +125,18 @@ const BasicResume = () => {
   const [editingSection, setEditingSection] = useState<EditSection>(null);
   const [editingWorkIndex, setEditingWorkIndex] = useState<number>(-1);
   const [editingActivityIndex, setEditingActivityIndex] = useState<number>(-1);
+  const [editingEducationIndex, setEditingEducationIndex] = useState<number>(-1);
+  const [editingAwardIndex, setEditingAwardIndex] = useState<number>(-1);
   const [viewMode, setViewMode] = useState(false);
   const [resumeId, setResumeId] = useState<string | null>(null);
+  const [isPdfUpload, setIsPdfUpload] = useState(false);
 
   // Parse URL parameters for resume ID and view mode
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const id = params.get('id');
     const mode = params.get('mode');
+    const source = params.get('source');
     
     if (id) {
       setResumeId(id);
@@ -126,6 +145,10 @@ const BasicResume = () => {
     
     if (mode === 'view') {
       setViewMode(true);
+    }
+    
+    if (source === 'pdf') {
+      setIsPdfUpload(true);
     }
   }, [location]);
 
@@ -180,15 +203,14 @@ const BasicResume = () => {
       if (data) {
         // Parse the data from JSON stored in Supabase
         setResumeData({
+          resumeName: data.resumeName || "Untitled Resume",
           name: data.name || "",
           phone: data.phone || "",
           email: data.email || "",
           nationality: data.nationality || "",
-          institution: data.institution || "",
-          educationDates: data.education_dates || "",
-          qualifications: data.qualifications || "",
+          educationItems: data.educationItems || [{ id: "education-1", institution: "", dates: "", qualifications: "" }],
           workExperience: data.work_experience || [{ id: "work-1", role: "", organization: "", dates: "", description: "" }],
-          awards: data.awards || "",
+          awards: data.awards || [{ id: "award-1", title: "", date: "" }],
           activities: data.activities || [{ id: "activity-1", role: "", organization: "", dates: "", description: "" }],
           languages: data.languages || "",
           interests: data.interests || "",
@@ -221,15 +243,14 @@ const BasicResume = () => {
       if (data) {
         // Parse the data from JSON stored in Supabase
         setResumeData({
+          resumeName: data.resumeName || "Untitled Resume",
           name: data.name || "",
           phone: data.phone || "",
           email: data.email || "",
           nationality: data.nationality || "",
-          institution: data.institution || "",
-          educationDates: data.education_dates || "",
-          qualifications: data.qualifications || "",
+          educationItems: data.educationItems || [{ id: "education-1", institution: "", dates: "", qualifications: "" }],
           workExperience: data.work_experience || [{ id: "work-1", role: "", organization: "", dates: "", description: "" }],
-          awards: data.awards || "",
+          awards: data.awards || [{ id: "award-1", title: "", date: "" }],
           activities: data.activities || [{ id: "activity-1", role: "", organization: "", dates: "", description: "" }],
           languages: data.languages || "",
           interests: data.interests || "",
@@ -250,6 +271,41 @@ const BasicResume = () => {
     setResumeData(prev => ({
       ...prev,
       [name]: value
+    }));
+  };
+
+  // Handle education changes
+  const handleEducationChange = (id: string, field: keyof Education, value: string) => {
+    setResumeData(prev => ({
+      ...prev,
+      educationItems: prev.educationItems.map(item => 
+        item.id === id ? { ...item, [field]: value } : item
+      )
+    }));
+  };
+
+  // Add new education item
+  const addEducationItem = () => {
+    const newId = `education-${Date.now()}`;
+    setResumeData(prev => ({
+      ...prev,
+      educationItems: [
+        ...prev.educationItems, 
+        { id: newId, institution: "", dates: "", qualifications: "" }
+      ]
+    }));
+  };
+
+  // Remove education item
+  const removeEducationItem = (id: string) => {
+    if (resumeData.educationItems.length <= 1) {
+      toast.error("You must have at least one education entry.");
+      return;
+    }
+    
+    setResumeData(prev => ({
+      ...prev,
+      educationItems: prev.educationItems.filter(item => item.id !== id)
     }));
   };
 
@@ -285,6 +341,41 @@ const BasicResume = () => {
     setResumeData(prev => ({
       ...prev,
       workExperience: prev.workExperience.filter(item => item.id !== id)
+    }));
+  };
+
+  // Handle award changes
+  const handleAwardChange = (id: string, field: keyof Award, value: string) => {
+    setResumeData(prev => ({
+      ...prev,
+      awards: prev.awards.map(item => 
+        item.id === id ? { ...item, [field]: value } : item
+      )
+    }));
+  };
+
+  // Add new award
+  const addAward = () => {
+    const newId = `award-${Date.now()}`;
+    setResumeData(prev => ({
+      ...prev,
+      awards: [
+        ...prev.awards, 
+        { id: newId, title: "", date: "" }
+      ]
+    }));
+  };
+
+  // Remove award
+  const removeAward = (id: string) => {
+    if (resumeData.awards.length <= 1) {
+      toast.error("You must have at least one award entry.");
+      return;
+    }
+    
+    setResumeData(prev => ({
+      ...prev,
+      awards: prev.awards.filter(item => item.id !== id)
     }));
   };
 
@@ -324,12 +415,14 @@ const BasicResume = () => {
   };
 
   // Open section editing dialog
-  const openEditDialog = (section: EditSection, workIndex?: number, activityIndex?: number) => {
+  const openEditDialog = (section: EditSection, workIndex?: number, activityIndex?: number, educationIndex?: number, awardIndex?: number) => {
     if (viewMode) return;
     
     setEditingSection(section);
     if (workIndex !== undefined) setEditingWorkIndex(workIndex);
     if (activityIndex !== undefined) setEditingActivityIndex(activityIndex);
+    if (educationIndex !== undefined) setEditingEducationIndex(educationIndex);
+    if (awardIndex !== undefined) setEditingAwardIndex(awardIndex);
   };
 
   // Close section editing dialog
@@ -337,6 +430,8 @@ const BasicResume = () => {
     setEditingSection(null);
     setEditingWorkIndex(-1);
     setEditingActivityIndex(-1);
+    setEditingEducationIndex(-1);
+    setEditingAwardIndex(-1);
   };
 
   // Save resume data to Supabase
@@ -361,13 +456,12 @@ const BasicResume = () => {
           id: resumeId || undefined, // If we have a resumeId, update that record
           user_id: user.id,
           template_type: 'basic',
+          resumeName: resumeData.resumeName,
           name: resumeData.name,
           phone: resumeData.phone,
           email: resumeData.email,
           nationality: resumeData.nationality,
-          institution: resumeData.institution,
-          education_dates: resumeData.educationDates,
-          qualifications: resumeData.qualifications,
+          educationItems: resumeData.educationItems,
           work_experience: resumeData.workExperience,
           awards: resumeData.awards,
           activities: resumeData.activities,
@@ -426,14 +520,14 @@ const BasicResume = () => {
       // Header
       doc.setFontSize(22);
       doc.setTextColor(tealColor[0], tealColor[1], tealColor[2]);
-      doc.text(resumeData.name.toUpperCase(), pageWidth / 2, y, { align: 'center' });
+      doc.text(resumeData.name.toUpperCase() || "YOUR NAME", pageWidth / 2, y, { align: 'center' });
       
       y += 30;
       
       // Contact info
       doc.setFontSize(10);
-      doc.setTextColor(0, 0, 0);
-      const contactInfo = `${resumeData.phone} | ${resumeData.email} | ${resumeData.nationality}`;
+      doc.setTextColor(tealColor[0], tealColor[1], tealColor[2]);
+      const contactInfo = `${resumeData.phone || "Phone"} | ${resumeData.email || "Email"} | ${resumeData.nationality || "Nationality"}`;
       doc.text(contactInfo, pageWidth / 2, y, { align: 'center' });
       
       y += 30;
@@ -451,24 +545,30 @@ const BasicResume = () => {
       y += 20;
       
       // Education details
-      doc.setFontSize(11);
-      doc.setTextColor(0, 0, 0);
-      doc.setFont("helvetica", "bold");
-      doc.text(resumeData.institution, margin, y);
-      
-      doc.setFont("helvetica", "italic");
-      doc.text(resumeData.educationDates, pageWidth - margin, y, { align: 'right' });
-      
-      y += 15;
-      
-      // Qualifications - Convert to list with bullet points
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(10);
-      
-      const qualLines = resumeData.qualifications.split("\n").filter(Boolean);
-      qualLines.forEach(qual => {
-        doc.text(`• ${qual}`, margin + 10, y);
+      resumeData.educationItems.forEach((edu, index) => {
+        if (index > 0) y += 15;
+        
+        doc.setTextColor(tealColor[0], tealColor[1], tealColor[2]);
+        doc.setFontSize(11);
+        doc.setFont("helvetica", "bold");
+        doc.text(edu.institution || "Institution", margin, y);
+        
+        doc.setFont("helvetica", "italic");
+        doc.text(edu.dates || "Dates", pageWidth - margin, y, { align: 'right' });
+        
         y += 15;
+        
+        // Qualifications - Convert to list with bullet points
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(10);
+        
+        const qualLines = edu.qualifications.split("\n").filter(Boolean);
+        qualLines.forEach(qual => {
+          doc.text(`• ${qual}`, margin + 10, y);
+          y += 15;
+        });
+        
+        y += 5;
       });
       
       y += 15;
@@ -490,18 +590,18 @@ const BasicResume = () => {
         if (index > 0) y += 15;
         
         doc.setFontSize(11);
-        doc.setTextColor(0, 0, 0);
+        doc.setTextColor(tealColor[0], tealColor[1], tealColor[2]);
         doc.setFont("helvetica", "bold");
-        doc.text(work.role, margin, y);
+        doc.text(work.role || "Role", margin, y);
         
         doc.setFont("helvetica", "italic");
-        doc.text(work.dates, pageWidth - margin, y, { align: 'right' });
+        doc.text(work.dates || "Dates", pageWidth - margin, y, { align: 'right' });
         
         y += 15;
         
         doc.setFont("helvetica", "bold");
         doc.setFontSize(10);
-        doc.text(work.organization, margin, y);
+        doc.text(work.organization || "Organization", margin, y);
         
         y += 15;
         
@@ -536,14 +636,15 @@ const BasicResume = () => {
       
       y += 20;
       
-      // Awards - Convert to list with bullet points
+      // Awards - Display as list with titles and dates
       doc.setFont("helvetica", "normal");
       doc.setFontSize(10);
-      doc.setTextColor(0, 0, 0);
+      doc.setTextColor(tealColor[0], tealColor[1], tealColor[2]);
       
-      const awardLines = resumeData.awards.split("\n").filter(Boolean);
-      awardLines.forEach(award => {
-        doc.text(`• ${award}`, margin + 10, y);
+      resumeData.awards.forEach((award, index) => {
+        const awardText = award.title || "Award Title";
+        const dateText = award.date ? `(${award.date})` : "";
+        doc.text(`• ${awardText} ${dateText}`, margin + 10, y);
         y += 15;
       });
       
@@ -572,18 +673,18 @@ const BasicResume = () => {
         if (index > 0) y += 15;
         
         doc.setFontSize(11);
-        doc.setTextColor(0, 0, 0);
+        doc.setTextColor(tealColor[0], tealColor[1], tealColor[2]);
         doc.setFont("helvetica", "bold");
-        doc.text(activity.role, margin, y);
+        doc.text(activity.role || "Role", margin, y);
         
         doc.setFont("helvetica", "italic");
-        doc.text(activity.dates, pageWidth - margin, y, { align: 'right' });
+        doc.text(activity.dates || "Dates", pageWidth - margin, y, { align: 'right' });
         
         y += 15;
         
         doc.setFont("helvetica", "bold");
         doc.setFontSize(10);
-        doc.text(activity.organization, margin, y);
+        doc.text(activity.organization || "Organization", margin, y);
         
         y += 15;
         
@@ -621,7 +722,7 @@ const BasicResume = () => {
       // Languages
       if (resumeData.languages) {
         doc.setFontSize(11);
-        doc.setTextColor(0, 0, 0);
+        doc.setTextColor(tealColor[0], tealColor[1], tealColor[2]);
         doc.setFont("helvetica", "bold");
         doc.text("Languages:", margin, y);
         
@@ -639,7 +740,7 @@ const BasicResume = () => {
       // Interests
       if (resumeData.interests) {
         doc.setFontSize(11);
-        doc.setTextColor(0, 0, 0);
+        doc.setTextColor(tealColor[0], tealColor[1], tealColor[2]);
         doc.setFont("helvetica", "bold");
         doc.text("Interests:", margin, y);
         
@@ -657,7 +758,7 @@ const BasicResume = () => {
       // IT Skills
       if (resumeData.itSkills) {
         doc.setFontSize(11);
-        doc.setTextColor(0, 0, 0);
+        doc.setTextColor(tealColor[0], tealColor[1], tealColor[2]);
         doc.setFont("helvetica", "bold");
         doc.text("IT Skills:", margin, y);
         
@@ -677,7 +778,7 @@ const BasicResume = () => {
       doc.text("Created with Adviseek © 2025", pageWidth / 2, footerY, { align: 'center' });
       
       // Save the PDF
-      doc.save(`${resumeData.name.replace(/\s+/g, '_')}_Resume.pdf`);
+      doc.save(`${resumeData.resumeName.replace(/\s+/g, '_')}.pdf`);
       
       toast.success("Resume downloaded as PDF!");
     } catch (error) {
@@ -695,11 +796,14 @@ const BasicResume = () => {
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
+              {editingSection === 'resumeName' && 'Edit Resume Name'}
               {editingSection === 'personal' && 'Edit Personal Information'}
-              {editingSection === 'education' && 'Edit Education Details'}
+              {editingSection === 'education' && 'Manage Education Details'}
+              {editingSection === 'educationItem' && 'Edit Education'}
               {editingSection === 'workExperience' && 'Manage Work Experience'}
               {editingSection === 'workExperienceItem' && 'Edit Work Experience'}
-              {editingSection === 'awards' && 'Edit Awards & Certificates'}
+              {editingSection === 'awards' && 'Manage Awards & Certificates'}
+              {editingSection === 'awardItem' && 'Edit Award/Certificate'}
               {editingSection === 'activities' && 'Manage Activities'}
               {editingSection === 'activitiesItem' && 'Edit Activity'}
               {editingSection === 'additional' && 'Edit Additional Information'}
@@ -708,6 +812,28 @@ const BasicResume = () => {
               Make changes to your resume information below.
             </DialogDescription>
           </DialogHeader>
+
+          {/* Resume Name Section */}
+          {editingSection === 'resumeName' && (
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="resumeName">Resume Name</Label>
+                <Input 
+                  id="resumeName"
+                  name="resumeName"
+                  value={resumeData.resumeName}
+                  onChange={handleInputChange}
+                  placeholder="Resume for XYZ Company"
+                />
+                <p className="text-sm text-muted-foreground">This name will be shown in your list of resumes.</p>
+              </div>
+              <div className="flex justify-end">
+                <DialogClose asChild>
+                  <Button>Save Changes</Button>
+                </DialogClose>
+              </div>
+            </div>
+          )}
 
           {/* Personal Information Section */}
           {editingSection === 'personal' && (
@@ -764,26 +890,69 @@ const BasicResume = () => {
             </div>
           )}
 
-          {/* Education Section */}
+          {/* Education Management Section */}
           {editingSection === 'education' && (
+            <div className="space-y-4">
+              {resumeData.educationItems.map((edu, index) => (
+                <div key={edu.id} className="flex justify-between items-center border p-3 rounded-md">
+                  <div>
+                    <p className="font-medium">{edu.institution || "Institution"}</p>
+                    <p className="text-sm text-gray-500">{edu.dates || "Dates"}</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setEditingEducationIndex(index);
+                        setEditingSection('educationItem');
+                      }}
+                    >
+                      Edit
+                    </Button>
+                    <Button 
+                      variant="outline"
+                      size="sm"
+                      disabled={resumeData.educationItems.length <= 1}
+                      onClick={() => removeEducationItem(edu.id)}
+                    >
+                      <Trash className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+              <Button 
+                onClick={addEducationItem}
+                className="w-full"
+              >
+                <Plus className="h-4 w-4 mr-2" /> Add Education
+              </Button>
+              <div className="flex justify-end pt-4">
+                <DialogClose asChild>
+                  <Button>Done</Button>
+                </DialogClose>
+              </div>
+            </div>
+          )}
+
+          {/* Education Item Edit Section */}
+          {editingSection === 'educationItem' && editingEducationIndex >= 0 && editingEducationIndex < resumeData.educationItems.length && (
             <div className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="institution">Institution</Label>
                 <Input 
                   id="institution"
-                  name="institution"
-                  value={resumeData.institution}
-                  onChange={handleInputChange}
+                  value={resumeData.educationItems[editingEducationIndex].institution}
+                  onChange={(e) => handleEducationChange(resumeData.educationItems[editingEducationIndex].id, 'institution', e.target.value)}
                   placeholder="Harvard University"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="educationDates">Dates</Label>
+                <Label htmlFor="dates">Dates</Label>
                 <Input 
-                  id="educationDates"
-                  name="educationDates"
-                  value={resumeData.educationDates}
-                  onChange={handleInputChange}
+                  id="dates"
+                  value={resumeData.educationItems[editingEducationIndex].dates}
+                  onChange={(e) => handleEducationChange(resumeData.educationItems[editingEducationIndex].id, 'dates', e.target.value)}
                   placeholder="Sep 2018 - Jun 2022"
                 />
               </div>
@@ -791,10 +960,9 @@ const BasicResume = () => {
                 <Label htmlFor="qualifications">Qualifications (one per line)</Label>
                 <Textarea 
                   id="qualifications"
-                  name="qualifications"
                   rows={4}
-                  value={resumeData.qualifications}
-                  onChange={handleInputChange}
+                  value={resumeData.educationItems[editingEducationIndex].qualifications}
+                  onChange={(e) => handleEducationChange(resumeData.educationItems[editingEducationIndex].id, 'qualifications', e.target.value)}
                   placeholder="Bachelor of Science in Computer Science&#10;GPA: 3.8/4.0&#10;Relevant Coursework: Data Structures, Algorithms"
                   className="min-h-[100px]"
                 />
@@ -902,22 +1070,73 @@ const BasicResume = () => {
             </div>
           )}
 
-          {/* Awards Section */}
+          {/* Awards Management Section */}
           {editingSection === 'awards' && (
             <div className="space-y-4">
+              {resumeData.awards.map((award, index) => (
+                <div key={award.id} className="flex justify-between items-center border p-3 rounded-md">
+                  <div>
+                    <p className="font-medium">{award.title || "Award Title"}</p>
+                    <p className="text-sm text-gray-500">{award.date || "Date"}</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setEditingAwardIndex(index);
+                        setEditingSection('awardItem');
+                      }}
+                    >
+                      Edit
+                    </Button>
+                    <Button 
+                      variant="outline"
+                      size="sm"
+                      disabled={resumeData.awards.length <= 1}
+                      onClick={() => removeAward(award.id)}
+                    >
+                      <Trash className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+              <Button 
+                onClick={addAward}
+                className="w-full"
+              >
+                <Plus className="h-4 w-4 mr-2" /> Add Award/Certificate
+              </Button>
+              <div className="flex justify-end pt-4">
+                <DialogClose asChild>
+                  <Button>Done</Button>
+                </DialogClose>
+              </div>
+            </div>
+          )}
+
+          {/* Award Item Edit Section */}
+          {editingSection === 'awardItem' && editingAwardIndex >= 0 && editingAwardIndex < resumeData.awards.length && (
+            <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="awards">List your awards and certificates (one per line)</Label>
-                <Textarea 
-                  id="awards"
-                  name="awards"
-                  rows={6}
-                  value={resumeData.awards}
-                  onChange={handleInputChange}
-                  placeholder="AWS Certified Solutions Architect, 2023&#10;Employee of the Month, June 2022&#10;Dean's List, Fall 2020"
-                  className="min-h-[150px]"
+                <Label htmlFor="awardTitle">Award/Certificate Title</Label>
+                <Input 
+                  id="awardTitle"
+                  value={resumeData.awards[editingAwardIndex].title}
+                  onChange={(e) => handleAwardChange(resumeData.awards[editingAwardIndex].id, 'title', e.target.value)}
+                  placeholder="AWS Certified Solutions Architect"
                 />
               </div>
-              <div className="flex justify-end">
+              <div className="space-y-2">
+                <Label htmlFor="awardDate">Date Received</Label>
+                <Input 
+                  id="awardDate"
+                  value={resumeData.awards[editingAwardIndex].date}
+                  onChange={(e) => handleAwardChange(resumeData.awards[editingAwardIndex].id, 'date', e.target.value)}
+                  placeholder="June 2022"
+                />
+              </div>
+              <div className="flex justify-end pt-4">
                 <DialogClose asChild>
                   <Button>Save Changes</Button>
                 </DialogClose>
@@ -1072,7 +1291,9 @@ const BasicResume = () => {
         <Button variant="ghost" size="icon" onClick={() => navigate('/resumebuilder')} className="mr-2">
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <h1 className="text-2xl font-bold flex-1">Basic Resume Builder</h1>
+        <h1 className="text-2xl font-bold flex-1">
+          {isPdfUpload ? "Edit PDF Resume" : "Basic Resume Builder"}
+        </h1>
         <div className="flex gap-2">
           {!viewMode && (
             <Button onClick={saveResume} disabled={isLoading} className="flex items-center">
@@ -1093,6 +1314,19 @@ const BasicResume = () => {
               className={`border rounded-md p-8 ${isCurrentlyDark ? 'border-gray-700 bg-gray-900' : 'bg-white'}`} 
               style={{ minHeight: "1120px", margin: "0 auto" }}
             >
+              {/* Resume Name Button */}
+              <div className="mb-4 text-right">
+                <Button 
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => openEditDialog('resumeName')}
+                  className={`${isCurrentlyDark ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-700'} flex items-center`}
+                >
+                  <Edit className="h-4 w-4 mr-1" />
+                  {resumeData.resumeName}
+                </Button>
+              </div>
+            
               {/* Header - Personal Information Section */}
               <div 
                 className={`text-center mb-6 p-4 rounded-md ${!viewMode && 'cursor-pointer hover:bg-gray-100 hover:dark:bg-gray-800'}`}
@@ -1101,7 +1335,7 @@ const BasicResume = () => {
                 <h1 className="text-2xl font-bold uppercase" style={{ color: "#2e6b8f" }}>
                   {resumeData.name || "FULL NAME"}
                 </h1>
-                <p className="text-sm mt-1">
+                <p className="text-sm mt-1" style={{ color: "#2e6b8f" }}>
                   {[resumeData.phone, resumeData.email, resumeData.nationality].filter(Boolean).join(" | ") || "Phone | Email | Nationality"}
                 </p>
                 {!viewMode && <div className="mt-2 text-xs text-blue-500">(Click to edit personal information)</div>}
@@ -1115,21 +1349,23 @@ const BasicResume = () => {
                 <h2 className="text-lg font-bold uppercase mb-2 pb-1 border-b-2" style={{ color: "#2e6b8f", borderColor: "#2e6b8f" }}>
                   Education
                 </h2>
-                <div className="ml-2">
-                  <div className="flex justify-between items-start">
-                    <span className="font-bold">{resumeData.institution || "Institution"}</span>
-                    <span className="italic">{resumeData.educationDates || "Dates"}</span>
+                {resumeData.educationItems.map((edu, index) => (
+                  <div key={edu.id} className="ml-2 mb-4">
+                    <div className="flex justify-between items-start">
+                      <span className="font-bold" style={{ color: "#2e6b8f" }}>{edu.institution || "Institution"}</span>
+                      <span className="italic" style={{ color: "#2e6b8f" }}>{edu.dates || "Dates"}</span>
+                    </div>
+                    <ul className="list-disc ml-5 mt-2 text-sm">
+                      {edu.qualifications ? 
+                        edu.qualifications.split("\n").filter(Boolean).map((qual, idx) => (
+                          <li key={idx}>{qual}</li>
+                        )) : 
+                        <li>Qualifications will appear here</li>
+                      }
+                    </ul>
                   </div>
-                  <ul className="list-disc ml-5 mt-2 text-sm">
-                    {resumeData.qualifications ? 
-                      resumeData.qualifications.split("\n").filter(Boolean).map((qual, index) => (
-                        <li key={index}>{qual}</li>
-                      )) : 
-                      <li>Qualifications will appear here</li>
-                    }
-                  </ul>
-                </div>
-                {!viewMode && <div className="mt-2 text-xs text-blue-500">(Click to edit education details)</div>}
+                ))}
+                {!viewMode && <div className="mt-2 text-xs text-blue-500">(Click to manage education entries)</div>}
               </div>
               
               {/* Work Experience Section */}
@@ -1153,10 +1389,10 @@ const BasicResume = () => {
                     }}
                   >
                     <div className="flex justify-between items-start">
-                      <span className="font-bold">{work.role || "Role/Position"}</span>
-                      <span className="italic">{work.dates || "Dates"}</span>
+                      <span className="font-bold" style={{ color: "#2e6b8f" }}>{work.role || "Role/Position"}</span>
+                      <span className="italic" style={{ color: "#2e6b8f" }}>{work.dates || "Dates"}</span>
                     </div>
-                    <div className="font-bold text-sm">{work.organization || "Organization/Company"}</div>
+                    <div className="font-bold text-sm" style={{ color: "#2e6b8f" }}>{work.organization || "Organization/Company"}</div>
                     <ul className="list-disc ml-5 mt-1 text-sm">
                       {work.description ? 
                         work.description.split("\n").filter(Boolean).map((desc, i) => (
@@ -1180,14 +1416,14 @@ const BasicResume = () => {
                   Awards & Certificates
                 </h2>
                 <ul className="list-disc ml-7 text-sm">
-                  {resumeData.awards ? 
-                    resumeData.awards.split("\n").filter(Boolean).map((award, index) => (
-                      <li key={index}>{award}</li>
-                    )) : 
-                    <li>Awards will appear here</li>
-                  }
+                  {resumeData.awards.map((award, index) => (
+                    <li key={award.id}>
+                      {award.title || "Award Title"} {award.date ? `(${award.date})` : ""}
+                    </li>
+                  ))}
+                  {resumeData.awards.length === 0 && <li>Awards will appear here</li>}
                 </ul>
-                {!viewMode && <div className="mt-2 text-xs text-blue-500">(Click to edit awards and certificates)</div>}
+                {!viewMode && <div className="mt-2 text-xs text-blue-500">(Click to manage awards and certificates)</div>}
               </div>
               
               {/* Extra-Curricular Activities Section */}
@@ -1211,10 +1447,10 @@ const BasicResume = () => {
                     }}
                   >
                     <div className="flex justify-between items-start">
-                      <span className="font-bold">{activity.role || "Role/Position"}</span>
-                      <span className="italic">{activity.dates || "Dates"}</span>
+                      <span className="font-bold" style={{ color: "#2e6b8f" }}>{activity.role || "Role/Position"}</span>
+                      <span className="italic" style={{ color: "#2e6b8f" }}>{activity.dates || "Dates"}</span>
                     </div>
-                    <div className="font-bold text-sm">{activity.organization || "Organization"}</div>
+                    <div className="font-bold text-sm" style={{ color: "#2e6b8f" }}>{activity.organization || "Organization"}</div>
                     <ul className="list-disc ml-5 mt-1 text-sm">
                       {activity.description ? 
                         activity.description.split("\n").filter(Boolean).map((desc, i) => (
@@ -1240,19 +1476,19 @@ const BasicResume = () => {
                 <div className="ml-2 space-y-3 text-sm">
                   {resumeData.languages && (
                     <div>
-                      <span className="font-bold">Languages: </span>
+                      <span className="font-bold" style={{ color: "#2e6b8f" }}>Languages: </span>
                       {resumeData.languages}
                     </div>
                   )}
                   {resumeData.interests && (
                     <div>
-                      <span className="font-bold">Interests: </span>
+                      <span className="font-bold" style={{ color: "#2e6b8f" }}>Interests: </span>
                       {resumeData.interests}
                     </div>
                   )}
                   {resumeData.itSkills && (
                     <div>
-                      <span className="font-bold">IT Skills: </span>
+                      <span className="font-bold" style={{ color: "#2e6b8f" }}>IT Skills: </span>
                       {resumeData.itSkills}
                     </div>
                   )}

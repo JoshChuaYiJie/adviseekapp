@@ -26,18 +26,18 @@ export default {
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
 				primary: {
-					DEFAULT: '#0F172A',
+					DEFAULT: '#0F172A', // Navy blue
 					hover: '#1E293B',
 					foreground: 'white'
 				},
 				secondary: {
-					DEFAULT: '#C4B5FD',
-					hover: '#A78BFA',
+					DEFAULT: '#94A3B8', // Gray
+					hover: '#64748B',
 					foreground: '#0F172A'
 				},
 				accent: {
-					DEFAULT: '#22D3EE',
-					foreground: '#0F172A'
+					DEFAULT: '#2E6B8F', // Teal-blue
+					foreground: 'white'
 				},
 				destructive: {
 					DEFAULT: '#EF4444',
@@ -103,8 +103,8 @@ export default {
 			},
 			backgroundImage: {
 				'primary-gradient': 'linear-gradient(to bottom right, #0F172A, #1E293B)',
-				'secondary-gradient': 'linear-gradient(to bottom right, #C4B5FD, #A78BFA)',
-				'accent-gradient': 'linear-gradient(to right, #22D3EE, #0EA5E9)',
+				'secondary-gradient': 'linear-gradient(to bottom right, #94A3B8, #64748B)',
+				'accent-gradient': 'linear-gradient(to right, #2E6B8F, #1E4D64)',
 			}
 		}
 	},
