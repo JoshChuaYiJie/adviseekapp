@@ -1,16 +1,17 @@
 
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, Plus, Trash, Download, Save } from "lucide-react";
+import { ArrowLeft, Plus, Trash, Download, Save, X } from "lucide-react";
 import { toast } from "@/components/ui/sonner";
 import { useTheme } from "@/contexts/ThemeContext";
 import { supabase } from "@/integrations/supabase/client";
 import jsPDF from "jspdf";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
 
 interface WorkExperience {
   id: string;
@@ -66,8 +67,27 @@ interface ResumeRecord {
   updated_at: string;
 }
 
+type EditSection = 
+  | "personal"
+  | "education"
+  | "workExperience"
+  | "workExperienceItem"
+  | "awards"
+  | "activities"
+  | "activitiesItem"
+  | "additional"
+  | null;
+
+interface EditDialogProps {
+  section: EditSection;
+  workIndex?: number;
+  activityIndex?: number;
+  onClose: () => void;
+}
+
 const BasicResume = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { isCurrentlyDark } = useTheme();
   const [user, setUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -86,6 +106,28 @@ const BasicResume = () => {
     interests: "",
     itSkills: ""
   });
+  
+  const [editingSection, setEditingSection] = useState<EditSection>(null);
+  const [editingWorkIndex, setEditingWorkIndex] = useState<number>(-1);
+  const [editingActivityIndex, setEditingActivityIndex] = useState<number>(-1);
+  const [viewMode, setViewMode] = useState(false);
+  const [resumeId, setResumeId] = useState<string | null>(null);
+
+  // Parse URL parameters for resume ID and view mode
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const id = params.get('id');
+    const mode = params.get('mode');
+    
+    if (id) {
+      setResumeId(id);
+      // We'll load the specific resume later
+    }
+    
+    if (mode === 'view') {
+      setViewMode(true);
+    }
+  }, [location]);
 
   // Check for user authentication
   useEffect(() => {
@@ -93,8 +135,12 @@ const BasicResume = () => {
       const { data } = await supabase.auth.getSession();
       setUser(data.session?.user || null);
       
-      // If user is authenticated, try to load their saved resume
-      if (data.session?.user) {
+      // If user is authenticated and we have a resume ID, load that specific resume
+      if (data.session?.user && resumeId) {
+        loadSpecificResume(resumeId);
+      }
+      // If user is authenticated but no specific resume, try to load their default resume
+      else if (data.session?.user && !resumeId) {
         loadResumeData(data.session.user.id);
       }
     };
@@ -105,14 +151,57 @@ const BasicResume = () => {
       setUser(session?.user || null);
       
       if (event === 'SIGNED_IN' && session?.user) {
-        loadResumeData(session.user.id);
+        if (resumeId) {
+          loadSpecificResume(resumeId);
+        } else {
+          loadResumeData(session.user.id);
+        }
       }
     });
     
     return () => {
       subscription.unsubscribe();
     };
-  }, []);
+  }, [resumeId]);
+
+  // Load specific resume by ID
+  const loadSpecificResume = async (id: string) => {
+    try {
+      setIsLoading(true);
+      
+      const { data, error } = await supabase
+        .from('resumes')
+        .select('*')
+        .eq('id', id)
+        .single() as { data: ResumeRecord, error: any };
+      
+      if (error) throw error;
+      
+      if (data) {
+        // Parse the data from JSON stored in Supabase
+        setResumeData({
+          name: data.name || "",
+          phone: data.phone || "",
+          email: data.email || "",
+          nationality: data.nationality || "",
+          institution: data.institution || "",
+          educationDates: data.education_dates || "",
+          qualifications: data.qualifications || "",
+          workExperience: data.work_experience || [{ id: "work-1", role: "", organization: "", dates: "", description: "" }],
+          awards: data.awards || "",
+          activities: data.activities || [{ id: "activity-1", role: "", organization: "", dates: "", description: "" }],
+          languages: data.languages || "",
+          interests: data.interests || "",
+          itSkills: data.it_skills || ""
+        });
+      }
+    } catch (error) {
+      console.error('Error loading specific resume:', error);
+      toast.error("Failed to load the requested resume.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // Load resume data from Supabase
   const loadResumeData = async (userId: string) => {
@@ -234,6 +323,22 @@ const BasicResume = () => {
     }));
   };
 
+  // Open section editing dialog
+  const openEditDialog = (section: EditSection, workIndex?: number, activityIndex?: number) => {
+    if (viewMode) return;
+    
+    setEditingSection(section);
+    if (workIndex !== undefined) setEditingWorkIndex(workIndex);
+    if (activityIndex !== undefined) setEditingActivityIndex(activityIndex);
+  };
+
+  // Close section editing dialog
+  const closeEditDialog = () => {
+    setEditingSection(null);
+    setEditingWorkIndex(-1);
+    setEditingActivityIndex(-1);
+  };
+
   // Save resume data to Supabase
   const saveResume = async () => {
     if (!user) {
@@ -250,9 +355,10 @@ const BasicResume = () => {
       setIsLoading(true);
       
       // Use a type assertion to handle the custom table
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('resumes')
         .upsert({
+          id: resumeId || undefined, // If we have a resumeId, update that record
           user_id: user.id,
           template_type: 'basic',
           name: resumeData.name,
@@ -269,9 +375,20 @@ const BasicResume = () => {
           interests: resumeData.interests,
           it_skills: resumeData.itSkills,
           updated_at: new Date()
-        } as any);
+        } as any)
+        .select('id')
+        .single();
       
       if (error) throw error;
+      
+      // If this was a new resume, update the resumeId
+      if (data && !resumeId) {
+        setResumeId(data.id);
+        // Update the URL to include the new ID without reloading
+        const url = new URL(window.location.href);
+        url.searchParams.set('id', data.id);
+        window.history.replaceState({}, '', url.toString());
+      }
       
       toast.success("Resume saved successfully!");
     } catch (error) {
@@ -569,6 +686,385 @@ const BasicResume = () => {
     }
   };
 
+  // Render the edit dialog for each section
+  const renderEditDialog = () => {
+    if (!editingSection) return null;
+
+    return (
+      <Dialog open={!!editingSection} onOpenChange={(open) => !open && closeEditDialog()}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              {editingSection === 'personal' && 'Edit Personal Information'}
+              {editingSection === 'education' && 'Edit Education Details'}
+              {editingSection === 'workExperience' && 'Manage Work Experience'}
+              {editingSection === 'workExperienceItem' && 'Edit Work Experience'}
+              {editingSection === 'awards' && 'Edit Awards & Certificates'}
+              {editingSection === 'activities' && 'Manage Activities'}
+              {editingSection === 'activitiesItem' && 'Edit Activity'}
+              {editingSection === 'additional' && 'Edit Additional Information'}
+            </DialogTitle>
+            <DialogDescription>
+              Make changes to your resume information below.
+            </DialogDescription>
+          </DialogHeader>
+
+          {/* Personal Information Section */}
+          {editingSection === 'personal' && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name">Full Name</Label>
+                  <Input 
+                    id="name"
+                    name="name"
+                    value={resumeData.name}
+                    onChange={handleInputChange}
+                    placeholder="John Doe"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="phone">Phone Number</Label>
+                  <Input 
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    value={resumeData.phone}
+                    onChange={handleInputChange}
+                    placeholder="+1 234 567 890"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input 
+                    id="email"
+                    name="email"
+                    type="email"
+                    value={resumeData.email}
+                    onChange={handleInputChange}
+                    placeholder="john.doe@example.com"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="nationality">Nationality</Label>
+                  <Input 
+                    id="nationality"
+                    name="nationality"
+                    value={resumeData.nationality}
+                    onChange={handleInputChange}
+                    placeholder="e.g. American"
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end">
+                <DialogClose asChild>
+                  <Button>Save Changes</Button>
+                </DialogClose>
+              </div>
+            </div>
+          )}
+
+          {/* Education Section */}
+          {editingSection === 'education' && (
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="institution">Institution</Label>
+                <Input 
+                  id="institution"
+                  name="institution"
+                  value={resumeData.institution}
+                  onChange={handleInputChange}
+                  placeholder="Harvard University"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="educationDates">Dates</Label>
+                <Input 
+                  id="educationDates"
+                  name="educationDates"
+                  value={resumeData.educationDates}
+                  onChange={handleInputChange}
+                  placeholder="Sep 2018 - Jun 2022"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="qualifications">Qualifications (one per line)</Label>
+                <Textarea 
+                  id="qualifications"
+                  name="qualifications"
+                  rows={4}
+                  value={resumeData.qualifications}
+                  onChange={handleInputChange}
+                  placeholder="Bachelor of Science in Computer Science&#10;GPA: 3.8/4.0&#10;Relevant Coursework: Data Structures, Algorithms"
+                  className="min-h-[100px]"
+                />
+              </div>
+              <div className="flex justify-end">
+                <DialogClose asChild>
+                  <Button>Save Changes</Button>
+                </DialogClose>
+              </div>
+            </div>
+          )}
+
+          {/* Work Experience Management Section */}
+          {editingSection === 'workExperience' && (
+            <div className="space-y-4">
+              {resumeData.workExperience.map((work, index) => (
+                <div key={work.id} className="flex justify-between items-center border p-3 rounded-md">
+                  <div>
+                    <p className="font-medium">{work.role || "Untitled Role"}</p>
+                    <p className="text-sm text-gray-500">{work.organization || "Organization"}</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setEditingWorkIndex(index);
+                        setEditingSection('workExperienceItem');
+                      }}
+                    >
+                      Edit
+                    </Button>
+                    <Button 
+                      variant="outline"
+                      size="sm"
+                      disabled={resumeData.workExperience.length <= 1}
+                      onClick={() => removeWorkExperience(work.id)}
+                    >
+                      <Trash className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+              <Button 
+                onClick={addWorkExperience}
+                className="w-full"
+              >
+                <Plus className="h-4 w-4 mr-2" /> Add Work Experience
+              </Button>
+              <div className="flex justify-end pt-4">
+                <DialogClose asChild>
+                  <Button>Done</Button>
+                </DialogClose>
+              </div>
+            </div>
+          )}
+
+          {/* Work Experience Item Edit Section */}
+          {editingSection === 'workExperienceItem' && editingWorkIndex >= 0 && editingWorkIndex < resumeData.workExperience.length && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor={`role`}>Role/Position</Label>
+                  <Input 
+                    id={`role`}
+                    value={resumeData.workExperience[editingWorkIndex].role}
+                    onChange={(e) => handleWorkExperienceChange(resumeData.workExperience[editingWorkIndex].id, 'role', e.target.value)}
+                    placeholder="Software Engineer"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor={`organization`}>Organization/Company</Label>
+                  <Input 
+                    id={`organization`}
+                    value={resumeData.workExperience[editingWorkIndex].organization}
+                    onChange={(e) => handleWorkExperienceChange(resumeData.workExperience[editingWorkIndex].id, 'organization', e.target.value)}
+                    placeholder="Google Inc."
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor={`dates`}>Dates</Label>
+                  <Input 
+                    id={`dates`}
+                    value={resumeData.workExperience[editingWorkIndex].dates}
+                    onChange={(e) => handleWorkExperienceChange(resumeData.workExperience[editingWorkIndex].id, 'dates', e.target.value)}
+                    placeholder="Jul 2022 - Present"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor={`description`}>Description (one achievement per line)</Label>
+                <Textarea 
+                  id={`description`}
+                  value={resumeData.workExperience[editingWorkIndex].description}
+                  onChange={(e) => handleWorkExperienceChange(resumeData.workExperience[editingWorkIndex].id, 'description', e.target.value)}
+                  placeholder="Developed a new feature that increased user engagement by 30%&#10;Led a team of 5 engineers to deliver project ahead of schedule&#10;Optimized database queries resulting in 25% faster load times"
+                  className="min-h-[150px]"
+                />
+              </div>
+              <div className="flex justify-end pt-4">
+                <DialogClose asChild>
+                  <Button>Save Changes</Button>
+                </DialogClose>
+              </div>
+            </div>
+          )}
+
+          {/* Awards Section */}
+          {editingSection === 'awards' && (
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="awards">List your awards and certificates (one per line)</Label>
+                <Textarea 
+                  id="awards"
+                  name="awards"
+                  rows={6}
+                  value={resumeData.awards}
+                  onChange={handleInputChange}
+                  placeholder="AWS Certified Solutions Architect, 2023&#10;Employee of the Month, June 2022&#10;Dean's List, Fall 2020"
+                  className="min-h-[150px]"
+                />
+              </div>
+              <div className="flex justify-end">
+                <DialogClose asChild>
+                  <Button>Save Changes</Button>
+                </DialogClose>
+              </div>
+            </div>
+          )}
+
+          {/* Activities Management Section */}
+          {editingSection === 'activities' && (
+            <div className="space-y-4">
+              {resumeData.activities.map((activity, index) => (
+                <div key={activity.id} className="flex justify-between items-center border p-3 rounded-md">
+                  <div>
+                    <p className="font-medium">{activity.role || "Untitled Role"}</p>
+                    <p className="text-sm text-gray-500">{activity.organization || "Organization"}</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setEditingActivityIndex(index);
+                        setEditingSection('activitiesItem');
+                      }}
+                    >
+                      Edit
+                    </Button>
+                    <Button 
+                      variant="outline"
+                      size="sm"
+                      disabled={resumeData.activities.length <= 1}
+                      onClick={() => removeActivity(activity.id)}
+                    >
+                      <Trash className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+              <Button 
+                onClick={addActivity}
+                className="w-full"
+              >
+                <Plus className="h-4 w-4 mr-2" /> Add Activity
+              </Button>
+              <div className="flex justify-end pt-4">
+                <DialogClose asChild>
+                  <Button>Done</Button>
+                </DialogClose>
+              </div>
+            </div>
+          )}
+
+          {/* Activity Item Edit Section */}
+          {editingSection === 'activitiesItem' && editingActivityIndex >= 0 && editingActivityIndex < resumeData.activities.length && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor={`role`}>Role/Position</Label>
+                  <Input 
+                    id={`role`}
+                    value={resumeData.activities[editingActivityIndex].role}
+                    onChange={(e) => handleActivityChange(resumeData.activities[editingActivityIndex].id, 'role', e.target.value)}
+                    placeholder="Volunteer"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor={`organization`}>Organization</Label>
+                  <Input 
+                    id={`organization`}
+                    value={resumeData.activities[editingActivityIndex].organization}
+                    onChange={(e) => handleActivityChange(resumeData.activities[editingActivityIndex].id, 'organization', e.target.value)}
+                    placeholder="Red Cross"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor={`dates`}>Dates</Label>
+                  <Input 
+                    id={`dates`}
+                    value={resumeData.activities[editingActivityIndex].dates}
+                    onChange={(e) => handleActivityChange(resumeData.activities[editingActivityIndex].id, 'dates', e.target.value)}
+                    placeholder="Jan 2021 - Dec 2021"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor={`description`}>Description (one point per line)</Label>
+                <Textarea 
+                  id={`description`}
+                  value={resumeData.activities[editingActivityIndex].description}
+                  onChange={(e) => handleActivityChange(resumeData.activities[editingActivityIndex].id, 'description', e.target.value)}
+                  placeholder="Organized fundraising events that raised $10,000&#10;Coordinated a team of 20 volunteers&#10;Managed social media campaign with 50,000+ impressions"
+                  className="min-h-[150px]"
+                />
+              </div>
+              <div className="flex justify-end pt-4">
+                <DialogClose asChild>
+                  <Button>Save Changes</Button>
+                </DialogClose>
+              </div>
+            </div>
+          )}
+
+          {/* Additional Information Section */}
+          {editingSection === 'additional' && (
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="languages">Languages (comma separated)</Label>
+                <Input 
+                  id="languages"
+                  name="languages"
+                  value={resumeData.languages}
+                  onChange={handleInputChange}
+                  placeholder="English (Native), Spanish (Fluent), Mandarin (Basic)"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="interests">Interests (comma separated)</Label>
+                <Input 
+                  id="interests"
+                  name="interests"
+                  value={resumeData.interests}
+                  onChange={handleInputChange}
+                  placeholder="Photography, Hiking, Chess"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="itSkills">IT Skills (comma separated)</Label>
+                <Input 
+                  id="itSkills"
+                  name="itSkills"
+                  value={resumeData.itSkills}
+                  onChange={handleInputChange}
+                  placeholder="MS Office, Adobe Photoshop, HTML/CSS"
+                />
+              </div>
+              <div className="flex justify-end pt-4">
+                <DialogClose asChild>
+                  <Button>Save Changes</Button>
+                </DialogClose>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+    );
+  };
+
   return (
     <div className="container mx-auto py-8 px-4">
       {/* Header with back button */}
@@ -576,451 +1072,208 @@ const BasicResume = () => {
         <Button variant="ghost" size="icon" onClick={() => navigate('/resumebuilder')} className="mr-2">
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <h1 className="text-2xl font-bold">Basic Resume Builder</h1>
+        <h1 className="text-2xl font-bold flex-1">Basic Resume Builder</h1>
+        <div className="flex gap-2">
+          {!viewMode && (
+            <Button onClick={saveResume} disabled={isLoading} className="flex items-center">
+              <Save className="h-4 w-4 mr-2" /> Save
+            </Button>
+          )}
+          <Button variant="outline" onClick={downloadPDF} disabled={isLoading} className="flex items-center">
+            <Download className="h-4 w-4 mr-2" /> Download PDF
+          </Button>
+        </div>
       </div>
       
-      {/* Main content with form and preview */}
-      <div className="flex flex-col lg:flex-row gap-8">
-        {/* Left column - Form */}
-        <div className="w-full lg:w-1/2 space-y-6">
-          <Card className={`p-6 ${isCurrentlyDark ? 'bg-gray-800 text-gray-200' : ''}`}>
-            <CardContent className="p-0 space-y-6">
-              {/* Header Section */}
-              <div>
-                <h3 className={`font-semibold text-lg mb-4 ${isCurrentlyDark ? 'text-gray-200' : 'text-gray-800'}`}>Personal Information</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="name">Full Name</Label>
-                    <Input 
-                      id="name"
-                      name="name"
-                      value={resumeData.name}
-                      onChange={handleInputChange}
-                      placeholder="John Doe"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="phone">Phone Number</Label>
-                    <Input 
-                      id="phone"
-                      name="phone"
-                      type="tel"
-                      value={resumeData.phone}
-                      onChange={handleInputChange}
-                      placeholder="+1 234 567 890"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input 
-                      id="email"
-                      name="email"
-                      type="email"
-                      value={resumeData.email}
-                      onChange={handleInputChange}
-                      placeholder="john.doe@example.com"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="nationality">Nationality</Label>
-                    <Input 
-                      id="nationality"
-                      name="nationality"
-                      value={resumeData.nationality}
-                      onChange={handleInputChange}
-                      placeholder="e.g. American"
-                    />
-                  </div>
-                </div>
+      {/* Full-width resume preview with clickable sections */}
+      <div className="max-w-4xl mx-auto">
+        <Card className={`p-6 ${isCurrentlyDark ? 'bg-gray-800 text-gray-200' : 'bg-white'}`}>
+          <CardContent className="p-0">
+            <div 
+              className={`border rounded-md p-8 ${isCurrentlyDark ? 'border-gray-700 bg-gray-900' : 'bg-white'}`} 
+              style={{ minHeight: "1120px", margin: "0 auto" }}
+            >
+              {/* Header - Personal Information Section */}
+              <div 
+                className={`text-center mb-6 p-4 rounded-md ${!viewMode && 'cursor-pointer hover:bg-gray-100 hover:dark:bg-gray-800'}`}
+                onClick={() => openEditDialog('personal')}
+              >
+                <h1 className="text-2xl font-bold uppercase" style={{ color: "#2e6b8f" }}>
+                  {resumeData.name || "FULL NAME"}
+                </h1>
+                <p className="text-sm mt-1">
+                  {[resumeData.phone, resumeData.email, resumeData.nationality].filter(Boolean).join(" | ") || "Phone | Email | Nationality"}
+                </p>
+                {!viewMode && <div className="mt-2 text-xs text-blue-500">(Click to edit personal information)</div>}
               </div>
               
               {/* Education Section */}
-              <div>
-                <h3 className={`font-semibold text-lg mb-4 ${isCurrentlyDark ? 'text-gray-200' : 'text-gray-800'}`}>Education</h3>
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="institution">Institution</Label>
-                    <Input 
-                      id="institution"
-                      name="institution"
-                      value={resumeData.institution}
-                      onChange={handleInputChange}
-                      placeholder="Harvard University"
-                    />
+              <div 
+                className={`mb-6 p-4 rounded-md ${!viewMode && 'cursor-pointer hover:bg-gray-100 hover:dark:bg-gray-800'}`}
+                onClick={() => openEditDialog('education')}
+              >
+                <h2 className="text-lg font-bold uppercase mb-2 pb-1 border-b-2" style={{ color: "#2e6b8f", borderColor: "#2e6b8f" }}>
+                  Education
+                </h2>
+                <div className="ml-2">
+                  <div className="flex justify-between items-start">
+                    <span className="font-bold">{resumeData.institution || "Institution"}</span>
+                    <span className="italic">{resumeData.educationDates || "Dates"}</span>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="educationDates">Dates</Label>
-                    <Input 
-                      id="educationDates"
-                      name="educationDates"
-                      value={resumeData.educationDates}
-                      onChange={handleInputChange}
-                      placeholder="Sep 2018 - Jun 2022"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="qualifications">Qualifications (one per line)</Label>
-                    <Textarea 
-                      id="qualifications"
-                      name="qualifications"
-                      rows={4}
-                      value={resumeData.qualifications}
-                      onChange={handleInputChange}
-                      placeholder="Bachelor of Science in Computer Science&#10;GPA: 3.8/4.0&#10;Relevant Coursework: Data Structures, Algorithms"
-                      className="min-h-[100px]"
-                    />
-                  </div>
-                </div>
-              </div>
-              
-              {/* Work Experience Section */}
-              <div>
-                <h3 className={`font-semibold text-lg mb-4 ${isCurrentlyDark ? 'text-gray-200' : 'text-gray-800'}`}>Work Experience</h3>
-                {resumeData.workExperience.map((work, index) => (
-                  <div key={work.id} className="space-y-4 mb-6 p-4 border rounded-md">
-                    <div className="flex justify-between items-center">
-                      <h4 className={`font-medium ${isCurrentlyDark ? 'text-gray-300' : 'text-gray-700'}`}>Position {index + 1}</h4>
-                      <Button 
-                        variant="ghost" 
-                        size="icon"
-                        onClick={() => removeWorkExperience(work.id)}
-                        disabled={resumeData.workExperience.length <= 1}
-                      >
-                        <Trash className="h-4 w-4" />
-                      </Button>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor={`role-${work.id}`}>Role/Position</Label>
-                        <Input 
-                          id={`role-${work.id}`}
-                          value={work.role}
-                          onChange={(e) => handleWorkExperienceChange(work.id, 'role', e.target.value)}
-                          placeholder="Software Engineer"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor={`organization-${work.id}`}>Organization/Company</Label>
-                        <Input 
-                          id={`organization-${work.id}`}
-                          value={work.organization}
-                          onChange={(e) => handleWorkExperienceChange(work.id, 'organization', e.target.value)}
-                          placeholder="Google Inc."
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor={`dates-${work.id}`}>Dates</Label>
-                        <Input 
-                          id={`dates-${work.id}`}
-                          value={work.dates}
-                          onChange={(e) => handleWorkExperienceChange(work.id, 'dates', e.target.value)}
-                          placeholder="Jul 2022 - Present"
-                        />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor={`description-${work.id}`}>Description (one achievement per line)</Label>
-                      <Textarea 
-                        id={`description-${work.id}`}
-                        value={work.description}
-                        onChange={(e) => handleWorkExperienceChange(work.id, 'description', e.target.value)}
-                        placeholder="Developed a new feature that increased user engagement by 30%&#10;Led a team of 5 engineers to deliver project ahead of schedule&#10;Optimized database queries resulting in 25% faster load times"
-                        className="min-h-[100px]"
-                      />
-                    </div>
-                  </div>
-                ))}
-                
-                <Button 
-                  variant="outline" 
-                  className={`w-full ${isCurrentlyDark ? 'border-gray-700 hover:bg-gray-700' : ''}`}
-                  onClick={addWorkExperience}
-                >
-                  <Plus className="h-4 w-4 mr-2" /> Add Work Experience
-                </Button>
-              </div>
-              
-              {/* Awards & Certificates Section */}
-              <div>
-                <h3 className={`font-semibold text-lg mb-4 ${isCurrentlyDark ? 'text-gray-200' : 'text-gray-800'}`}>Awards & Certificates</h3>
-                <div className="space-y-2">
-                  <Label htmlFor="awards">List your awards and certificates (one per line)</Label>
-                  <Textarea 
-                    id="awards"
-                    name="awards"
-                    rows={4}
-                    value={resumeData.awards}
-                    onChange={handleInputChange}
-                    placeholder="AWS Certified Solutions Architect, 2023&#10;Employee of the Month, June 2022&#10;Dean's List, Fall 2020"
-                    className="min-h-[100px]"
-                  />
-                </div>
-              </div>
-              
-              {/* Extra-Curricular Activities Section */}
-              <div>
-                <h3 className={`font-semibold text-lg mb-4 ${isCurrentlyDark ? 'text-gray-200' : 'text-gray-800'}`}>Extra-Curricular Activities</h3>
-                {resumeData.activities.map((activity, index) => (
-                  <div key={activity.id} className="space-y-4 mb-6 p-4 border rounded-md">
-                    <div className="flex justify-between items-center">
-                      <h4 className={`font-medium ${isCurrentlyDark ? 'text-gray-300' : 'text-gray-700'}`}>Activity {index + 1}</h4>
-                      <Button 
-                        variant="ghost" 
-                        size="icon"
-                        onClick={() => removeActivity(activity.id)}
-                        disabled={resumeData.activities.length <= 1}
-                      >
-                        <Trash className="h-4 w-4" />
-                      </Button>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor={`role-${activity.id}`}>Role/Position</Label>
-                        <Input 
-                          id={`role-${activity.id}`}
-                          value={activity.role}
-                          onChange={(e) => handleActivityChange(activity.id, 'role', e.target.value)}
-                          placeholder="Volunteer"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor={`organization-${activity.id}`}>Organization</Label>
-                        <Input 
-                          id={`organization-${activity.id}`}
-                          value={activity.organization}
-                          onChange={(e) => handleActivityChange(activity.id, 'organization', e.target.value)}
-                          placeholder="Red Cross"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor={`dates-${activity.id}`}>Dates</Label>
-                        <Input 
-                          id={`dates-${activity.id}`}
-                          value={activity.dates}
-                          onChange={(e) => handleActivityChange(activity.id, 'dates', e.target.value)}
-                          placeholder="Jan 2021 - Dec 2021"
-                        />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor={`description-${activity.id}`}>Description (one point per line)</Label>
-                      <Textarea 
-                        id={`description-${activity.id}`}
-                        value={activity.description}
-                        onChange={(e) => handleActivityChange(activity.id, 'description', e.target.value)}
-                        placeholder="Organized fundraising events that raised $10,000&#10;Coordinated a team of 20 volunteers&#10;Managed social media campaign with 50,000+ impressions"
-                        className="min-h-[100px]"
-                      />
-                    </div>
-                  </div>
-                ))}
-                
-                <Button 
-                  variant="outline" 
-                  className={`w-full ${isCurrentlyDark ? 'border-gray-700 hover:bg-gray-700' : ''}`}
-                  onClick={addActivity}
-                >
-                  <Plus className="h-4 w-4 mr-2" /> Add Activity
-                </Button>
-              </div>
-              
-              {/* Additional Information Section */}
-              <div>
-                <h3 className={`font-semibold text-lg mb-4 ${isCurrentlyDark ? 'text-gray-200' : 'text-gray-800'}`}>Additional Information</h3>
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="languages">Languages (comma separated)</Label>
-                    <Input 
-                      id="languages"
-                      name="languages"
-                      value={resumeData.languages}
-                      onChange={handleInputChange}
-                      placeholder="English (Native), Spanish (Fluent), Mandarin (Basic)"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="interests">Interests (comma separated)</Label>
-                    <Input 
-                      id="interests"
-                      name="interests"
-                      value={resumeData.interests}
-                      onChange={handleInputChange}
-                      placeholder="Photography, Hiking, Chess"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="itSkills">IT Skills (comma separated)</Label>
-                    <Input 
-                      id="itSkills"
-                      name="itSkills"
-                      value={resumeData.itSkills}
-                      onChange={handleInputChange}
-                      placeholder="MS Office, Adobe Photoshop, HTML/CSS"
-                    />
-                  </div>
-                </div>
-              </div>
-              
-              {/* Action buttons */}
-              <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                <Button 
-                  onClick={saveResume} 
-                  disabled={isLoading}
-                  className="flex-1"
-                >
-                  <Save className="h-4 w-4 mr-2" /> Save & Preview
-                </Button>
-                <Button 
-                  variant="outline"
-                  onClick={downloadPDF} 
-                  disabled={isLoading}
-                  className="flex-1"
-                >
-                  <Download className="h-4 w-4 mr-2" /> Download PDF
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-        
-        {/* Right column - Preview */}
-        <div className="w-full lg:w-1/2">
-          <Card className={`p-6 ${isCurrentlyDark ? 'bg-gray-800 text-gray-200' : 'bg-white'}`}>
-            <CardContent className="p-0">
-              <div className={`border rounded-md p-8 ${isCurrentlyDark ? 'border-gray-700 bg-gray-900' : 'bg-white'}`} style={{ minHeight: "1120px", maxWidth: "100%", margin: "0 auto" }}>
-                {/* Header */}
-                <div className="text-center mb-6">
-                  <h1 className="text-2xl font-bold uppercase text-teal-600" style={{ color: "#2e6b8f" }}>
-                    {resumeData.name || "FULL NAME"}
-                  </h1>
-                  <p className="text-sm mt-1">
-                    {[resumeData.phone, resumeData.email, resumeData.nationality].filter(Boolean).join(" | ") || "Phone | Email | Nationality"}
-                  </p>
-                </div>
-                
-                {/* Education Section */}
-                <div className="mb-6">
-                  <h2 className="text-lg font-bold uppercase mb-2 pb-1 border-b-2" style={{ color: "#2e6b8f", borderColor: "#2e6b8f" }}>
-                    Education
-                  </h2>
-                  <div className="ml-2">
-                    <div className="flex justify-between items-start">
-                      <span className="font-bold">{resumeData.institution || "Institution"}</span>
-                      <span className="italic">{resumeData.educationDates || "Dates"}</span>
-                    </div>
-                    <ul className="list-disc ml-5 mt-2 text-sm">
-                      {resumeData.qualifications ? 
-                        resumeData.qualifications.split("\n").filter(Boolean).map((qual, index) => (
-                          <li key={index}>{qual}</li>
-                        )) : 
-                        <li>Qualifications will appear here</li>
-                      }
-                    </ul>
-                  </div>
-                </div>
-                
-                {/* Work Experience Section */}
-                <div className="mb-6">
-                  <h2 className="text-lg font-bold uppercase mb-2 pb-1 border-b-2" style={{ color: "#2e6b8f", borderColor: "#2e6b8f" }}>
-                    Work Experience
-                  </h2>
-                  {resumeData.workExperience.map((work, index) => (
-                    <div key={work.id} className="ml-2 mb-4">
-                      <div className="flex justify-between items-start">
-                        <span className="font-bold">{work.role || "Role/Position"}</span>
-                        <span className="italic">{work.dates || "Dates"}</span>
-                      </div>
-                      <div className="font-bold text-sm">{work.organization || "Organization/Company"}</div>
-                      <ul className="list-disc ml-5 mt-1 text-sm">
-                        {work.description ? 
-                          work.description.split("\n").filter(Boolean).map((desc, i) => (
-                            <li key={i}>{desc}</li>
-                          )) : 
-                          <li>Description will appear here</li>
-                        }
-                      </ul>
-                    </div>
-                  ))}
-                </div>
-                
-                {/* Awards & Certificates Section */}
-                <div className="mb-6">
-                  <h2 className="text-lg font-bold uppercase mb-2 pb-1 border-b-2" style={{ color: "#2e6b8f", borderColor: "#2e6b8f" }}>
-                    Awards & Certificates
-                  </h2>
-                  <ul className="list-disc ml-7 text-sm">
-                    {resumeData.awards ? 
-                      resumeData.awards.split("\n").filter(Boolean).map((award, index) => (
-                        <li key={index}>{award}</li>
+                  <ul className="list-disc ml-5 mt-2 text-sm">
+                    {resumeData.qualifications ? 
+                      resumeData.qualifications.split("\n").filter(Boolean).map((qual, index) => (
+                        <li key={index}>{qual}</li>
                       )) : 
-                      <li>Awards will appear here</li>
+                      <li>Qualifications will appear here</li>
                     }
                   </ul>
                 </div>
-                
-                {/* Extra-Curricular Activities Section */}
-                <div className="mb-6">
-                  <h2 className="text-lg font-bold uppercase mb-2 pb-1 border-b-2" style={{ color: "#2e6b8f", borderColor: "#2e6b8f" }}>
-                    Extra-Curricular Activities
-                  </h2>
-                  {resumeData.activities.map((activity, index) => (
-                    <div key={activity.id} className="ml-2 mb-4">
-                      <div className="flex justify-between items-start">
-                        <span className="font-bold">{activity.role || "Role/Position"}</span>
-                        <span className="italic">{activity.dates || "Dates"}</span>
-                      </div>
-                      <div className="font-bold text-sm">{activity.organization || "Organization"}</div>
-                      <ul className="list-disc ml-5 mt-1 text-sm">
-                        {activity.description ? 
-                          activity.description.split("\n").filter(Boolean).map((desc, i) => (
-                            <li key={i}>{desc}</li>
-                          )) : 
-                          <li>Description will appear here</li>
-                        }
-                      </ul>
-                    </div>
-                  ))}
-                </div>
-                
-                {/* Additional Information Section */}
-                <div>
-                  <h2 className="text-lg font-bold uppercase mb-2 pb-1 border-b-2" style={{ color: "#2e6b8f", borderColor: "#2e6b8f" }}>
-                    Additional Information
-                  </h2>
-                  <div className="ml-2 space-y-3 text-sm">
-                    {resumeData.languages && (
-                      <div>
-                        <span className="font-bold">Languages: </span>
-                        {resumeData.languages}
-                      </div>
-                    )}
-                    {resumeData.interests && (
-                      <div>
-                        <span className="font-bold">Interests: </span>
-                        {resumeData.interests}
-                      </div>
-                    )}
-                    {resumeData.itSkills && (
-                      <div>
-                        <span className="font-bold">IT Skills: </span>
-                        {resumeData.itSkills}
-                      </div>
-                    )}
-                    {!resumeData.languages && !resumeData.interests && !resumeData.itSkills && (
-                      <p>Additional information will appear here</p>
-                    )}
-                  </div>
-                </div>
-                
-                {/* Footer */}
-                <div className="mt-16 text-center text-xs text-gray-500">
-                  Created with Adviseek © 2025
-                </div>
+                {!viewMode && <div className="mt-2 text-xs text-blue-500">(Click to edit education details)</div>}
               </div>
-            </CardContent>
-          </Card>
-        </div>
+              
+              {/* Work Experience Section */}
+              <div 
+                className={`mb-6 p-4 rounded-md ${!viewMode && 'cursor-pointer hover:bg-gray-100 hover:dark:bg-gray-800'}`}
+                onClick={() => openEditDialog('workExperience')}
+              >
+                <h2 className="text-lg font-bold uppercase mb-2 pb-1 border-b-2" style={{ color: "#2e6b8f", borderColor: "#2e6b8f" }}>
+                  Work Experience
+                </h2>
+                {resumeData.workExperience.map((work, index) => (
+                  <div 
+                    key={work.id} 
+                    className={`ml-2 mb-4 p-2 rounded ${!viewMode && 'hover:bg-gray-200 hover:dark:bg-gray-700'}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (!viewMode) {
+                        setEditingWorkIndex(index);
+                        setEditingSection('workExperienceItem');
+                      }
+                    }}
+                  >
+                    <div className="flex justify-between items-start">
+                      <span className="font-bold">{work.role || "Role/Position"}</span>
+                      <span className="italic">{work.dates || "Dates"}</span>
+                    </div>
+                    <div className="font-bold text-sm">{work.organization || "Organization/Company"}</div>
+                    <ul className="list-disc ml-5 mt-1 text-sm">
+                      {work.description ? 
+                        work.description.split("\n").filter(Boolean).map((desc, i) => (
+                          <li key={i}>{desc}</li>
+                        )) : 
+                        <li>Description will appear here</li>
+                      }
+                    </ul>
+                    {!viewMode && <div className="mt-1 text-xs text-blue-500">(Click to edit this work experience)</div>}
+                  </div>
+                ))}
+                {!viewMode && <div className="mt-2 text-xs text-blue-500">(Click to manage work experience entries)</div>}
+              </div>
+              
+              {/* Awards & Certificates Section */}
+              <div 
+                className={`mb-6 p-4 rounded-md ${!viewMode && 'cursor-pointer hover:bg-gray-100 hover:dark:bg-gray-800'}`}
+                onClick={() => openEditDialog('awards')}
+              >
+                <h2 className="text-lg font-bold uppercase mb-2 pb-1 border-b-2" style={{ color: "#2e6b8f", borderColor: "#2e6b8f" }}>
+                  Awards & Certificates
+                </h2>
+                <ul className="list-disc ml-7 text-sm">
+                  {resumeData.awards ? 
+                    resumeData.awards.split("\n").filter(Boolean).map((award, index) => (
+                      <li key={index}>{award}</li>
+                    )) : 
+                    <li>Awards will appear here</li>
+                  }
+                </ul>
+                {!viewMode && <div className="mt-2 text-xs text-blue-500">(Click to edit awards and certificates)</div>}
+              </div>
+              
+              {/* Extra-Curricular Activities Section */}
+              <div 
+                className={`mb-6 p-4 rounded-md ${!viewMode && 'cursor-pointer hover:bg-gray-100 hover:dark:bg-gray-800'}`}
+                onClick={() => openEditDialog('activities')}
+              >
+                <h2 className="text-lg font-bold uppercase mb-2 pb-1 border-b-2" style={{ color: "#2e6b8f", borderColor: "#2e6b8f" }}>
+                  Extra-Curricular Activities
+                </h2>
+                {resumeData.activities.map((activity, index) => (
+                  <div 
+                    key={activity.id} 
+                    className={`ml-2 mb-4 p-2 rounded ${!viewMode && 'hover:bg-gray-200 hover:dark:bg-gray-700'}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (!viewMode) {
+                        setEditingActivityIndex(index);
+                        setEditingSection('activitiesItem');
+                      }
+                    }}
+                  >
+                    <div className="flex justify-between items-start">
+                      <span className="font-bold">{activity.role || "Role/Position"}</span>
+                      <span className="italic">{activity.dates || "Dates"}</span>
+                    </div>
+                    <div className="font-bold text-sm">{activity.organization || "Organization"}</div>
+                    <ul className="list-disc ml-5 mt-1 text-sm">
+                      {activity.description ? 
+                        activity.description.split("\n").filter(Boolean).map((desc, i) => (
+                          <li key={i}>{desc}</li>
+                        )) : 
+                        <li>Description will appear here</li>
+                      }
+                    </ul>
+                    {!viewMode && <div className="mt-1 text-xs text-blue-500">(Click to edit this activity)</div>}
+                  </div>
+                ))}
+                {!viewMode && <div className="mt-2 text-xs text-blue-500">(Click to manage activities)</div>}
+              </div>
+              
+              {/* Additional Information Section */}
+              <div 
+                className={`p-4 rounded-md ${!viewMode && 'cursor-pointer hover:bg-gray-100 hover:dark:bg-gray-800'}`}
+                onClick={() => openEditDialog('additional')}
+              >
+                <h2 className="text-lg font-bold uppercase mb-2 pb-1 border-b-2" style={{ color: "#2e6b8f", borderColor: "#2e6b8f" }}>
+                  Additional Information
+                </h2>
+                <div className="ml-2 space-y-3 text-sm">
+                  {resumeData.languages && (
+                    <div>
+                      <span className="font-bold">Languages: </span>
+                      {resumeData.languages}
+                    </div>
+                  )}
+                  {resumeData.interests && (
+                    <div>
+                      <span className="font-bold">Interests: </span>
+                      {resumeData.interests}
+                    </div>
+                  )}
+                  {resumeData.itSkills && (
+                    <div>
+                      <span className="font-bold">IT Skills: </span>
+                      {resumeData.itSkills}
+                    </div>
+                  )}
+                  {!resumeData.languages && !resumeData.interests && !resumeData.itSkills && (
+                    <p>Additional information will appear here</p>
+                  )}
+                </div>
+                {!viewMode && <div className="mt-2 text-xs text-blue-500">(Click to edit additional information)</div>}
+              </div>
+              
+              {/* Footer */}
+              <div className="mt-16 text-center text-xs text-gray-500">
+                Created with Adviseek © 2025
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
+
+      {/* Render the edit dialog */}
+      {renderEditDialog()}
     </div>
   );
 };

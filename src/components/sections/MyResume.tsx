@@ -1,24 +1,78 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { toast } from "@/components/ui/sonner";
-import { FileUp, FilePlus } from "lucide-react";
+import { FileUp, FilePlus, Eye, Edit } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "@/contexts/ThemeContext";
+import { supabase } from "@/integrations/supabase/client";
+
+interface SavedResume {
+  id: string;
+  name: string;
+  template_type: string;
+  updated_at: string;
+}
 
 export const MyResume = () => {
   const [isDragActive, setIsDragActive] = useState(false);
   const [resumeFiles, setResumeFiles] = useState<File[]>([]);
+  const [savedResumes, setSavedResumes] = useState<SavedResume[]>([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { isCurrentlyDark } = useTheme();
 
-  // Sample resume data (in a real app, this would come from a database)
-  const existingResumes = [
-    { id: 1, name: "Harvard Business School.pdf", program: "Harvard MBA", updatedAt: "2024-04-02" },
-    { id: 2, name: "Stanford GSB.pdf", program: "Stanford MBA", updatedAt: "2024-04-01" },
-    { id: 3, name: "MIT Sloan.pdf", program: "MIT MS Finance", updatedAt: "2024-03-28" },
-  ];
+  // Fetch saved resumes from Supabase
+  useEffect(() => {
+    const fetchSavedResumes = async () => {
+      try {
+        const { data: session } = await supabase.auth.getSession();
+        if (session?.session?.user) {
+          const { data, error } = await supabase
+            .from('resumes')
+            .select('id, name, template_type, updated_at')
+            .eq('user_id', session.session.user.id)
+            .order('updated_at', { ascending: false });
+          
+          if (error) throw error;
+          
+          if (data) {
+            // Format the data for display
+            const formattedResumes = data.map(resume => ({
+              id: resume.id,
+              name: resume.name || 'Untitled Resume',
+              template_type: formatTemplateType(resume.template_type),
+              updated_at: new Date(resume.updated_at).toLocaleDateString()
+            }));
+            
+            setSavedResumes(formattedResumes);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching saved resumes:', error);
+        toast.error('Failed to load your saved resumes.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchSavedResumes();
+  }, []);
+
+  // Format template type for display
+  const formatTemplateType = (templateType: string) => {
+    switch (templateType) {
+      case 'basic': return 'Basic Resume';
+      case 'stem': return 'STEM Resume';
+      case 'business': return 'Business Resume';
+      case 'humanities': return 'Humanities Resume';
+      case 'creative': return 'Creative Arts Resume';
+      case 'health': return 'Health Sciences Resume';
+      case 'education': return 'Education/Public Service Resume';
+      default: return templateType.charAt(0).toUpperCase() + templateType.slice(1);
+    }
+  };
 
   const handleDragEnter = (e: React.DragEvent) => {
     e.preventDefault();
@@ -46,24 +100,60 @@ export const MyResume = () => {
     const pdfFiles = droppedFiles.filter(file => file.type === "application/pdf");
     
     if (pdfFiles.length > 0) {
-      setResumeFiles(prev => [...prev, ...pdfFiles]);
-      toast.success(`${pdfFiles.length} resume${pdfFiles.length > 1 ? 's' : ''} uploaded successfully!`);
+      handleFileUpload(pdfFiles);
     } else {
       toast.error("Please upload PDF files only.");
     }
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleBrowseFiles = () => {
+    // This will trigger the hidden file input
+    document.getElementById('resume-file-upload')?.click();
+  };
+
+  const handleInputFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length > 0) {
       const fileArray = Array.from(files);
-      setResumeFiles(prev => [...prev, ...fileArray]);
-      toast.success(`${fileArray.length} resume${fileArray.length > 1 ? 's' : ''} uploaded successfully!`);
+      handleFileUpload(fileArray);
+    }
+  };
+
+  const handleFileUpload = async (files: File[]) => {
+    try {
+      const { data: session } = await supabase.auth.getSession();
+      const userId = session?.session?.user?.id;
+      
+      if (!userId) {
+        setResumeFiles(prev => [...prev, ...files]);
+        toast.success(`${files.length} resume${files.length > 1 ? 's' : ''} uploaded successfully!`);
+        return;
+      }
+      
+      // Upload to Supabase Storage (this would need a bucket setup)
+      // For now, we'll just add the files to the state
+      setResumeFiles(prev => [...prev, ...files]);
+      toast.success(`${files.length} resume${files.length > 1 ? 's' : ''} uploaded successfully!`);
+
+    } catch (error) {
+      console.error('Error uploading files:', error);
+      toast.error('Failed to upload resume files.');
     }
   };
 
   const handleBuildResume = () => {
     navigate("/resumebuilder");
+  };
+
+  const handleViewResume = (resumeId: string, templateType: string) => {
+    // For view functionality, we'll navigate to the resume builder with the specific ID
+    // The actual viewing logic would be implemented in the resume builder page
+    navigate(`/resumebuilder/${templateType.toLowerCase().replace(' resume', '')}?id=${resumeId}&mode=view`);
+  };
+
+  const handleEditResume = (resumeId: string, templateType: string) => {
+    // Navigate to the specific resume builder with the ID to edit
+    navigate(`/resumebuilder/${templateType.toLowerCase().replace(' resume', '')}?id=${resumeId}`);
   };
 
   return (
@@ -85,18 +175,17 @@ export const MyResume = () => {
           <p className={`text-sm ${isCurrentlyDark ? "text-gray-300" : "text-gray-500"} mb-4`}>
             Drag and drop your PDF resume here or click to browse
           </p>
-          <label className="cursor-pointer">
-            <input
-              type="file"
-              accept=".pdf"
-              className="hidden"
-              onChange={handleFileUpload}
-              multiple
-            />
-            <Button variant="outline" size="sm">
-              Browse Files
-            </Button>
-          </label>
+          <Button variant="outline" size="sm" onClick={handleBrowseFiles}>
+            Browse Files
+          </Button>
+          <input
+            id="resume-file-upload"
+            type="file"
+            accept=".pdf"
+            className="hidden"
+            onChange={handleInputFileChange}
+            multiple
+          />
         </Card>
 
         <Card
@@ -135,7 +224,7 @@ export const MyResume = () => {
                     isCurrentlyDark ? "text-gray-300" : "text-gray-500"
                   } uppercase tracking-wider`}
                 >
-                  Program
+                  Type
                 </th>
                 <th
                   scope="col"
@@ -158,64 +247,104 @@ export const MyResume = () => {
             <tbody className={`${isCurrentlyDark ? "bg-gray-800" : "bg-white"} divide-y ${
               isCurrentlyDark ? "divide-gray-700" : "divide-gray-200"
             }`}>
-              {existingResumes.map((resume) => (
-                <tr key={resume.id}>
-                  <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${
-                    isCurrentlyDark ? "text-gray-200" : "text-gray-900"
-                  }`}>
-                    {resume.name}
-                  </td>
-                  <td className={`px-6 py-4 whitespace-nowrap text-sm ${
-                    isCurrentlyDark ? "text-gray-300" : "text-gray-500"
-                  }`}>
-                    {resume.program}
-                  </td>
-                  <td className={`px-6 py-4 whitespace-nowrap text-sm ${
-                    isCurrentlyDark ? "text-gray-300" : "text-gray-500"
-                  }`}>
-                    {resume.updatedAt}
-                  </td>
-                  <td className={`px-6 py-4 whitespace-nowrap text-sm ${
-                    isCurrentlyDark ? "text-gray-300" : "text-gray-500"
-                  } space-x-2`}>
-                    <Button variant="ghost" size="sm">
-                      View
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      Edit
-                    </Button>
+              {loading ? (
+                <tr>
+                  <td colSpan={4} className="px-6 py-4 text-center">
+                    <div className="flex justify-center">
+                      <div className="animate-spin h-5 w-5 border-t-2 border-b-2 border-blue-500 rounded-full"></div>
+                    </div>
                   </td>
                 </tr>
-              ))}
-              {resumeFiles.map((file, index) => (
-                <tr key={`uploaded-${index}`}>
-                  <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${
-                    isCurrentlyDark ? "text-gray-200" : "text-gray-900"
-                  }`}>
-                    {file.name}
-                  </td>
-                  <td className={`px-6 py-4 whitespace-nowrap text-sm ${
-                    isCurrentlyDark ? "text-gray-300" : "text-gray-500"
-                  }`}>
-                    Not assigned
-                  </td>
-                  <td className={`px-6 py-4 whitespace-nowrap text-sm ${
-                    isCurrentlyDark ? "text-gray-300" : "text-gray-500"
-                  }`}>
-                    Just now
-                  </td>
-                  <td className={`px-6 py-4 whitespace-nowrap text-sm ${
-                    isCurrentlyDark ? "text-gray-300" : "text-gray-500"
-                  } space-x-2`}>
-                    <Button variant="ghost" size="sm">
-                      View
-                    </Button>
-                    <Button variant="ghost" size="sm">
-                      Edit
-                    </Button>
+              ) : savedResumes.length === 0 && resumeFiles.length === 0 ? (
+                <tr>
+                  <td colSpan={4} className="px-6 py-4 text-center">
+                    No resumes found. Upload a PDF or build a new resume!
                   </td>
                 </tr>
-              ))}
+              ) : (
+                <>
+                  {savedResumes.map((resume) => (
+                    <tr key={resume.id}>
+                      <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${
+                        isCurrentlyDark ? "text-gray-200" : "text-gray-900"
+                      }`}>
+                        {resume.name}
+                      </td>
+                      <td className={`px-6 py-4 whitespace-nowrap text-sm ${
+                        isCurrentlyDark ? "text-gray-300" : "text-gray-500"
+                      }`}>
+                        {resume.template_type}
+                      </td>
+                      <td className={`px-6 py-4 whitespace-nowrap text-sm ${
+                        isCurrentlyDark ? "text-gray-300" : "text-gray-500"
+                      }`}>
+                        {resume.updated_at}
+                      </td>
+                      <td className={`px-6 py-4 whitespace-nowrap text-sm ${
+                        isCurrentlyDark ? "text-gray-300" : "text-gray-500"
+                      } space-x-2`}>
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => handleViewResume(resume.id, resume.template_type)}
+                          className="flex items-center gap-1"
+                        >
+                          <Eye className="h-4 w-4" />
+                          View
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => handleEditResume(resume.id, resume.template_type)}
+                          className="flex items-center gap-1"
+                        >
+                          <Edit className="h-4 w-4" />
+                          Edit
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                  {resumeFiles.map((file, index) => (
+                    <tr key={`uploaded-${index}`}>
+                      <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${
+                        isCurrentlyDark ? "text-gray-200" : "text-gray-900"
+                      }`}>
+                        {file.name}
+                      </td>
+                      <td className={`px-6 py-4 whitespace-nowrap text-sm ${
+                        isCurrentlyDark ? "text-gray-300" : "text-gray-500"
+                      }`}>
+                        PDF Upload
+                      </td>
+                      <td className={`px-6 py-4 whitespace-nowrap text-sm ${
+                        isCurrentlyDark ? "text-gray-300" : "text-gray-500"
+                      }`}>
+                        Just now
+                      </td>
+                      <td className={`px-6 py-4 whitespace-nowrap text-sm ${
+                        isCurrentlyDark ? "text-gray-300" : "text-gray-500"
+                      } space-x-2`}>
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          className="flex items-center gap-1"
+                        >
+                          <Eye className="h-4 w-4" />
+                          View
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          className="flex items-center gap-1"
+                        >
+                          <Edit className="h-4 w-4" />
+                          Edit
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </>
+              )}
             </tbody>
           </table>
         </div>
