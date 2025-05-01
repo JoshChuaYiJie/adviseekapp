@@ -44,6 +44,28 @@ interface ResumeData {
   itSkills: string;
 }
 
+// Define the resume table structure to match our Supabase table
+interface ResumeRecord {
+  id: string;
+  user_id: string;
+  template_type: string;
+  name: string | null;
+  phone: string | null;
+  email: string | null;
+  nationality: string | null;
+  institution: string | null;
+  education_dates: string | null;
+  qualifications: string | null;
+  work_experience: WorkExperience[] | null;
+  awards: string | null;
+  activities: Activity[] | null;
+  languages: string | null;
+  interests: string | null;
+  it_skills: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 const BasicResume = () => {
   const navigate = useNavigate();
   const { isCurrentlyDark } = useTheme();
@@ -96,12 +118,14 @@ const BasicResume = () => {
   const loadResumeData = async (userId: string) => {
     try {
       setIsLoading(true);
+      
+      // Use the correct typings with a raw query to the resumes table
       const { data, error } = await supabase
         .from('resumes')
         .select('*')
         .eq('user_id', userId)
         .eq('template_type', 'basic')
-        .maybeSingle();
+        .maybeSingle() as { data: ResumeRecord | null, error: any };
       
       if (error) throw error;
       
@@ -225,6 +249,7 @@ const BasicResume = () => {
     try {
       setIsLoading(true);
       
+      // Use a type assertion to handle the custom table
       const { error } = await supabase
         .from('resumes')
         .upsert({
@@ -244,7 +269,7 @@ const BasicResume = () => {
           interests: resumeData.interests,
           it_skills: resumeData.itSkills,
           updated_at: new Date()
-        });
+        } as any);
       
       if (error) throw error;
       

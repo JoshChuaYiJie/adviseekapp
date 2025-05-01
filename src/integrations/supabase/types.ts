@@ -205,6 +205,69 @@ export type Database = {
           },
         ]
       }
+      resumes: {
+        Row: {
+          activities: Json | null
+          awards: string | null
+          created_at: string
+          education_dates: string | null
+          email: string | null
+          id: string
+          institution: string | null
+          interests: string | null
+          it_skills: string | null
+          languages: string | null
+          name: string | null
+          nationality: string | null
+          phone: string | null
+          qualifications: string | null
+          template_type: string
+          updated_at: string
+          user_id: string
+          work_experience: Json | null
+        }
+        Insert: {
+          activities?: Json | null
+          awards?: string | null
+          created_at?: string
+          education_dates?: string | null
+          email?: string | null
+          id?: string
+          institution?: string | null
+          interests?: string | null
+          it_skills?: string | null
+          languages?: string | null
+          name?: string | null
+          nationality?: string | null
+          phone?: string | null
+          qualifications?: string | null
+          template_type: string
+          updated_at?: string
+          user_id: string
+          work_experience?: Json | null
+        }
+        Update: {
+          activities?: Json | null
+          awards?: string | null
+          created_at?: string
+          education_dates?: string | null
+          email?: string | null
+          id?: string
+          institution?: string | null
+          interests?: string | null
+          it_skills?: string | null
+          languages?: string | null
+          name?: string | null
+          nationality?: string | null
+          phone?: string | null
+          qualifications?: string | null
+          template_type?: string
+          updated_at?: string
+          user_id?: string
+          work_experience?: Json | null
+        }
+        Relationships: []
+      }
       user_feedback: {
         Row: {
           created_at: string
