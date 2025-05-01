@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -15,6 +16,7 @@ import Pricing from "./pages/Pricing";
 import FeedbackForm from "./components/FeedbackForm";
 import Settings from "./pages/Settings";
 import ResumeBuilder from "./pages/ResumeBuilder";
+import BasicResume from "./pages/BasicResume";
 import { ChatWithAI } from "./components/ChatWithAI";
 import Community from "./pages/Community";
 import { ThemeProvider } from "@/contexts/ThemeContext";
@@ -43,6 +45,7 @@ const App = () => (
               <Route path="/pricing" element={<Pricing />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/resumebuilder" element={<ResumeBuilder />} />
+              <Route path="/resumebuilder/basic" element={<BasicResume />} />
               <Route path="/community" element={<Community />} />
               <Route path="/achievements" element={<Achievements />} />
               <Route path="*" element={<NotFound />} />
