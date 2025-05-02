@@ -13,6 +13,12 @@ interface CommunitySidebarProps {
 export const CommunitySidebar = ({ onCreatePost }: CommunitySidebarProps) => {
   const { t } = useTranslation();
 
+  const handleCreatePost = () => {
+    if (onCreatePost) {
+      onCreatePost();
+    }
+  };
+
   return (
     <div className="w-64 h-full bg-background border-r border-border p-4 flex flex-col gap-4">
       <div className="mb-4">
@@ -28,7 +34,7 @@ export const CommunitySidebar = ({ onCreatePost }: CommunitySidebarProps) => {
       <div className="mb-4">
         <Button 
           className="w-full flex items-center gap-2"
-          onClick={onCreatePost}
+          onClick={handleCreatePost}
         >
           <PlusCircle className="h-4 w-4" />
           {t('community.create_post', 'Create Post')}

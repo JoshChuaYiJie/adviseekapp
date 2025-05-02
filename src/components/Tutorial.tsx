@@ -60,6 +60,7 @@ export const Tutorial = ({ isOpen, onClose, onSkip }: TutorialProps) => {
     {
       target: '[data-tutorial="program-select"]',
       content: t("tutorial.program_select", "Pick your desired programme"),
+      autoSelectValue: "Computer Science"
     },
     {
       target: '[data-tutorial="application-questions"]',

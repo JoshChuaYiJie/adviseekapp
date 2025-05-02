@@ -1,36 +1,92 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useTranslation } from "react-i18next";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { 
+  loadUniversityData, 
+  getDegrees, 
+  getMajorsForDegree, 
+  UniversityData,
+  Major
+} from "@/utils/universityDataUtils";
 
 export const ApplyNow = () => {
   const [selectedUniversity, setSelectedUniversity] = useState("");
-  const [selectedProgramme, setSelectedProgramme] = useState("");
+  const [selectedDegree, setSelectedDegree] = useState("");
+  const [selectedMajor, setSelectedMajor] = useState("");
   const [questions, setQuestions] = useState<string[]>([]);
   const [responses, setResponses] = useState<Record<string, string>>({});
+  const [universityData, setUniversityData] = useState<UniversityData | null>(null);
+  const [availableDegrees, setAvailableDegrees] = useState<string[]>([]);
+  const [availableMajors, setAvailableMajors] = useState<Major[]>([]);
   const { isCurrentlyDark } = useTheme();
   const { t } = useTranslation();
 
   const universities = ["National University of Singapore", "Nanyang Technological University", "Singapore Management University"];
-  
-  const programmes: Record<string, string[]> = {
-    "National University of Singapore": ["Computer Science", "Business Administration", "Medicine"],
-    "Nanyang Technological University": ["Engineering", "Communication Studies", "Biological Sciences"],
-    "Singapore Management University": ["Business", "Law", "Information Systems"],
-  };
 
-  const handleUniversityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const university = e.target.value;
+  // Load university data when university changes
+  useEffect(() => {
+    if (!selectedUniversity) {
+      setUniversityData(null);
+      setAvailableDegrees([]);
+      return;
+    }
+
+    const loadData = async () => {
+      const data = await loadUniversityData(selectedUniversity);
+      setUniversityData(data);
+      
+      if (data) {
+        const degrees = getDegrees(data);
+        setAvailableDegrees(degrees);
+      }
+    };
+
+    loadData();
+  }, [selectedUniversity]);
+
+  // Update available majors when degree changes
+  useEffect(() => {
+    if (!universityData || !selectedDegree) {
+      setAvailableMajors([]);
+      return;
+    }
+
+    const majors = getMajorsForDegree(universityData, selectedDegree);
+    setAvailableMajors(majors);
+  }, [universityData, selectedDegree]);
+
+  // Reset selections when dependencies change
+  useEffect(() => {
+    if (!selectedUniversity) {
+      setSelectedDegree("");
+    }
+  }, [selectedUniversity]);
+
+  useEffect(() => {
+    if (!selectedDegree) {
+      setSelectedMajor("");
+    }
+  }, [selectedDegree]);
+
+  const handleUniversityChange = (university: string) => {
     setSelectedUniversity(university);
-    setSelectedProgramme("");
+    setSelectedDegree("");
+    setSelectedMajor("");
     setQuestions([]);
   };
 
-  const handleProgrammeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const programme = e.target.value;
-    setSelectedProgramme(programme);
+  const handleDegreeChange = (degree: string) => {
+    setSelectedDegree(degree);
+    setSelectedMajor("");
+    setQuestions([]);
+  };
+
+  const handleMajorChange = (major: string) => {
+    setSelectedMajor(major);
     
     // Load application questions for this programme
     // This is a placeholder, you would typically fetch these from an API
@@ -71,33 +127,64 @@ export const ApplyNow = () => {
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium mb-1">{t("apply.university", "University")}</label>
-            <select 
+            <Select 
               value={selectedUniversity}
-              onChange={handleUniversityChange}
-              className={`w-full border rounded p-2 ${isCurrentlyDark ? 'bg-gray-700 text-white border-gray-600' : ''}`}
+              onValueChange={handleUniversityChange}
               data-tutorial="university-select"
             >
-              <option value="">{t("apply.select_university", "Select University")}</option>
-              {universities.map(uni => (
-                <option key={uni} value={uni}>{t(`universities.${uni.replace(/\s+/g, '_').toLowerCase()}`, uni)}</option>
-              ))}
-            </select>
+              <SelectTrigger className={`w-full ${isCurrentlyDark ? 'bg-gray-700 text-white border-gray-600' : ''}`}>
+                <SelectValue placeholder={t("apply.select_university", "Select University")} />
+              </SelectTrigger>
+              <SelectContent className={isCurrentlyDark ? 'bg-gray-700 text-white border-gray-600' : ''}>
+                {universities.map(uni => (
+                  <SelectItem key={uni} value={uni}>
+                    {t(`universities.${uni.replace(/\s+/g, '_').toLowerCase()}`, uni)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           
           {selectedUniversity && (
             <div>
+              <label className="block text-sm font-medium mb-1">{t("apply.degree", "Degree")}</label>
+              <Select 
+                value={selectedDegree}
+                onValueChange={handleDegreeChange}
+              >
+                <SelectTrigger className={`w-full ${isCurrentlyDark ? 'bg-gray-700 text-white border-gray-600' : ''}`}>
+                  <SelectValue placeholder={t("apply.select_degree", "Select Degree")} />
+                </SelectTrigger>
+                <SelectContent className={isCurrentlyDark ? 'bg-gray-700 text-white border-gray-600' : ''}>
+                  {availableDegrees.map(degree => (
+                    <SelectItem key={degree} value={degree}>
+                      {degree}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+          
+          {selectedDegree && (
+            <div>
               <label className="block text-sm font-medium mb-1">{t("apply.programme", "Programme")}</label>
-              <select 
-                value={selectedProgramme}
-                onChange={handleProgrammeChange}
-                className={`w-full border rounded p-2 ${isCurrentlyDark ? 'bg-gray-700 text-white border-gray-600' : ''}`}
+              <Select 
+                value={selectedMajor}
+                onValueChange={handleMajorChange}
                 data-tutorial="program-select"
               >
-                <option value="">{t("apply.select_programme", "Select Programme")}</option>
-                {programmes[selectedUniversity]?.map(prog => (
-                  <option key={prog} value={prog}>{t(`programmes.${prog.replace(/\s+/g, '_').toLowerCase()}`, prog)}</option>
-                ))}
-              </select>
+                <SelectTrigger className={`w-full ${isCurrentlyDark ? 'bg-gray-700 text-white border-gray-600' : ''}`}>
+                  <SelectValue placeholder={t("apply.select_programme", "Select Programme")} />
+                </SelectTrigger>
+                <SelectContent className={isCurrentlyDark ? 'bg-gray-700 text-white border-gray-600' : ''}>
+                  {availableMajors.map(major => (
+                    <SelectItem key={major.major} value={major.major}>
+                      {major.major} {major.college ? `(${major.college})` : ''}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           )}
         </div>
