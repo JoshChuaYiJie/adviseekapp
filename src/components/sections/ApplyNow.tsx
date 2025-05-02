@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useTranslation } from "react-i18next";
 
 export const ApplyNow = () => {
   const [selectedUniversity, setSelectedUniversity] = useState("");
@@ -10,6 +11,7 @@ export const ApplyNow = () => {
   const [questions, setQuestions] = useState<string[]>([]);
   const [responses, setResponses] = useState<Record<string, string>>({});
   const { isCurrentlyDark } = useTheme();
+  const { t } = useTranslation();
 
   const universities = ["National University of Singapore", "Nanyang Technological University", "Singapore Management University"];
   
@@ -33,9 +35,9 @@ export const ApplyNow = () => {
     // Load application questions for this programme
     // This is a placeholder, you would typically fetch these from an API
     const sampleQuestions = [
-      "Why are you interested in this programme?",
-      "Describe a challenge you've overcome that demonstrates your suitability for this field.",
-      "What are your career goals and how will this programme help you achieve them?",
+      t("apply.questions.interest", "Why are you interested in this programme?"),
+      t("apply.questions.challenge", "Describe a challenge you've overcome that demonstrates your suitability for this field."),
+      t("apply.questions.goals", "What are your career goals and how will this programme help you achieve them?"),
     ];
     
     setQuestions(sampleQuestions);
@@ -58,42 +60,42 @@ export const ApplyNow = () => {
   const handleSaveResponses = () => {
     // Here you would typically save the responses to your database
     console.log("Saved responses:", responses);
-    alert("Your responses have been saved!");
+    alert(t("apply.responses_saved", "Your responses have been saved!"));
   };
 
   return (
     <div className="space-y-6 w-full max-w-full">
       <div className={`mb-8 p-6 ${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg shadow w-full`}>
-        <h3 className="text-lg font-semibold mb-2">Select University and Programme</h3>
+        <h3 className="text-lg font-semibold mb-2">{t("apply.select_header", "Select University and Programme")}</h3>
         
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1">University</label>
+            <label className="block text-sm font-medium mb-1">{t("apply.university", "University")}</label>
             <select 
               value={selectedUniversity}
               onChange={handleUniversityChange}
               className={`w-full border rounded p-2 ${isCurrentlyDark ? 'bg-gray-700 text-white border-gray-600' : ''}`}
               data-tutorial="university-select"
             >
-              <option value="">Select University</option>
+              <option value="">{t("apply.select_university", "Select University")}</option>
               {universities.map(uni => (
-                <option key={uni} value={uni}>{uni}</option>
+                <option key={uni} value={uni}>{t(`universities.${uni.replace(/\s+/g, '_').toLowerCase()}`, uni)}</option>
               ))}
             </select>
           </div>
           
           {selectedUniversity && (
             <div>
-              <label className="block text-sm font-medium mb-1">Programme</label>
+              <label className="block text-sm font-medium mb-1">{t("apply.programme", "Programme")}</label>
               <select 
                 value={selectedProgramme}
                 onChange={handleProgrammeChange}
                 className={`w-full border rounded p-2 ${isCurrentlyDark ? 'bg-gray-700 text-white border-gray-600' : ''}`}
                 data-tutorial="program-select"
               >
-                <option value="">Select Programme</option>
+                <option value="">{t("apply.select_programme", "Select Programme")}</option>
                 {programmes[selectedUniversity]?.map(prog => (
-                  <option key={prog} value={prog}>{prog}</option>
+                  <option key={prog} value={prog}>{t(`programmes.${prog.replace(/\s+/g, '_').toLowerCase()}`, prog)}</option>
                 ))}
               </select>
             </div>
@@ -103,7 +105,7 @@ export const ApplyNow = () => {
 
       {questions.length > 0 && (
         <div data-tutorial="application-questions" className={`${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} p-6 rounded-lg shadow w-full`}>
-          <h3 className="text-lg font-semibold mb-4">Application Questions</h3>
+          <h3 className="text-lg font-semibold mb-4">{t("apply.questions_header", "Application Questions")}</h3>
           
           <div className="space-y-6">
             {questions.map((question, index) => (
@@ -115,13 +117,13 @@ export const ApplyNow = () => {
                   }`}
                   value={responses[question] || ""}
                   onChange={(e) => handleResponseChange(question, e.target.value)}
-                  placeholder="Type your response here..."
+                  placeholder={t("apply.response_placeholder", "Type your response here...")}
                 />
               </Card>
             ))}
             
             <Button onClick={handleSaveResponses}>
-              Save Responses
+              {t("apply.save_responses", "Save Responses")}
             </Button>
           </div>
         </div>

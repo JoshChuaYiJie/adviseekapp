@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/button";
@@ -11,6 +12,7 @@ interface Step {
   action?: string;
   position?: "top" | "bottom" | "left" | "right";
   requireClick?: boolean;
+  autoSelectValue?: string;
 }
 
 interface TutorialProps {
@@ -53,12 +55,11 @@ export const Tutorial = ({ isOpen, onClose, onSkip }: TutorialProps) => {
     {
       target: '[data-tutorial="university-select"]',
       content: t("tutorial.university_select", "Pick which university you want to apply to"),
-      requireClick: true,
+      autoSelectValue: "National University of Singapore"
     },
     {
       target: '[data-tutorial="program-select"]',
       content: t("tutorial.program_select", "Pick your desired programme"),
-      requireClick: true,
     },
     {
       target: '[data-tutorial="application-questions"]',
@@ -72,7 +73,7 @@ export const Tutorial = ({ isOpen, onClose, onSkip }: TutorialProps) => {
     {
       target: '[data-tutorial="program-select-interview"]',
       content: t("tutorial.program_select_interview", "Pick your application"),
-      requireClick: true,
+      autoSelectValue: "Default NUS Application"
     },
     {
       target: '[data-tutorial="interview-questions"]',
@@ -161,17 +162,48 @@ export const Tutorial = ({ isOpen, onClose, onSkip }: TutorialProps) => {
     }
   }, [targetElement]);
 
+  // Function to auto-select a value in a dropdown
+  const autoSelectDropdownValue = useCallback((value: string) => {
+    if (!targetElement) return false;
+    
+    try {
+      if (targetElement instanceof HTMLSelectElement) {
+        const selectElement = targetElement as HTMLSelectElement;
+        
+        // Find the option with the matching value
+        for (let i = 0; i < selectElement.options.length; i++) {
+          if (selectElement.options[i].text === value) {
+            selectElement.selectedIndex = i;
+            
+            // Trigger change event
+            const event = new Event('change', { bubbles: true });
+            selectElement.dispatchEvent(event);
+            return true;
+          }
+        }
+      }
+      return false;
+    } catch (error) {
+      console.error("Error auto-selecting value:", error);
+      return false;
+    }
+  }, [targetElement]);
+
   // Handle next button click
   const handleNext = () => {
+    const currentStepData = tutorialSteps[currentStep];
+    
     // If this step requires clicking an element, simulate the click
-    if (tutorialSteps[currentStep]?.requireClick) {
-      const clicked = simulateElementClick();
-      if (!clicked) {
-        console.warn("Failed to simulate click on target element");
-      }
+    if (currentStepData?.requireClick) {
+      simulateElementClick();
     }
     
-    // Advance to next step regardless
+    // If this step requires selecting a value, auto-select it
+    if (currentStepData?.autoSelectValue) {
+      autoSelectDropdownValue(currentStepData.autoSelectValue);
+    }
+    
+    // Advance to next step
     if (currentStep < tutorialSteps.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {

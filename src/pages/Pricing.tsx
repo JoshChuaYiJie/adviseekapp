@@ -2,7 +2,9 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import UpgradeModal from "@/components/UpgradeModal";
-import { Check } from "lucide-react";
+import { Check, ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const plans = [
   {
@@ -58,14 +60,32 @@ const plans = [
 
 const Pricing = () => {
   const [upgradeOpen, setUpgradeOpen] = useState(false);
+  const navigate = useNavigate();
+  const { t } = useTranslation();
+
+  const handleBackToDashboard = () => {
+    navigate('/');
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#ECE9FF] to-[#F5F7FA] flex flex-col py-12">
-      <div className="max-w-4xl w-full mx-auto text-center mb-12">
-        <h1 className="text-4xl md:text-5xl font-bold font-poppins mb-4">Choose your Adviseek plan</h1>
-        <p className="text-lg text-gray-600 mb-2">Pick the plan that fits your ambitions. Clear pricing, no surprises.</p>
+      <div className="max-w-4xl w-full mx-auto px-4">
+        <Button 
+          variant="outline" 
+          onClick={handleBackToDashboard}
+          className="mb-8 flex items-center gap-2"
+        >
+          <ArrowLeft size={16} />
+          {t("common.back_to_dashboard", "Back to Dashboard")}
+        </Button>
+        
+        <div className="text-center mb-12">
+          <h1 className="text-4xl md:text-5xl font-bold font-poppins mb-4">{t("pricing.title", "Choose your Adviseek plan")}</h1>
+          <p className="text-lg text-gray-600 mb-2">{t("pricing.subtitle", "Pick the plan that fits your ambitions. Clear pricing, no surprises.")}</p>
+        </div>
       </div>
-      <div className="grid md:grid-cols-3 gap-8 px-4 md:px-0">
+      
+      <div className="grid md:grid-cols-3 gap-8 px-4 md:px-0 max-w-4xl mx-auto">
         {plans.map((plan, idx) => (
           <div
             key={plan.name}
@@ -73,13 +93,13 @@ const Pricing = () => {
           >
             {plan.popular && (
               <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-purple-500 text-white text-xs px-4 py-1 rounded-full shadow font-semibold tracking-wide animate-fade-in">
-                Most Popular
+                {t("pricing.most_popular", "Most Popular")}
               </div>
             )}
-            <h2 className="text-2xl font-bold font-poppins mb-2">{plan.name}</h2>
+            <h2 className="text-2xl font-bold font-poppins mb-2">{t(`pricing.plan_name.${plan.name.toLowerCase()}`, plan.name)}</h2>
             <div className="mb-2">
               <span className="text-4xl font-extrabold text-gray-900 font-poppins">
-                {typeof plan.price === "number" ? `$${plan.price}` : plan.price}
+                {typeof plan.price === "number" ? `$${plan.price}` : t("pricing.contact_us", plan.price)}
               </span>
               <span className="text-gray-500 font-medium text-lg">{plan.priceSuffix}</span>
             </div>
@@ -89,7 +109,7 @@ const Pricing = () => {
                   <span className="flex-shrink-0 text-accent">
                     <Check size={20} className="text-purple-500" />
                   </span>
-                  <span>{feat}</span>
+                  <span>{t(`pricing.features.${plan.name.toLowerCase()}.${i}`, feat)}</span>
                 </li>
               ))}
             </ul>
@@ -102,9 +122,9 @@ const Pricing = () => {
                   : undefined
               }
               disabled={plan.name === "Free"}
-              aria-label={plan.cta}
+              aria-label={t(`pricing.cta.${plan.name.toLowerCase()}`, plan.cta)}
             >
-              {plan.cta}
+              {t(`pricing.cta.${plan.name.toLowerCase()}`, plan.cta)}
             </Button>
           </div>
         ))}

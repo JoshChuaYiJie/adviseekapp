@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -57,6 +58,7 @@ const CommunityPage: React.FC = () => {
   const [newPost, setNewPost] = useState({ title: '', content: '' });
   const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleBackToDashboard = () => {
     navigate('/');
@@ -90,7 +92,7 @@ const CommunityPage: React.FC = () => {
       const allPosts = [...postsWithEmails, ...PLACEHOLDER_POSTS];
       setPosts(allPosts);
     } catch (error) {
-      toast.error("Failed to fetch community posts");
+      toast.error(t("community.error.fetch", "Failed to fetch community posts"));
       console.error(error);
     } finally {
       setIsLoading(false);
@@ -100,13 +102,20 @@ const CommunityPage: React.FC = () => {
   const handleCreatePost = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      toast.error("You must be logged in to create a post");
+    if (!newPost.title.trim() || !newPost.content.trim()) {
+      toast.error(t("community.error.empty_fields", "Title and content cannot be empty"));
       return;
     }
-
+    
+    setIsSubmitting(true);
+    
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error(t("community.error.auth", "You must be logged in to create a post"));
+        return;
+      }
+
       const { error } = await supabase.from('community_posts').insert({
         title: newPost.title,
         content: newPost.content,
@@ -115,12 +124,14 @@ const CommunityPage: React.FC = () => {
 
       if (error) throw error;
 
-      toast.success("Post created successfully");
+      toast.success(t("community.success.post_created", "Post created successfully"));
       setNewPost({ title: '', content: '' });
       fetchPosts();
     } catch (error) {
-      toast.error("Failed to create post");
+      toast.error(t("community.error.post_creation", "Failed to create post"));
       console.error(error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -133,7 +144,7 @@ const CommunityPage: React.FC = () => {
 
   return (
     <div className="flex h-screen">
-      <CommunitySidebar />
+      <CommunitySidebar onCreatePost={() => document.getElementById('post-form')?.scrollIntoView({ behavior: 'smooth' })} />
       
       <div className="flex-1 overflow-y-auto p-6">
         <div className="max-w-4xl mx-auto">
@@ -144,7 +155,7 @@ const CommunityPage: React.FC = () => {
               className="flex items-center gap-2"
             >
               <ArrowLeft size={16} />
-              Back to Dashboard
+              {t("community.back_to_dashboard", "Back to Dashboard")}
             </Button>
           </div>
 
@@ -181,7 +192,7 @@ const CommunityPage: React.FC = () => {
                 <Facebook size={32} className="text-[#1877F2]" />
               </a>
               <a 
-                href="https://instagram.com/adviseek" 
+                href="https://www.instagram.com/adviseek.official/" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="hover:bg-soft-gray dark:hover:bg-gray-700 p-2 rounded-full transition-colors"
@@ -203,7 +214,7 @@ const CommunityPage: React.FC = () => {
             </div>
           </div>
 
-          <form onSubmit={handleCreatePost} className="mb-8 p-6 bg-white dark:bg-gray-800 shadow-md rounded-lg">
+          <form id="post-form" onSubmit={handleCreatePost} className="mb-8 p-6 bg-white dark:bg-gray-800 shadow-md rounded-lg">
             <Input
               placeholder={t('community.post_title')}
               value={newPost.title}
@@ -218,12 +229,18 @@ const CommunityPage: React.FC = () => {
               className="mb-4 min-h-[100px]"
               required
             />
-            <Button type="submit" className="w-full">{t('community.create_post')}</Button>
+            <Button 
+              type="submit" 
+              className="w-full"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? t('community.submitting', 'Creating...') : t('community.create_post')}
+            </Button>
           </form>
 
           <div className="space-y-4">
             {isLoading ? (
-              <p>Loading posts...</p>
+              <p>{t('community.loading', 'Loading posts...')}</p>
             ) : filteredPosts.length === 0 ? (
               <p className="text-center text-gray-500 dark:text-gray-400">{t('community.no_posts')}</p>
             ) : (
@@ -245,9 +262,9 @@ const CommunityPage: React.FC = () => {
 
           <div className="mt-auto pt-4 border-t text-xs text-muted-foreground">
             <div className="flex gap-2">
-              <Link to="/privacy-policy" className="hover:underline">Privacy</Link>
-              <Link to="/terms-of-service" className="hover:underline">Terms</Link>
-              <Link to="/help" className="hover:underline">Help</Link>
+              <Link to="/privacy-policy" className="hover:underline">{t('footer.privacy', 'Privacy')}</Link>
+              <Link to="/terms-of-service" className="hover:underline">{t('footer.terms', 'Terms')}</Link>
+              <Link to="/help" className="hover:underline">{t('footer.help', 'Help')}</Link>
             </div>
           </div>
         </div>

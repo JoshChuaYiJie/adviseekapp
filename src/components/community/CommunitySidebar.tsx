@@ -6,7 +6,11 @@ import { Search, PlusCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-export const CommunitySidebar = () => {
+interface CommunitySidebarProps {
+  onCreatePost?: () => void;
+}
+
+export const CommunitySidebar = ({ onCreatePost }: CommunitySidebarProps) => {
   const { t } = useTranslation();
 
   return (
@@ -22,7 +26,10 @@ export const CommunitySidebar = () => {
       </div>
       
       <div className="mb-4">
-        <Button className="w-full flex items-center gap-2">
+        <Button 
+          className="w-full flex items-center gap-2"
+          onClick={onCreatePost}
+        >
           <PlusCircle className="h-4 w-4" />
           {t('community.create_post', 'Create Post')}
         </Button>
