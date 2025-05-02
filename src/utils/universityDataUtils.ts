@@ -66,33 +66,29 @@ export const loadUniversityData = async (university: string): Promise<University
 };
 
 // Extract all degrees from university data
-export const getDegrees = (data: UniversityData): string[] => {
-  if (!data) return [];
-  
-  const degrees: string[] = [];
-  Object.keys(data).forEach(key => {
-    data[key].forEach(degreeData => {
-      if (!degrees.includes(degreeData.degree)) {
-        degrees.push(degreeData.degree);
-      }
-    });
+// Extract all degrees from university data (expects { programs: [...] })
+export const getDegrees = (data: any): string[] => {
+  if (!data || !Array.isArray(data.programs)) return [];
+  const degrees = new Set<string>();
+  data.programs.forEach((program: any) => {
+    if (program.degree) degrees.add(program.degree);
   });
-  
-  return degrees.sort();
+  return Array.from(degrees).sort();
 };
 
-// Get all majors for a specific degree
-export const getMajorsForDegree = (data: UniversityData, degree: string): Major[] => {
-  if (!data || !degree) return [];
-  
+// Get all majors for a specific degree (expects { programs: [...] })
+export const getMajorsForDegree = (data: any, degree: string): Major[] => {
+  if (!data || !Array.isArray(data.programs) || !degree) return [];
   const majors: Major[] = [];
-  Object.keys(data).forEach(key => {
-    const degreeData = data[key].find(d => d.degree === degree);
-    if (degreeData && degreeData.majors) {
-      majors.push(...degreeData.majors);
+  data.programs.forEach((program: any) => {
+    if (program.degree === degree && program.major) {
+      majors.push({
+        major: program.major,
+        weight: program.weight ?? 1,
+        college: program.college,
+      });
     }
   });
-  
   return majors.sort((a, b) => a.major.localeCompare(b.major));
 };
 
