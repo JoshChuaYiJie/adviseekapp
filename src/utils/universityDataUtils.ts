@@ -88,7 +88,7 @@ export const getMajorsForDegree = (data: UniversityData, degree: string): Major[
   const majors: Major[] = [];
   Object.keys(data).forEach(key => {
     const degreeData = data[key].find(d => d.degree === degree);
-    if (degreeData) {
+    if (degreeData && degreeData.majors) {
       majors.push(...degreeData.majors);
     }
   });
