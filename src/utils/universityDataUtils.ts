@@ -12,7 +12,12 @@ export interface Degree {
 }
 
 export interface UniversityData {
-  [key: string]: Degree[];
+  programs: {
+    degree: string;
+    major: string;
+    weight: number;
+    college?: string;
+  }[];
 }
 
 // Cache for loaded university data
@@ -52,7 +57,7 @@ export const loadUniversityData = async (university: string): Promise<University
     // Load data
     const response = await fetch(filePath);
     if (!response.ok) {
-      console.error('Failed to load university data:', response.statusText);
+      console.error(`Failed to load university data: ${response.statusText} for ${filePath}`);
       return null;
     }
     
@@ -66,21 +71,27 @@ export const loadUniversityData = async (university: string): Promise<University
 };
 
 // Extract all degrees from university data
-// Extract all degrees from university data (expects { programs: [...] })
-export const getDegrees = (data: any): string[] => {
-  if (!data || !Array.isArray(data.programs)) return [];
+export const getDegrees = (data: UniversityData | null): string[] => {
+  if (!data || !Array.isArray(data.programs)) {
+    return [];
+  }
+  
   const degrees = new Set<string>();
-  data.programs.forEach((program: any) => {
+  data.programs.forEach((program) => {
     if (program.degree) degrees.add(program.degree);
   });
+  
   return Array.from(degrees).sort();
 };
 
-// Get all majors for a specific degree (expects { programs: [...] })
-export const getMajorsForDegree = (data: any, degree: string): Major[] => {
-  if (!data || !Array.isArray(data.programs) || !degree) return [];
+// Get all majors for a specific degree
+export const getMajorsForDegree = (data: UniversityData | null, degree: string): Major[] => {
+  if (!data || !Array.isArray(data.programs) || !degree) {
+    return [];
+  }
+  
   const majors: Major[] = [];
-  data.programs.forEach((program: any) => {
+  data.programs.forEach((program) => {
     if (program.degree === degree && program.major) {
       majors.push({
         major: program.major,
@@ -89,6 +100,7 @@ export const getMajorsForDegree = (data: any, degree: string): Major[] => {
       });
     }
   });
+  
   return majors.sort((a, b) => a.major.localeCompare(b.major));
 };
 

@@ -6,6 +6,7 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 import { 
   loadUniversityData, 
   getDegrees, 
@@ -34,6 +35,7 @@ export const AppliedProgrammes = () => {
   const [universityData, setUniversityData] = useState<UniversityData | null>(null);
   const [availableDegrees, setAvailableDegrees] = useState<string[]>([]);
   const [availableMajors, setAvailableMajors] = useState<Major[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const { isCurrentlyDark } = useTheme();
   const { t } = useTranslation();
 
@@ -46,12 +48,22 @@ export const AppliedProgrammes = () => {
     }
 
     const loadData = async () => {
-      const data = await loadUniversityData(selectedUniversity);
-      setUniversityData(data);
-      
-      if (data) {
-        const degrees = getDegrees(data);
-        setAvailableDegrees(degrees);
+      setIsLoading(true);
+      try {
+        const data = await loadUniversityData(selectedUniversity);
+        setUniversityData(data);
+        
+        if (data) {
+          const degrees = getDegrees(data);
+          setAvailableDegrees(degrees);
+        } else {
+          toast.error("Failed to load university data");
+        }
+      } catch (error) {
+        console.error("Error loading university data:", error);
+        toast.error("Failed to load university data");
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -114,6 +126,7 @@ export const AppliedProgrammes = () => {
     };
     
     setAppliedProgrammes([...appliedProgrammes, newProgramme]);
+    toast.success("Program added successfully");
     setSelectedUniversity("");
     setSelectedDegree("");
     setSelectedMajor("");
@@ -122,7 +135,7 @@ export const AppliedProgrammes = () => {
   return (
     <div className="space-y-6 w-full max-w-full">
       <div className={`space-y-4 p-6 ${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg shadow w-full`}>
-        <Select value={selectedUniversity} onValueChange={handleUniversityChange}>
+        <Select value={selectedUniversity} onValueChange={handleUniversityChange} disabled={isLoading}>
           <SelectTrigger className={`w-full ${isCurrentlyDark ? 'bg-gray-700 text-white border-gray-600' : ''}`}>
             <SelectValue placeholder={t("university.select", "Select a university")} />
           </SelectTrigger>
@@ -134,9 +147,9 @@ export const AppliedProgrammes = () => {
         </Select>
         
         {selectedUniversity && (
-          <Select value={selectedDegree} onValueChange={handleDegreeChange}>
+          <Select value={selectedDegree} onValueChange={handleDegreeChange} disabled={isLoading || !availableDegrees.length}>
             <SelectTrigger className={`w-full ${isCurrentlyDark ? 'bg-gray-700 text-white border-gray-600' : ''}`}>
-              <SelectValue placeholder={t("degree.select", "Select a degree")} />
+              <SelectValue placeholder={isLoading ? "Loading..." : t("degree.select", "Select a degree")} />
             </SelectTrigger>
             <SelectContent className={isCurrentlyDark ? 'bg-gray-700 text-white border-gray-600' : ''}>
               {availableDegrees.map((degree) => (
@@ -149,9 +162,9 @@ export const AppliedProgrammes = () => {
         )}
         
         {selectedDegree && (
-          <Select value={selectedMajor} onValueChange={handleMajorChange}>
+          <Select value={selectedMajor} onValueChange={handleMajorChange} disabled={isLoading || !availableMajors.length}>
             <SelectTrigger className={`w-full ${isCurrentlyDark ? 'bg-gray-700 text-white border-gray-600' : ''}`}>
-              <SelectValue placeholder={t("major.select", "Select a major")} />
+              <SelectValue placeholder={isLoading ? "Loading..." : t("major.select", "Select a major")} />
             </SelectTrigger>
             <SelectContent className={isCurrentlyDark ? 'bg-gray-700 text-white border-gray-600' : ''}>
               {availableMajors.map((major) => (
@@ -165,7 +178,7 @@ export const AppliedProgrammes = () => {
         
         <Button 
           onClick={handleAddUniversity}
-          disabled={!selectedUniversity || !selectedDegree || !selectedMajor}
+          disabled={!selectedUniversity || !selectedDegree || !selectedMajor || isLoading}
         >
           {t("university.add", "Add University")}
         </Button>

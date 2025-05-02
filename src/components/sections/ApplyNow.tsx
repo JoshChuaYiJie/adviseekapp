@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { toast } from "sonner";
 import { 
   loadUniversityData, 
   getDegrees, 
@@ -22,6 +23,7 @@ export const ApplyNow = () => {
   const [universityData, setUniversityData] = useState<UniversityData | null>(null);
   const [availableDegrees, setAvailableDegrees] = useState<string[]>([]);
   const [availableMajors, setAvailableMajors] = useState<Major[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const { isCurrentlyDark } = useTheme();
   const { t } = useTranslation();
 
@@ -36,12 +38,22 @@ export const ApplyNow = () => {
     }
 
     const loadData = async () => {
-      const data = await loadUniversityData(selectedUniversity);
-      setUniversityData(data);
-      
-      if (data) {
-        const degrees = getDegrees(data);
-        setAvailableDegrees(degrees);
+      setIsLoading(true);
+      try {
+        const data = await loadUniversityData(selectedUniversity);
+        setUniversityData(data);
+        
+        if (data) {
+          const degrees = getDegrees(data);
+          setAvailableDegrees(degrees);
+        } else {
+          toast.error("Failed to load university data");
+        }
+      } catch (error) {
+        console.error("Error loading university data:", error);
+        toast.error("Failed to load university data");
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -116,7 +128,7 @@ export const ApplyNow = () => {
   const handleSaveResponses = () => {
     // Here you would typically save the responses to your database
     console.log("Saved responses:", responses);
-    alert(t("apply.responses_saved", "Your responses have been saved!"));
+    toast.success(t("apply.responses_saved", "Your responses have been saved!"));
   };
 
   return (
@@ -131,6 +143,7 @@ export const ApplyNow = () => {
               value={selectedUniversity}
               onValueChange={handleUniversityChange}
               data-tutorial="university-select"
+              disabled={isLoading}
             >
               <SelectTrigger className={`w-full ${isCurrentlyDark ? 'bg-gray-700 text-white border-gray-600' : ''}`}>
                 <SelectValue placeholder={t("apply.select_university", "Select University")} />
@@ -151,9 +164,10 @@ export const ApplyNow = () => {
               <Select 
                 value={selectedDegree}
                 onValueChange={handleDegreeChange}
+                disabled={isLoading || !availableDegrees.length}
               >
                 <SelectTrigger className={`w-full ${isCurrentlyDark ? 'bg-gray-700 text-white border-gray-600' : ''}`}>
-                  <SelectValue placeholder={t("apply.select_degree", "Select Degree")} />
+                  <SelectValue placeholder={isLoading ? "Loading..." : t("apply.select_degree", "Select Degree")} />
                 </SelectTrigger>
                 <SelectContent className={isCurrentlyDark ? 'bg-gray-700 text-white border-gray-600' : ''}>
                   {availableDegrees.map(degree => (
@@ -173,9 +187,10 @@ export const ApplyNow = () => {
                 value={selectedMajor}
                 onValueChange={handleMajorChange}
                 data-tutorial="program-select"
+                disabled={isLoading || !availableMajors.length}
               >
                 <SelectTrigger className={`w-full ${isCurrentlyDark ? 'bg-gray-700 text-white border-gray-600' : ''}`}>
-                  <SelectValue placeholder={t("apply.select_programme", "Select Programme")} />
+                  <SelectValue placeholder={isLoading ? "Loading..." : t("apply.select_programme", "Select Programme")} />
                 </SelectTrigger>
                 <SelectContent className={isCurrentlyDark ? 'bg-gray-700 text-white border-gray-600' : ''}>
                   {availableMajors.map(major => (
