@@ -1,10 +1,9 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/Sidebar";
 import { AppliedProgrammes } from "@/components/sections/AppliedProgrammes";
-import { MyResume } from "@/components/sections/MyResume";
+import { AboutMe } from "@/components/sections/AboutMe";
 import { ApplyNow } from "@/components/sections/ApplyNow";
 import { MockInterviews } from "@/components/sections/MockInterviews";
 import { GetPaid } from "@/components/sections/GetPaid";
@@ -132,8 +131,8 @@ const Index = () => {
     switch (selectedSection) {
       case "applied-programmes":
         return <AppliedProgrammes />;
-      case "my-resume":
-        return <MyResume />;
+      case "about-me":
+        return <AboutMe />;
       case "apply-now":
         return <ApplyNow />;
       case "mock-interviews":
