@@ -54,19 +54,25 @@ export const loadUniversityData = async (university: string): Promise<University
         return null;
     }
     
-    // Load data
-    const response = await fetch(filePath);
-    if (!response.ok) {
-      console.error(`Failed to load university data: ${response.statusText} for ${filePath}`);
-      return null;
+    // Add error handling with detailed logging
+    try {
+      const response = await fetch(filePath);
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      dataCache[normalizedName] = data;
+      return data;
+    } catch (error) {
+      console.error(`Error loading university data for ${university} from ${filePath}:`, error);
+      
+      // Return a default empty structure instead of null
+      return { programs: [] };
     }
-    
-    const data = await response.json();
-    dataCache[normalizedName] = data;
-    return data;
   } catch (error) {
-    console.error('Error loading university data:', error);
-    return null;
+    console.error('Error in loadUniversityData:', error);
+    return { programs: [] };
   }
 };
 

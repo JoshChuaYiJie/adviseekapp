@@ -5,18 +5,17 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MyResume } from "./MyResume";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
 export const AboutMe = () => {
   const { isCurrentlyDark } = useTheme();
   const [quizCompleted, setQuizCompleted] = useState(false);
   const { t } = useTranslation();
+  const navigate = useNavigate();
   
   const handleTakeQuiz = () => {
-    // This would be implemented in the future to launch the quiz
-    // For now, we'll just set quizCompleted to true after a delay to simulate completing the quiz
-    setTimeout(() => {
-      setQuizCompleted(true);
-    }, 2000);
+    // Redirect to the pickAI page
+    navigate("/pickAI");
   };
 
   return (

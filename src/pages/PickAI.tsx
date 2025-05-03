@@ -332,7 +332,8 @@ const PickAI = () => {
     setSubmitting(true);
     try {
       await submitResponses();
-      navigate("/recommendations");
+      // Navigate back to dashboard with the about-me section selected
+      navigate("/?section=about-me");
     } catch (error) {
       console.error("Error submitting responses:", error);
       toast({

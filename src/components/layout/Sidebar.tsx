@@ -1,3 +1,4 @@
+
 import { School, FileText, BookOpen, Video, DollarSign, Settings, Play, LogOut, Users, Award, UserRound } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -28,16 +29,16 @@ interface NavItem {
 
 const getNavItems = (t: any): NavItem[] => [
   { 
+    label: "About Me",
+    icon: UserRound, 
+    id: "about-me",
+    tooltip: "Your profile and resume information"
+  },
+  { 
     label: t("navigation.applied_programmes"),
     icon: School, 
     id: "applied-programmes",
     tooltip: "View and manage your university applications"
-  },
-  { 
-    label: t("navigation.about_me"), 
-    icon: UserRound, 
-    id: "about-me",
-    tooltip: "Your profile and resume information"
   },
   { 
     label: t("navigation.apply_now"), 

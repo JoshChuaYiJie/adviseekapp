@@ -9,7 +9,7 @@ import { MockInterviews } from "@/components/sections/MockInterviews";
 import { GetPaid } from "@/components/sections/GetPaid";
 import { Tutorial } from "@/components/Tutorial";
 import AuthSection from "@/components/auth/AuthSection";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -18,14 +18,23 @@ import { useTheme } from "@/contexts/ThemeContext";
 const Index = () => {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [selectedSection, setSelectedSection] = useState("applied-programmes");
+  const [selectedSection, setSelectedSection] = useState("about-me");
   const [showTutorial, setShowTutorial] = useState(false);
   const [showWelcomeBack, setShowWelcomeBack] = useState(false);
   const [lastVisitDate, setLastVisitDate] = useState<Date | null>(null);
   const navigate = useNavigate();
+  const location = useLocation();
   const { isCurrentlyDark } = useTheme();
 
   useEffect(() => {
+    // Check for section parameter in URL
+    const queryParams = new URLSearchParams(location.search);
+    const sectionParam = queryParams.get('section');
+    
+    if (sectionParam) {
+      setSelectedSection(sectionParam);
+    }
+    
     const checkUser = async () => {
       const { data } = await supabase.auth.getSession();
       const currentUser = data.session?.user || null;
