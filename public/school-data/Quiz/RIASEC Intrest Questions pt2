@@ -1,0 +1,362 @@
+[
+  {
+    "question_number": "I1",
+    "rephrased_text": "Guide a team of global delegates",
+    "riasec_component": "Enterprising"
+  },
+  {
+    "question_number": "I2",
+    "rephrased_text": "Explore new developments in science and tech",
+    "riasec_component": "Investigative"
+  },
+  {
+    "question_number": "I3",
+    "rephrased_text": "Assist low-income families",
+    "riasec_component": "Social"
+  },
+  {
+    "question_number": "I4",
+    "rephrased_text": "Run large industrial equipment",
+    "riasec_component": "Realistic"
+  },
+  {
+    "question_number": "I5",
+    "rephrased_text": "Lead a struggling company to success",
+    "riasec_component": "Enterprising"
+  },
+  {
+    "question_number": "I6",
+    "rephrased_text": "Volunteer at a medical facility",
+    "riasec_component": "Social"
+  },
+  {
+    "question_number": "I7",
+    "rephrased_text": "Tour a display of scientific instruments",
+    "riasec_component": "Investigative"
+  },
+  {
+    "question_number": "I8",
+    "rephrased_text": "Track monthly expenses",
+    "riasec_component": "Conventional"
+  },
+  {
+    "question_number": "I9",
+    "rephrased_text": "Calculate annual growth of savings or investments",
+    "riasec_component": "Conventional"
+  },
+  {
+    "question_number": "I10",
+    "rephrased_text": "Create scenery for a theatrical production",
+    "riasec_component": "Artistic"
+  },
+  {
+    "question_number": "I11",
+    "rephrased_text": "Advise youth on personal issues",
+    "riasec_component": "Social"
+  },
+  {
+    "question_number": "I12",
+    "rephrased_text": "Conduct chemical analyses in a lab",
+    "riasec_component": "Investigative"
+  },
+  {
+    "question_number": "I13",
+    "rephrased_text": "Craft words for a musical composition",
+    "riasec_component": "Artistic"
+  },
+  {
+    "question_number": "I14",
+    "rephrased_text": "Supervise a sizable team of employees",
+    "riasec_component": "Enterprising"
+  },
+  {
+    "question_number": "I15",
+    "rephrased_text": "Author a short theatrical piece",
+    "riasec_component": "Artistic"
+  },
+  {
+    "question_number": "I16",
+    "rephrased_text": "Develop a financial plan for an organization",
+    "riasec_component": "Conventional"
+  },
+  {
+    "question_number": "I17",
+    "rephrased_text": "Maintain precise records of client transactions",
+    "riasec_component": "Conventional"
+  },
+  {
+    "question_number": "I18",
+    "rephrased_text": "Compute interest for a potential loan",
+    "riasec_component": "Conventional"
+  },
+  {
+    "question_number": "I19",
+    "rephrased_text": "Book a flight by evaluating airlines and costs",
+    "riasec_component": "Conventional"
+  },
+  {
+    "question_number": "I20",
+    "rephrased_text": "Establish a new community group",
+    "riasec_component": "Enterprising"
+  },
+  {
+    "question_number": "I21",
+    "rephrased_text": "Set up a new electrical switch",
+    "riasec_component": "Realistic"
+  },
+  {
+    "question_number": "I22",
+    "rephrased_text": "Create a musical composition",
+    "riasec_component": "Artistic"
+  },
+  {
+    "question_number": "I23",
+    "rephrased_text": "Train a professional sports team",
+    "riasec_component": "Social"
+  },
+  {
+    "question_number": "I24",
+    "rephrased_text": "Perform vocally or instrumentally in a band",
+    "riasec_component": "Artistic"
+  },
+  {
+    "question_number": "I25",
+    "rephrased_text": "Research your preferred music genre",
+    "riasec_component": "Investigative"
+  },
+  {
+    "question_number": "I26",
+    "rephrased_text": "Author a novel",
+    "riasec_component": "Artistic"
+  },
+  {
+    "question_number": "I27",
+    "rephrased_text": "Evaluate grocery prices to find the best deal",
+    "riasec_component": "Conventional"
+  },
+  {
+    "question_number": "I28",
+    "rephrased_text": "Mentor kids requiring academic support",
+    "riasec_component": "Social"
+  },
+  {
+    "question_number": "I29",
+    "rephrased_text": "Set up a kitchen device",
+    "riasec_component": "Realistic"
+  },
+  {
+    "question_number": "I30",
+    "rephrased_text": "Fix plumbing systems",
+    "riasec_component": "Realistic"
+  },
+  {
+    "question_number": "I31",
+    "rephrased_text": "Engage youth in after-school activities",
+    "riasec_component": "Social"
+  },
+  {
+    "question_number": "I32",
+    "rephrased_text": "Oversee a firm’s financial budget",
+    "riasec_component": "Conventional"
+  },
+  {
+    "question_number": "I33",
+    "rephrased_text": "Lead a community event",
+    "riasec_component": "Enterprising"
+  },
+  {
+    "question_number": "I34",
+    "rephrased_text": "Run a stall at an expo",
+    "riasec_component": "Enterprising"
+  },
+  {
+    "question_number": "I35",
+    "rephrased_text": "Craft furniture using manual tools",
+    "riasec_component": "Realistic"
+  },
+  {
+    "question_number": "I36",
+    "rephrased_text": "Investigate the causes of ocean waves",
+    "riasec_component": "Investigative"
+  },
+  {
+    "question_number": "I37",
+    "rephrased_text": "Act as a board member for an organization",
+    "riasec_component": "Enterprising"
+  },
+  {
+    "question_number": "I38",
+    "rephrased_text": "Study watercolor art methods",
+    "riasec_component": "Artistic"
+  },
+  {
+    "question_number": "I39",
+    "rephrased_text": "Research genetic structures",
+    "riasec_component": "Investigative"
+  },
+  {
+    "question_number": "I40",
+    "rephrased_text": "Lead a team to complete a project",
+    "riasec_component": "Enterprising"
+  },
+  {
+    "question_number": "I41",
+    "rephrased_text": "Review scientific publications",
+    "riasec_component": "Investigative"
+  },
+  {
+    "question_number": "I42",
+    "rephrased_text": "Help at a charity distributing food to families",
+    "riasec_component": "Social"
+  },
+  {
+    "question_number": "I43",
+    "rephrased_text": "Craft a poem inspired by a person or theme",
+    "riasec_component": "Artistic"
+  },
+  {
+    "question_number": "I44",
+    "rephrased_text": "Tally expenses from market purchases",
+    "riasec_component": "Conventional"
+  },
+  {
+    "question_number": "I45",
+    "rephrased_text": "Service mechanical equipment",
+    "riasec_component": "Realistic"
+  },
+  {
+    "question_number": "I46",
+    "rephrased_text": "Deliver a public address",
+    "riasec_component": "Enterprising"
+  },
+  {
+    "question_number": "I47",
+    "rephrased_text": "Instruct a group of young children",
+    "riasec_component": "Social"
+  },
+  {
+    "question_number": "I48",
+    "rephrased_text": "Fix a broken vehicle",
+    "riasec_component": "Realistic"
+  },
+  {
+    "question_number": "I49",
+    "rephrased_text": "Build furniture from parts",
+    "riasec_component": "Realistic"
+  },
+  {
+    "question_number": "I50",
+    "rephrased_text": "Present an inspiring talk",
+    "riasec_component": "Enterprising"
+  },
+  {
+    "question_number": "I51",
+    "rephrased_text": "Participate in a scientific conference",
+    "riasec_component": "Investigative"
+  },
+  {
+    "question_number": "I52",
+    "rephrased_text": "Test the chemical composition of toothpaste",
+    "riasec_component": "Investigative"
+  },
+  {
+    "question_number": "I53",
+    "rephrased_text": "Plan a monthly financial budget",
+    "riasec_component": "Conventional"
+  },
+  {
+    "question_number": "I54",
+    "rephrased_text": "Head a political organization",
+    "riasec_component": "Enterprising"
+  },
+  {
+    "question_number": "I55",
+    "rephrased_text": "Support adults coping with grief",
+    "riasec_component": "Social"
+  },
+  {
+    "question_number": "I56",
+    "rephrased_text": "Assist hospital patients",
+    "riasec_component": "Social"
+  },
+  {
+    "question_number": "I57",
+    "rephrased_text": "Engage in a public discussion",
+    "riasec_component": "Enterprising"
+  },
+  {
+    "question_number": "I58",
+    "rephrased_text": "Lead a club as its president",
+    "riasec_component": "Enterprising"
+  },
+  {
+    "question_number": "I59",
+    "rephrased_text": "Guide a child in social skills",
+    "riasec_component": "Social"
+  },
+  {
+    "question_number": "I60",
+    "rephrased_text": "Take charge of a favorite activity",
+    "riasec_component": "Enterprising"
+  },
+  {
+    "question_number": "I61",
+    "rephrased_text": "Convince investors to fund your company",
+    "riasec_component": "Enterprising"
+  },
+  {
+    "question_number": "I62",
+    "rephrased_text": "Enroll in a course on particle physics",
+    "riasec_component": "Investigative"
+  },
+  {
+    "question_number": "I63",
+    "rephrased_text": "Mount shelves in a space",
+    "riasec_component": "Realistic"
+  },
+  {
+    "question_number": "I64",
+    "rephrased_text": "Study the paths of planets and satellites",
+    "riasec_component": "Investigative"
+  },
+  {
+    "question_number": "I65",
+    "rephrased_text": "Make artwork using common items",
+    "riasec_component": "Artistic"
+  },
+  {
+    "question_number": "I66",
+    "rephrased_text": "Repair a damaged tool",
+    "riasec_component": "Realistic"
+  },
+  {
+    "question_number": "I67",
+    "rephrased_text": "Assist a child with homework",
+    "riasec_component": "Social"
+  },
+  {
+    "question_number": "I68",
+    "rephrased_text": "Create a new recipe",
+    "riasec_component": "Artistic"
+  },
+  {
+    "question_number": "I69",
+    "rephrased_text": "Organize a community event",
+    "riasec_component": "Enterprising"
+  },
+  {
+    "question_number": "I70",
+    "rephrased_text": "Assist in a scientific research project",
+    "riasec_component": "Investigative"
+  },
+  {
+    "question_number": "I71",
+    "rephrased_text": "Teach a class on a specific topic",
+    "riasec_component": "Social"
+  },
+  {
+    "question_number": "I72",
+    "rephrased_text": "Analyze data for a research project",
+    "riasec_component": "Investigative"
+  }
+]

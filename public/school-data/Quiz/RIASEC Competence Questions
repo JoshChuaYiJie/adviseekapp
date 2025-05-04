@@ -1,0 +1,337 @@
+[
+  {
+    "question_number": "C1",
+    "rephrased_text": "Run equipment to produce or fix tools",
+    "riasec_component": "Realistic"
+  },
+  {
+    "question_number": "C2",
+    "rephrased_text": "Design visuals for a website",
+    "riasec_component": "Artistic"
+  },
+  {
+    "question_number": "C3",
+    "rephrased_text": "Manage air traffic at a major airport",
+    "riasec_component": "Conventional"
+  },
+  {
+    "question_number": "C4",
+    "rephrased_text": "Record minutes for a key meeting",
+    "riasec_component": "Conventional"
+  },
+  {
+    "question_number": "C5",
+    "rephrased_text": "Identify educational needs of diverse students",
+    "riasec_component": "Social"
+  },
+  {
+    "question_number": "C6",
+    "rephrased_text": "Install wallpaper in a new home",
+    "riasec_component": "Realistic"
+  },
+  {
+    "question_number": "C7",
+    "rephrased_text": "Instruct people with disabilities in life skills",
+    "riasec_component": "Social"
+  },
+  {
+    "question_number": "C8",
+    "rephrased_text": "Motivate students tackling challenging tasks",
+    "riasec_component": "Social"
+  },
+  {
+    "question_number": "C9",
+    "rephrased_text": "Explain test results to a patient",
+    "riasec_component": "Social"
+  },
+  {
+    "question_number": "C10",
+    "rephrased_text": "Organize receipts for tax filing",
+    "riasec_component": "Conventional"
+  },
+  {
+    "question_number": "C11",
+    "rephrased_text": "Create activities to enhance learning for high school students",
+    "riasec_component": "Social"
+  },
+  {
+    "question_number": "C12",
+    "rephrased_text": "Review financial records for a small company",
+    "riasec_component": "Conventional"
+  },
+  {
+    "question_number": "C13",
+    "rephrased_text": "Organize a family vacation itinerary",
+    "riasec_component": "Conventional"
+  },
+  {
+    "question_number": "C14",
+    "rephrased_text": "Create a marketing strategy for a product with limited funds",
+    "riasec_component": "Enterprising"
+  },
+  {
+    "question_number": "C15",
+    "rephrased_text": "Install a new shower faucet",
+    "riasec_component": "Realistic"
+  },
+  {
+    "question_number": "C16",
+    "rephrased_text": "Build a multimedia site for a radio station",
+    "riasec_component": "Artistic"
+  },
+  {
+    "question_number": "C17",
+    "rephrased_text": "Use a spreadsheet to calculate company expenses",
+    "riasec_component": "Conventional"
+  },
+  {
+    "question_number": "C18",
+    "rephrased_text": "Analyze medical test outcomes",
+    "riasec_component": "Investigative"
+  },
+  {
+    "question_number": "C19",
+    "rephrased_text": "Track time at a sports event",
+    "riasec_component": "Conventional"
+  },
+  {
+    "question_number": "C20",
+    "rephrased_text": "Create an ad campaign for a charity event",
+    "riasec_component": "Artistic"
+  },
+  {
+    "question_number": "C21",
+    "rephrased_text": "Assess a patient’s dietary requirements",
+    "riasec_component": "Investigative"
+  },
+  {
+    "question_number": "C22",
+    "rephrased_text": "Calculate funding needs for a startup",
+    "riasec_component": "Conventional"
+  },
+  {
+    "question_number": "C23",
+    "rephrased_text": "Operate tracking software for logistics",
+    "riasec_component": "Conventional"
+  },
+  {
+    "question_number": "C24",
+    "rephrased_text": "Set up a computer and audio system with a TV",
+    "riasec_component": "Realistic"
+  },
+  {
+    "question_number": "C25",
+    "rephrased_text": "Input information into a database",
+    "riasec_component": "Conventional"
+  },
+  {
+    "question_number": "C26",
+    "rephrased_text": "Set educational goals for special needs students",
+    "riasec_component": "Social"
+  },
+  {
+    "question_number": "C27",
+    "rephrased_text": "Conduct an experiment in a biology lab",
+    "riasec_component": "Investigative"
+  },
+  {
+    "question_number": "C28",
+    "rephrased_text": "Support high school students with emotional issues",
+    "riasec_component": "Social"
+  },
+  {
+    "question_number": "C29",
+    "rephrased_text": "Verify budget records for accuracy",
+    "riasec_component": "Conventional"
+  },
+  {
+    "question_number": "C30",
+    "rephrased_text": "Script a play for a local theater",
+    "riasec_component": "Artistic"
+  },
+  {
+    "question_number": "C31",
+    "rephrased_text": "Find new customer segments for a product",
+    "riasec_component": "Enterprising"
+  },
+  {
+    "question_number": "C32",
+    "rephrased_text": "Assess a patient’s vision issues",
+    "riasec_component": "Investigative"
+  },
+  {
+    "question_number": "C33",
+    "rephrased_text": "Track travel costs meticulously",
+    "riasec_component": "Conventional"
+  },
+  {
+    "question_number": "C34",
+    "rephrased_text": "Operate lab tools to analyze blood cells",
+    "riasec_component": "Investigative"
+  },
+  {
+    "question_number": "C35",
+    "rephrased_text": "Handle managerial tasks for a business",
+    "riasec_component": "Enterprising"
+  },
+  {
+    "question_number": "C36",
+    "rephrased_text": "Examine a company’s financial statements",
+    "riasec_component": "Conventional"
+  },
+  {
+    "question_number": "C37",
+    "rephrased_text": "Lead workshops to boost self-confidence",
+    "riasec_component": "Social"
+  },
+  {
+    "question_number": "C38",
+    "rephrased_text": "Pitch a marketing strategy to clients",
+    "riasec_component": "Enterprising"
+  },
+  {
+    "question_number": "C39",
+    "rephrased_text": "Track performance stats for a sports team",
+    "riasec_component": "Conventional"
+  },
+  {
+    "question_number": "C40",
+    "rephrased_text": "Manage finances for a club",
+    "riasec_component": "Conventional"
+  },
+  {
+    "question_number": "C41",
+    "rephrased_text": "Produce a TV commercial",
+    "riasec_component": "Artistic"
+  },
+  {
+    "question_number": "C42",
+    "rephrased_text": "Use software for business accounting",
+    "riasec_component": "Conventional"
+  },
+  {
+    "question_number": "C43",
+    "rephrased_text": "Find investors for a new enterprise",
+    "riasec_component": "Enterprising"
+  },
+  {
+    "question_number": "C44",
+    "rephrased_text": "Create a promotional flyer for an event",
+    "riasec_component": "Artistic"
+  },
+  {
+    "question_number": "C45",
+    "rephrased_text": "Serve as treasurer for a community group",
+    "riasec_component": "Conventional"
+  },
+  {
+    "question_number": "C46",
+    "rephrased_text": "Restore a damaged desk",
+    "riasec_component": "Realistic"
+  },
+  {
+    "question_number": "C47",
+    "rephrased_text": "Describe the periodic table",
+    "riasec_component": "Investigative"
+  },
+  {
+    "question_number": "C48",
+    "rephrased_text": "Organize a major event meticulously",
+    "riasec_component": "Conventional"
+  },
+  {
+    "question_number": "C49",
+    "rephrased_text": "Evaluate property values",
+    "riasec_component": "Conventional"
+  },
+  {
+    "question_number": "C50",
+    "rephrased_text": "Assess insurance papers for risk",
+    "riasec_component": "Conventional"
+  },
+  {
+    "question_number": "C51",
+    "rephrased_text": "Compute realtor fees for a rental",
+    "riasec_component": "Conventional"
+  },
+  {
+    "question_number": "C52",
+    "rephrased_text": "Craft stage scenery for a play",
+    "riasec_component": "Artistic"
+  },
+  {
+    "question_number": "C53",
+    "rephrased_text": "Evaluate flight prices across multiple sites",
+    "riasec_component": "Conventional"
+  },
+  {
+    "question_number": "C54",
+    "rephrased_text": "Design a chemical experiment",
+    "riasec_component": "Investigative"
+  },
+  {
+    "question_number": "C55",
+    "rephrased_text": "Oversee logistics in a warehouse",
+    "riasec_component": "Conventional"
+  },
+  {
+    "question_number": "C56",
+    "rephrased_text": "Build a corporate website",
+    "riasec_component": "Artistic"
+  },
+  {
+    "question_number": "C57",
+    "rephrased_text": "Study plant cells under a microscope",
+    "riasec_component": "Investigative"
+  },
+  {
+    "question_number": "C58",
+    "rephrased_text": "Create a comprehensive family budget",
+    "riasec_component": "Conventional"
+  },
+  {
+    "question_number": "C59",
+    "rephrased_text": "Produce a captivating artwork",
+    "riasec_component": "Artistic"
+  },
+  {
+    "question_number": "C60",
+    "rephrased_text": "Construct a bookshelf",
+    "riasec_component": "Realistic"
+  },
+  {
+    "question_number": "C61",
+    "rephrased_text": "Bargain for a product’s best price",
+    "riasec_component": "Enterprising"
+  },
+  {
+    "question_number": "C62",
+    "rephrased_text": "Chair a committee to manage a government budget",
+    "riasec_component": "Enterprising"
+  },
+  {
+    "question_number": "C63",
+    "rephrased_text": "Arrange an art exhibit in a gallery",
+    "riasec_component": "Artistic"
+  },
+  {
+    "question_number": "C64",
+    "rephrased_text": "Complete family tax documents",
+    "riasec_component": "Conventional"
+  },
+  {
+    "question_number": "C65",
+    "rephrased_text": "Create a strategy to boost local business",
+    "riasec_component": "Enterprising"
+  },
+  {
+    "question_number": "C66",
+    "rephrased_text": "Track company orders and deliveries",
+    "riasec_component": "Conventional"
+  },
+  {
+    "question_number": "C67",
+    "rephrased_text": "Fill your car’s tires with air",
+    "riasec_component": "Realistic"
+  }
+]

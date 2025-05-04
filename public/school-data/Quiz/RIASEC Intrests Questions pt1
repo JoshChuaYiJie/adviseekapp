@@ -1,0 +1,302 @@
+[
+  {
+    "question_number": "1",
+    "rephrased_text": "Construct wooden cabinets for a kitchen",
+    "riasec_component": "Realistic"
+  },
+  {
+    "question_number": "2",
+    "rephrased_text": "Install bricks or tiles for a building",
+    "riasec_component": "Realistic"
+  },
+  {
+    "question_number": "3",
+    "rephrased_text": "Create a new pharmaceutical drug",
+    "riasec_component": "Investigative"
+  },
+  {
+    "question_number": "4",
+    "rephrased_text": "Research methods to decrease water contamination",
+    "riasec_component": "Investigative"
+  },
+  {
+    "question_number": "5",
+    "rephrased_text": "Author novels or theatrical scripts",
+    "riasec_component": "Artistic"
+  },
+  {
+    "question_number": "6",
+    "rephrased_text": "Perform music using an instrument",
+    "riasec_component": "Artistic"
+  },
+  {
+    "question_number": "7",
+    "rephrased_text": "Coach someone in a fitness regimen",
+    "riasec_component": "Social"
+  },
+  {
+    "question_number": "8",
+    "rephrased_text": "Support individuals with emotional challenges",
+    "riasec_component": "Social"
+  },
+  {
+    "question_number": "9",
+    "rephrased_text": "Trade financial securities",
+    "riasec_component": "Enterprising"
+  },
+  {
+    "question_number": "10",
+    "rephrased_text": "Oversee operations of a shop",
+    "riasec_component": "Enterprising"
+  },
+  {
+    "question_number": "11",
+    "rephrased_text": "Create a data table with software",
+    "riasec_component": "Conventional"
+  },
+  {
+    "question_number": "12",
+    "rephrased_text": "Review documents for accuracy",
+    "riasec_component": "Conventional"
+  },
+  {
+    "question_number": "13",
+    "rephrased_text": "Fix home electrical devices",
+    "riasec_component": "Realistic"
+  },
+  {
+    "question_number": "14",
+    "rephrased_text": "Breed fish in an aquaculture facility",
+    "riasec_component": "Realistic"
+  },
+  {
+    "question_number": "15",
+    "rephrased_text": "Perform experiments with chemicals",
+    "riasec_component": "Investigative"
+  },
+  {
+    "question_number": "16",
+    "rephrased_text": "Research planetary orbits",
+    "riasec_component": "Investigative"
+  },
+  {
+    "question_number": "17",
+    "rephrased_text": "Create or orchestrate musical pieces",
+    "riasec_component": "Artistic"
+  },
+  {
+    "question_number": "18",
+    "rephrased_text": "Sketch illustrations",
+    "riasec_component": "Artistic"
+  },
+  {
+    "question_number": "19",
+    "rephrased_text": "Provide job counseling to individuals",
+    "riasec_component": "Social"
+  },
+  {
+    "question_number": "20",
+    "rephrased_text": "Administer therapy for recovery",
+    "riasec_component": "Social"
+  },
+  {
+    "question_number": "21",
+    "rephrased_text": "Run a hair or beauty salon",
+    "riasec_component": "Enterprising"
+  },
+  {
+    "question_number": "22",
+    "rephrased_text": "Lead a division in a corporation",
+    "riasec_component": "Enterprising"
+  },
+  {
+    "question_number": "23",
+    "rephrased_text": "Deploy software on a network of computers",
+    "riasec_component": "Conventional"
+  },
+  {
+    "question_number": "24",
+    "rephrased_text": "Use a calculator for computations",
+    "riasec_component": "Conventional"
+  },
+  {
+    "question_number": "25",
+    "rephrased_text": "Put together electronic components",
+    "riasec_component": "Realistic"
+  },
+  {
+    "question_number": "26",
+    "rephrased_text": "Operate a delivery truck for packages",
+    "riasec_component": "Realistic"
+  },
+  {
+    "question_number": "27",
+    "rephrased_text": "Analyze blood samples with a microscope",
+    "riasec_component": "Investigative"
+  },
+  {
+    "question_number": "28",
+    "rephrased_text": "Determine the origin of a fire",
+    "riasec_component": "Investigative"
+  },
+  {
+    "question_number": "29",
+    "rephrased_text": "Design visual effects for films",
+    "riasec_component": "Artistic"
+  },
+  {
+    "question_number": "30",
+    "rephrased_text": "Decorate stage sets for theater",
+    "riasec_component": "Artistic"
+  },
+  {
+    "question_number": "31",
+    "rephrased_text": "Volunteer at a charitable organization",
+    "riasec_component": "Social"
+  },
+  {
+    "question_number": "32",
+    "rephrased_text": "Coach kids in sports activities",
+    "riasec_component": "Social"
+  },
+  {
+    "question_number": "33",
+    "rephrased_text": "Launch a new company",
+    "riasec_component": "Enterprising"
+  },
+  {
+    "question_number": "34",
+    "rephrased_text": "Secure favorable business agreements",
+    "riasec_component": "Enterprising"
+  },
+  {
+    "question_number": "35",
+    "rephrased_text": "Track shipping and receiving logs",
+    "riasec_component": "Conventional"
+  },
+  {
+    "question_number": "36",
+    "rephrased_text": "Compute employee salaries",
+    "riasec_component": "Conventional"
+  },
+  {
+    "question_number": "37",
+    "rephrased_text": "Inspect parts for quality before shipping",
+    "riasec_component": "Realistic"
+  },
+  {
+    "question_number": "38",
+    "rephrased_text": "Fix and install security locks",
+    "riasec_component": "Realistic"
+  },
+  {
+    "question_number": "39",
+    "rephrased_text": "Improve weather forecasting methods",
+    "riasec_component": "Investigative"
+  },
+  {
+    "question_number": "40",
+    "rephrased_text": "Conduct research in a biology laboratory",
+    "riasec_component": "Investigative"
+  },
+  {
+    "question_number": "41",
+    "rephrased_text": "Script content for films or TV shows",
+    "riasec_component": "Artistic"
+  },
+  {
+    "question_number": "42",
+    "rephrased_text": "Dance in a jazz or tap performance",
+    "riasec_component": "Artistic"
+  },
+  {
+    "question_number": "43",
+    "rephrased_text": "Instruct sign language to the deaf",
+    "riasec_component": "Social"
+  },
+  {
+    "question_number": "44",
+    "rephrased_text": "Facilitate a group therapy session",
+    "riasec_component": "Social"
+  },
+  {
+    "question_number": "45",
+    "rephrased_text": "Defend a client in court",
+    "riasec_component": "Enterprising"
+  },
+  {
+    "question_number": "46",
+    "rephrased_text": "Promote a new clothing collection",
+    "riasec_component": "Enterprising"
+  },
+  {
+    "question_number": "47",
+    "rephrased_text": "Catalog supplies with a handheld device",
+    "riasec_component": "Conventional"
+  },
+  {
+    "question_number": "48",
+    "rephrased_text": "Log rental payments",
+    "riasec_component": "Conventional"
+  },
+  {
+    "question_number": "49",
+    "rephrased_text": "Operate machinery for product manufacturing",
+    "riasec_component": "Realistic"
+  },
+  {
+    "question_number": "50",
+    "rephrased_text": "Combat wildfires",
+    "riasec_component": "Realistic"
+  },
+  {
+    "question_number": "51",
+    "rephrased_text": "Create a sugar substitute",
+    "riasec_component": "Investigative"
+  },
+  {
+    "question_number": "52",
+    "rephrased_text": "Perform lab tests to diagnose diseases",
+    "riasec_component": "Investigative"
+  },
+  {
+    "question_number": "53",
+    "rephrased_text": "Perform vocally in a band",
+    "riasec_component": "Artistic"
+  },
+  {
+    "question_number": "54",
+    "rephrased_text": "Edit video content for films",
+    "riasec_component": "Artistic"
+  },
+  {
+    "question_number": "55",
+    "rephrased_text": "Care for children in a daycare",
+    "riasec_component": "Social"
+  },
+  {
+    "question_number": "56",
+    "rephrased_text": "Instruct a high school course",
+    "riasec_component": "Social"
+  },
+  {
+    "question_number": "57",
+    "rephrased_text": "Sell products in a retail store",
+    "riasec_component": "Enterprising"
+  },
+  {
+    "question_number": "58",
+    "rephrased_text": "Run a fashion retail shop",
+    "riasec_component": "Enterprising"
+  },
+  {
+    "question_number": "59",
+    "rephrased_text": "Maintain stock records",
+    "riasec_component": "Conventional"
+  },
+  {
+    "question_number": "60",
+    "rephrased_text": "Process and distribute organizational mail",
+    "riasec_component": "Conventional"
+  }
+]
