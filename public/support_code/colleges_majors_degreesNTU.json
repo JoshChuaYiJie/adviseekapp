@@ -1,0 +1,477 @@
+[
+    {
+        "college": "College of Computing and Data Science",
+        "major": "Artificial Intelligence and Society",
+        "degree": "Bachelor of Computing"
+    },
+    {
+        "college": "College of Computing and Data Science",
+        "major": "Business and Computer Engineering",
+        "degree": "Double Degree: Bachelor of Business + Bachelor of Engineering"
+    },
+    {
+        "college": "College of Computing and Data Science",
+        "major": "Business and Computing",
+        "degree": "Double Degree: Bachelor of Business + Bachelor of Computing"
+    },
+    {
+        "college": "College of Computing and Data Science",
+        "major": "Computer Engineering",
+        "degree": "Bachelor of Engineering"
+    },
+    {
+        "college": "College of Computing and Data Science",
+        "major": "Computer Science",
+        "degree": "Bachelor of Computing"
+    },
+    {
+        "college": "College of Computing and Data Science",
+        "major": "Data Science and Artificial Intelligence",
+        "degree": "Bachelor of Computing"
+    },
+    {
+        "college": "Renaissance Engineering Programme",
+        "major": "Renaissance Engineering",
+        "degree": "Bachelor of Engineering Science + Master of Science in Technology Management"
+    },
+    {
+        "college": "College of Engineering",
+        "major": "Aerospace Engineering",
+        "degree": "Bachelor of Engineering"
+    },
+    {
+        "college": "College of Engineering",
+        "major": "Bioengineering",
+        "degree": "Bachelor of Engineering"
+    },
+    {
+        "college": "College of Engineering",
+        "major": "Chemical and Biomolecular Engineering",
+        "degree": "Bachelor of Engineering"
+    },
+    {
+        "college": "College of Engineering",
+        "major": "Civil Engineering",
+        "degree": "Bachelor of Engineering"
+    },
+    {
+        "college": "College of Engineering",
+        "major": "Electrical and Electronic Engineering",
+        "degree": "Bachelor of Engineering"
+    },
+    {
+        "college": "College of Engineering",
+        "major": "Environmental Engineering",
+        "degree": "Bachelor of Engineering"
+    },
+    {
+        "college": "College of Engineering",
+        "major": "Information Engineering and Media",
+        "degree": "Bachelor of Engineering"
+    },
+    {
+        "college": "College of Engineering",
+        "major": "Maritime Studies",
+        "degree": "Bachelor of Science"
+    },
+    {
+        "college": "College of Engineering",
+        "major": "Materials Engineering",
+        "degree": "Bachelor of Engineering"
+    },
+    {
+        "college": "College of Engineering",
+        "major": "Mechanical Engineering",
+        "degree": "Bachelor of Engineering"
+    },
+    {
+        "college": "College of Engineering",
+        "major": "Process Engineering and Synthetic Chemistry",
+        "degree": "Bachelor of Engineering Science"
+    },
+    {
+        "college": "College of Engineering",
+        "major": "Robotics",
+        "degree": "Bachelor of Engineering"
+    },
+    {
+        "college": "College of Humanities, Arts and Social Sciences",
+        "major": "Art, Design and Media",
+        "degree": "Bachelor of Fine Arts"
+    },
+    {
+        "college": "College of Humanities, Arts and Social Sciences",
+        "major": "Chinese",
+        "degree": "Bachelor of Arts"
+    },
+    {
+        "college": "College of Humanities, Arts and Social Sciences",
+        "major": "Communication Studies",
+        "degree": "Bachelor of Communication Studies"
+    },
+    {
+        "college": "College of Humanities, Arts and Social Sciences",
+        "major": "Economics",
+        "degree": "Bachelor of Social Sciences"
+    },
+    {
+        "college": "College of Humanities, Arts and Social Sciences",
+        "major": "English",
+        "degree": "Bachelor of Arts"
+    },
+    {
+        "college": "College of Humanities, Arts and Social Sciences",
+        "major": "English Literature and Art History",
+        "degree": "Bachelor of Arts"
+    },
+    {
+        "college": "College of Humanities, Arts and Social Sciences",
+        "major": "English and History",
+        "degree": "Bachelor of Arts"
+    },
+    {
+        "college": "College of Humanities, Arts and Social Sciences",
+        "major": "English and Philosophy",
+        "degree": "Bachelor of Arts"
+    },
+    {
+        "college": "College of Humanities, Arts and Social Sciences",
+        "major": "History",
+        "degree": "Bachelor of Arts"
+    },
+    {
+        "college": "College of Humanities, Arts and Social Sciences",
+        "major": "History and Chinese",
+        "degree": "Bachelor of Arts"
+    },
+    {
+        "college": "College of Humanities, Arts and Social Sciences",
+        "major": "History and Linguistics & Multilingual Studies",
+        "degree": "Bachelor of Arts"
+    },
+    {
+        "college": "College of Humanities, Arts and Social Sciences",
+        "major": "Linguistics and Multilingual Studies",
+        "degree": "Bachelor of Arts"
+    },
+    {
+        "college": "College of Humanities, Arts and Social Sciences",
+        "major": "Linguistics & Multilingual Studies and English",
+        "degree": "Bachelor of Arts"
+    },
+    {
+        "college": "College of Humanities, Arts and Social Sciences",
+        "major": "Linguistics & Multilingual Studies and Philosophy",
+        "degree": "Bachelor of Arts"
+    },
+    {
+        "college": "College of Humanities, Arts and Social Sciences",
+        "major": "Philosophy",
+        "degree": "Bachelor of Arts"
+    },
+    {
+        "college": "College of Humanities, Arts and Social Sciences",
+        "major": "Philosophy and Chinese",
+        "degree": "Bachelor of Arts"
+    },
+    {
+        "college": "College of Humanities, Arts and Social Sciences",
+        "major": "Philosophy and History",
+        "degree": "Bachelor of Arts"
+    },
+    {
+        "college": "College of Humanities, Arts and Social Sciences",
+        "major": "Philosophy, Politics and Economics",
+        "degree": "Bachelor of Social Sciences"
+    },
+    {
+        "college": "College of Humanities, Arts and Social Sciences",
+        "major": "Psychology",
+        "degree": "Bachelor of Social Sciences"
+    },
+    {
+        "college": "College of Humanities, Arts and Social Sciences",
+        "major": "Psychology and Biological Sciences",
+        "degree": "Bachelor of Science"
+    },
+    {
+        "college": "College of Humanities, Arts and Social Sciences",
+        "major": "Psychology and Linguistics & Multilingual Studies",
+        "degree": "Bachelor of Arts"
+    },
+    {
+        "college": "College of Humanities, Arts and Social Sciences",
+        "major": "Psychology and Media Analytics",
+        "degree": "Bachelor of Social Sciences"
+    },
+    {
+        "college": "College of Humanities, Arts and Social Sciences",
+        "major": "Public Policy and Global Affairs",
+        "degree": "Bachelor of Social Sciences"
+    },
+    {
+        "college": "College of Humanities, Arts and Social Sciences",
+        "major": "Sociology",
+        "degree": "Bachelor of Social Sciences"
+    },
+    {
+        "college": "College of Science",
+        "major": "Biological Sciences",
+        "degree": "Bachelor of Science"
+    },
+    {
+        "college": "College of Science",
+        "major": "Biomedical Sciences and BioBusiness",
+        "degree": "Bachelor of Science"
+    },
+    {
+        "college": "College of Science",
+        "major": "Biological Sciences and Psychology",
+        "degree": "Bachelor of Science"
+    },
+    {
+        "college": "College of Science",
+        "major": "Chemistry and Biological Chemistry",
+        "degree": "Bachelor of Science"
+    },
+    {
+        "college": "College of Science",
+        "major": "Chinese Medicine",
+        "degree": "Bachelor of Chinese Medicine"
+    },
+    {
+        "college": "College of Science",
+        "major": "Environmental Earth Systems Science",
+        "degree": "Bachelor of Science"
+    },
+    {
+        "college": "College of Science",
+        "major": "Environmental Earth Systems Science and Public Policy & Global Affairs",
+        "degree": "Bachelor of Science"
+    },
+    {
+        "college": "College of Science",
+        "major": "Mathematical Sciences",
+        "degree": "Bachelor of Science"
+    },
+    {
+        "college": "Lee Kong Chian School of Medicine",
+        "major": "Medicine",
+        "degree": "Bachelor of Medicine and Bachelor of Surgery"
+    },
+    {
+        "college": "College of Science",
+        "major": "Physics and Applied Physics",
+        "degree": "Bachelor of Science"
+    },
+    {
+        "college": "National Institute of Education",
+        "major": "Sport Science and Management",
+        "degree": "Bachelor of Science"
+    },
+    {
+        "college": "College of Science",
+        "major": "Mathematical and Computer Sciences",
+        "degree": "Bachelor of Science"
+    },
+    {
+        "college": "College of Science",
+        "major": "Mathematical Sciences and Economics",
+        "degree": "Bachelor of Science"
+    },
+    {
+        "college": "College of Science",
+        "major": "Physics and Mathematical Sciences",
+        "degree": "Bachelor of Science"
+    },
+    {
+        "college": "College of Humanities, Arts and Social Sciences",
+        "major": "Chinese and English",
+        "degree": "Bachelor of Arts"
+    },
+    {
+        "college": "College of Humanities, Arts and Social Sciences",
+        "major": "Chinese and Linguistics and Multilingual Studies",
+        "degree": "Bachelor of Arts"
+    },
+    {
+        "college": "College of Humanities, Arts and Social Sciences",
+        "major": "Economics and Media Analytics",
+        "degree": "Bachelor of Social Sciences"
+    },
+    {
+        "college": "College of Humanities, Arts and Social Sciences",
+        "major": "Economics and Psychology",
+        "degree": "Bachelor of Social Sciences"
+    },
+    {
+        "college": "College of Humanities, Arts and Social Sciences",
+        "major": "Economics and Public Policy and Global Affairs",
+        "degree": "Bachelor of Social Sciences"
+    },
+    {
+        "college": "College of Engineering",
+        "major": "Process Engineering and Synthetic Chemistry",
+        "degree": "Bachelor of Engineering Science"
+    },
+    {
+        "college": "Nanyang Business School",
+        "major": "Accountancy and Business",
+        "degree": "Bachelor of Accountancy + Bachelor of Business"
+    },
+    {
+        "college": "Nanyang Business School",
+        "major": "Accountancy and Data Science and Artificial Intelligence",
+        "degree": "Bachelor of Accountancy + Bachelor of Computing"
+    },
+    {
+        "college": "Nanyang Business School",
+        "major": "Business and Computing",
+        "degree": "Bachelor of Business + Bachelor of Computing"
+    },
+    {
+        "college": "College of Computing and Data Science",
+        "major": "Computer Science and Economics",
+        "degree": "Bachelor of Computing + Bachelor of Social Sciences"
+    },
+    {
+        "college": "College of Engineering",
+        "major": "Engineering and Economics",
+        "degree": "Bachelor of Engineering + Bachelor of Social Sciences"
+    },
+    {
+        "college": "National Institute of Education",
+        "major": "Art and Education",
+        "degree": "Bachelor of Arts"
+    },
+    {
+        "college": "National Institute of Education",
+        "major": "Chinese Studies and Education",
+        "degree": "Bachelor of Arts"
+    },
+    {
+        "college": "National Institute of Education",
+        "major": "Drama and Education",
+        "degree": "Bachelor of Arts"
+    },
+    {
+        "college": "National Institute of Education",
+        "major": "English Language & Linguistics and Education",
+        "degree": "Bachelor of Arts"
+    },
+    {
+        "college": "National Institute of Education",
+        "major": "English Literature and Education",
+        "degree": "Bachelor of Arts"
+    },
+    {
+        "college": "National Institute of Education",
+        "major": "Geography and Education",
+        "degree": "Bachelor of Arts"
+    },
+    {
+        "college": "National Institute of Education",
+        "major": "History and Education",
+        "degree": "Bachelor of Arts"
+    },
+    {
+        "college": "National Institute of Education",
+        "major": "Malay Studies and Education",
+        "degree": "Bachelor of Arts"
+    },
+    {
+        "college": "National Institute of Education",
+        "major": "Music and Education",
+        "degree": "Bachelor of Arts"
+    },
+    {
+        "college": "National Institute of Education",
+        "major": "Tamil Studies and Education",
+        "degree": "Bachelor of Arts"
+    },
+    {
+        "college": "National Institute of Education",
+        "major": "Biology and Education",
+        "degree": "Bachelor of Science"
+    },
+    {
+        "college": "National Institute of Education",
+        "major": "Chemistry and Education",
+        "degree": "Bachelor of Science"
+    },
+    {
+        "college": "National Institute of Education",
+        "major": "Food & Consumer Sciences and Education",
+        "degree": "Bachelor of Science"
+    },
+    {
+        "college": "National Institute of Education",
+        "major": "Mathematics & Computational Thinking and Education",
+        "degree": "Bachelor of Science"
+    },
+    {
+        "college": "National Institute of Education",
+        "major": "Sport Science and Education",
+        "degree": "Bachelor of Science"
+    },
+    {
+        "college": "National Institute of Education",
+        "major": "Physics & Energy Studies and Education",
+        "degree": "Bachelor of Science"
+    },
+    {
+        "college": "Renaissance Engineering Programme",
+        "major": "Renaissance Engineering",
+        "degree": "Bachelor of Engineering Science + Master of Science in Technology Management"
+    },
+    {
+        "college": "Various Colleges",
+        "major": "Premier Scholars Programmes",
+        "degree": "Varies"
+    },
+    {
+        "college": "Various Colleges",
+        "major": "Work-Study Degree Programmes",
+        "degree": "Varies"
+    },
+    {
+        "college": "College of Humanities, Arts and Social Sciences",
+        "major": "Art History",
+        "degree": "Second Major"
+    },
+    {
+        "college": "College of Humanities, Arts and Social Sciences",
+        "major": "Chinese",
+        "degree": "Second Major"
+    },
+    {
+        "college": "College of Humanities, Arts and Social Sciences",
+        "major": "Communication Studies",
+        "degree": "Second Major"
+    },
+    {
+        "college": "College of Humanities, Arts and Social Sciences",
+        "major": "Economics",
+        "degree": "Second Major"
+    },
+    {
+        "college": "College of Humanities, Arts and Social Sciences",
+        "major": "English",
+        "degree": "Second Major"
+    },
+    {
+        "college": "College of Humanities, Arts and Social Sciences",
+        "major": "History",
+        "degree": "Second Major"
+    },
+    {
+        "college": "College of Humanities, Arts and Social Sciences",
+        "major": "Linguistics and Multilingual Studies",
+        "degree": "Second Major"
+    },
+    {
+        "college": "College of Humanities, Arts and Social Sciences",
+        "major": "Modern Languages",
+        "degree": "Second Major"
+    }
+]

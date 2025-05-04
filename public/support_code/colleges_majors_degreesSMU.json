@@ -1,0 +1,347 @@
+[
+    {
+        "college": "School of Accountancy",
+        "major": "Accounting",
+        "degree": "Bachelor of Accountancy"
+    },
+    {
+        "college": "School of Accountancy",
+        "major": "Accounting Data and Analytics",
+        "degree": "Bachelor of Accountancy (Second Major)"
+    },
+    {
+        "college": "School of Accountancy",
+        "major": "Financial Forensics",
+        "degree": "Bachelor of Accountancy (Second Major)"
+    },
+    {
+        "college": "Lee Kong Chian School of Business",
+        "major": "Communication Management",
+        "degree": "Bachelor of Business Management"
+    },
+    {
+        "college": "Lee Kong Chian School of Business",
+        "major": "Communication Management (Data, Design & Communication)",
+        "degree": "Bachelor of Business Management"
+    },
+    {
+        "college": "Lee Kong Chian School of Business",
+        "major": "Finance",
+        "degree": "Bachelor of Business Management"
+    },
+    {
+        "college": "Lee Kong Chian School of Business",
+        "major": "Finance (Private Banking Work-Study)",
+        "degree": "Bachelor of Business Management"
+    },
+    {
+        "college": "Lee Kong Chian School of Business",
+        "major": "Finance (Finance Analytics)",
+        "degree": "Bachelor of Business Management"
+    },
+    {
+        "college": "Lee Kong Chian School of Business",
+        "major": "Finance (Real Estate)",
+        "degree": "Bachelor of Business Management"
+    },
+    {
+        "college": "Lee Kong Chian School of Business",
+        "major": "Finance (Wealth Management)",
+        "degree": "Bachelor of Business Management"
+    },
+    {
+        "college": "Lee Kong Chian School of Business",
+        "major": "Finance (International Trading)",
+        "degree": "Bachelor of Business Management"
+    },
+    {
+        "college": "Lee Kong Chian School of Business",
+        "major": "Finance (Banking)",
+        "degree": "Bachelor of Business Management"
+    },
+    {
+        "college": "Lee Kong Chian School of Business",
+        "major": "Innovation & Entrepreneurship",
+        "degree": "Bachelor of Business Management"
+    },
+    {
+        "college": "Lee Kong Chian School of Business",
+        "major": "Marketing",
+        "degree": "Bachelor of Business Management"
+    },
+    {
+        "college": "Lee Kong Chian School of Business",
+        "major": "Marketing (Marketing Analytics)",
+        "degree": "Bachelor of Business Management"
+    },
+    {
+        "college": "Lee Kong Chian School of Business",
+        "major": "Operations Management",
+        "degree": "Bachelor of Business Management"
+    },
+    {
+        "college": "Lee Kong Chian School of Business",
+        "major": "Operations Management (Operations Analytics)",
+        "degree": "Bachelor of Business Management"
+    },
+    {
+        "college": "Lee Kong Chian School of Business",
+        "major": "Operations Management (Maritime Business & Operations)",
+        "degree": "Bachelor of Business Management"
+    },
+    {
+        "college": "Lee Kong Chian School of Business",
+        "major": "Organisational Behaviour & Human Resources",
+        "degree": "Bachelor of Business Management"
+    },
+    {
+        "college": "Lee Kong Chian School of Business",
+        "major": "Quantitative Finance",
+        "degree": "Bachelor of Business Management"
+    },
+    {
+        "college": "Lee Kong Chian School of Business",
+        "major": "Strategic Management",
+        "degree": "Bachelor of Business Management"
+    },
+    {
+        "college": "Lee Kong Chian School of Business",
+        "major": "Digital Business",
+        "degree": "Bachelor of Business Management (Second Major)"
+    },
+    {
+        "college": "Lee Kong Chian School of Business",
+        "major": "Sustainability Management",
+        "degree": "Bachelor of Business Management (Second Major)"
+    },
+    {
+        "college": "School of Economics",
+        "major": "Economics",
+        "degree": "Bachelor of Science (Economics)"
+    },
+    {
+        "college": "School of Economics",
+        "major": "Economics (Quantitative Economics)",
+        "degree": "Bachelor of Science (Economics)"
+    },
+    {
+        "college": "School of Economics",
+        "major": "Economics (Real Estate)",
+        "degree": "Bachelor of Science (Economics)"
+    },
+    {
+        "college": "School of Economics",
+        "major": "Actuarial Science",
+        "degree": "Bachelor of Science (Economics) (Second Major)"
+    },
+    {
+        "college": "School of Economics",
+        "major": "Actuarial Science (Industry Integration)",
+        "degree": "Bachelor of Science (Economics) (Second Major)"
+    },
+    {
+        "college": "School of Economics",
+        "major": "Health Economics & Management",
+        "degree": "Bachelor of Science (Economics) (Second Major)"
+    },
+    {
+        "college": "School of Economics",
+        "major": "Data Science and Analytics",
+        "degree": "Bachelor of Science (Economics) (Second Major)"
+    },
+    {
+        "college": "School of Computing and Information Systems",
+        "major": "Information Systems",
+        "degree": "Bachelor of Science (Information Systems)"
+    },
+    {
+        "college": "School of Computing and Information Systems",
+        "major": "Information Systems (Business Analytics)",
+        "degree": "Bachelor of Science (Information Systems)"
+    },
+    {
+        "college": "School of Computing and Information Systems",
+        "major": "Information Systems (Financial Technology)",
+        "degree": "Bachelor of Science (Information Systems)"
+    },
+    {
+        "college": "School of Computing and Information Systems",
+        "major": "Information Systems (Smart-City Management and Technology)",
+        "degree": "Bachelor of Science (Information Systems)"
+    },
+    {
+        "college": "School of Computing and Information Systems",
+        "major": "Information Systems (Product Development)",
+        "degree": "Bachelor of Science (Information Systems)"
+    },
+    {
+        "college": "School of Computing and Information Systems",
+        "major": "Information Systems (Business Analytics & Financial Technology)",
+        "degree": "Bachelor of Science (Information Systems)"
+    },
+    {
+        "college": "School of Computing and Information Systems",
+        "major": "Information Systems (Smart-City Management and Technology & Business Analytics)",
+        "degree": "Bachelor of Science (Information Systems)"
+    },
+    {
+        "college": "School of Computing and Information Systems",
+        "major": "Information Systems (Smart-City Management and Technology & Financial Technology)",
+        "degree": "Bachelor of Science (Information Systems)"
+    },
+    {
+        "college": "School of Computing and Information Systems",
+        "major": "Information Systems (Product Development and Financial Technology)",
+        "degree": "Bachelor of Science (Information Systems)"
+    },
+    {
+        "college": "School of Computing and Information Systems",
+        "major": "Information Systems (Product Development and Smart-City Management & Technology)",
+        "degree": "Bachelor of Science (Information Systems)"
+    },
+    {
+        "college": "School of Computing and Information Systems",
+        "major": "Computer Science",
+        "degree": "Bachelor of Science (Computer Science)"
+    },
+    {
+        "college": "School of Computing and Information Systems",
+        "major": "Computer Science (Artificial Intelligence)",
+        "degree": "Bachelor of Science (Computer Science)"
+    },
+    {
+        "college": "School of Computing and Information Systems",
+        "major": "Computer Science (Cybersecurity)",
+        "degree": "Bachelor of Science (Computer Science)"
+    },
+    {
+        "college": "School of Computing and Information Systems",
+        "major": "Computer Science (Cyber-Physical Systems)",
+        "degree": "Bachelor of Science (Computer Science)"
+    },
+    {
+        "college": "School of Computing and Information Systems",
+        "major": "Computer Science (Artificial Intelligence & Cybersecurity)",
+        "degree": "Bachelor of Science (Computer Science)"
+    },
+    {
+        "college": "School of Computing and Information Systems",
+        "major": "Computer Science (Artificial Intelligence and Cyber-Physical Systems)",
+        "degree": "Bachelor of Science (Computer Science)"
+    },
+    {
+        "college": "School of Computing and Information Systems",
+        "major": "Computer Science (Cybersecurity & Cyber-Physical Systems)",
+        "degree": "Bachelor of Science (Computer Science)"
+    },
+    {
+        "college": "School of Computing and Information Systems",
+        "major": "Computing & Law",
+        "degree": "Bachelor of Science (Computing & Law)"
+    },
+    {
+        "college": "School of Computing and Information Systems",
+        "major": "Software Engineering",
+        "degree": "Bachelor of Science (Software Engineering)"
+    },
+    {
+        "college": "School of Computing and Information Systems",
+        "major": "Computing Studies (Artificial Intelligence)",
+        "degree": "Bachelor of Science (Computing & Law) (Second Major)"
+    },
+    {
+        "college": "School of Computing and Information Systems",
+        "major": "Computing Studies (Cybersecurity)",
+        "degree": "Bachelor of Science (Computing & Law) (Second Major)"
+    },
+    {
+        "college": "School of Computing and Information Systems",
+        "major": "Computing Studies (Cyber-Physical Systems)",
+        "degree": "Bachelor of Science (Computing & Law) (Second Major)"
+    },
+    {
+        "college": "School of Computing and Information Systems",
+        "major": "Technology for Business Solutions (Business Analytics)",
+        "degree": "Bachelor of Science (Computing & Law) (Second Major)"
+    },
+    {
+        "college": "School of Computing and Information Systems",
+        "major": "Technology for Business Solutions (Financial Technology)",
+        "degree": "Bachelor of Science (Computing & Law) (Second Major)"
+    },
+    {
+        "college": "School of Computing and Information Systems",
+        "major": "IT Solution Management",
+        "degree": "Bachelor of Science (Computing & Law) (Second Major)"
+    },
+    {
+        "college": "Yong Pung How School of Law",
+        "major": "Law",
+        "degree": "Bachelor of Laws"
+    },
+    {
+        "college": "Yong Pung How School of Law",
+        "major": "Legal Studies",
+        "degree": "Bachelor of Laws (Second Major)"
+    },
+    {
+        "college": "School of Social Sciences",
+        "major": "Politics, Law and Economics",
+        "degree": "Bachelor of Social Science"
+    },
+    {
+        "college": "School of Social Sciences",
+        "major": "Political Science",
+        "degree": "Bachelor of Social Science"
+    },
+    {
+        "college": "School of Social Sciences",
+        "major": "Psychology",
+        "degree": "Bachelor of Social Science"
+    },
+    {
+        "college": "School of Social Sciences",
+        "major": "Sociology",
+        "degree": "Bachelor of Social Science"
+    },
+    {
+        "college": "School of Social Sciences",
+        "major": "Global Asia",
+        "degree": "Bachelor of Social Science (Second Major)"
+    },
+    {
+        "college": "School of Social Sciences",
+        "major": "Public Policy and Public Management",
+        "degree": "Bachelor of Social Science (Second Major)"
+    },
+    {
+        "college": "School of Social Sciences",
+        "major": "Sustainable Societies",
+        "degree": "Bachelor of Social Science (Second Major)"
+    },
+    {
+        "college": "School of Social Sciences",
+        "major": "Arts and Culture Management",
+        "degree": "Bachelor of Social Science (Second Major)"
+    },
+    {
+        "college": "College of Integrative Studies",
+        "major": "Deferred Declaration of Degree",
+        "degree": "Bachelor of Integrative Studies"
+    },
+    {
+        "college": "College of Integrative Studies",
+        "major": "Individualised Major",
+        "degree": "Bachelor of Integrative Studies"
+    },
+    {
+        "college": "College of Integrative Studies",
+        "major": "Individualised Second Major",
+        "degree": "Bachelor of Integrative Studies (Second Major)"
+    },
+    {
+        "college": "Special Programs",
+        "major": "SMU-Duke-NUS Medicine Pathway",
+        "degree": "Special Program"
+    }
+]

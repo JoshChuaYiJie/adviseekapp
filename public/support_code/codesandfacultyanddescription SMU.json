@@ -1,0 +1,282 @@
+[
+    {
+        "moduleCode": "COMM .330",
+        "name": "Persuasion: The Business of Influence",
+        "description": ""
+    },
+    {
+        "moduleCode": "BSRM 700",
+        "name": "Introduction to Business Research",
+        "description": "javascript:submitAction_win0(document.win0,'DERIVED_CLSRCH_SSR_SELECT$0');"
+    },
+    {
+        "moduleCode": "DSA 201",
+        "name": "Statistical Inference for Data Science",
+        "description": "javascript:submitAction_win0(document.win0,'DERIVED_CLSRCH_SSR_SELECT$0');"
+    },
+    {
+        "moduleCode": "ECON 001",
+        "name": "Introductory Economics",
+        "description": ""
+    },
+    {
+        "moduleCode": "FNAR 001",
+        "name": "Dance: East and West",
+        "description": ""
+    },
+    {
+        "moduleCode": "FNCE .210",
+        "name": "International Finance",
+        "description": "javascript:submitAction_win0(document.win0,'DERIVED_CLSRCH_SSR_SELECT$2');"
+    },
+    {
+        "moduleCode": "COR-COMM COMM 662",
+        "name": "Management Communication",
+        "description": ""
+    },
+    {
+        "moduleCode": "FTW 100",
+        "name": "Finishing Touch Workshops (Year One)",
+        "description": ""
+    },
+    {
+        "moduleCode": "GA 102",
+        "name": "Southeast Asian Literature",
+        "description": ""
+    },
+    {
+        "moduleCode": "HLCR 601",
+        "name": "Strategy and Global Healthcare Landscape",
+        "description": ""
+    },
+    {
+        "moduleCode": "HUMN 004",
+        "name": "Culture Identities and Arts",
+        "description": ""
+    },
+    {
+        "moduleCode": "ENGL 001",
+        "name": "From Text to Screen: Shakespeare on Film",
+        "description": ""
+    },
+    {
+        "moduleCode": "IAS 202",
+        "name": "Asia and the World in the Twentieth Century",
+        "description": ""
+    },
+    {
+        "moduleCode": "IDIS 001",
+        "name": "Analytical Skills",
+        "description": ""
+    },
+    {
+        "moduleCode": "LAW .4009",
+        "name": "China’s BRI: Practical Legal and Commercial Aspects of Cross-Border Projects on the New Silk Route",
+        "description": ""
+    },
+    {
+        "moduleCode": "IDST 300",
+        "name": "Independent Study",
+        "description": ""
+    },
+    {
+        "moduleCode": "INDN 201",
+        "name": "Bahasa Indonesia",
+        "description": ""
+    },
+    {
+        "moduleCode": "INTS 001",
+        "name": "Perspectives, Challenges, and Insights in Singapore",
+        "description": ""
+    },
+    {
+        "moduleCode": "IS .215",
+        "name": "Digital Business - Technologies and Transformation",
+        "description": "javascript:submitAction_win0(document.win0,'DERIVED_CLSRCH_SSR_SELECT$89');"
+    },
+    {
+        "moduleCode": "CS .420",
+        "name": "Introduction to Artificial Intelligence",
+        "description": "javascript:submitAction_win0(document.win0,'DERIVED_CLSRCH_SSR_SELECT$205');"
+    },
+    {
+        "moduleCode": "ACCT 112",
+        "name": "Data Management",
+        "description": "javascript:submitAction_win0(document.win0,'DERIVED_CLSRCH_SSR_SELECT$108');"
+    },
+    {
+        "moduleCode": "MGMT .205",
+        "name": "International Business",
+        "description": "javascript:submitAction_win0(document.win0,'DERIVED_CLSRCH_SSR_SELECT$1');"
+    },
+    {
+        "moduleCode": "ISFS 605",
+        "name": "Financial Markets Systems and Technology",
+        "description": ""
+    },
+    {
+        "moduleCode": "LGST .232",
+        "name": "The Law and Information Technology in Asia: Developments and Issues",
+        "description": ""
+    },
+    {
+        "moduleCode": "ISSS 601",
+        "name": "Analytics Framework & Business Context",
+        "description": ""
+    },
+    {
+        "moduleCode": "OBHR .211",
+        "name": "Governing, Managing and Protecting Knowledge in Organisations",
+        "description": ""
+    },
+    {
+        "moduleCode": "PHIL 101",
+        "name": "Philosophy",
+        "description": ""
+    },
+    {
+        "moduleCode": "PLE 100",
+        "name": "Interdisciplinary Perspectives and Methods",
+        "description": "javascript:submitAction_win0(document.win0,'DERIVED_CLSRCH_SSR_SELECT$4');"
+    },
+    {
+        "moduleCode": "POSC 003",
+        "name": "Introduction to Political and Policy Studies",
+        "description": "javascript:submitAction_win0(document.win0,'DERIVED_CLSRCH_SSR_SELECT$6');"
+    },
+    {
+        "moduleCode": "PPPM 101",
+        "name": "Public Sector Management",
+        "description": ""
+    },
+    {
+        "moduleCode": "PSYC 001",
+        "name": "Introduction to Psychology",
+        "description": "javascript:submitAction_win0(document.win0,'DERIVED_CLSRCH_SSR_SELECT$60');"
+    },
+    {
+        "moduleCode": "OPIM 101",
+        "name": "Decision Analysis",
+        "description": "javascript:submitAction_win0(document.win0,'DERIVED_CLSRCH_SSR_SELECT$91');"
+    },
+    {
+        "moduleCode": "QF .205",
+        "name": "Computing Technology For Finance",
+        "description": "javascript:submitAction_win0(document.win0,'DERIVED_CLSRCH_SSR_SELECT$0');"
+    },
+    {
+        "moduleCode": "THAR 003",
+        "name": "Post Modern Theatre Studies",
+        "description": ""
+    },
+    {
+        "moduleCode": "THES 601",
+        "name": "Thesis Preparation",
+        "description": ""
+    },
+    {
+        "moduleCode": "TRAD 201",
+        "name": "Shipping Business",
+        "description": "javascript:submitAction_win0(document.win0,'DERIVED_CLSRCH_SSR_SELECT$31');"
+    },
+    {
+        "moduleCode": "WRIT 200",
+        "name": "Virtual Business Professional",
+        "description": ""
+    },
+    {
+        "moduleCode": "XOPN 900",
+        "name": "Open Elective",
+        "description": ""
+    },
+    {
+        "moduleCode": "XPAC 900",
+        "name": "PAC Elective",
+        "description": ""
+    },
+    {
+        "moduleCode": "MKTG .221",
+        "name": "Global Marketing",
+        "description": "javascript:submitAction_win0(document.win0,'DERIVED_CLSRCH_SSR_SELECT$236');"
+    },
+    {
+        "moduleCode": "MUSC 001",
+        "name": "Music: East and West",
+        "description": ""
+    },
+    {
+        "moduleCode": "ACM 001",
+        "name": "The Arts and the Production of Culture in Everyday Life",
+        "description": ""
+    },
+    {
+        "moduleCode": "ANLY 482",
+        "name": "Analytics Practicum",
+        "description": ""
+    },
+    {
+        "moduleCode": "ARTS 004",
+        "name": "Drama and Scriptwriting",
+        "description": ""
+    },
+    {
+        "moduleCode": "ASIA 002",
+        "name": "Market, State and Society in Asian Economic Development",
+        "description": ""
+    },
+    {
+        "moduleCode": "SE 101",
+        "name": "Operating Systems and Networking",
+        "description": ""
+    },
+    {
+        "moduleCode": "SMT .201",
+        "name": "Geographic Information Systems for Urban Planning",
+        "description": "javascript:submitAction_win0(document.win0,'DERIVED_CLSRCH_SSR_SELECT$3');"
+    },
+    {
+        "moduleCode": "SOCG 001",
+        "name": "Understanding Societies",
+        "description": "javascript:submitAction_win0(document.win0,'DERIVED_CLSRCH_SSR_SELECT$14');"
+    },
+    {
+        "moduleCode": "SPRT 001",
+        "name": "Principles of Coaching in Sports",
+        "description": ""
+    },
+    {
+        "moduleCode": "SSCS 400",
+        "name": "Capstone Seminar",
+        "description": ""
+    },
+    {
+        "moduleCode": "SSGS 002",
+        "name": "Global Social Challenges",
+        "description": ""
+    },
+    {
+        "moduleCode": "SSOC110",
+        "name": "Sustainability Practicum",
+        "description": ""
+    },
+    {
+        "moduleCode": "SSRM001",
+        "name": "Research Methods in the Social Sciences",
+        "description": ""
+    },
+    {
+        "moduleCode": "SSW 001",
+        "name": "Public Policy Roundtable",
+        "description": ""
+    },
+    {
+        "moduleCode": "STAT 121",
+        "name": "Cracking Statistics!",
+        "description": ""
+    },
+    {
+        "moduleCode": "STEC 202",
+        "name": "Environmental Science",
+        "description": ""
+    }
+]
