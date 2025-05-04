@@ -1,0 +1,367 @@
+[
+  {
+    "question_number": "WV1",
+    "rephrased_text": "Feeling a sense of accomplishment at the end of each workday",
+    "work_value_component": "Achievement"
+  },
+  {
+    "question_number": "WV2",
+    "rephrased_text": "Enjoying positive interactions with colleagues",
+    "work_value_component": "Relationships"
+  },
+  {
+    "question_number": "WV3",
+    "rephrased_text": "Experimenting with innovative ideas in my work",
+    "work_value_component": "Independence"
+  },
+  {
+    "question_number": "WV4",
+    "rephrased_text": "Securing a pay increase when desired",
+    "work_value_component": "Recognition"
+  },
+  {
+    "question_number": "WV5",
+    "rephrased_text": "Making decisions autonomously",
+    "work_value_component": "Independence"
+  },
+  {
+    "question_number": "WV6",
+    "rephrased_text": "Tackling new challenges regularly",
+    "work_value_component": "Achievement"
+  },
+  {
+    "question_number": "WV7",
+    "rephrased_text": "Knowing my work is valued by others",
+    "work_value_component": "Recognition"
+  },
+  {
+    "question_number": "WV8",
+    "rephrased_text": "Having a job with long-term stability",
+    "work_value_component": "Working Conditions"
+  },
+  {
+    "question_number": "WV9",
+    "rephrased_text": "Working under a respectful supervisor",
+    "work_value_component": "Support"
+  },
+  {
+    "question_number": "WV10",
+    "rephrased_text": "Working in a pleasant environment",
+    "work_value_component": "Working Conditions"
+  },
+  {
+    "question_number": "WV11",
+    "rephrased_text": "Engaging in diverse tasks daily",
+    "work_value_component": "Working Conditions"
+  },
+  {
+    "question_number": "WV12",
+    "rephrased_text": "Maintaining a fulfilling lifestyle outside work",
+    "work_value_component": "Working Conditions"
+  },
+  {
+    "question_number": "WV13",
+    "rephrased_text": "Feeling successful from completing tasks well",
+    "work_value_component": "Achievement"
+  },
+  {
+    "question_number": "WV14",
+    "rephrased_text": "Forming friendships with co-workers",
+    "work_value_component": "Relationships"
+  },
+  {
+    "question_number": "WV15",
+    "rephrased_text": "Creating something entirely original",
+    "work_value_component": "Independence"
+  },
+  {
+    "question_number": "WV16",
+    "rephrased_text": "Receiving salary increases to outpace living costs",
+    "work_value_component": "Recognition"
+  },
+  {
+    "question_number": "WV17",
+    "rephrased_text": "Being my own boss",
+    "work_value_component": "Independence"
+  },
+  {
+    "question_number": "WV18",
+    "rephrased_text": "Staying mentally sharp in my role",
+    "work_value_component": "Achievement"
+  },
+  {
+    "question_number": "WV19",
+    "rephrased_text": "Being respected by others for my work",
+    "work_value_component": "Recognition"
+  },
+  {
+    "question_number": "WV20",
+    "rephrased_text": "Having backup opportunities if my job ends",
+    "work_value_component": "Working Conditions"
+  },
+  {
+    "question_number": "WV21",
+    "rephrased_text": "Having a considerate supervisor",
+    "work_value_component": "Support"
+  },
+  {
+    "question_number": "WV22",
+    "rephrased_text": "Working in a clean, well-lit workplace",
+    "work_value_component": "Working Conditions"
+  },
+  {
+    "question_number": "WV23",
+    "rephrased_text": "Performing a variety of tasks to complete work",
+    "work_value_component": "Working Conditions"
+  },
+  {
+    "question_number": "WV24",
+    "rephrased_text": "Having time for family and friends",
+    "work_value_component": "Working Conditions"
+  },
+  {
+    "question_number": "WV25",
+    "rephrased_text": "Feeling accomplished at the end of each day",
+    "work_value_component": "Achievement"
+  },
+  {
+    "question_number": "WV26",
+    "rephrased_text": "Working with likable colleagues",
+    "work_value_component": "Relationships"
+  },
+  {
+    "question_number": "WV27",
+    "rephrased_text": "Devising new methods for tasks",
+    "work_value_component": "Independence"
+  },
+  {
+    "question_number": "WV28",
+    "rephrased_text": "Earning substantial pay raises or bonuses",
+    "work_value_component": "Recognition"
+  },
+  {
+    "question_number": "WV29",
+    "rephrased_text": "Performing tasks in my preferred way",
+    "work_value_component": "Independence"
+  },
+  {
+    "question_number": "WV30",
+    "rephrased_text": "Utilizing all my skills and abilities",
+    "work_value_component": "Achievement"
+  },
+  {
+    "question_number": "WV31",
+    "rephrased_text": "Feeling my work benefits society",
+    "work_value_component": "Recognition"
+  },
+  {
+    "question_number": "WV32",
+    "rephrased_text": "Knowing my job is always in demand",
+    "work_value_component": "Working Conditions"
+  },
+  {
+    "question_number": "WV33",
+    "rephrased_text": "Discussing issues openly with my boss",
+    "work_value_component": "Support"
+  },
+  {
+    "question_number": "WV34",
+    "rephrased_text": "Working in a safe, comfortable environment",
+    "work_value_component": "Working Conditions"
+  },
+  {
+    "question_number": "WV35",
+    "rephrased_text": "Handling diverse tasks consistently",
+    "work_value_component": "Working Conditions"
+  },
+  {
+    "question_number": "WV36",
+    "rephrased_text": "Being true to my personal identity",
+    "work_value_component": "Working Conditions"
+  },
+  {
+    "question_number": "WV37",
+    "rephrased_text": "Seeing tangible results of my efforts",
+    "work_value_component": "Achievement"
+  },
+  {
+    "question_number": "WV38",
+    "rephrased_text": "Receiving help from colleagues to complete tasks",
+    "work_value_component": "Relationships"
+  },
+  {
+    "question_number": "WV39",
+    "rephrased_text": "Contributing innovative ideas",
+    "work_value_component": "Independence"
+  },
+  {
+    "question_number": "WV40",
+    "rephrased_text": "Earning a high salary",
+    "work_value_component": "Recognition"
+  },
+  {
+    "question_number": "WV41",
+    "rephrased_text": "Deciding how to approach my tasks",
+    "work_value_component": "Independence"
+  },
+  {
+    "question_number": "WV42",
+    "rephrased_text": "Facing challenges to achieve success",
+    "work_value_component": "Achievement"
+  },
+  {
+    "question_number": "WV43",
+    "rephrased_text": "Feeling valued for my contributions",
+    "work_value_component": "Recognition"
+  },
+  {
+    "question_number": "WV44",
+    "rephrased_text": "Having a job with no risk of loss",
+    "work_value_component": "Working Conditions"
+  },
+  {
+    "question_number": "WV45",
+    "rephrased_text": "Working with a boss who appreciates me",
+    "work_value_component": "Support"
+  },
+  {
+    "question_number": "WV46",
+    "rephrased_text": "Working in an enviable setting",
+    "work_value_component": "Working Conditions"
+  },
+  {
+    "question_number": "WV47",
+    "rephrased_text": "Using a broad range of skills",
+    "work_value_component": "Achievement"
+  },
+  {
+    "question_number": "WV48",
+    "rephrased_text": "Having ample time for leisure",
+    "work_value_component": "Working Conditions"
+  },
+  {
+    "question_number": "WV49",
+    "rephrased_text": "Knowing I’ve done well through results",
+    "work_value_component": "Achievement"
+  },
+  {
+    "question_number": "WV50",
+    "rephrased_text": "Collaborating with cooperative co-workers",
+    "work_value_component": "Relationships"
+  },
+  {
+    "question_number": "WV51",
+    "rephrased_text": "Inventing new approaches to work",
+    "work_value_component": "Independence"
+  },
+  {
+    "question_number": "WV52",
+    "rephrased_text": "Earning enough for luxury purchases",
+    "work_value_component": "Recognition"
+  },
+  {
+    "question_number": "WV53",
+    "rephrased_text": "Setting my own work schedule",
+    "work_value_component": "Independence"
+  },
+  {
+    "question_number": "WV54",
+    "rephrased_text": "Improving tasks with innovative methods",
+    "work_value_component": "Independence"
+  },
+  {
+    "question_number": "WV55",
+    "rephrased_text": "Feeling my role is significant",
+    "work_value_component": "Recognition"
+  },
+  {
+    "question_number": "WV56",
+    "rephrased_text": "Having a permanently secure job",
+    "work_value_component": "Working Conditions"
+  },
+  {
+    "question_number": "WV57",
+    "rephrased_text": "Working with a fair supervisor",
+    "work_value_component": "Support"
+  },
+  {
+    "question_number": "WV58",
+    "rephrased_text": "Working in a comfortable, safe setting",
+    "work_value_component": "Working Conditions"
+  },
+  {
+    "question_number": "WV59",
+    "rephrased_text": "Avoiding repetitive tasks",
+    "work_value_component": "Working Conditions"
+  },
+  {
+    "question_number": "WV60",
+    "rephrased_text": "Leading a fulfilling personal life",
+    "work_value_component": "Working Conditions"
+  },
+  {
+    "question_number": "WV61",
+    "rephrased_text": "Working on high-impact projects",
+    "work_value_component": "Achievement"
+  },
+  {
+    "question_number": "WV62",
+    "rephrased_text": "Working with friendly colleagues",
+    "work_value_component": "Relationships"
+  },
+  {
+    "question_number": "WV63",
+    "rephrased_text": "Exploring new methods or discoveries",
+    "work_value_component": "Independence"
+  },
+  {
+    "question_number": "WV64",
+    "rephrased_text": "Earning enough for a comfortable life",
+    "work_value_component": "Recognition"
+  },
+  {
+    "question_number": "WV65",
+    "rephrased_text": "Using my judgment to address issues",
+    "work_value_component": "Independence"
+  },
+  {
+    "question_number": "WV66",
+    "rephrased_text": "Pushing the boundaries of my abilities",
+    "work_value_component": "Achievement"
+  },
+  {
+    "question_number": "WV67",
+    "rephrased_text": "Holding a prestigious role",
+    "work_value_component": "Recognition"
+  },
+  {
+    "question_number": "WV68",
+    "rephrased_text": "Having guaranteed job security",
+    "work_value_component": "Working Conditions"
+  },
+  {
+    "question_number": "WV69",
+    "rephrased_text": "Working with a boss who values my efforts",
+    "work_value_component": "Support"
+  },
+  {
+    "question_number": "WV70",
+    "rephrased_text": "Working with sufficient space and tools",
+    "work_value_component": "Working Conditions"
+  },
+  {
+    "question_number": "WV71",
+    "rephrased_text": "Engaging in a variety of daily tasks",
+    "work_value_component": "Working Conditions"
+  },
+  {
+    "question_number": "WV72",
+    "rephrased_text": "Having time for hobbies and relaxation",
+    "work_value_component": "Working Conditions"
+  },
+  {
+    "question_number": "WV73",
+    "rephrased_text": "Balancing work with personal enjoyment",
+    "work_value_component": "Working Conditions"
+  }
+]

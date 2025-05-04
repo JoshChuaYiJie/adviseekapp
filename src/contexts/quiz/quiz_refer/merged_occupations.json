@@ -1,0 +1,4617 @@
+[
+  {
+    "occupation": "Accountants and Auditors",
+    "RIASEC_code": "CEI",
+    "work_value_code": "AIRc"
+  },
+  {
+    "occupation": "Actors",
+    "RIASEC_code": "ASE",
+    "work_value_code": "RAI"
+  },
+  {
+    "occupation": "Actuaries",
+    "RIASEC_code": "CIE",
+    "work_value_code": "WAI"
+  },
+  {
+    "occupation": "Acupuncturists",
+    "RIASEC_code": "SIR",
+    "work_value_code": "AIR"
+  },
+  {
+    "occupation": "Acute Care Nurses",
+    "RIASEC_code": "SIR",
+    "work_value_code": "RSA"
+  },
+  {
+    "occupation": "Adapted Physical Education Specialists",
+    "RIASEC_code": "SR",
+    "work_value_code": "RAI"
+  },
+  {
+    "occupation": "Adhesive Bonding Machine Operators and Tenders",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRA"
+  },
+  {
+    "occupation": "Administrative Law Judges, Adjudicators, and Hearing Officers",
+    "RIASEC_code": "CEI",
+    "work_value_code": "RcAW"
+  },
+  {
+    "occupation": "Administrative Services Managers",
+    "RIASEC_code": "ECS",
+    "work_value_code": "RIRc"
+  },
+  {
+    "occupation": "Adult Basic Education, Adult Secondary Education, and English as a Second Language Instructors",
+    "RIASEC_code": "S",
+    "work_value_code": "RIA"
+  },
+  {
+    "occupation": "Advanced Practice Psychiatric Nurses",
+    "RIASEC_code": "IS",
+    "work_value_code": "RWS"
+  },
+  {
+    "occupation": "Advertising Sales Agents",
+    "RIASEC_code": "ECA",
+    "work_value_code": "RIW"
+  },
+  {
+    "occupation": "Advertising and Promotions Managers",
+    "RIASEC_code": "ECA",
+    "work_value_code": "WAI"
+  },
+  {
+    "occupation": "Aerospace Engineering and Operations Technologists and Technicians",
+    "RIASEC_code": "RCI",
+    "work_value_code": "SWA"
+  },
+  {
+    "occupation": "Aerospace Engineers",
+    "RIASEC_code": "IRC",
+    "work_value_code": "WIRc"
+  },
+  {
+    "occupation": "Agents and Business Managers of Artists, Performers, and Athletes",
+    "RIASEC_code": "ESC",
+    "work_value_code": "AIRc"
+  },
+  {
+    "occupation": "Agricultural Engineers",
+    "RIASEC_code": "IRC",
+    "work_value_code": "IWA"
+  },
+  {
+    "occupation": "Agricultural Equipment Operators",
+    "RIASEC_code": "RC",
+    "work_value_code": "SIA"
+  },
+  {
+    "occupation": "Agricultural Inspectors",
+    "RIASEC_code": "RCI",
+    "work_value_code": "ASI"
+  },
+  {
+    "occupation": "Agricultural Sciences Teachers, Postsecondary",
+    "RIASEC_code": "SI",
+    "work_value_code": "WAI"
+  },
+  {
+    "occupation": "Agricultural Technicians",
+    "RIASEC_code": "RIC",
+    "work_value_code": "RSW"
+  },
+  {
+    "occupation": "Air Traffic Controllers",
+    "RIASEC_code": "CRE",
+    "work_value_code": "SIW"
+  },
+  {
+    "occupation": "Aircraft Cargo Handling Supervisors",
+    "RIASEC_code": "ECR",
+    "work_value_code": "ISR"
+  },
+  {
+    "occupation": "Aircraft Mechanics and Service Technicians",
+    "RIASEC_code": "RCI",
+    "work_value_code": "SWR"
+  },
+  {
+    "occupation": "Aircraft Service Attendants",
+    "RIASEC_code": "RC",
+    "work_value_code": null
+  },
+  {
+    "occupation": "Aircraft Structure, Surfaces, Rigging, and Systems Assemblers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Airfield Operations Specialists",
+    "RIASEC_code": "CRE",
+    "work_value_code": "SIW"
+  },
+  {
+    "occupation": "Airline Pilots, Copilots, and Flight Engineers",
+    "RIASEC_code": "RCE",
+    "work_value_code": "ISW"
+  },
+  {
+    "occupation": "Allergists and Immunologists",
+    "RIASEC_code": "ISR",
+    "work_value_code": "RcIA"
+  },
+  {
+    "occupation": "Ambulance Drivers and Attendants, Except Emergency Medical Technicians",
+    "RIASEC_code": "RSC",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Amusement and Recreation Attendants",
+    "RIASEC_code": "CSR",
+    "work_value_code": "SIR"
+  },
+  {
+    "occupation": "Anesthesiologist Assistants",
+    "RIASEC_code": "SCI",
+    "work_value_code": "SRA"
+  },
+  {
+    "occupation": "Anesthesiologists",
+    "RIASEC_code": "ISR",
+    "work_value_code": "ARI"
+  },
+  {
+    "occupation": "Animal Breeders",
+    "RIASEC_code": "RC",
+    "work_value_code": "IWA"
+  },
+  {
+    "occupation": "Animal Caretakers",
+    "RIASEC_code": "RSC",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Animal Control Workers",
+    "RIASEC_code": "RCI",
+    "work_value_code": "RIS"
+  },
+  {
+    "occupation": "Animal Scientists",
+    "RIASEC_code": "IR",
+    "work_value_code": "AIRc"
+  },
+  {
+    "occupation": "Animal Trainers",
+    "RIASEC_code": "RS",
+    "work_value_code": "IRA"
+  },
+  {
+    "occupation": "Anthropologists and Archeologists",
+    "RIASEC_code": "IR",
+    "work_value_code": "AIW"
+  },
+  {
+    "occupation": "Anthropology and Archeology Teachers, Postsecondary",
+    "RIASEC_code": "SI",
+    "work_value_code": "IWA"
+  },
+  {
+    "occupation": "Appraisers and Assessors of Real Estate",
+    "RIASEC_code": "CE",
+    "work_value_code": "ISW"
+  },
+  {
+    "occupation": "Appraisers of Personal and Business Property",
+    "RIASEC_code": "CER",
+    "work_value_code": null
+  },
+  {
+    "occupation": "Arbitrators, Mediators, and Conciliators",
+    "RIASEC_code": "ECS",
+    "work_value_code": "RAI"
+  },
+  {
+    "occupation": "Architects, Except Landscape and Naval",
+    "RIASEC_code": "RAI",
+    "work_value_code": "IRcA"
+  },
+  {
+    "occupation": "Architectural and Civil Drafters",
+    "RIASEC_code": "RCA",
+    "work_value_code": "SWA"
+  },
+  {
+    "occupation": "Architectural and Engineering Managers",
+    "RIASEC_code": "ECI",
+    "work_value_code": "AIW"
+  },
+  {
+    "occupation": "Architecture Teachers, Postsecondary",
+    "RIASEC_code": "SIA",
+    "work_value_code": "AIR"
+  },
+  {
+    "occupation": "Archivists",
+    "RIASEC_code": "CI",
+    "work_value_code": "IARc"
+  },
+  {
+    "occupation": "Area, Ethnic, and Cultural Studies Teachers, Postsecondary",
+    "RIASEC_code": "SI",
+    "work_value_code": "ARI"
+  },
+  {
+    "occupation": "Art Directors",
+    "RIASEC_code": "AE",
+    "work_value_code": "IAW"
+  },
+  {
+    "occupation": "Art Therapists",
+    "RIASEC_code": "SA",
+    "work_value_code": "RAI"
+  },
+  {
+    "occupation": "Art, Drama, and Music Teachers, Postsecondary",
+    "RIASEC_code": "SA",
+    "work_value_code": "IRW"
+  },
+  {
+    "occupation": "Astronomers",
+    "RIASEC_code": "IR",
+    "work_value_code": "AIRc"
+  },
+  {
+    "occupation": "Athletes and Sports Competitors",
+    "RIASEC_code": "RES",
+    "work_value_code": "ARcR"
+  },
+  {
+    "occupation": "Athletic Trainers",
+    "RIASEC_code": "SRI",
+    "work_value_code": "RAI"
+  },
+  {
+    "occupation": "Atmospheric and Space Scientists",
+    "RIASEC_code": "IRC",
+    "work_value_code": "AIR"
+  },
+  {
+    "occupation": "Atmospheric, Earth, Marine, and Space Sciences Teachers, Postsecondary",
+    "RIASEC_code": "SI",
+    "work_value_code": "AIRc"
+  },
+  {
+    "occupation": "Audio and Video Technicians",
+    "RIASEC_code": "RC",
+    "work_value_code": "ISR"
+  },
+  {
+    "occupation": "Audiologists",
+    "RIASEC_code": "ISC",
+    "work_value_code": "RAW"
+  },
+  {
+    "occupation": "Audiovisual Equipment Installers and Repairers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Automotive Body and Related Repairers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Automotive Engineering Technicians",
+    "RIASEC_code": "RIC",
+    "work_value_code": "AWS"
+  },
+  {
+    "occupation": "Automotive Engineers",
+    "RIASEC_code": "RIC",
+    "work_value_code": "AWRc"
+  },
+  {
+    "occupation": "Automotive Glass Installers and Repairers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Automotive Service Technicians and Mechanics",
+    "RIASEC_code": "RCI",
+    "work_value_code": "SIR"
+  },
+  {
+    "occupation": "Automotive and Watercraft Service Attendants",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Aviation Inspectors",
+    "RIASEC_code": "CRI",
+    "work_value_code": "SIA"
+  },
+  {
+    "occupation": "Avionics Technicians",
+    "RIASEC_code": "RCI",
+    "work_value_code": "SRA"
+  },
+  {
+    "occupation": "Baggage Porters and Bellhops",
+    "RIASEC_code": "RCS",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Bailiffs",
+    "RIASEC_code": "RCE",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Bakers",
+    "RIASEC_code": "RC",
+    "work_value_code": "AIS"
+  },
+  {
+    "occupation": "Barbers",
+    "RIASEC_code": "RCE",
+    "work_value_code": "RAW"
+  },
+  {
+    "occupation": "Baristas",
+    "RIASEC_code": "RCS",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Bartenders",
+    "RIASEC_code": "RCE",
+    "work_value_code": "RIS"
+  },
+  {
+    "occupation": "Bicycle Repairers",
+    "RIASEC_code": "RC",
+    "work_value_code": "IAS"
+  },
+  {
+    "occupation": "Bill and Account Collectors",
+    "RIASEC_code": "CES",
+    "work_value_code": "RSA"
+  },
+  {
+    "occupation": "Billing and Posting Clerks",
+    "RIASEC_code": "C",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Biochemists and Biophysicists",
+    "RIASEC_code": "IR",
+    "work_value_code": "RcAW"
+  },
+  {
+    "occupation": "Bioengineers and Biomedical Engineers",
+    "RIASEC_code": "IR",
+    "work_value_code": "IAW"
+  },
+  {
+    "occupation": "Biofuels Processing Technicians",
+    "RIASEC_code": "RCI",
+    "work_value_code": "SWA"
+  },
+  {
+    "occupation": "Biofuels Production Managers",
+    "RIASEC_code": "ECR",
+    "work_value_code": "WARc"
+  },
+  {
+    "occupation": "Biofuels/Biodiesel Technology and Product Development Managers",
+    "RIASEC_code": "IER",
+    "work_value_code": "AWI"
+  },
+  {
+    "occupation": "Bioinformatics Scientists",
+    "RIASEC_code": "ICR",
+    "work_value_code": "IARc"
+  },
+  {
+    "occupation": "Bioinformatics Technicians",
+    "RIASEC_code": "ICR",
+    "work_value_code": "ISW"
+  },
+  {
+    "occupation": "Biological Science Teachers, Postsecondary",
+    "RIASEC_code": "SI",
+    "work_value_code": "WAI"
+  },
+  {
+    "occupation": "Biological Technicians",
+    "RIASEC_code": "RIC",
+    "work_value_code": "SAW"
+  },
+  {
+    "occupation": "Biologists",
+    "RIASEC_code": "ICR",
+    "work_value_code": "ARcI"
+  },
+  {
+    "occupation": "Biomass Plant Technicians",
+    "RIASEC_code": "RC",
+    "work_value_code": "SWA"
+  },
+  {
+    "occupation": "Biomass Power Plant Managers",
+    "RIASEC_code": "CRE",
+    "work_value_code": "WARc"
+  },
+  {
+    "occupation": "Biostatisticians",
+    "RIASEC_code": "IC",
+    "work_value_code": "AIRc"
+  },
+  {
+    "occupation": "Blockchain Engineers",
+    "RIASEC_code": "CI",
+    "work_value_code": null
+  },
+  {
+    "occupation": "Boilermakers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Bookkeeping, Accounting, and Auditing Clerks",
+    "RIASEC_code": "CE",
+    "work_value_code": "SRA"
+  },
+  {
+    "occupation": "Brickmasons and Blockmasons",
+    "RIASEC_code": "RC",
+    "work_value_code": "SWI"
+  },
+  {
+    "occupation": "Bridge and Lock Tenders",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Broadcast Announcers and Radio Disc Jockeys",
+    "RIASEC_code": "AES",
+    "work_value_code": "ARcI"
+  },
+  {
+    "occupation": "Broadcast Technicians",
+    "RIASEC_code": "CR",
+    "work_value_code": "SAI"
+  },
+  {
+    "occupation": "Brokerage Clerks",
+    "RIASEC_code": "CE",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Brownfield Redevelopment Specialists and Site Managers",
+    "RIASEC_code": "CER",
+    "work_value_code": "ARW"
+  },
+  {
+    "occupation": "Budget Analysts",
+    "RIASEC_code": "CEI",
+    "work_value_code": "WSI"
+  },
+  {
+    "occupation": "Bus Drivers, School",
+    "RIASEC_code": "RCS",
+    "work_value_code": null
+  },
+  {
+    "occupation": "Bus Drivers, Transit and Intercity",
+    "RIASEC_code": "RCS",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Bus and Truck Mechanics and Diesel Engine Specialists",
+    "RIASEC_code": "RCI",
+    "work_value_code": "SRA"
+  },
+  {
+    "occupation": "Business Continuity Planners",
+    "RIASEC_code": "ECI",
+    "work_value_code": "AIW"
+  },
+  {
+    "occupation": "Business Intelligence Analysts",
+    "RIASEC_code": "CIE",
+    "work_value_code": "AWRc"
+  },
+  {
+    "occupation": "Business Teachers, Postsecondary",
+    "RIASEC_code": "SI",
+    "work_value_code": "AIRc"
+  },
+  {
+    "occupation": "Butchers and Meat Cutters",
+    "RIASEC_code": "RC",
+    "work_value_code": "RIA"
+  },
+  {
+    "occupation": "Buyers and Purchasing Agents, Farm Products",
+    "RIASEC_code": "ECR",
+    "work_value_code": "IWA"
+  },
+  {
+    "occupation": "Cabinetmakers and Bench Carpenters",
+    "RIASEC_code": "RC",
+    "work_value_code": "RSA"
+  },
+  {
+    "occupation": "Calibration Technologists and Technicians",
+    "RIASEC_code": "RCI",
+    "work_value_code": null
+  },
+  {
+    "occupation": "Camera Operators, Television, Video, and Film",
+    "RIASEC_code": "ARC",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Camera and Photographic Equipment Repairers",
+    "RIASEC_code": "RC",
+    "work_value_code": "IAW"
+  },
+  {
+    "occupation": "Captains, Mates, and Pilots of Water Vessels",
+    "RIASEC_code": "RCE",
+    "work_value_code": "ISR"
+  },
+  {
+    "occupation": "Cardiologists",
+    "RIASEC_code": "IRS",
+    "work_value_code": null
+  },
+  {
+    "occupation": "Cardiovascular Technologists and Technicians",
+    "RIASEC_code": "RIC",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Career/Technical Education Teachers, Middle School",
+    "RIASEC_code": "S",
+    "work_value_code": "RAI"
+  },
+  {
+    "occupation": "Career/Technical Education Teachers, Postsecondary",
+    "RIASEC_code": "SI",
+    "work_value_code": "AIR"
+  },
+  {
+    "occupation": "Career/Technical Education Teachers, Secondary School",
+    "RIASEC_code": "S",
+    "work_value_code": "RAI"
+  },
+  {
+    "occupation": "Cargo and Freight Agents",
+    "RIASEC_code": "CE",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Carpenters",
+    "RIASEC_code": "RC",
+    "work_value_code": "SIW"
+  },
+  {
+    "occupation": "Carpet Installers",
+    "RIASEC_code": "RC",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Cartographers and Photogrammetrists",
+    "RIASEC_code": "CIR",
+    "work_value_code": "AIW"
+  },
+  {
+    "occupation": "Cashiers",
+    "RIASEC_code": "CE",
+    "work_value_code": "RSA"
+  },
+  {
+    "occupation": "Cement Masons and Concrete Finishers",
+    "RIASEC_code": "RC",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Chefs and Head Cooks",
+    "RIASEC_code": "ERC",
+    "work_value_code": "IRcA"
+  },
+  {
+    "occupation": "Chemical Engineers",
+    "RIASEC_code": "RIC",
+    "work_value_code": "RcAI"
+  },
+  {
+    "occupation": "Chemical Equipment Operators and Tenders",
+    "RIASEC_code": "RCI",
+    "work_value_code": "SIR"
+  },
+  {
+    "occupation": "Chemical Plant and System Operators",
+    "RIASEC_code": "RCI",
+    "work_value_code": "SWI"
+  },
+  {
+    "occupation": "Chemical Technicians",
+    "RIASEC_code": "IRC",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Chemistry Teachers, Postsecondary",
+    "RIASEC_code": "IS",
+    "work_value_code": "AWI"
+  },
+  {
+    "occupation": "Chemists",
+    "RIASEC_code": "IRC",
+    "work_value_code": "AIW"
+  },
+  {
+    "occupation": "Chief Executives",
+    "RIASEC_code": "EC",
+    "work_value_code": "RcIA"
+  },
+  {
+    "occupation": "Chief Sustainability Officers",
+    "RIASEC_code": "EIC",
+    "work_value_code": "AIW"
+  },
+  {
+    "occupation": "Child, Family, and School Social Workers",
+    "RIASEC_code": "S",
+    "work_value_code": "RAI"
+  },
+  {
+    "occupation": "Childcare Workers",
+    "RIASEC_code": "SCA",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Chiropractors",
+    "RIASEC_code": "SRI",
+    "work_value_code": "RIA"
+  },
+  {
+    "occupation": "Choreographers",
+    "RIASEC_code": "AS",
+    "work_value_code": "AIR"
+  },
+  {
+    "occupation": "Civil Engineering Technologists and Technicians",
+    "RIASEC_code": "RIC",
+    "work_value_code": "SIA"
+  },
+  {
+    "occupation": "Civil Engineers",
+    "RIASEC_code": "RIC",
+    "work_value_code": "IWRc"
+  },
+  {
+    "occupation": "Claims Adjusters, Examiners, and Investigators",
+    "RIASEC_code": "CEI",
+    "work_value_code": "SIW"
+  },
+  {
+    "occupation": "Cleaners of Vehicles and Equipment",
+    "RIASEC_code": "RC",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Cleaning, Washing, and Metal Pickling Equipment Operators and Tenders",
+    "RIASEC_code": "RC",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Clergy",
+    "RIASEC_code": "SE",
+    "work_value_code": "ARI"
+  },
+  {
+    "occupation": "Climate Change Policy Analysts",
+    "RIASEC_code": "IEC",
+    "work_value_code": "AIRc"
+  },
+  {
+    "occupation": "Clinical Data Managers",
+    "RIASEC_code": "CI",
+    "work_value_code": "ASI"
+  },
+  {
+    "occupation": "Clinical Neuropsychologists",
+    "RIASEC_code": "IS",
+    "work_value_code": null
+  },
+  {
+    "occupation": "Clinical Nurse Specialists",
+    "RIASEC_code": "SIC",
+    "work_value_code": "SRA"
+  },
+  {
+    "occupation": "Clinical Research Coordinators",
+    "RIASEC_code": "ICE",
+    "work_value_code": "IAW"
+  },
+  {
+    "occupation": "Clinical and Counseling Psychologists",
+    "RIASEC_code": "SI",
+    "work_value_code": "RIA"
+  },
+  {
+    "occupation": "Coaches and Scouts",
+    "RIASEC_code": "SER",
+    "work_value_code": "ARI"
+  },
+  {
+    "occupation": "Coating, Painting, and Spraying Machine Setters, Operators, and Tenders",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Coil Winders, Tapers, and Finishers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SWI"
+  },
+  {
+    "occupation": "Coin, Vending, and Amusement Machine Servicers and Repairers",
+    "RIASEC_code": "RC",
+    "work_value_code": "IRS"
+  },
+  {
+    "occupation": "Commercial Divers",
+    "RIASEC_code": "RIC",
+    "work_value_code": "SIW"
+  },
+  {
+    "occupation": "Commercial Pilots",
+    "RIASEC_code": "RCE",
+    "work_value_code": "SIRc"
+  },
+  {
+    "occupation": "Commercial and Industrial Designers",
+    "RIASEC_code": "ARI",
+    "work_value_code": "ARI"
+  },
+  {
+    "occupation": "Communications Teachers, Postsecondary",
+    "RIASEC_code": "SI",
+    "work_value_code": "RIA"
+  },
+  {
+    "occupation": "Community Health Workers",
+    "RIASEC_code": "S",
+    "work_value_code": "RAI"
+  },
+  {
+    "occupation": "Compensation and Benefits Managers",
+    "RIASEC_code": "ECS",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Compensation, Benefits, and Job Analysis Specialists",
+    "RIASEC_code": "CEI",
+    "work_value_code": "RSA"
+  },
+  {
+    "occupation": "Compliance Managers",
+    "RIASEC_code": "CE",
+    "work_value_code": "ASI"
+  },
+  {
+    "occupation": "Compliance Officers",
+    "RIASEC_code": "CE",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Computer Hardware Engineers",
+    "RIASEC_code": "RIC",
+    "work_value_code": "WAI"
+  },
+  {
+    "occupation": "Computer Network Architects",
+    "RIASEC_code": "ICR",
+    "work_value_code": "AWI"
+  },
+  {
+    "occupation": "Computer Network Support Specialists",
+    "RIASEC_code": "CIR",
+    "work_value_code": "ASW"
+  },
+  {
+    "occupation": "Computer Numerically Controlled Tool Operators",
+    "RIASEC_code": "RC",
+    "work_value_code": "SIW"
+  },
+  {
+    "occupation": "Computer Numerically Controlled Tool Programmers",
+    "RIASEC_code": "CRI",
+    "work_value_code": "SIR"
+  },
+  {
+    "occupation": "Computer Programmers",
+    "RIASEC_code": "CI",
+    "work_value_code": "AWI"
+  },
+  {
+    "occupation": "Computer Science Teachers, Postsecondary",
+    "RIASEC_code": "SIC",
+    "work_value_code": "AIW"
+  },
+  {
+    "occupation": "Computer Systems Analysts",
+    "RIASEC_code": "IC",
+    "work_value_code": "WAI"
+  },
+  {
+    "occupation": "Computer Systems Engineers/Architects",
+    "RIASEC_code": "ICR",
+    "work_value_code": "AIRc"
+  },
+  {
+    "occupation": "Computer User Support Specialists",
+    "RIASEC_code": "CRI",
+    "work_value_code": "RWA"
+  },
+  {
+    "occupation": "Computer and Information Research Scientists",
+    "RIASEC_code": "ICR",
+    "work_value_code": "AWI"
+  },
+  {
+    "occupation": "Computer and Information Systems Managers",
+    "RIASEC_code": "CEI",
+    "work_value_code": "WSA"
+  },
+  {
+    "occupation": "Computer, Automated Teller, and Office Machine Repairers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SIW"
+  },
+  {
+    "occupation": "Concierges",
+    "RIASEC_code": "SEC",
+    "work_value_code": "RIS"
+  },
+  {
+    "occupation": "Conservation Scientists",
+    "RIASEC_code": "IRC",
+    "work_value_code": "RWI"
+  },
+  {
+    "occupation": "Construction Laborers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Construction Managers",
+    "RIASEC_code": "ECR",
+    "work_value_code": "WIS"
+  },
+  {
+    "occupation": "Construction and Building Inspectors",
+    "RIASEC_code": "RCI",
+    "work_value_code": "SIW"
+  },
+  {
+    "occupation": "Continuous Mining Machine Operators",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Control and Valve Installers and Repairers, Except Mechanical Door",
+    "RIASEC_code": "RC",
+    "work_value_code": "SIW"
+  },
+  {
+    "occupation": "Conveyor Operators and Tenders",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Cooks, Fast Food",
+    "RIASEC_code": "RCE",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Cooks, Institution and Cafeteria",
+    "RIASEC_code": "RC",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Cooks, Private Household",
+    "RIASEC_code": "RCS",
+    "work_value_code": "IAR"
+  },
+  {
+    "occupation": "Cooks, Restaurant",
+    "RIASEC_code": "RCE",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Cooks, Short Order",
+    "RIASEC_code": "RCE",
+    "work_value_code": "IRS"
+  },
+  {
+    "occupation": "Cooling and Freezing Equipment Operators and Tenders",
+    "RIASEC_code": "RC",
+    "work_value_code": "SIR"
+  },
+  {
+    "occupation": "Coroners",
+    "RIASEC_code": "ICR",
+    "work_value_code": "IAS"
+  },
+  {
+    "occupation": "Correctional Officers and Jailers",
+    "RIASEC_code": "RCS",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Correspondence Clerks",
+    "RIASEC_code": "CE",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Cost Estimators",
+    "RIASEC_code": "CE",
+    "work_value_code": "IRW"
+  },
+  {
+    "occupation": "Costume Attendants",
+    "RIASEC_code": "ACR",
+    "work_value_code": "RSW"
+  },
+  {
+    "occupation": "Counter and Rental Clerks",
+    "RIASEC_code": "CES",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Couriers and Messengers",
+    "RIASEC_code": "CRS",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Court Reporters and Simultaneous Captioners",
+    "RIASEC_code": "C",
+    "work_value_code": "RSA"
+  },
+  {
+    "occupation": "Court, Municipal, and License Clerks",
+    "RIASEC_code": "CES",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Craft Artists",
+    "RIASEC_code": "AR",
+    "work_value_code": "AIW"
+  },
+  {
+    "occupation": "Crane and Tower Operators",
+    "RIASEC_code": "RC",
+    "work_value_code": "SIW"
+  },
+  {
+    "occupation": "Credit Analysts",
+    "RIASEC_code": "CEI",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Credit Authorizers, Checkers, and Clerks",
+    "RIASEC_code": "CES",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Credit Counselors",
+    "RIASEC_code": "CSE",
+    "work_value_code": "RAI"
+  },
+  {
+    "occupation": "Crematory Operators",
+    "RIASEC_code": "RC",
+    "work_value_code": null
+  },
+  {
+    "occupation": "Criminal Justice and Law Enforcement Teachers, Postsecondary",
+    "RIASEC_code": "SI",
+    "work_value_code": "IAW"
+  },
+  {
+    "occupation": "Critical Care Nurses",
+    "RIASEC_code": "SIR",
+    "work_value_code": "RSA"
+  },
+  {
+    "occupation": "Crossing Guards and Flaggers",
+    "RIASEC_code": "RC",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Crushing, Grinding, and Polishing Machine Setters, Operators, and Tenders",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Curators",
+    "RIASEC_code": "CE",
+    "work_value_code": "IAW"
+  },
+  {
+    "occupation": "Customer Service Representatives",
+    "RIASEC_code": "CES",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Customs Brokers",
+    "RIASEC_code": "CE",
+    "work_value_code": "AIRc"
+  },
+  {
+    "occupation": "Customs and Border Protection Officers",
+    "RIASEC_code": "CER",
+    "work_value_code": "SWI"
+  },
+  {
+    "occupation": "Cutters and Trimmers, Hand",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Cutting and Slicing Machine Setters, Operators, and Tenders",
+    "RIASEC_code": "RC",
+    "work_value_code": "SIR"
+  },
+  {
+    "occupation": "Cutting, Punching, and Press Machine Setters, Operators, and Tenders, Metal and Plastic",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRA"
+  },
+  {
+    "occupation": "Cytogenetic Technologists",
+    "RIASEC_code": "IRC",
+    "work_value_code": "AIRc"
+  },
+  {
+    "occupation": "Cytotechnologists",
+    "RIASEC_code": "IRC",
+    "work_value_code": "AIRc"
+  },
+  {
+    "occupation": "Dancers",
+    "RIASEC_code": "ARS",
+    "work_value_code": "ARW"
+  },
+  {
+    "occupation": "Data Entry Keyers",
+    "RIASEC_code": "CR",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Data Scientists",
+    "RIASEC_code": "IC",
+    "work_value_code": null
+  },
+  {
+    "occupation": "Data Warehousing Specialists",
+    "RIASEC_code": "CI",
+    "work_value_code": "AWI"
+  },
+  {
+    "occupation": "Database Administrators",
+    "RIASEC_code": "CI",
+    "work_value_code": "WSA"
+  },
+  {
+    "occupation": "Database Architects",
+    "RIASEC_code": "CI",
+    "work_value_code": "AWI"
+  },
+  {
+    "occupation": "Demonstrators and Product Promoters",
+    "RIASEC_code": "EC",
+    "work_value_code": "RIRc"
+  },
+  {
+    "occupation": "Dental Assistants",
+    "RIASEC_code": "CRS",
+    "work_value_code": "RSW"
+  },
+  {
+    "occupation": "Dental Hygienists",
+    "RIASEC_code": "SRI",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Dental Laboratory Technicians",
+    "RIASEC_code": "RIC",
+    "work_value_code": "SIW"
+  },
+  {
+    "occupation": "Dentists, General",
+    "RIASEC_code": "IRS",
+    "work_value_code": "IAR"
+  },
+  {
+    "occupation": "Dermatologists",
+    "RIASEC_code": "IRS",
+    "work_value_code": "AIRc"
+  },
+  {
+    "occupation": "Derrick Operators, Oil and Gas",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Desktop Publishers",
+    "RIASEC_code": "CA",
+    "work_value_code": "ASI"
+  },
+  {
+    "occupation": "Detectives and Criminal Investigators",
+    "RIASEC_code": "ICR",
+    "work_value_code": "AWI"
+  },
+  {
+    "occupation": "Diagnostic Medical Sonographers",
+    "RIASEC_code": "RCI",
+    "work_value_code": "RSA"
+  },
+  {
+    "occupation": "Dietetic Technicians",
+    "RIASEC_code": "SRC",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Dietitians and Nutritionists",
+    "RIASEC_code": "SI",
+    "work_value_code": "RIA"
+  },
+  {
+    "occupation": "Digital Forensics Analysts",
+    "RIASEC_code": "IC",
+    "work_value_code": null
+  },
+  {
+    "occupation": "Dining Room and Cafeteria Attendants and Bartender Helpers",
+    "RIASEC_code": "RCS",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Directors, Religious Activities and Education",
+    "RIASEC_code": "SE",
+    "work_value_code": "RAI"
+  },
+  {
+    "occupation": "Disc Jockeys, Except Radio",
+    "RIASEC_code": "AEC",
+    "work_value_code": null
+  },
+  {
+    "occupation": "Dishwashers",
+    "RIASEC_code": "RC",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Dispatchers, Except Police, Fire, and Ambulance",
+    "RIASEC_code": "CR",
+    "work_value_code": "SIW"
+  },
+  {
+    "occupation": "Document Management Specialists",
+    "RIASEC_code": "CI",
+    "work_value_code": "ASW"
+  },
+  {
+    "occupation": "Door-to-Door Sales Workers, News and Street Vendors, and Related Workers",
+    "RIASEC_code": "ECR",
+    "work_value_code": "RAI"
+  },
+  {
+    "occupation": "Dredge Operators",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Drilling and Boring Machine Tool Setters, Operators, and Tenders, Metal and Plastic",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Driver/Sales Workers",
+    "RIASEC_code": "RCE",
+    "work_value_code": "SIR"
+  },
+  {
+    "occupation": "Drywall and Ceiling Tile Installers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SIW"
+  },
+  {
+    "occupation": "Earth Drillers, Except Oil and Gas",
+    "RIASEC_code": "RCI",
+    "work_value_code": "SIW"
+  },
+  {
+    "occupation": "Economics Teachers, Postsecondary",
+    "RIASEC_code": "SI",
+    "work_value_code": "AIRc"
+  },
+  {
+    "occupation": "Economists",
+    "RIASEC_code": "ICE",
+    "work_value_code": "WIA"
+  },
+  {
+    "occupation": "Editors",
+    "RIASEC_code": "ACE",
+    "work_value_code": "IARc"
+  },
+  {
+    "occupation": "Education Administrators, Kindergarten through Secondary",
+    "RIASEC_code": "SEC",
+    "work_value_code": "RIW"
+  },
+  {
+    "occupation": "Education Administrators, Postsecondary",
+    "RIASEC_code": "SEC",
+    "work_value_code": "IAR"
+  },
+  {
+    "occupation": "Education Teachers, Postsecondary",
+    "RIASEC_code": "SI",
+    "work_value_code": "RIA"
+  },
+  {
+    "occupation": "Education and Childcare Administrators, Preschool and Daycare",
+    "RIASEC_code": "SEC",
+    "work_value_code": "RAI"
+  },
+  {
+    "occupation": "Educational, Guidance, and Career Counselors and Advisors",
+    "RIASEC_code": "SE",
+    "work_value_code": "RAW"
+  },
+  {
+    "occupation": "Electric Motor, Power Tool, and Related Repairers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Electrical Engineers",
+    "RIASEC_code": "RIC",
+    "work_value_code": "AWI"
+  },
+  {
+    "occupation": "Electrical Power-Line Installers and Repairers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SIW"
+  },
+  {
+    "occupation": "Electrical and Electronic Engineering Technologists and Technicians",
+    "RIASEC_code": "RIC",
+    "work_value_code": "SWI"
+  },
+  {
+    "occupation": "Electrical and Electronic Equipment Assemblers",
+    "RIASEC_code": "RCI",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Electrical and Electronics Drafters",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRA"
+  },
+  {
+    "occupation": "Electrical and Electronics Installers and Repairers, Transportation Equipment",
+    "RIASEC_code": "RCI",
+    "work_value_code": "SWR"
+  },
+  {
+    "occupation": "Electrical and Electronics Repairers, Commercial and Industrial Equipment",
+    "RIASEC_code": "RCI",
+    "work_value_code": "SWI"
+  },
+  {
+    "occupation": "Electrical and Electronics Repairers, Powerhouse, Substation, and Relay",
+    "RIASEC_code": "RCI",
+    "work_value_code": "SIW"
+  },
+  {
+    "occupation": "Electricians",
+    "RIASEC_code": "RC",
+    "work_value_code": "ISA"
+  },
+  {
+    "occupation": "Electro-Mechanical and Mechatronics Technologists and Technicians",
+    "RIASEC_code": "RCI",
+    "work_value_code": "RSW"
+  },
+  {
+    "occupation": "Electromechanical Equipment Assemblers",
+    "RIASEC_code": "RCI",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Electronic Equipment Installers and Repairers, Motor Vehicles",
+    "RIASEC_code": "RCI",
+    "work_value_code": "SIR"
+  },
+  {
+    "occupation": "Electronics Engineers, Except Computer",
+    "RIASEC_code": "RIC",
+    "work_value_code": "RcWA"
+  },
+  {
+    "occupation": "Elementary School Teachers, Except Special Education",
+    "RIASEC_code": "SA",
+    "work_value_code": "RAI"
+  },
+  {
+    "occupation": "Elevator and Escalator Installers and Repairers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SWI"
+  },
+  {
+    "occupation": "Eligibility Interviewers, Government Programs",
+    "RIASEC_code": "CSE",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Embalmers",
+    "RIASEC_code": "RCS",
+    "work_value_code": "ISR"
+  },
+  {
+    "occupation": "Emergency Management Directors",
+    "RIASEC_code": "ECI",
+    "work_value_code": "IRRc"
+  },
+  {
+    "occupation": "Emergency Medical Technicians",
+    "RIASEC_code": "SRI",
+    "work_value_code": null
+  },
+  {
+    "occupation": "Emergency Medicine Physicians",
+    "RIASEC_code": "ISC",
+    "work_value_code": null
+  },
+  {
+    "occupation": "Endoscopy Technicians",
+    "RIASEC_code": "RCI",
+    "work_value_code": "SRA"
+  },
+  {
+    "occupation": "Energy Auditors",
+    "RIASEC_code": "CRI",
+    "work_value_code": "ISA"
+  },
+  {
+    "occupation": "Energy Engineers, Except Wind and Solar",
+    "RIASEC_code": "RIC",
+    "work_value_code": "WAI"
+  },
+  {
+    "occupation": "Engine and Other Machine Assemblers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Engineering Teachers, Postsecondary",
+    "RIASEC_code": "SIR",
+    "work_value_code": "AIRc"
+  },
+  {
+    "occupation": "English Language and Literature Teachers, Postsecondary",
+    "RIASEC_code": "SIA",
+    "work_value_code": "RAW"
+  },
+  {
+    "occupation": "Entertainment and Recreation Managers, Except Gambling",
+    "RIASEC_code": "ECR",
+    "work_value_code": null
+  },
+  {
+    "occupation": "Environmental Compliance Inspectors",
+    "RIASEC_code": "CIR",
+    "work_value_code": "AWS"
+  },
+  {
+    "occupation": "Environmental Economists",
+    "RIASEC_code": "IEC",
+    "work_value_code": "AIW"
+  },
+  {
+    "occupation": "Environmental Engineering Technologists and Technicians",
+    "RIASEC_code": "RIC",
+    "work_value_code": "SWA"
+  },
+  {
+    "occupation": "Environmental Engineers",
+    "RIASEC_code": "IRC",
+    "work_value_code": "AWRc"
+  },
+  {
+    "occupation": "Environmental Restoration Planners",
+    "RIASEC_code": "IRC",
+    "work_value_code": "AIRc"
+  },
+  {
+    "occupation": "Environmental Science Teachers, Postsecondary",
+    "RIASEC_code": "SI",
+    "work_value_code": "AIRc"
+  },
+  {
+    "occupation": "Environmental Science and Protection Technicians, Including Health",
+    "RIASEC_code": "IRC",
+    "work_value_code": "ASR"
+  },
+  {
+    "occupation": "Environmental Scientists and Specialists, Including Health",
+    "RIASEC_code": "IRC",
+    "work_value_code": "AIRc"
+  },
+  {
+    "occupation": "Epidemiologists",
+    "RIASEC_code": "IS",
+    "work_value_code": "ARcI"
+  },
+  {
+    "occupation": "Equal Opportunity Representatives and Officers",
+    "RIASEC_code": "ECS",
+    "work_value_code": "RAW"
+  },
+  {
+    "occupation": "Etchers and Engravers",
+    "RIASEC_code": "RCA",
+    "work_value_code": "SIR"
+  },
+  {
+    "occupation": "Excavating and Loading Machine and Dragline Operators, Surface Mining",
+    "RIASEC_code": "RC",
+    "work_value_code": "SIR"
+  },
+  {
+    "occupation": "Executive Secretaries and Executive Administrative Assistants",
+    "RIASEC_code": "CES",
+    "work_value_code": "RSW"
+  },
+  {
+    "occupation": "Exercise Physiologists",
+    "RIASEC_code": "RIS",
+    "work_value_code": "RAI"
+  },
+  {
+    "occupation": "Exercise Trainers and Group Fitness Instructors",
+    "RIASEC_code": "SR",
+    "work_value_code": "RAI"
+  },
+  {
+    "occupation": "Explosives Workers, Ordnance Handling Experts, and Blasters",
+    "RIASEC_code": "RCI",
+    "work_value_code": "SIW"
+  },
+  {
+    "occupation": "Extruding and Drawing Machine Setters, Operators, and Tenders, Metal and Plastic",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Extruding and Forming Machine Setters, Operators, and Tenders, Synthetic and Glass Fibers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Extruding, Forming, Pressing, and Compacting Machine Setters, Operators, and Tenders",
+    "RIASEC_code": "RC",
+    "work_value_code": "SIR"
+  },
+  {
+    "occupation": "Fabric and Apparel Patternmakers",
+    "RIASEC_code": "RAC",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Facilities Managers",
+    "RIASEC_code": "ECR",
+    "work_value_code": null
+  },
+  {
+    "occupation": "Fallers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SIW"
+  },
+  {
+    "occupation": "Family Medicine Physicians",
+    "RIASEC_code": "SI",
+    "work_value_code": "RARc"
+  },
+  {
+    "occupation": "Family and Consumer Sciences Teachers, Postsecondary",
+    "RIASEC_code": "SI",
+    "work_value_code": "ARI"
+  },
+  {
+    "occupation": "Farm Equipment Mechanics and Service Technicians",
+    "RIASEC_code": "RCI",
+    "work_value_code": "SIA"
+  },
+  {
+    "occupation": "Farm Labor Contractors",
+    "RIASEC_code": "ERC",
+    "work_value_code": "RIRc"
+  },
+  {
+    "occupation": "Farm and Home Management Educators",
+    "RIASEC_code": "SIR",
+    "work_value_code": "RIA"
+  },
+  {
+    "occupation": "Farmers, Ranchers, and Other Agricultural Managers",
+    "RIASEC_code": "ERC",
+    "work_value_code": "IAW"
+  },
+  {
+    "occupation": "Farmworkers and Laborers, Crop, Nursery, and Greenhouse",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRA"
+  },
+  {
+    "occupation": "Farmworkers, Farm, Ranch, and Aquacultural Animals",
+    "RIASEC_code": "R",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Fashion Designers",
+    "RIASEC_code": "ARE",
+    "work_value_code": "AIW"
+  },
+  {
+    "occupation": "Fast Food and Counter Workers",
+    "RIASEC_code": "RCE",
+    "work_value_code": "RS"
+  },
+  {
+    "occupation": "Fence Erectors",
+    "RIASEC_code": "RC",
+    "work_value_code": "RSW"
+  },
+  {
+    "occupation": "Fiberglass Laminators and Fabricators",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "File Clerks",
+    "RIASEC_code": "C",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Film and Video Editors",
+    "RIASEC_code": "AC",
+    "work_value_code": "IARc"
+  },
+  {
+    "occupation": "Financial Examiners",
+    "RIASEC_code": "CEI",
+    "work_value_code": "IRA"
+  },
+  {
+    "occupation": "Financial Managers",
+    "RIASEC_code": "EC",
+    "work_value_code": "WIRc"
+  },
+  {
+    "occupation": "Financial Quantitative Analysts",
+    "RIASEC_code": "IC",
+    "work_value_code": "IARc"
+  },
+  {
+    "occupation": "Financial Risk Specialists",
+    "RIASEC_code": "CIE",
+    "work_value_code": null
+  },
+  {
+    "occupation": "Financial and Investment Analysts",
+    "RIASEC_code": "CEI",
+    "work_value_code": null
+  },
+  {
+    "occupation": "Fine Artists, Including Painters, Sculptors, and Illustrators",
+    "RIASEC_code": "AR",
+    "work_value_code": "IAW"
+  },
+  {
+    "occupation": "Fire Inspectors and Investigators",
+    "RIASEC_code": "RCI",
+    "work_value_code": "AIS"
+  },
+  {
+    "occupation": "Fire-Prevention and Protection Engineers",
+    "RIASEC_code": "RIC",
+    "work_value_code": "AIW"
+  },
+  {
+    "occupation": "Firefighters",
+    "RIASEC_code": "R",
+    "work_value_code": "SRA"
+  },
+  {
+    "occupation": "First-Line Supervisors of Construction Trades and Extraction Workers",
+    "RIASEC_code": "ECR",
+    "work_value_code": "IRA"
+  },
+  {
+    "occupation": "First-Line Supervisors of Correctional Officers",
+    "RIASEC_code": "ECS",
+    "work_value_code": "SIA"
+  },
+  {
+    "occupation": "First-Line Supervisors of Entertainment and Recreation Workers, Except Gambling Services",
+    "RIASEC_code": "ECS",
+    "work_value_code": null
+  },
+  {
+    "occupation": "First-Line Supervisors of Farming, Fishing, and Forestry Workers",
+    "RIASEC_code": "ERC",
+    "work_value_code": "ISA"
+  },
+  {
+    "occupation": "First-Line Supervisors of Firefighting and Prevention Workers",
+    "RIASEC_code": "ERC",
+    "work_value_code": "ISA"
+  },
+  {
+    "occupation": "First-Line Supervisors of Food Preparation and Serving Workers",
+    "RIASEC_code": "ECR",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "First-Line Supervisors of Gambling Services Workers",
+    "RIASEC_code": "ECR",
+    "work_value_code": "RIS"
+  },
+  {
+    "occupation": "First-Line Supervisors of Helpers, Laborers, and Material Movers, Hand",
+    "RIASEC_code": "ECR",
+    "work_value_code": "ISR"
+  },
+  {
+    "occupation": "First-Line Supervisors of Housekeeping and Janitorial Workers",
+    "RIASEC_code": "ECR",
+    "work_value_code": "ISW"
+  },
+  {
+    "occupation": "First-Line Supervisors of Landscaping, Lawn Service, and Groundskeeping Workers",
+    "RIASEC_code": "ECR",
+    "work_value_code": "IRW"
+  },
+  {
+    "occupation": "First-Line Supervisors of Material-Moving Machine and Vehicle Operators",
+    "RIASEC_code": "ERC",
+    "work_value_code": "SIR"
+  },
+  {
+    "occupation": "First-Line Supervisors of Mechanics, Installers, and Repairers",
+    "RIASEC_code": "ECR",
+    "work_value_code": "IWA"
+  },
+  {
+    "occupation": "First-Line Supervisors of Non-Retail Sales Workers",
+    "RIASEC_code": "ECS",
+    "work_value_code": "IWS"
+  },
+  {
+    "occupation": "First-Line Supervisors of Office and Administrative Support Workers",
+    "RIASEC_code": "ECS",
+    "work_value_code": "SIR"
+  },
+  {
+    "occupation": "First-Line Supervisors of Passenger Attendants",
+    "RIASEC_code": "ECS",
+    "work_value_code": null
+  },
+  {
+    "occupation": "First-Line Supervisors of Personal Service Workers",
+    "RIASEC_code": "ECS",
+    "work_value_code": "RIS"
+  },
+  {
+    "occupation": "First-Line Supervisors of Police and Detectives",
+    "RIASEC_code": "ECS",
+    "work_value_code": "IRcW"
+  },
+  {
+    "occupation": "First-Line Supervisors of Production and Operating Workers",
+    "RIASEC_code": "ECR",
+    "work_value_code": "ISA"
+  },
+  {
+    "occupation": "First-Line Supervisors of Retail Sales Workers",
+    "RIASEC_code": "ECS",
+    "work_value_code": "IRS"
+  },
+  {
+    "occupation": "First-Line Supervisors of Security Workers",
+    "RIASEC_code": "ECR",
+    "work_value_code": null
+  },
+  {
+    "occupation": "Fish and Game Wardens",
+    "RIASEC_code": "RCI",
+    "work_value_code": "ISA"
+  },
+  {
+    "occupation": "Fishing and Hunting Workers",
+    "RIASEC_code": "RC",
+    "work_value_code": "IRS"
+  },
+  {
+    "occupation": "Fitness and Wellness Coordinators",
+    "RIASEC_code": "SE",
+    "work_value_code": "RIA"
+  },
+  {
+    "occupation": "Flight Attendants",
+    "RIASEC_code": "CRS",
+    "work_value_code": "RSW"
+  },
+  {
+    "occupation": "Floor Layers, Except Carpet, Wood, and Hard Tiles",
+    "RIASEC_code": "RC",
+    "work_value_code": "SIW"
+  },
+  {
+    "occupation": "Floor Sanders and Finishers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Floral Designers",
+    "RIASEC_code": "RAC",
+    "work_value_code": "ARI"
+  },
+  {
+    "occupation": "Food Batchmakers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Food Cooking Machine Operators and Tenders",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Food Preparation Workers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Food Science Technicians",
+    "RIASEC_code": "RCI",
+    "work_value_code": "SRA"
+  },
+  {
+    "occupation": "Food Scientists and Technologists",
+    "RIASEC_code": "IRC",
+    "work_value_code": "ASRc"
+  },
+  {
+    "occupation": "Food Servers, Nonrestaurant",
+    "RIASEC_code": "RSC",
+    "work_value_code": "RSW"
+  },
+  {
+    "occupation": "Food Service Managers",
+    "RIASEC_code": "ECR",
+    "work_value_code": "IRS"
+  },
+  {
+    "occupation": "Food and Tobacco Roasting, Baking, and Drying Machine Operators and Tenders",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Foreign Language and Literature Teachers, Postsecondary",
+    "RIASEC_code": "SI",
+    "work_value_code": "IRA"
+  },
+  {
+    "occupation": "Forensic Science Technicians",
+    "RIASEC_code": "ICR",
+    "work_value_code": "SRcI"
+  },
+  {
+    "occupation": "Forest Fire Inspectors and Prevention Specialists",
+    "RIASEC_code": "RC",
+    "work_value_code": "AIR"
+  },
+  {
+    "occupation": "Forest and Conservation Technicians",
+    "RIASEC_code": "RCI",
+    "work_value_code": "IAW"
+  },
+  {
+    "occupation": "Forest and Conservation Workers",
+    "RIASEC_code": "RC",
+    "work_value_code": "IRA"
+  },
+  {
+    "occupation": "Foresters",
+    "RIASEC_code": "RIC",
+    "work_value_code": "IWA"
+  },
+  {
+    "occupation": "Forestry and Conservation Science Teachers, Postsecondary",
+    "RIASEC_code": "SI",
+    "work_value_code": "WAI"
+  },
+  {
+    "occupation": "Forging Machine Setters, Operators, and Tenders, Metal and Plastic",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Foundry Mold and Coremakers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Fraud Examiners, Investigators and Analysts",
+    "RIASEC_code": "CEI",
+    "work_value_code": "IWA"
+  },
+  {
+    "occupation": "Freight Forwarders",
+    "RIASEC_code": "CER",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Fuel Cell Engineers",
+    "RIASEC_code": "RIC",
+    "work_value_code": "AIW"
+  },
+  {
+    "occupation": "Fundraisers",
+    "RIASEC_code": "ESC",
+    "work_value_code": "ARI"
+  },
+  {
+    "occupation": "Fundraising Managers",
+    "RIASEC_code": "ECS",
+    "work_value_code": null
+  },
+  {
+    "occupation": "Funeral Attendants",
+    "RIASEC_code": "RSC",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Funeral Home Managers",
+    "RIASEC_code": "ECS",
+    "work_value_code": "RAI"
+  },
+  {
+    "occupation": "Furnace, Kiln, Oven, Drier, and Kettle Operators and Tenders",
+    "RIASEC_code": "RC",
+    "work_value_code": "SIR"
+  },
+  {
+    "occupation": "Furniture Finishers",
+    "RIASEC_code": "RCA",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Gambling Cage Workers",
+    "RIASEC_code": "CE",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Gambling Change Persons and Booth Cashiers",
+    "RIASEC_code": "CE",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Gambling Dealers",
+    "RIASEC_code": "CER",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Gambling Managers",
+    "RIASEC_code": "EC",
+    "work_value_code": "IRW"
+  },
+  {
+    "occupation": "Gambling Surveillance Officers and Gambling Investigators",
+    "RIASEC_code": "CER",
+    "work_value_code": "ISA"
+  },
+  {
+    "occupation": "Gambling and Sports Book Writers and Runners",
+    "RIASEC_code": "CE",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Gas Compressor and Gas Pumping Station Operators",
+    "RIASEC_code": "RC",
+    "work_value_code": "SIW"
+  },
+  {
+    "occupation": "Gas Plant Operators",
+    "RIASEC_code": "RC",
+    "work_value_code": "SIW"
+  },
+  {
+    "occupation": "Gem and Diamond Workers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SIW"
+  },
+  {
+    "occupation": "General Internal Medicine Physicians",
+    "RIASEC_code": "ISR",
+    "work_value_code": "ARcI"
+  },
+  {
+    "occupation": "General and Operations Managers",
+    "RIASEC_code": "EC",
+    "work_value_code": "RIW"
+  },
+  {
+    "occupation": "Genetic Counselors",
+    "RIASEC_code": "ISC",
+    "work_value_code": "RARc"
+  },
+  {
+    "occupation": "Geneticists",
+    "RIASEC_code": "ICR",
+    "work_value_code": "RcAI"
+  },
+  {
+    "occupation": "Geodetic Surveyors",
+    "RIASEC_code": "RCI",
+    "work_value_code": "AIW"
+  },
+  {
+    "occupation": "Geographers",
+    "RIASEC_code": "IR",
+    "work_value_code": "IAW"
+  },
+  {
+    "occupation": "Geographic Information Systems Technologists and Technicians",
+    "RIASEC_code": "CIR",
+    "work_value_code": "AIW"
+  },
+  {
+    "occupation": "Geography Teachers, Postsecondary",
+    "RIASEC_code": "SI",
+    "work_value_code": "IARc"
+  },
+  {
+    "occupation": "Geological Technicians, Except Hydrologic Technicians",
+    "RIASEC_code": "RCI",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Geoscientists, Except Hydrologists and Geographers",
+    "RIASEC_code": "IRC",
+    "work_value_code": "IARc"
+  },
+  {
+    "occupation": "Geothermal Production Managers",
+    "RIASEC_code": "RCE",
+    "work_value_code": "RcAW"
+  },
+  {
+    "occupation": "Geothermal Technicians",
+    "RIASEC_code": "RCI",
+    "work_value_code": "SAW"
+  },
+  {
+    "occupation": "Glass Blowers, Molders, Benders, and Finishers",
+    "RIASEC_code": "RC",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Glaziers",
+    "RIASEC_code": "RC",
+    "work_value_code": "WRA"
+  },
+  {
+    "occupation": "Government Property Inspectors and Investigators",
+    "RIASEC_code": "CE",
+    "work_value_code": "SIR"
+  },
+  {
+    "occupation": "Graders and Sorters, Agricultural Products",
+    "RIASEC_code": "RC",
+    "work_value_code": "SWR"
+  },
+  {
+    "occupation": "Graphic Designers",
+    "RIASEC_code": "A",
+    "work_value_code": "AIRc"
+  },
+  {
+    "occupation": "Grinding and Polishing Workers, Hand",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Grinding, Lapping, Polishing, and Buffing Machine Tool Setters, Operators, and Tenders, Metal and Plastic",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Hairdressers, Hairstylists, and Cosmetologists",
+    "RIASEC_code": "RCS",
+    "work_value_code": "RIA"
+  },
+  {
+    "occupation": "Hazardous Materials Removal Workers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Health Education Specialists",
+    "RIASEC_code": "SIC",
+    "work_value_code": "RIA"
+  },
+  {
+    "occupation": "Health Informatics Specialists",
+    "RIASEC_code": "ICS",
+    "work_value_code": "AIS"
+  },
+  {
+    "occupation": "Health Information Technologists and Medical Registrars",
+    "RIASEC_code": "CIS",
+    "work_value_code": null
+  },
+  {
+    "occupation": "Health Specialties Teachers, Postsecondary",
+    "RIASEC_code": "SI",
+    "work_value_code": "WAI"
+  },
+  {
+    "occupation": "Health and Safety Engineers, Except Mining Safety Engineers and Inspectors",
+    "RIASEC_code": "IRC",
+    "work_value_code": "WSA"
+  },
+  {
+    "occupation": "Healthcare Social Workers",
+    "RIASEC_code": "SI",
+    "work_value_code": "RAI"
+  },
+  {
+    "occupation": "Hearing Aid Specialists",
+    "RIASEC_code": "SIC",
+    "work_value_code": "RWA"
+  },
+  {
+    "occupation": "Heat Treating Equipment Setters, Operators, and Tenders, Metal and Plastic",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Heating, Air Conditioning, and Refrigeration Mechanics and Installers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SIR"
+  },
+  {
+    "occupation": "Heavy and Tractor-Trailer Truck Drivers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SIW"
+  },
+  {
+    "occupation": "Helpers--Brickmasons, Blockmasons, Stonemasons, and Tile and Marble Setters",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Helpers--Carpenters",
+    "RIASEC_code": "RC",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Helpers--Electricians",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Helpers--Extraction Workers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SWR"
+  },
+  {
+    "occupation": "Helpers--Installation, Maintenance, and Repair Workers",
+    "RIASEC_code": "RC",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Helpers--Painters, Paperhangers, Plasterers, and Stucco Masons",
+    "RIASEC_code": "RC",
+    "work_value_code": "RSW"
+  },
+  {
+    "occupation": "Helpers--Pipelayers, Plumbers, Pipefitters, and Steamfitters",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Helpers--Production Workers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Helpers--Roofers",
+    "RIASEC_code": "RC",
+    "work_value_code": "RSW"
+  },
+  {
+    "occupation": "Highway Maintenance Workers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Histology Technicians",
+    "RIASEC_code": "RIC",
+    "work_value_code": null
+  },
+  {
+    "occupation": "Historians",
+    "RIASEC_code": "IC",
+    "work_value_code": "AIRc"
+  },
+  {
+    "occupation": "History Teachers, Postsecondary",
+    "RIASEC_code": "SI",
+    "work_value_code": "AIW"
+  },
+  {
+    "occupation": "Histotechnologists",
+    "RIASEC_code": "IRC",
+    "work_value_code": null
+  },
+  {
+    "occupation": "Hoist and Winch Operators",
+    "RIASEC_code": "RC",
+    "work_value_code": "SIR"
+  },
+  {
+    "occupation": "Home Appliance Repairers",
+    "RIASEC_code": "RC",
+    "work_value_code": "ISW"
+  },
+  {
+    "occupation": "Home Health Aides",
+    "RIASEC_code": "SRC",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Hospitalists",
+    "RIASEC_code": "SIC",
+    "work_value_code": "ARcI"
+  },
+  {
+    "occupation": "Hosts and Hostesses, Restaurant, Lounge, and Coffee Shop",
+    "RIASEC_code": "SEC",
+    "work_value_code": "RSA"
+  },
+  {
+    "occupation": "Hotel, Motel, and Resort Desk Clerks",
+    "RIASEC_code": "CSE",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Human Factors Engineers and Ergonomists",
+    "RIASEC_code": "IRC",
+    "work_value_code": "AWI"
+  },
+  {
+    "occupation": "Human Resources Assistants, Except Payroll and Timekeeping",
+    "RIASEC_code": "CES",
+    "work_value_code": "RSW"
+  },
+  {
+    "occupation": "Human Resources Managers",
+    "RIASEC_code": "ECS",
+    "work_value_code": "RRcW"
+  },
+  {
+    "occupation": "Human Resources Specialists",
+    "RIASEC_code": "ECS",
+    "work_value_code": "RSA"
+  },
+  {
+    "occupation": "Hydroelectric Plant Technicians",
+    "RIASEC_code": "RCI",
+    "work_value_code": "SWA"
+  },
+  {
+    "occupation": "Hydroelectric Production Managers",
+    "RIASEC_code": "RCE",
+    "work_value_code": "AWRc"
+  },
+  {
+    "occupation": "Hydrologic Technicians",
+    "RIASEC_code": "RCI",
+    "work_value_code": null
+  },
+  {
+    "occupation": "Hydrologists",
+    "RIASEC_code": "IRC",
+    "work_value_code": "AWI"
+  },
+  {
+    "occupation": "Industrial Ecologists",
+    "RIASEC_code": "IRC",
+    "work_value_code": "AIW"
+  },
+  {
+    "occupation": "Industrial Engineering Technologists and Technicians",
+    "RIASEC_code": "RCI",
+    "work_value_code": "SAI"
+  },
+  {
+    "occupation": "Industrial Engineers",
+    "RIASEC_code": "CIR",
+    "work_value_code": "IRcA"
+  },
+  {
+    "occupation": "Industrial Machinery Mechanics",
+    "RIASEC_code": "RCI",
+    "work_value_code": "SIW"
+  },
+  {
+    "occupation": "Industrial Production Managers",
+    "RIASEC_code": "ECR",
+    "work_value_code": "IWR"
+  },
+  {
+    "occupation": "Industrial Truck and Tractor Operators",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Industrial-Organizational Psychologists",
+    "RIASEC_code": "IES",
+    "work_value_code": "WRA"
+  },
+  {
+    "occupation": "Information Security Analysts",
+    "RIASEC_code": "CI",
+    "work_value_code": "WIS"
+  },
+  {
+    "occupation": "Information Security Engineers",
+    "RIASEC_code": "CIR",
+    "work_value_code": null
+  },
+  {
+    "occupation": "Information Technology Project Managers",
+    "RIASEC_code": "ECI",
+    "work_value_code": "AIW"
+  },
+  {
+    "occupation": "Inspectors, Testers, Sorters, Samplers, and Weighers",
+    "RIASEC_code": "RCI",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Instructional Coordinators",
+    "RIASEC_code": "SEC",
+    "work_value_code": "RIA"
+  },
+  {
+    "occupation": "Insulation Workers, Floor, Ceiling, and Wall",
+    "RIASEC_code": "RC",
+    "work_value_code": "SIR"
+  },
+  {
+    "occupation": "Insulation Workers, Mechanical",
+    "RIASEC_code": "RC",
+    "work_value_code": "SIR"
+  },
+  {
+    "occupation": "Insurance Appraisers, Auto Damage",
+    "RIASEC_code": "CRE",
+    "work_value_code": "ISW"
+  },
+  {
+    "occupation": "Insurance Claims and Policy Processing Clerks",
+    "RIASEC_code": "CE",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Insurance Sales Agents",
+    "RIASEC_code": "ECS",
+    "work_value_code": "IRA"
+  },
+  {
+    "occupation": "Insurance Underwriters",
+    "RIASEC_code": "CEI",
+    "work_value_code": "IRS"
+  },
+  {
+    "occupation": "Intelligence Analysts",
+    "RIASEC_code": "IC",
+    "work_value_code": "AWRc"
+  },
+  {
+    "occupation": "Interior Designers",
+    "RIASEC_code": "AR",
+    "work_value_code": "AIR"
+  },
+  {
+    "occupation": "Interpreters and Translators",
+    "RIASEC_code": "CAS",
+    "work_value_code": "RWRc"
+  },
+  {
+    "occupation": "Interviewers, Except Eligibility and Loan",
+    "RIASEC_code": "CSE",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Investment Fund Managers",
+    "RIASEC_code": "ECI",
+    "work_value_code": "ARcW"
+  },
+  {
+    "occupation": "Janitors and Cleaners, Except Maids and Housekeeping Cleaners",
+    "RIASEC_code": "RC",
+    "work_value_code": "RSW"
+  },
+  {
+    "occupation": "Jewelers and Precious Stone and Metal Workers",
+    "RIASEC_code": "RAC",
+    "work_value_code": "WARc"
+  },
+  {
+    "occupation": "Judges, Magistrate Judges, and Magistrates",
+    "RIASEC_code": "ECS",
+    "work_value_code": "IRA"
+  },
+  {
+    "occupation": "Judicial Law Clerks",
+    "RIASEC_code": "CEI",
+    "work_value_code": "AWS"
+  },
+  {
+    "occupation": "Kindergarten Teachers, Except Special Education",
+    "RIASEC_code": "SA",
+    "work_value_code": "RAI"
+  },
+  {
+    "occupation": "Labor Relations Specialists",
+    "RIASEC_code": "ECS",
+    "work_value_code": "ARS"
+  },
+  {
+    "occupation": "Laborers and Freight, Stock, and Material Movers, Hand",
+    "RIASEC_code": "RC",
+    "work_value_code": "RSW"
+  },
+  {
+    "occupation": "Landscape Architects",
+    "RIASEC_code": "RIA",
+    "work_value_code": "IWA"
+  },
+  {
+    "occupation": "Landscaping and Groundskeeping Workers",
+    "RIASEC_code": "RC",
+    "work_value_code": "RWS"
+  },
+  {
+    "occupation": "Lathe and Turning Machine Tool Setters, Operators, and Tenders, Metal and Plastic",
+    "RIASEC_code": "RC",
+    "work_value_code": "SAI"
+  },
+  {
+    "occupation": "Laundry and Dry-Cleaning Workers",
+    "RIASEC_code": "RC",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Law Teachers, Postsecondary",
+    "RIASEC_code": "SI",
+    "work_value_code": "AIW"
+  },
+  {
+    "occupation": "Lawyers",
+    "RIASEC_code": "ECI",
+    "work_value_code": "RcAI"
+  },
+  {
+    "occupation": "Layout Workers, Metal and Plastic",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Legal Secretaries and Administrative Assistants",
+    "RIASEC_code": "CE",
+    "work_value_code": "RSW"
+  },
+  {
+    "occupation": "Legislators",
+    "RIASEC_code": "ESC",
+    "work_value_code": "RARc"
+  },
+  {
+    "occupation": "Librarians and Media Collections Specialists",
+    "RIASEC_code": "CSI",
+    "work_value_code": "RWI"
+  },
+  {
+    "occupation": "Library Assistants, Clerical",
+    "RIASEC_code": "CS",
+    "work_value_code": "RSA"
+  },
+  {
+    "occupation": "Library Science Teachers, Postsecondary",
+    "RIASEC_code": "SI",
+    "work_value_code": "AIW"
+  },
+  {
+    "occupation": "Library Technicians",
+    "RIASEC_code": "CS",
+    "work_value_code": "RSW"
+  },
+  {
+    "occupation": "Licensed Practical and Licensed Vocational Nurses",
+    "RIASEC_code": "SRC",
+    "work_value_code": "RSA"
+  },
+  {
+    "occupation": "Lifeguards, Ski Patrol, and Other Recreational Protective Service Workers",
+    "RIASEC_code": "RSC",
+    "work_value_code": "RSA"
+  },
+  {
+    "occupation": "Light Truck Drivers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SIW"
+  },
+  {
+    "occupation": "Lighting Technicians",
+    "RIASEC_code": "RC",
+    "work_value_code": null
+  },
+  {
+    "occupation": "Loading and Moving Machine Operators, Underground Mining",
+    "RIASEC_code": "RC",
+    "work_value_code": "SWR"
+  },
+  {
+    "occupation": "Loan Interviewers and Clerks",
+    "RIASEC_code": "CES",
+    "work_value_code": "RSW"
+  },
+  {
+    "occupation": "Loan Officers",
+    "RIASEC_code": "CES",
+    "work_value_code": "RIS"
+  },
+  {
+    "occupation": "Locker Room, Coatroom, and Dressing Room Attendants",
+    "RIASEC_code": "CRS",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Locksmiths and Safe Repairers",
+    "RIASEC_code": "RC",
+    "work_value_code": "IWA"
+  },
+  {
+    "occupation": "Locomotive Engineers",
+    "RIASEC_code": "RCI",
+    "work_value_code": "SWR"
+  },
+  {
+    "occupation": "Lodging Managers",
+    "RIASEC_code": "ECS",
+    "work_value_code": "RIA"
+  },
+  {
+    "occupation": "Log Graders and Scalers",
+    "RIASEC_code": "CR",
+    "work_value_code": "ISW"
+  },
+  {
+    "occupation": "Logging Equipment Operators",
+    "RIASEC_code": "RC",
+    "work_value_code": "SIW"
+  },
+  {
+    "occupation": "Logisticians",
+    "RIASEC_code": "CEI",
+    "work_value_code": "IARc"
+  },
+  {
+    "occupation": "Logistics Analysts",
+    "RIASEC_code": "CEI",
+    "work_value_code": "AIRc"
+  },
+  {
+    "occupation": "Logistics Engineers",
+    "RIASEC_code": "CIR",
+    "work_value_code": "AIRc"
+  },
+  {
+    "occupation": "Loss Prevention Managers",
+    "RIASEC_code": "CE",
+    "work_value_code": "ARI"
+  },
+  {
+    "occupation": "Low Vision Therapists, Orientation and Mobility Specialists, and Vision Rehabilitation Therapists",
+    "RIASEC_code": "SRI",
+    "work_value_code": "RIA"
+  },
+  {
+    "occupation": "Machine Feeders and Offbearers",
+    "RIASEC_code": "RC",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Machinists",
+    "RIASEC_code": "RCI",
+    "work_value_code": "SWI"
+  },
+  {
+    "occupation": "Magnetic Resonance Imaging Technologists",
+    "RIASEC_code": "RCI",
+    "work_value_code": "AWS"
+  },
+  {
+    "occupation": "Maids and Housekeeping Cleaners",
+    "RIASEC_code": "RC",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Mail Clerks and Mail Machine Operators, Except Postal Service",
+    "RIASEC_code": "CR",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Maintenance Workers, Machinery",
+    "RIASEC_code": "RC",
+    "work_value_code": "SIR"
+  },
+  {
+    "occupation": "Maintenance and Repair Workers, General",
+    "RIASEC_code": "RC",
+    "work_value_code": "SIR"
+  },
+  {
+    "occupation": "Makeup Artists, Theatrical and Performance",
+    "RIASEC_code": "AR",
+    "work_value_code": "RWA"
+  },
+  {
+    "occupation": "Management Analysts",
+    "RIASEC_code": "CIE",
+    "work_value_code": "RAI"
+  },
+  {
+    "occupation": "Manicurists and Pedicurists",
+    "RIASEC_code": "RC",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Manufactured Building and Mobile Home Installers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Manufacturing Engineers",
+    "RIASEC_code": "RIC",
+    "work_value_code": "WSI"
+  },
+  {
+    "occupation": "Marine Engineers and Naval Architects",
+    "RIASEC_code": "RIC",
+    "work_value_code": "IARc"
+  },
+  {
+    "occupation": "Market Research Analysts and Marketing Specialists",
+    "RIASEC_code": "ECI",
+    "work_value_code": "AWS"
+  },
+  {
+    "occupation": "Marketing Managers",
+    "RIASEC_code": "EC",
+    "work_value_code": "WAI"
+  },
+  {
+    "occupation": "Marriage and Family Therapists",
+    "RIASEC_code": "SI",
+    "work_value_code": "RIA"
+  },
+  {
+    "occupation": "Massage Therapists",
+    "RIASEC_code": "SRI",
+    "work_value_code": "RIA"
+  },
+  {
+    "occupation": "Materials Engineers",
+    "RIASEC_code": "RIC",
+    "work_value_code": "SWI"
+  },
+  {
+    "occupation": "Materials Scientists",
+    "RIASEC_code": "IRC",
+    "work_value_code": "AIRc"
+  },
+  {
+    "occupation": "Mathematical Science Teachers, Postsecondary",
+    "RIASEC_code": "SIC",
+    "work_value_code": "AIRc"
+  },
+  {
+    "occupation": "Mathematicians",
+    "RIASEC_code": "IC",
+    "work_value_code": "ARcI"
+  },
+  {
+    "occupation": "Meat, Poultry, and Fish Cutters and Trimmers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Mechanical Door Repairers",
+    "RIASEC_code": "RC",
+    "work_value_code": "ISW"
+  },
+  {
+    "occupation": "Mechanical Drafters",
+    "RIASEC_code": "RCI",
+    "work_value_code": "SWA"
+  },
+  {
+    "occupation": "Mechanical Engineering Technologists and Technicians",
+    "RIASEC_code": "RIC",
+    "work_value_code": "SWR"
+  },
+  {
+    "occupation": "Mechanical Engineers",
+    "RIASEC_code": "RIC",
+    "work_value_code": "RcAI"
+  },
+  {
+    "occupation": "Mechatronics Engineers",
+    "RIASEC_code": "RIC",
+    "work_value_code": "ARcI"
+  },
+  {
+    "occupation": "Media Programming Directors",
+    "RIASEC_code": "ECA",
+    "work_value_code": "RcAI"
+  },
+  {
+    "occupation": "Media Technical Directors/Managers",
+    "RIASEC_code": "ECR",
+    "work_value_code": "ISW"
+  },
+  {
+    "occupation": "Medical Appliance Technicians",
+    "RIASEC_code": "RIC",
+    "work_value_code": "RSW"
+  },
+  {
+    "occupation": "Medical Assistants",
+    "RIASEC_code": "CSR",
+    "work_value_code": "RSA"
+  },
+  {
+    "occupation": "Medical Dosimetrists",
+    "RIASEC_code": "ICR",
+    "work_value_code": null
+  },
+  {
+    "occupation": "Medical Equipment Preparers",
+    "RIASEC_code": "RCI",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Medical Equipment Repairers",
+    "RIASEC_code": "RCI",
+    "work_value_code": "SIR"
+  },
+  {
+    "occupation": "Medical Records Specialists",
+    "RIASEC_code": "CI",
+    "work_value_code": null
+  },
+  {
+    "occupation": "Medical Scientists, Except Epidemiologists",
+    "RIASEC_code": "IRC",
+    "work_value_code": "ARcI"
+  },
+  {
+    "occupation": "Medical Secretaries and Administrative Assistants",
+    "RIASEC_code": "CS",
+    "work_value_code": "RSW"
+  },
+  {
+    "occupation": "Medical Transcriptionists",
+    "RIASEC_code": "CSI",
+    "work_value_code": "SRA"
+  },
+  {
+    "occupation": "Medical and Clinical Laboratory Technicians",
+    "RIASEC_code": "RIC",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Medical and Clinical Laboratory Technologists",
+    "RIASEC_code": "IRC",
+    "work_value_code": "SIA"
+  },
+  {
+    "occupation": "Medical and Health Services Managers",
+    "RIASEC_code": "ECS",
+    "work_value_code": "IWR"
+  },
+  {
+    "occupation": "Meeting, Convention, and Event Planners",
+    "RIASEC_code": "ECS",
+    "work_value_code": "RIA"
+  },
+  {
+    "occupation": "Mental Health Counselors",
+    "RIASEC_code": "SI",
+    "work_value_code": "RAI"
+  },
+  {
+    "occupation": "Mental Health and Substance Abuse Social Workers",
+    "RIASEC_code": "SI",
+    "work_value_code": "RAI"
+  },
+  {
+    "occupation": "Merchandise Displayers and Window Trimmers",
+    "RIASEC_code": "ARE",
+    "work_value_code": "RIA"
+  },
+  {
+    "occupation": "Metal-Refining Furnace Operators and Tenders",
+    "RIASEC_code": "RC",
+    "work_value_code": "SIW"
+  },
+  {
+    "occupation": "Meter Readers, Utilities",
+    "RIASEC_code": "CR",
+    "work_value_code": "WIS"
+  },
+  {
+    "occupation": "Microbiologists",
+    "RIASEC_code": "IRC",
+    "work_value_code": "RcAI"
+  },
+  {
+    "occupation": "Microsystems Engineers",
+    "RIASEC_code": "IRC",
+    "work_value_code": "AIW"
+  },
+  {
+    "occupation": "Middle School Teachers, Except Special and Career/Technical Education",
+    "RIASEC_code": "SA",
+    "work_value_code": "RIA"
+  },
+  {
+    "occupation": "Midwives",
+    "RIASEC_code": "SIR",
+    "work_value_code": "RAI"
+  },
+  {
+    "occupation": "Milling and Planing Machine Setters, Operators, and Tenders, Metal and Plastic",
+    "RIASEC_code": "RC",
+    "work_value_code": "SWI"
+  },
+  {
+    "occupation": "Millwrights",
+    "RIASEC_code": "RC",
+    "work_value_code": "SIW"
+  },
+  {
+    "occupation": "Mining and Geological Engineers, Including Mining Safety Engineers",
+    "RIASEC_code": "RIC",
+    "work_value_code": "WSI"
+  },
+  {
+    "occupation": "Mixing and Blending Machine Setters, Operators, and Tenders",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Mobile Heavy Equipment Mechanics, Except Engines",
+    "RIASEC_code": "RCI",
+    "work_value_code": "SIR"
+  },
+  {
+    "occupation": "Model Makers, Metal and Plastic",
+    "RIASEC_code": "RC",
+    "work_value_code": "SWA"
+  },
+  {
+    "occupation": "Model Makers, Wood",
+    "RIASEC_code": "RCA",
+    "work_value_code": "ISA"
+  },
+  {
+    "occupation": "Models",
+    "RIASEC_code": "ARE",
+    "work_value_code": "RRcW"
+  },
+  {
+    "occupation": "Molders, Shapers, and Casters, Except Metal and Plastic",
+    "RIASEC_code": "RC",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Molding, Coremaking, and Casting Machine Setters, Operators, and Tenders, Metal and Plastic",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Molecular and Cellular Biologists",
+    "RIASEC_code": "IRC",
+    "work_value_code": "IWA"
+  },
+  {
+    "occupation": "Morticians, Undertakers, and Funeral Arrangers",
+    "RIASEC_code": "CES",
+    "work_value_code": "RIA"
+  },
+  {
+    "occupation": "Motion Picture Projectionists",
+    "RIASEC_code": "RC",
+    "work_value_code": "SIA"
+  },
+  {
+    "occupation": "Motorboat Mechanics and Service Technicians",
+    "RIASEC_code": "RC",
+    "work_value_code": "SIW"
+  },
+  {
+    "occupation": "Motorboat Operators",
+    "RIASEC_code": "RCE",
+    "work_value_code": "IRS"
+  },
+  {
+    "occupation": "Motorcycle Mechanics",
+    "RIASEC_code": "RCI",
+    "work_value_code": "ISW"
+  },
+  {
+    "occupation": "Multiple Machine Tool Setters, Operators, and Tenders, Metal and Plastic",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Museum Technicians and Conservators",
+    "RIASEC_code": "RC",
+    "work_value_code": "ARI"
+  },
+  {
+    "occupation": "Music Directors and Composers",
+    "RIASEC_code": "AE",
+    "work_value_code": "AIRc"
+  },
+  {
+    "occupation": "Music Therapists",
+    "RIASEC_code": "SAI",
+    "work_value_code": "RAI"
+  },
+  {
+    "occupation": "Musical Instrument Repairers and Tuners",
+    "RIASEC_code": "RAC",
+    "work_value_code": "IAW"
+  },
+  {
+    "occupation": "Musicians and Singers",
+    "RIASEC_code": "AE",
+    "work_value_code": "RARc"
+  },
+  {
+    "occupation": "Nannies",
+    "RIASEC_code": "SA",
+    "work_value_code": "RIA"
+  },
+  {
+    "occupation": "Nanosystems Engineers",
+    "RIASEC_code": "IRC",
+    "work_value_code": "AWI"
+  },
+  {
+    "occupation": "Nanotechnology Engineering Technologists and Technicians",
+    "RIASEC_code": "RIC",
+    "work_value_code": "ASW"
+  },
+  {
+    "occupation": "Natural Sciences Managers",
+    "RIASEC_code": "IEC",
+    "work_value_code": "IWA"
+  },
+  {
+    "occupation": "Naturopathic Physicians",
+    "RIASEC_code": "ISR",
+    "work_value_code": "RAI"
+  },
+  {
+    "occupation": "Network and Computer Systems Administrators",
+    "RIASEC_code": "CRI",
+    "work_value_code": "WSA"
+  },
+  {
+    "occupation": "Neurodiagnostic Technologists",
+    "RIASEC_code": "IRC",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Neurologists",
+    "RIASEC_code": "IS",
+    "work_value_code": "ARcW"
+  },
+  {
+    "occupation": "Neuropsychologists",
+    "RIASEC_code": "IS",
+    "work_value_code": null
+  },
+  {
+    "occupation": "New Accounts Clerks",
+    "RIASEC_code": "CES",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "News Analysts, Reporters, and Journalists",
+    "RIASEC_code": "AIE",
+    "work_value_code": "ARcI"
+  },
+  {
+    "occupation": "Non-Destructive Testing Specialists",
+    "RIASEC_code": "RIC",
+    "work_value_code": "SIW"
+  },
+  {
+    "occupation": "Nuclear Engineers",
+    "RIASEC_code": "IRC",
+    "work_value_code": "RcAS"
+  },
+  {
+    "occupation": "Nuclear Medicine Technologists",
+    "RIASEC_code": "RIC",
+    "work_value_code": "RSW"
+  },
+  {
+    "occupation": "Nuclear Monitoring Technicians",
+    "RIASEC_code": "RCI",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Nuclear Power Reactor Operators",
+    "RIASEC_code": "RC",
+    "work_value_code": "SWA"
+  },
+  {
+    "occupation": "Nuclear Technicians",
+    "RIASEC_code": "RCI",
+    "work_value_code": "SWR"
+  },
+  {
+    "occupation": "Nurse Anesthetists",
+    "RIASEC_code": "SRI",
+    "work_value_code": "SRA"
+  },
+  {
+    "occupation": "Nurse Midwives",
+    "RIASEC_code": "SI",
+    "work_value_code": "RAI"
+  },
+  {
+    "occupation": "Nurse Practitioners",
+    "RIASEC_code": "ISC",
+    "work_value_code": "RAI"
+  },
+  {
+    "occupation": "Nursing Assistants",
+    "RIASEC_code": "SRC",
+    "work_value_code": "RSW"
+  },
+  {
+    "occupation": "Nursing Instructors and Teachers, Postsecondary",
+    "RIASEC_code": "SI",
+    "work_value_code": "RWI"
+  },
+  {
+    "occupation": "Obstetricians and Gynecologists",
+    "RIASEC_code": "ISR",
+    "work_value_code": "ARcI"
+  },
+  {
+    "occupation": "Occupational Health and Safety Specialists",
+    "RIASEC_code": "ICR",
+    "work_value_code": "SWA"
+  },
+  {
+    "occupation": "Occupational Health and Safety Technicians",
+    "RIASEC_code": "RCI",
+    "work_value_code": "RSA"
+  },
+  {
+    "occupation": "Occupational Therapists",
+    "RIASEC_code": "SI",
+    "work_value_code": "RAW"
+  },
+  {
+    "occupation": "Occupational Therapy Aides",
+    "RIASEC_code": "SRC",
+    "work_value_code": "RSA"
+  },
+  {
+    "occupation": "Occupational Therapy Assistants",
+    "RIASEC_code": "SCR",
+    "work_value_code": "RAW"
+  },
+  {
+    "occupation": "Office Clerks, General",
+    "RIASEC_code": "C",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Office Machine Operators, Except Computer",
+    "RIASEC_code": "CR",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Online Merchants",
+    "RIASEC_code": "CE",
+    "work_value_code": "IAW"
+  },
+  {
+    "occupation": "Operating Engineers and Other Construction Equipment Operators",
+    "RIASEC_code": "RCI",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Operations Research Analysts",
+    "RIASEC_code": "IC",
+    "work_value_code": "AIW"
+  },
+  {
+    "occupation": "Ophthalmic Laboratory Technicians",
+    "RIASEC_code": "RC",
+    "work_value_code": "SIR"
+  },
+  {
+    "occupation": "Ophthalmic Medical Technicians",
+    "RIASEC_code": "RCI",
+    "work_value_code": "RSA"
+  },
+  {
+    "occupation": "Ophthalmic Medical Technologists",
+    "RIASEC_code": "RIC",
+    "work_value_code": "ARW"
+  },
+  {
+    "occupation": "Ophthalmologists, Except Pediatric",
+    "RIASEC_code": "ISR",
+    "work_value_code": "AIRc"
+  },
+  {
+    "occupation": "Opticians, Dispensing",
+    "RIASEC_code": "CR",
+    "work_value_code": "IRS"
+  },
+  {
+    "occupation": "Optometrists",
+    "RIASEC_code": "ISR",
+    "work_value_code": "WARc"
+  },
+  {
+    "occupation": "Oral and Maxillofacial Surgeons",
+    "RIASEC_code": "IRS",
+    "work_value_code": "IARc"
+  },
+  {
+    "occupation": "Order Clerks",
+    "RIASEC_code": "CE",
+    "work_value_code": "SIW"
+  },
+  {
+    "occupation": "Orderlies",
+    "RIASEC_code": "RCS",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Orthodontists",
+    "RIASEC_code": "IRC",
+    "work_value_code": "IARc"
+  },
+  {
+    "occupation": "Orthopedic Surgeons, Except Pediatric",
+    "RIASEC_code": "IRS",
+    "work_value_code": null
+  },
+  {
+    "occupation": "Orthoptists",
+    "RIASEC_code": "IRS",
+    "work_value_code": "IWR"
+  },
+  {
+    "occupation": "Orthotists and Prosthetists",
+    "RIASEC_code": "RIS",
+    "work_value_code": "IRA"
+  },
+  {
+    "occupation": "Outdoor Power Equipment and Other Small Engine Mechanics",
+    "RIASEC_code": "RC",
+    "work_value_code": "ISW"
+  },
+  {
+    "occupation": "Packaging and Filling Machine Operators and Tenders",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Packers and Packagers, Hand",
+    "RIASEC_code": "CR",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Painters, Construction and Maintenance",
+    "RIASEC_code": "RC",
+    "work_value_code": "SIW"
+  },
+  {
+    "occupation": "Painting, Coating, and Decorating Workers",
+    "RIASEC_code": "RAC",
+    "work_value_code": "SIA"
+  },
+  {
+    "occupation": "Paper Goods Machine Setters, Operators, and Tenders",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Paperhangers",
+    "RIASEC_code": "RCA",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Paralegals and Legal Assistants",
+    "RIASEC_code": "CIE",
+    "work_value_code": "RSW"
+  },
+  {
+    "occupation": "Paramedics",
+    "RIASEC_code": "SRI",
+    "work_value_code": null
+  },
+  {
+    "occupation": "Park Naturalists",
+    "RIASEC_code": "SIR",
+    "work_value_code": "RWA"
+  },
+  {
+    "occupation": "Parking Attendants",
+    "RIASEC_code": "RC",
+    "work_value_code": "RIS"
+  },
+  {
+    "occupation": "Parking Enforcement Workers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Parts Salespersons",
+    "RIASEC_code": "CRE",
+    "work_value_code": "RIS"
+  },
+  {
+    "occupation": "Passenger Attendants",
+    "RIASEC_code": "CSR",
+    "work_value_code": "RSA"
+  },
+  {
+    "occupation": "Patient Representatives",
+    "RIASEC_code": "SIC",
+    "work_value_code": "RSA"
+  },
+  {
+    "occupation": "Patternmakers, Metal and Plastic",
+    "RIASEC_code": "RCA",
+    "work_value_code": "SIR"
+  },
+  {
+    "occupation": "Patternmakers, Wood",
+    "RIASEC_code": "RCA",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Paving, Surfacing, and Tamping Equipment Operators",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Payroll and Timekeeping Clerks",
+    "RIASEC_code": "CE",
+    "work_value_code": "RSA"
+  },
+  {
+    "occupation": "Pediatric Surgeons",
+    "RIASEC_code": "ISR",
+    "work_value_code": null
+  },
+  {
+    "occupation": "Pediatricians, General",
+    "RIASEC_code": "SI",
+    "work_value_code": "ARcR"
+  },
+  {
+    "occupation": "Penetration Testers",
+    "RIASEC_code": "ICR",
+    "work_value_code": null
+  },
+  {
+    "occupation": "Personal Care Aides",
+    "RIASEC_code": "SCR",
+    "work_value_code": "RSA"
+  },
+  {
+    "occupation": "Personal Financial Advisors",
+    "RIASEC_code": "ECS",
+    "work_value_code": "IARc"
+  },
+  {
+    "occupation": "Pest Control Workers",
+    "RIASEC_code": "RC",
+    "work_value_code": "ISR"
+  },
+  {
+    "occupation": "Pesticide Handlers, Sprayers, and Applicators, Vegetation",
+    "RIASEC_code": "RC",
+    "work_value_code": "SIW"
+  },
+  {
+    "occupation": "Petroleum Engineers",
+    "RIASEC_code": "RIC",
+    "work_value_code": "IWA"
+  },
+  {
+    "occupation": "Petroleum Pump System Operators, Refinery Operators, and Gaugers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SWI"
+  },
+  {
+    "occupation": "Pharmacists",
+    "RIASEC_code": "ISC",
+    "work_value_code": "RcSR"
+  },
+  {
+    "occupation": "Pharmacy Aides",
+    "RIASEC_code": "CER",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Pharmacy Technicians",
+    "RIASEC_code": "CR",
+    "work_value_code": "RSA"
+  },
+  {
+    "occupation": "Philosophy and Religion Teachers, Postsecondary",
+    "RIASEC_code": "SI",
+    "work_value_code": "AIRc"
+  },
+  {
+    "occupation": "Phlebotomists",
+    "RIASEC_code": "RCI",
+    "work_value_code": "SAR"
+  },
+  {
+    "occupation": "Photographers",
+    "RIASEC_code": "RA",
+    "work_value_code": "IRA"
+  },
+  {
+    "occupation": "Photographic Process Workers and Processing Machine Operators",
+    "RIASEC_code": "RCA",
+    "work_value_code": "SIR"
+  },
+  {
+    "occupation": "Photonics Engineers",
+    "RIASEC_code": "IRC",
+    "work_value_code": "AIW"
+  },
+  {
+    "occupation": "Photonics Technicians",
+    "RIASEC_code": "RCI",
+    "work_value_code": "ASR"
+  },
+  {
+    "occupation": "Physical Medicine and Rehabilitation Physicians",
+    "RIASEC_code": "ISR",
+    "work_value_code": "ARcI"
+  },
+  {
+    "occupation": "Physical Therapist Aides",
+    "RIASEC_code": "SRC",
+    "work_value_code": "RSA"
+  },
+  {
+    "occupation": "Physical Therapist Assistants",
+    "RIASEC_code": "SRC",
+    "work_value_code": "RSW"
+  },
+  {
+    "occupation": "Physical Therapists",
+    "RIASEC_code": "SIR",
+    "work_value_code": "RARc"
+  },
+  {
+    "occupation": "Physician Assistants",
+    "RIASEC_code": "SIC",
+    "work_value_code": "RWA"
+  },
+  {
+    "occupation": "Physicians, Pathologists",
+    "RIASEC_code": "IRC",
+    "work_value_code": "AIRc"
+  },
+  {
+    "occupation": "Physicists",
+    "RIASEC_code": "IRC",
+    "work_value_code": "RcWA"
+  },
+  {
+    "occupation": "Physics Teachers, Postsecondary",
+    "RIASEC_code": "SI",
+    "work_value_code": "ARcW"
+  },
+  {
+    "occupation": "Pile Driver Operators",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Pipelayers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Plasterers and Stucco Masons",
+    "RIASEC_code": "RC",
+    "work_value_code": "IRW"
+  },
+  {
+    "occupation": "Plating Machine Setters, Operators, and Tenders, Metal and Plastic",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Plumbers, Pipefitters, and Steamfitters",
+    "RIASEC_code": "RC",
+    "work_value_code": "RIS"
+  },
+  {
+    "occupation": "Podiatrists",
+    "RIASEC_code": "IRS",
+    "work_value_code": "AIR"
+  },
+  {
+    "occupation": "Poets, Lyricists and Creative Writers",
+    "RIASEC_code": "AI",
+    "work_value_code": "AIRc"
+  },
+  {
+    "occupation": "Police Identification and Records Officers",
+    "RIASEC_code": "CRI",
+    "work_value_code": "SRA"
+  },
+  {
+    "occupation": "Police and Sheriff's Patrol Officers",
+    "RIASEC_code": "RCE",
+    "work_value_code": "AIS"
+  },
+  {
+    "occupation": "Political Science Teachers, Postsecondary",
+    "RIASEC_code": "SI",
+    "work_value_code": "WAI"
+  },
+  {
+    "occupation": "Political Scientists",
+    "RIASEC_code": "IA",
+    "work_value_code": "AWRc"
+  },
+  {
+    "occupation": "Postal Service Clerks",
+    "RIASEC_code": "CR",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Postal Service Mail Carriers",
+    "RIASEC_code": "CR",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Postal Service Mail Sorters, Processors, and Processing Machine Operators",
+    "RIASEC_code": "CR",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Postmasters and Mail Superintendents",
+    "RIASEC_code": "ECS",
+    "work_value_code": "ISW"
+  },
+  {
+    "occupation": "Potters, Manufacturing",
+    "RIASEC_code": "RC",
+    "work_value_code": "ARW"
+  },
+  {
+    "occupation": "Pourers and Casters, Metal",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Power Distributors and Dispatchers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SIW"
+  },
+  {
+    "occupation": "Power Plant Operators",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Precision Agriculture Technicians",
+    "RIASEC_code": "RIC",
+    "work_value_code": "WIS"
+  },
+  {
+    "occupation": "Prepress Technicians and Workers",
+    "RIASEC_code": "CR",
+    "work_value_code": "SIR"
+  },
+  {
+    "occupation": "Preschool Teachers, Except Special Education",
+    "RIASEC_code": "SA",
+    "work_value_code": "RAI"
+  },
+  {
+    "occupation": "Pressers, Textile, Garment, and Related Materials",
+    "RIASEC_code": "RC",
+    "work_value_code": "RSA"
+  },
+  {
+    "occupation": "Preventive Medicine Physicians",
+    "RIASEC_code": "IS",
+    "work_value_code": "RcAI"
+  },
+  {
+    "occupation": "Print Binding and Finishing Workers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SIA"
+  },
+  {
+    "occupation": "Printing Press Operators",
+    "RIASEC_code": "CR",
+    "work_value_code": "SAI"
+  },
+  {
+    "occupation": "Private Detectives and Investigators",
+    "RIASEC_code": "CEI",
+    "work_value_code": "IARc"
+  },
+  {
+    "occupation": "Probation Officers and Correctional Treatment Specialists",
+    "RIASEC_code": "SCE",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Procurement Clerks",
+    "RIASEC_code": "CE",
+    "work_value_code": "RIS"
+  },
+  {
+    "occupation": "Producers and Directors",
+    "RIASEC_code": "AE",
+    "work_value_code": "IRcA"
+  },
+  {
+    "occupation": "Production, Planning, and Expediting Clerks",
+    "RIASEC_code": "CE",
+    "work_value_code": "ISW"
+  },
+  {
+    "occupation": "Project Management Specialists",
+    "RIASEC_code": "EC",
+    "work_value_code": null
+  },
+  {
+    "occupation": "Proofreaders and Copy Markers",
+    "RIASEC_code": "CA",
+    "work_value_code": "RAS"
+  },
+  {
+    "occupation": "Property, Real Estate, and Community Association Managers",
+    "RIASEC_code": "EC",
+    "work_value_code": "IAW"
+  },
+  {
+    "occupation": "Prosthodontists",
+    "RIASEC_code": "RIS",
+    "work_value_code": "IRA"
+  },
+  {
+    "occupation": "Psychiatric Aides",
+    "RIASEC_code": "SIC",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Psychiatric Technicians",
+    "RIASEC_code": "SI",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Psychiatrists",
+    "RIASEC_code": "IS",
+    "work_value_code": "AIRc"
+  },
+  {
+    "occupation": "Psychology Teachers, Postsecondary",
+    "RIASEC_code": "SI",
+    "work_value_code": "AIRc"
+  },
+  {
+    "occupation": "Public Relations Managers",
+    "RIASEC_code": "ECS",
+    "work_value_code": null
+  },
+  {
+    "occupation": "Public Relations Specialists",
+    "RIASEC_code": "EAS",
+    "work_value_code": "IAW"
+  },
+  {
+    "occupation": "Public Safety Telecommunicators",
+    "RIASEC_code": "CRS",
+    "work_value_code": "RSA"
+  },
+  {
+    "occupation": "Pump Operators, Except Wellhead Pumpers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SIR"
+  },
+  {
+    "occupation": "Purchasing Agents, Except Wholesale, Retail, and Farm Products",
+    "RIASEC_code": "CER",
+    "work_value_code": "WIS"
+  },
+  {
+    "occupation": "Purchasing Managers",
+    "RIASEC_code": "EC",
+    "work_value_code": "WSI"
+  },
+  {
+    "occupation": "Quality Control Analysts",
+    "RIASEC_code": "CIR",
+    "work_value_code": "SIW"
+  },
+  {
+    "occupation": "Quality Control Systems Managers",
+    "RIASEC_code": "CEI",
+    "work_value_code": "SAI"
+  },
+  {
+    "occupation": "Radiation Therapists",
+    "RIASEC_code": "RSI",
+    "work_value_code": "RSA"
+  },
+  {
+    "occupation": "Radio Frequency Identification Device Specialists",
+    "RIASEC_code": "CRI",
+    "work_value_code": "ISW"
+  },
+  {
+    "occupation": "Radio, Cellular, and Tower Equipment Installers and Repairers",
+    "RIASEC_code": "RCI",
+    "work_value_code": "ASW"
+  },
+  {
+    "occupation": "Radiologic Technologists and Technicians",
+    "RIASEC_code": "RCI",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Radiologists",
+    "RIASEC_code": "ICR",
+    "work_value_code": "ARcI"
+  },
+  {
+    "occupation": "Rail Car Repairers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SWI"
+  },
+  {
+    "occupation": "Rail Yard Engineers, Dinkey Operators, and Hostlers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Rail-Track Laying and Maintenance Equipment Operators",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Railroad Brake, Signal, and Switch Operators and Locomotive Firers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Railroad Conductors and Yardmasters",
+    "RIASEC_code": "RCE",
+    "work_value_code": "SIW"
+  },
+  {
+    "occupation": "Range Managers",
+    "RIASEC_code": "RIE",
+    "work_value_code": "WIA"
+  },
+  {
+    "occupation": "Real Estate Brokers",
+    "RIASEC_code": "EC",
+    "work_value_code": "IAR"
+  },
+  {
+    "occupation": "Real Estate Sales Agents",
+    "RIASEC_code": "ECS",
+    "work_value_code": "IAR"
+  },
+  {
+    "occupation": "Receptionists and Information Clerks",
+    "RIASEC_code": "CES",
+    "work_value_code": "RSA"
+  },
+  {
+    "occupation": "Recreation Workers",
+    "RIASEC_code": "SER",
+    "work_value_code": "RIS"
+  },
+  {
+    "occupation": "Recreation and Fitness Studies Teachers, Postsecondary",
+    "RIASEC_code": "SI",
+    "work_value_code": "RAI"
+  },
+  {
+    "occupation": "Recreational Therapists",
+    "RIASEC_code": "SI",
+    "work_value_code": "RAI"
+  },
+  {
+    "occupation": "Recreational Vehicle Service Technicians",
+    "RIASEC_code": "RC",
+    "work_value_code": "SIW"
+  },
+  {
+    "occupation": "Recycling Coordinators",
+    "RIASEC_code": "ECR",
+    "work_value_code": "ARcI"
+  },
+  {
+    "occupation": "Recycling and Reclamation Workers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Refractory Materials Repairers, Except Brickmasons",
+    "RIASEC_code": "RC",
+    "work_value_code": "SIR"
+  },
+  {
+    "occupation": "Refuse and Recyclable Material Collectors",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Registered Nurses",
+    "RIASEC_code": "SIC",
+    "work_value_code": "RSA"
+  },
+  {
+    "occupation": "Regulatory Affairs Managers",
+    "RIASEC_code": "EC",
+    "work_value_code": "AIS"
+  },
+  {
+    "occupation": "Regulatory Affairs Specialists",
+    "RIASEC_code": "CEI",
+    "work_value_code": "WIS"
+  },
+  {
+    "occupation": "Rehabilitation Counselors",
+    "RIASEC_code": "S",
+    "work_value_code": "RAS"
+  },
+  {
+    "occupation": "Reinforcing Iron and Rebar Workers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Remote Sensing Scientists and Technologists",
+    "RIASEC_code": "IRC",
+    "work_value_code": "AIRc"
+  },
+  {
+    "occupation": "Remote Sensing Technicians",
+    "RIASEC_code": "RCI",
+    "work_value_code": "SWA"
+  },
+  {
+    "occupation": "Reservation and Transportation Ticket Agents and Travel Clerks",
+    "RIASEC_code": "CSE",
+    "work_value_code": "RIS"
+  },
+  {
+    "occupation": "Residential Advisors",
+    "RIASEC_code": "SCE",
+    "work_value_code": "RIS"
+  },
+  {
+    "occupation": "Respiratory Therapists",
+    "RIASEC_code": "SRI",
+    "work_value_code": "RSRc"
+  },
+  {
+    "occupation": "Retail Loss Prevention Specialists",
+    "RIASEC_code": "CER",
+    "work_value_code": "IAW"
+  },
+  {
+    "occupation": "Retail Salespersons",
+    "RIASEC_code": "EC",
+    "work_value_code": "RSA"
+  },
+  {
+    "occupation": "Riggers",
+    "RIASEC_code": "RC",
+    "work_value_code": "RSW"
+  },
+  {
+    "occupation": "Robotics Engineers",
+    "RIASEC_code": "RIC",
+    "work_value_code": "IWA"
+  },
+  {
+    "occupation": "Robotics Technicians",
+    "RIASEC_code": "RCI",
+    "work_value_code": "SWA"
+  },
+  {
+    "occupation": "Rock Splitters, Quarry",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Rolling Machine Setters, Operators, and Tenders, Metal and Plastic",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Roof Bolters, Mining",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Roofers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SIW"
+  },
+  {
+    "occupation": "Rotary Drill Operators, Oil and Gas",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Roustabouts, Oil and Gas",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Sailors and Marine Oilers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SAR"
+  },
+  {
+    "occupation": "Sales Engineers",
+    "RIASEC_code": "EC",
+    "work_value_code": "AWR"
+  },
+  {
+    "occupation": "Sales Managers",
+    "RIASEC_code": "EC",
+    "work_value_code": "IWA"
+  },
+  {
+    "occupation": "Sales Representatives of Services, Except Advertising, Insurance, Financial Services, and Travel",
+    "RIASEC_code": "ECS",
+    "work_value_code": null
+  },
+  {
+    "occupation": "Sales Representatives, Wholesale and Manufacturing, Except Technical and Scientific Products",
+    "RIASEC_code": "EC",
+    "work_value_code": "RAI"
+  },
+  {
+    "occupation": "Sales Representatives, Wholesale and Manufacturing, Technical and Scientific Products",
+    "RIASEC_code": "EC",
+    "work_value_code": "IAW"
+  },
+  {
+    "occupation": "Sawing Machine Setters, Operators, and Tenders, Wood",
+    "RIASEC_code": "RC",
+    "work_value_code": "SIW"
+  },
+  {
+    "occupation": "School Bus Monitors",
+    "RIASEC_code": "SCR",
+    "work_value_code": null
+  },
+  {
+    "occupation": "School Psychologists",
+    "RIASEC_code": "SIC",
+    "work_value_code": "RIA"
+  },
+  {
+    "occupation": "Search Marketing Strategists",
+    "RIASEC_code": "ECI",
+    "work_value_code": "AWI"
+  },
+  {
+    "occupation": "Secondary School Teachers, Except Special and Career/Technical Education",
+    "RIASEC_code": "S",
+    "work_value_code": "RAW"
+  },
+  {
+    "occupation": "Secretaries and Administrative Assistants, Except Legal, Medical, and Executive",
+    "RIASEC_code": "CES",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Securities, Commodities, and Financial Services Sales Agents",
+    "RIASEC_code": "EC",
+    "work_value_code": "AWI"
+  },
+  {
+    "occupation": "Security Guards",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Security Management Specialists",
+    "RIASEC_code": "CIR",
+    "work_value_code": null
+  },
+  {
+    "occupation": "Security Managers",
+    "RIASEC_code": "EC",
+    "work_value_code": null
+  },
+  {
+    "occupation": "Security and Fire Alarm Systems Installers",
+    "RIASEC_code": "RCI",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Segmental Pavers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Self-Enrichment Teachers",
+    "RIASEC_code": "SA",
+    "work_value_code": "RIA"
+  },
+  {
+    "occupation": "Semiconductor Processing Technicians",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Separating, Filtering, Clarifying, Precipitating, and Still Machine Setters, Operators, and Tenders",
+    "RIASEC_code": "RC",
+    "work_value_code": "SWI"
+  },
+  {
+    "occupation": "Septic Tank Servicers and Sewer Pipe Cleaners",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Service Unit Operators, Oil and Gas",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Set and Exhibit Designers",
+    "RIASEC_code": "A",
+    "work_value_code": "AIW"
+  },
+  {
+    "occupation": "Sewers, Hand",
+    "RIASEC_code": "RCA",
+    "work_value_code": "ISW"
+  },
+  {
+    "occupation": "Sewing Machine Operators",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Shampooers",
+    "RIASEC_code": "RSC",
+    "work_value_code": "RSW"
+  },
+  {
+    "occupation": "Sheet Metal Workers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SIR"
+  },
+  {
+    "occupation": "Ship Engineers",
+    "RIASEC_code": "RCE",
+    "work_value_code": "ISR"
+  },
+  {
+    "occupation": "Shipping, Receiving, and Inventory Clerks",
+    "RIASEC_code": "CRE",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Shoe Machine Operators and Tenders",
+    "RIASEC_code": "RC",
+    "work_value_code": "RSA"
+  },
+  {
+    "occupation": "Shoe and Leather Workers and Repairers",
+    "RIASEC_code": "RA",
+    "work_value_code": "SAI"
+  },
+  {
+    "occupation": "Shuttle Drivers and Chauffeurs",
+    "RIASEC_code": "RCS",
+    "work_value_code": null
+  },
+  {
+    "occupation": "Signal and Track Switch Repairers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SIW"
+  },
+  {
+    "occupation": "Skincare Specialists",
+    "RIASEC_code": "RS",
+    "work_value_code": "RIA"
+  },
+  {
+    "occupation": "Slaughterers and Meat Packers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Social Science Research Assistants",
+    "RIASEC_code": "IC",
+    "work_value_code": "IAW"
+  },
+  {
+    "occupation": "Social Work Teachers, Postsecondary",
+    "RIASEC_code": "SI",
+    "work_value_code": "RAI"
+  },
+  {
+    "occupation": "Social and Community Service Managers",
+    "RIASEC_code": "ESC",
+    "work_value_code": "RIW"
+  },
+  {
+    "occupation": "Social and Human Service Assistants",
+    "RIASEC_code": "SCE",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Sociologists",
+    "RIASEC_code": "ISA",
+    "work_value_code": "AIRc"
+  },
+  {
+    "occupation": "Sociology Teachers, Postsecondary",
+    "RIASEC_code": "SI",
+    "work_value_code": "AIR"
+  },
+  {
+    "occupation": "Software Developers",
+    "RIASEC_code": "ICR",
+    "work_value_code": null
+  },
+  {
+    "occupation": "Software Quality Assurance Analysts and Testers",
+    "RIASEC_code": "ICR",
+    "work_value_code": "AWI"
+  },
+  {
+    "occupation": "Soil and Plant Scientists",
+    "RIASEC_code": "IR",
+    "work_value_code": "AIRc"
+  },
+  {
+    "occupation": "Solar Energy Installation Managers",
+    "RIASEC_code": "REC",
+    "work_value_code": "AIRc"
+  },
+  {
+    "occupation": "Solar Energy Systems Engineers",
+    "RIASEC_code": "RIC",
+    "work_value_code": "AWI"
+  },
+  {
+    "occupation": "Solar Photovoltaic Installers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SAW"
+  },
+  {
+    "occupation": "Solar Sales Representatives and Assessors",
+    "RIASEC_code": "ECR",
+    "work_value_code": "AIW"
+  },
+  {
+    "occupation": "Solar Thermal Installers and Technicians",
+    "RIASEC_code": "RC",
+    "work_value_code": "SAW"
+  },
+  {
+    "occupation": "Sound Engineering Technicians",
+    "RIASEC_code": "RAC",
+    "work_value_code": "IRA"
+  },
+  {
+    "occupation": "Spa Managers",
+    "RIASEC_code": "ECS",
+    "work_value_code": "IRA"
+  },
+  {
+    "occupation": "Special Education Teachers, Elementary School",
+    "RIASEC_code": "SI",
+    "work_value_code": null
+  },
+  {
+    "occupation": "Special Education Teachers, Kindergarten",
+    "RIASEC_code": "S",
+    "work_value_code": null
+  },
+  {
+    "occupation": "Special Education Teachers, Middle School",
+    "RIASEC_code": "SIA",
+    "work_value_code": "RWA"
+  },
+  {
+    "occupation": "Special Education Teachers, Preschool",
+    "RIASEC_code": "SA",
+    "work_value_code": "RAI"
+  },
+  {
+    "occupation": "Special Education Teachers, Secondary School",
+    "RIASEC_code": "SI",
+    "work_value_code": "RAI"
+  },
+  {
+    "occupation": "Special Effects Artists and Animators",
+    "RIASEC_code": "AR",
+    "work_value_code": "IAW"
+  },
+  {
+    "occupation": "Speech-Language Pathologists",
+    "RIASEC_code": "SIC",
+    "work_value_code": "RAI"
+  },
+  {
+    "occupation": "Speech-Language Pathology Assistants",
+    "RIASEC_code": "SCI",
+    "work_value_code": "RSA"
+  },
+  {
+    "occupation": "Sports Medicine Physicians",
+    "RIASEC_code": "ISR",
+    "work_value_code": "ARcW"
+  },
+  {
+    "occupation": "Stationary Engineers and Boiler Operators",
+    "RIASEC_code": "RCI",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Statistical Assistants",
+    "RIASEC_code": "CI",
+    "work_value_code": "SAW"
+  },
+  {
+    "occupation": "Statisticians",
+    "RIASEC_code": "IC",
+    "work_value_code": "IARc"
+  },
+  {
+    "occupation": "Stockers and Order Fillers",
+    "RIASEC_code": "CRE",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Stone Cutters and Carvers, Manufacturing",
+    "RIASEC_code": "RAC",
+    "work_value_code": "SAW"
+  },
+  {
+    "occupation": "Stonemasons",
+    "RIASEC_code": "R",
+    "work_value_code": "ISW"
+  },
+  {
+    "occupation": "Structural Iron and Steel Workers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Structural Metal Fabricators and Fitters",
+    "RIASEC_code": "RC",
+    "work_value_code": "SWR"
+  },
+  {
+    "occupation": "Substance Abuse and Behavioral Disorder Counselors",
+    "RIASEC_code": "SIC",
+    "work_value_code": "RAI"
+  },
+  {
+    "occupation": "Substitute Teachers, Short-Term",
+    "RIASEC_code": "SC",
+    "work_value_code": null
+  },
+  {
+    "occupation": "Subway and Streetcar Operators",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Supply Chain Managers",
+    "RIASEC_code": "EC",
+    "work_value_code": "IWS"
+  },
+  {
+    "occupation": "Surgical Assistants",
+    "RIASEC_code": "RCS",
+    "work_value_code": "RAS"
+  },
+  {
+    "occupation": "Surgical Technologists",
+    "RIASEC_code": "RCS",
+    "work_value_code": "SRA"
+  },
+  {
+    "occupation": "Survey Researchers",
+    "RIASEC_code": "IC",
+    "work_value_code": "IARc"
+  },
+  {
+    "occupation": "Surveying and Mapping Technicians",
+    "RIASEC_code": "RCI",
+    "work_value_code": "SIR"
+  },
+  {
+    "occupation": "Surveyors",
+    "RIASEC_code": "CRI",
+    "work_value_code": "RIW"
+  },
+  {
+    "occupation": "Sustainability Specialists",
+    "RIASEC_code": "IEC",
+    "work_value_code": "AIW"
+  },
+  {
+    "occupation": "Switchboard Operators, Including Answering Service",
+    "RIASEC_code": "CRE",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Tailors, Dressmakers, and Custom Sewers",
+    "RIASEC_code": "RA",
+    "work_value_code": "AIR"
+  },
+  {
+    "occupation": "Talent Directors",
+    "RIASEC_code": "EAS",
+    "work_value_code": "ARRc"
+  },
+  {
+    "occupation": "Tank Car, Truck, and Ship Loaders",
+    "RIASEC_code": "RC",
+    "work_value_code": "SIR"
+  },
+  {
+    "occupation": "Tapers",
+    "RIASEC_code": "RC",
+    "work_value_code": "RSW"
+  },
+  {
+    "occupation": "Tax Examiners and Collectors, and Revenue Agents",
+    "RIASEC_code": "CE",
+    "work_value_code": "ASR"
+  },
+  {
+    "occupation": "Tax Preparers",
+    "RIASEC_code": "CE",
+    "work_value_code": "RIS"
+  },
+  {
+    "occupation": "Taxi Drivers",
+    "RIASEC_code": "RC",
+    "work_value_code": null
+  },
+  {
+    "occupation": "Teaching Assistants, Postsecondary",
+    "RIASEC_code": "SC",
+    "work_value_code": "AIS"
+  },
+  {
+    "occupation": "Teaching Assistants, Preschool, Elementary, Middle, and Secondary School, Except Special Education",
+    "RIASEC_code": "SC",
+    "work_value_code": null
+  },
+  {
+    "occupation": "Teaching Assistants, Special Education",
+    "RIASEC_code": "SC",
+    "work_value_code": null
+  },
+  {
+    "occupation": "Team Assemblers",
+    "RIASEC_code": "RCE",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Technical Writers",
+    "RIASEC_code": "CAI",
+    "work_value_code": "IWA"
+  },
+  {
+    "occupation": "Telecommunications Engineering Specialists",
+    "RIASEC_code": "CRI",
+    "work_value_code": "ASW"
+  },
+  {
+    "occupation": "Telecommunications Equipment Installers and Repairers, Except Line Installers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SIW"
+  },
+  {
+    "occupation": "Telecommunications Line Installers and Repairers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Telemarketers",
+    "RIASEC_code": "ECS",
+    "work_value_code": "RSA"
+  },
+  {
+    "occupation": "Telephone Operators",
+    "RIASEC_code": "CSE",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Tellers",
+    "RIASEC_code": "CE",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Terrazzo Workers and Finishers",
+    "RIASEC_code": "RC",
+    "work_value_code": "ISA"
+  },
+  {
+    "occupation": "Textile Bleaching and Dyeing Machine Operators and Tenders",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Textile Cutting Machine Setters, Operators, and Tenders",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Textile Knitting and Weaving Machine Setters, Operators, and Tenders",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Textile Winding, Twisting, and Drawing Out Machine Setters, Operators, and Tenders",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Tile and Stone Setters",
+    "RIASEC_code": "RC",
+    "work_value_code": "ISW"
+  },
+  {
+    "occupation": "Timing Device Assemblers and Adjusters",
+    "RIASEC_code": "RC",
+    "work_value_code": "SWA"
+  },
+  {
+    "occupation": "Tire Builders",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Tire Repairers and Changers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Title Examiners, Abstractors, and Searchers",
+    "RIASEC_code": "CE",
+    "work_value_code": "SAW"
+  },
+  {
+    "occupation": "Tool Grinders, Filers, and Sharpeners",
+    "RIASEC_code": "RC",
+    "work_value_code": "SIW"
+  },
+  {
+    "occupation": "Tool and Die Makers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SWI"
+  },
+  {
+    "occupation": "Tour Guides and Escorts",
+    "RIASEC_code": "SE",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Traffic Technicians",
+    "RIASEC_code": "RCI",
+    "work_value_code": "ISR"
+  },
+  {
+    "occupation": "Training and Development Managers",
+    "RIASEC_code": "ES",
+    "work_value_code": "RWA"
+  },
+  {
+    "occupation": "Training and Development Specialists",
+    "RIASEC_code": "SCI",
+    "work_value_code": "RAI"
+  },
+  {
+    "occupation": "Transit and Railroad Police",
+    "RIASEC_code": "RC",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Transportation Engineers",
+    "RIASEC_code": "RIC",
+    "work_value_code": "ARcS"
+  },
+  {
+    "occupation": "Transportation Inspectors",
+    "RIASEC_code": "CR",
+    "work_value_code": "SWR"
+  },
+  {
+    "occupation": "Transportation Planners",
+    "RIASEC_code": "IC",
+    "work_value_code": "AIW"
+  },
+  {
+    "occupation": "Transportation Security Screeners",
+    "RIASEC_code": "CR",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Transportation Vehicle, Equipment and Systems Inspectors, Except Aviation",
+    "RIASEC_code": "RCI",
+    "work_value_code": "SWA"
+  },
+  {
+    "occupation": "Transportation, Storage, and Distribution Managers",
+    "RIASEC_code": "EC",
+    "work_value_code": "RIW"
+  },
+  {
+    "occupation": "Travel Agents",
+    "RIASEC_code": "ECS",
+    "work_value_code": "RAI"
+  },
+  {
+    "occupation": "Travel Guides",
+    "RIASEC_code": "SEC",
+    "work_value_code": "RIA"
+  },
+  {
+    "occupation": "Treasurers and Controllers",
+    "RIASEC_code": "EC",
+    "work_value_code": "WAI"
+  },
+  {
+    "occupation": "Tree Trimmers and Pruners",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Tutors",
+    "RIASEC_code": "S",
+    "work_value_code": "RIA"
+  },
+  {
+    "occupation": "Umpires, Referees, and Other Sports Officials",
+    "RIASEC_code": "ECR",
+    "work_value_code": "AIRc"
+  },
+  {
+    "occupation": "Upholsterers",
+    "RIASEC_code": "RAC",
+    "work_value_code": "SAW"
+  },
+  {
+    "occupation": "Urban and Regional Planners",
+    "RIASEC_code": "IEC",
+    "work_value_code": "RAW"
+  },
+  {
+    "occupation": "Urologists",
+    "RIASEC_code": "IRS",
+    "work_value_code": "ARcW"
+  },
+  {
+    "occupation": "Ushers, Lobby Attendants, and Ticket Takers",
+    "RIASEC_code": "SCE",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Validation Engineers",
+    "RIASEC_code": "ICR",
+    "work_value_code": "WAI"
+  },
+  {
+    "occupation": "Veterinarians",
+    "RIASEC_code": "RI",
+    "work_value_code": "AIRc"
+  },
+  {
+    "occupation": "Veterinary Assistants and Laboratory Animal Caretakers",
+    "RIASEC_code": "RIC",
+    "work_value_code": "RSW"
+  },
+  {
+    "occupation": "Veterinary Technologists and Technicians",
+    "RIASEC_code": "RIC",
+    "work_value_code": "RSW"
+  },
+  {
+    "occupation": "Video Game Designers",
+    "RIASEC_code": "AIE",
+    "work_value_code": "IAW"
+  },
+  {
+    "occupation": "Waiters and Waitresses",
+    "RIASEC_code": "SCE",
+    "work_value_code": "RSA"
+  },
+  {
+    "occupation": "Watch and Clock Repairers",
+    "RIASEC_code": "RC",
+    "work_value_code": "IAW"
+  },
+  {
+    "occupation": "Water Resource Specialists",
+    "RIASEC_code": "IRC",
+    "work_value_code": "AWI"
+  },
+  {
+    "occupation": "Water and Wastewater Treatment Plant and System Operators",
+    "RIASEC_code": "RC",
+    "work_value_code": "SIA"
+  },
+  {
+    "occupation": "Water/Wastewater Engineers",
+    "RIASEC_code": "RIC",
+    "work_value_code": "AWI"
+  },
+  {
+    "occupation": "Weatherization Installers and Technicians",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Web Administrators",
+    "RIASEC_code": "CIE",
+    "work_value_code": "AWI"
+  },
+  {
+    "occupation": "Web Developers",
+    "RIASEC_code": "CI",
+    "work_value_code": "IWA"
+  },
+  {
+    "occupation": "Web and Digital Interface Designers",
+    "RIASEC_code": "IAC",
+    "work_value_code": null
+  },
+  {
+    "occupation": "Weighers, Measurers, Checkers, and Samplers, Recordkeeping",
+    "RIASEC_code": "CR",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Welders, Cutters, Solderers, and Brazers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Welding, Soldering, and Brazing Machine Setters, Operators, and Tenders",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRI"
+  },
+  {
+    "occupation": "Wellhead Pumpers",
+    "RIASEC_code": "RC",
+    "work_value_code": "SRW"
+  },
+  {
+    "occupation": "Wholesale and Retail Buyers, Except Farm Products",
+    "RIASEC_code": "ECR",
+    "work_value_code": "IAR"
+  },
+  {
+    "occupation": "Wind Energy Development Managers",
+    "RIASEC_code": "EC",
+    "work_value_code": "AIRc"
+  },
+  {
+    "occupation": "Wind Energy Engineers",
+    "RIASEC_code": "RIC",
+    "work_value_code": "AWI"
+  },
+  {
+    "occupation": "Wind Energy Operations Managers",
+    "RIASEC_code": "ECR",
+    "work_value_code": "AWRc"
+  },
+  {
+    "occupation": "Wind Turbine Service Technicians",
+    "RIASEC_code": "RCI",
+    "work_value_code": "SAW"
+  },
+  {
+    "occupation": "Woodworking Machine Setters, Operators, and Tenders, Except Sawing",
+    "RIASEC_code": "RC",
+    "work_value_code": "SIW"
+  },
+  {
+    "occupation": "Word Processors and Typists",
+    "RIASEC_code": "C",
+    "work_value_code": "RSI"
+  },
+  {
+    "occupation": "Writers and Authors",
+    "RIASEC_code": "AE",
+    "work_value_code": "ASW"
+  },
+  {
+    "occupation": "Zoologists and Wildlife Biologists",
+    "RIASEC_code": "IR",
+    "work_value_code": "ARcW"
+  }
+]

@@ -6,7 +6,7 @@ client = OpenAI(
 )
 
 # Read your code from a file
-code_path = "quizgenerator.py"
+code_path = r"C:\Users\Josh\Desktop\Josh's webstie\adviseekapp\src\contexts\quiz\quiz_refer\RIASEC_to_occupation.csv"
 with open(code_path, "r", encoding="utf-8") as f:
     code_content = f.read()
 
