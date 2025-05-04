@@ -1,0 +1,2465 @@
+{
+  "description": "Manifest of split major-school question files",
+  "files": [
+    {
+      "name": "Anthropology_NUS.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Anthropology_NUS.json",
+      "major": "Anthropology",
+      "school": "NUS",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Chinese_Language_NUS.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Chinese_Language_NUS.json",
+      "major": "Chinese Language",
+      "school": "NUS",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Chinese_Studies_NUS.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Chinese_Studies_NUS.json",
+      "major": "Chinese Studies",
+      "school": "NUS",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Communications_and_New_Media_NUS.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Communications_and_New_Media_NUS.json",
+      "major": "Communications and New Media",
+      "school": "NUS",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "English_Language_and_Linguistics_NUS.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\English_Language_and_Linguistics_NUS.json",
+      "major": "English Language and Linguistics",
+      "school": "NUS",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "English_Literature_NUS.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\English_Literature_NUS.json",
+      "major": "English Literature",
+      "school": "NUS",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Geography_NUS.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Geography_NUS.json",
+      "major": "Geography",
+      "school": "NUS",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Global_Studies_NUS.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Global_Studies_NUS.json",
+      "major": "Global Studies",
+      "school": "NUS",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "History_NUS.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\History_NUS.json",
+      "major": "History",
+      "school": "NUS",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Japanese_Studies_NUS.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Japanese_Studies_NUS.json",
+      "major": "Japanese Studies",
+      "school": "NUS",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Malay_Studies_NUS.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Malay_Studies_NUS.json",
+      "major": "Malay Studies",
+      "school": "NUS",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Philosophy_NUS.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Philosophy_NUS.json",
+      "major": "Philosophy",
+      "school": "NUS",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Political_Science_NUS.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Political_Science_NUS.json",
+      "major": "Political Science",
+      "school": "NUS",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Psychology_NUS.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Psychology_NUS.json",
+      "major": "Psychology",
+      "school": "NUS",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Social_Work_NUS.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Social_Work_NUS.json",
+      "major": "Social Work",
+      "school": "NUS",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Sociology_NUS.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Sociology_NUS.json",
+      "major": "Sociology",
+      "school": "NUS",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "South_Asian_Studies_NUS.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\South_Asian_Studies_NUS.json",
+      "major": "South Asian Studies",
+      "school": "NUS",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Southeast_Asian_Studies_NUS.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Southeast_Asian_Studies_NUS.json",
+      "major": "Southeast Asian Studies",
+      "school": "NUS",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Theatre_and_Performance_Studies_NUS.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Theatre_and_Performance_Studies_NUS.json",
+      "major": "Theatre and Performance Studies",
+      "school": "NUS",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Economics_NUS.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Economics_NUS.json",
+      "major": "Economics",
+      "school": "NUS",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Chemistry_NUS.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Chemistry_NUS.json",
+      "major": "Chemistry",
+      "school": "NUS",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Data_Science_and_Analytics_NUS.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Data_Science_and_Analytics_NUS.json",
+      "major": "Data Science and Analytics",
+      "school": "NUS",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Environmental_Studies_NUS.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Environmental_Studies_NUS.json",
+      "major": "Environmental Studies",
+      "school": "NUS",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Food_Science_and_Technology_NUS.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Food_Science_and_Technology_NUS.json",
+      "major": "Food Science and Technology",
+      "school": "NUS",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Life_Sciences_NUS.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Life_Sciences_NUS.json",
+      "major": "Life Sciences",
+      "school": "NUS",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Mathematics_NUS.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Mathematics_NUS.json",
+      "major": "Mathematics",
+      "school": "NUS",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Pharmaceutical_Science_NUS.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Pharmaceutical_Science_NUS.json",
+      "major": "Pharmaceutical Science",
+      "school": "NUS",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Physics_NUS.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Physics_NUS.json",
+      "major": "Physics",
+      "school": "NUS",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Statistics_NUS.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Statistics_NUS.json",
+      "major": "Statistics",
+      "school": "NUS",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Architecture_NUS.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Architecture_NUS.json",
+      "major": "Architecture",
+      "school": "NUS",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Biomedical_Engineering_NUS.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Biomedical_Engineering_NUS.json",
+      "major": "Biomedical Engineering",
+      "school": "NUS",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Chemical_Engineering_NUS.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Chemical_Engineering_NUS.json",
+      "major": "Chemical Engineering",
+      "school": "NUS",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Civil_Engineering_NUS.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Civil_Engineering_NUS.json",
+      "major": "Civil Engineering",
+      "school": "NUS",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Computer_Engineering_NUS.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Computer_Engineering_NUS.json",
+      "major": "Computer Engineering",
+      "school": "NUS",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Electrical_Engineering_NUS.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Electrical_Engineering_NUS.json",
+      "major": "Electrical Engineering",
+      "school": "NUS",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Engineering_Science_NUS.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Engineering_Science_NUS.json",
+      "major": "Engineering Science",
+      "school": "NUS",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Environmental_Engineering_NUS.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Environmental_Engineering_NUS.json",
+      "major": "Environmental Engineering",
+      "school": "NUS",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Industrial_Design_NUS.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Industrial_Design_NUS.json",
+      "major": "Industrial Design",
+      "school": "NUS",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Mechanical_Engineering_NUS.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Mechanical_Engineering_NUS.json",
+      "major": "Mechanical Engineering",
+      "school": "NUS",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Business_Analytics_NUS.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Business_Analytics_NUS.json",
+      "major": "Business Analytics",
+      "school": "NUS",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Computer_Science_NUS.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Computer_Science_NUS.json",
+      "major": "Computer Science",
+      "school": "NUS",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Information_Security_NUS.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Information_Security_NUS.json",
+      "major": "Information Security",
+      "school": "NUS",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Information_Systems_NUS.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Information_Systems_NUS.json",
+      "major": "Information Systems",
+      "school": "NUS",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Business_Administration_NUS.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Business_Administration_NUS.json",
+      "major": "Business Administration",
+      "school": "NUS",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Real_Estate_NUS.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Real_Estate_NUS.json",
+      "major": "Real Estate",
+      "school": "NUS",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Law_NUS.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Law_NUS.json",
+      "major": "Law",
+      "school": "NUS",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Medicine_NUS.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Medicine_NUS.json",
+      "major": "Medicine",
+      "school": "NUS",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Nursing_NUS.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Nursing_NUS.json",
+      "major": "Nursing",
+      "school": "NUS",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Dentistry_NUS.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Dentistry_NUS.json",
+      "major": "Dentistry",
+      "school": "NUS",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Music_NUS.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Music_NUS.json",
+      "major": "Music",
+      "school": "NUS",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Artificial_Intelligence_and_Society_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Artificial_Intelligence_and_Society_NTU.json",
+      "major": "Artificial Intelligence and Society",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Business_and_Computer_Engineering_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Business_and_Computer_Engineering_NTU.json",
+      "major": "Business and Computer Engineering",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Business_and_Computing_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Business_and_Computing_NTU.json",
+      "major": "Business and Computing",
+      "school": "NTU",
+      "question_count": 600,
+      "criteria_counts": {
+        "Interests": 200,
+        "Skills": 200,
+        "Experiences": 200
+      }
+    },
+    {
+      "name": "Computer_Engineering_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Computer_Engineering_NTU.json",
+      "major": "Computer Engineering",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Computer_Science_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Computer_Science_NTU.json",
+      "major": "Computer Science",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Data_Science_and_Artificial_Intelligence_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Data_Science_and_Artificial_Intelligence_NTU.json",
+      "major": "Data Science and Artificial Intelligence",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Renaissance_Engineering_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Renaissance_Engineering_NTU.json",
+      "major": "Renaissance Engineering",
+      "school": "NTU",
+      "question_count": 600,
+      "criteria_counts": {
+        "Interests": 200,
+        "Skills": 200,
+        "Experiences": 200
+      }
+    },
+    {
+      "name": "Aerospace_Engineering_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Aerospace_Engineering_NTU.json",
+      "major": "Aerospace Engineering",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Bioengineering_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Bioengineering_NTU.json",
+      "major": "Bioengineering",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Chemical_and_Biomolecular_Engineering_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Chemical_and_Biomolecular_Engineering_NTU.json",
+      "major": "Chemical and Biomolecular Engineering",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Civil_Engineering_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Civil_Engineering_NTU.json",
+      "major": "Civil Engineering",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Electrical_and_Electronic_Engineering_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Electrical_and_Electronic_Engineering_NTU.json",
+      "major": "Electrical and Electronic Engineering",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Environmental_Engineering_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Environmental_Engineering_NTU.json",
+      "major": "Environmental Engineering",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Information_Engineering_and_Media_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Information_Engineering_and_Media_NTU.json",
+      "major": "Information Engineering and Media",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Maritime_Studies_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Maritime_Studies_NTU.json",
+      "major": "Maritime Studies",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Materials_Engineering_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Materials_Engineering_NTU.json",
+      "major": "Materials Engineering",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Mechanical_Engineering_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Mechanical_Engineering_NTU.json",
+      "major": "Mechanical Engineering",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Process_Engineering_and_Synthetic_Chemistry_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Process_Engineering_and_Synthetic_Chemistry_NTU.json",
+      "major": "Process Engineering and Synthetic Chemistry",
+      "school": "NTU",
+      "question_count": 600,
+      "criteria_counts": {
+        "Interests": 200,
+        "Skills": 200,
+        "Experiences": 200
+      }
+    },
+    {
+      "name": "Robotics_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Robotics_NTU.json",
+      "major": "Robotics",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Art__Design_and_Media_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Art__Design_and_Media_NTU.json",
+      "major": "Art, Design and Media",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Chinese_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Chinese_NTU.json",
+      "major": "Chinese",
+      "school": "NTU",
+      "question_count": 600,
+      "criteria_counts": {
+        "Interests": 200,
+        "Skills": 200,
+        "Experiences": 200
+      }
+    },
+    {
+      "name": "Communication_Studies_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Communication_Studies_NTU.json",
+      "major": "Communication Studies",
+      "school": "NTU",
+      "question_count": 600,
+      "criteria_counts": {
+        "Interests": 200,
+        "Skills": 200,
+        "Experiences": 200
+      }
+    },
+    {
+      "name": "Economics_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Economics_NTU.json",
+      "major": "Economics",
+      "school": "NTU",
+      "question_count": 600,
+      "criteria_counts": {
+        "Interests": 200,
+        "Skills": 200,
+        "Experiences": 200
+      }
+    },
+    {
+      "name": "English_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\English_NTU.json",
+      "major": "English",
+      "school": "NTU",
+      "question_count": 600,
+      "criteria_counts": {
+        "Interests": 200,
+        "Skills": 200,
+        "Experiences": 200
+      }
+    },
+    {
+      "name": "English_Literature_and_Art_History_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\English_Literature_and_Art_History_NTU.json",
+      "major": "English Literature and Art History",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "English_and_History_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\English_and_History_NTU.json",
+      "major": "English and History",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "English_and_Philosophy_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\English_and_Philosophy_NTU.json",
+      "major": "English and Philosophy",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "History_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\History_NTU.json",
+      "major": "History",
+      "school": "NTU",
+      "question_count": 600,
+      "criteria_counts": {
+        "Interests": 200,
+        "Skills": 200,
+        "Experiences": 200
+      }
+    },
+    {
+      "name": "History_and_Chinese_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\History_and_Chinese_NTU.json",
+      "major": "History and Chinese",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "History_and_Linguistics___Multilingual_Studies_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\History_and_Linguistics___Multilingual_Studies_NTU.json",
+      "major": "History and Linguistics & Multilingual Studies",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Linguistics_and_Multilingual_Studies_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Linguistics_and_Multilingual_Studies_NTU.json",
+      "major": "Linguistics and Multilingual Studies",
+      "school": "NTU",
+      "question_count": 600,
+      "criteria_counts": {
+        "Interests": 200,
+        "Skills": 200,
+        "Experiences": 200
+      }
+    },
+    {
+      "name": "Linguistics___Multilingual_Studies_and_English_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Linguistics___Multilingual_Studies_and_English_NTU.json",
+      "major": "Linguistics & Multilingual Studies and English",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Linguistics___Multilingual_Studies_and_Philosophy_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Linguistics___Multilingual_Studies_and_Philosophy_NTU.json",
+      "major": "Linguistics & Multilingual Studies and Philosophy",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Philosophy_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Philosophy_NTU.json",
+      "major": "Philosophy",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Philosophy_and_Chinese_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Philosophy_and_Chinese_NTU.json",
+      "major": "Philosophy and Chinese",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Philosophy_and_History_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Philosophy_and_History_NTU.json",
+      "major": "Philosophy and History",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Philosophy__Politics_and_Economics_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Philosophy__Politics_and_Economics_NTU.json",
+      "major": "Philosophy, Politics and Economics",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Psychology_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Psychology_NTU.json",
+      "major": "Psychology",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Psychology_and_Biological_Sciences_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Psychology_and_Biological_Sciences_NTU.json",
+      "major": "Psychology and Biological Sciences",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Psychology_and_Linguistics___Multilingual_Studies_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Psychology_and_Linguistics___Multilingual_Studies_NTU.json",
+      "major": "Psychology and Linguistics & Multilingual Studies",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Psychology_and_Media_Analytics_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Psychology_and_Media_Analytics_NTU.json",
+      "major": "Psychology and Media Analytics",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Public_Policy_and_Global_Affairs_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Public_Policy_and_Global_Affairs_NTU.json",
+      "major": "Public Policy and Global Affairs",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Sociology_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Sociology_NTU.json",
+      "major": "Sociology",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Biological_Sciences_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Biological_Sciences_NTU.json",
+      "major": "Biological Sciences",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Biomedical_Sciences_and_BioBusiness_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Biomedical_Sciences_and_BioBusiness_NTU.json",
+      "major": "Biomedical Sciences and BioBusiness",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Biological_Sciences_and_Psychology_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Biological_Sciences_and_Psychology_NTU.json",
+      "major": "Biological Sciences and Psychology",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Chemistry_and_Biological_Chemistry_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Chemistry_and_Biological_Chemistry_NTU.json",
+      "major": "Chemistry and Biological Chemistry",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Chinese_Medicine_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Chinese_Medicine_NTU.json",
+      "major": "Chinese Medicine",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Environmental_Earth_Systems_Science_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Environmental_Earth_Systems_Science_NTU.json",
+      "major": "Environmental Earth Systems Science",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Environmental_Earth_Systems_Science_and_Public_Policy___Global_Affairs_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Environmental_Earth_Systems_Science_and_Public_Policy___Global_Affairs_NTU.json",
+      "major": "Environmental Earth Systems Science and Public Policy & Global Affairs",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Mathematical_Sciences_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Mathematical_Sciences_NTU.json",
+      "major": "Mathematical Sciences",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Medicine_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Medicine_NTU.json",
+      "major": "Medicine",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Physics_and_Applied_Physics_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Physics_and_Applied_Physics_NTU.json",
+      "major": "Physics and Applied Physics",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Sport_Science_and_Management_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Sport_Science_and_Management_NTU.json",
+      "major": "Sport Science and Management",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Mathematical_and_Computer_Sciences_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Mathematical_and_Computer_Sciences_NTU.json",
+      "major": "Mathematical and Computer Sciences",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Mathematical_Sciences_and_Economics_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Mathematical_Sciences_and_Economics_NTU.json",
+      "major": "Mathematical Sciences and Economics",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Physics_and_Mathematical_Sciences_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Physics_and_Mathematical_Sciences_NTU.json",
+      "major": "Physics and Mathematical Sciences",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Chinese_and_English_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Chinese_and_English_NTU.json",
+      "major": "Chinese and English",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Chinese_and_Linguistics_and_Multilingual_Studies_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Chinese_and_Linguistics_and_Multilingual_Studies_NTU.json",
+      "major": "Chinese and Linguistics and Multilingual Studies",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Economics_and_Media_Analytics_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Economics_and_Media_Analytics_NTU.json",
+      "major": "Economics and Media Analytics",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Economics_and_Psychology_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Economics_and_Psychology_NTU.json",
+      "major": "Economics and Psychology",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Economics_and_Public_Policy_and_Global_Affairs_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Economics_and_Public_Policy_and_Global_Affairs_NTU.json",
+      "major": "Economics and Public Policy and Global Affairs",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Accountancy_and_Business_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Accountancy_and_Business_NTU.json",
+      "major": "Accountancy and Business",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Accountancy_and_Data_Science_and_Artificial_Intelligence_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Accountancy_and_Data_Science_and_Artificial_Intelligence_NTU.json",
+      "major": "Accountancy and Data Science and Artificial Intelligence",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Computer_Science_and_Economics_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Computer_Science_and_Economics_NTU.json",
+      "major": "Computer Science and Economics",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Engineering_and_Economics_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Engineering_and_Economics_NTU.json",
+      "major": "Engineering and Economics",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Art_and_Education_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Art_and_Education_NTU.json",
+      "major": "Art and Education",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Chinese_Studies_and_Education_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Chinese_Studies_and_Education_NTU.json",
+      "major": "Chinese Studies and Education",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Drama_and_Education_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Drama_and_Education_NTU.json",
+      "major": "Drama and Education",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "English_Language___Linguistics_and_Education_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\English_Language___Linguistics_and_Education_NTU.json",
+      "major": "English Language & Linguistics and Education",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "English_Literature_and_Education_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\English_Literature_and_Education_NTU.json",
+      "major": "English Literature and Education",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Geography_and_Education_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Geography_and_Education_NTU.json",
+      "major": "Geography and Education",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "History_and_Education_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\History_and_Education_NTU.json",
+      "major": "History and Education",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Malay_Studies_and_Education_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Malay_Studies_and_Education_NTU.json",
+      "major": "Malay Studies and Education",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Music_and_Education_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Music_and_Education_NTU.json",
+      "major": "Music and Education",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Tamil_Studies_and_Education_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Tamil_Studies_and_Education_NTU.json",
+      "major": "Tamil Studies and Education",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Biology_and_Education_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Biology_and_Education_NTU.json",
+      "major": "Biology and Education",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Chemistry_and_Education_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Chemistry_and_Education_NTU.json",
+      "major": "Chemistry and Education",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Food___Consumer_Sciences_and_Education_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Food___Consumer_Sciences_and_Education_NTU.json",
+      "major": "Food & Consumer Sciences and Education",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Mathematics___Computational_Thinking_and_Education_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Mathematics___Computational_Thinking_and_Education_NTU.json",
+      "major": "Mathematics & Computational Thinking and Education",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Sport_Science_and_Education_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Sport_Science_and_Education_NTU.json",
+      "major": "Sport Science and Education",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Physics___Energy_Studies_and_Education_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Physics___Energy_Studies_and_Education_NTU.json",
+      "major": "Physics & Energy Studies and Education",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Premier_Scholars_Programmes_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Premier_Scholars_Programmes_NTU.json",
+      "major": "Premier Scholars Programmes",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Work-Study_Degree_Programmes_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Work-Study_Degree_Programmes_NTU.json",
+      "major": "Work-Study Degree Programmes",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Art_History_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Art_History_NTU.json",
+      "major": "Art History",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Modern_Languages_NTU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Modern_Languages_NTU.json",
+      "major": "Modern Languages",
+      "school": "NTU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Accounting_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Accounting_SMU.json",
+      "major": "Accounting",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Accounting_Data_and_Analytics_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Accounting_Data_and_Analytics_SMU.json",
+      "major": "Accounting Data and Analytics",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Financial_Forensics_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Financial_Forensics_SMU.json",
+      "major": "Financial Forensics",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Communication_Management_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Communication_Management_SMU.json",
+      "major": "Communication Management",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Communication_Management__Data__Design___Communication_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Communication_Management__Data__Design___Communication_SMU.json",
+      "major": "Communication Management (Data, Design & Communication)",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Finance_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Finance_SMU.json",
+      "major": "Finance",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Finance__Private_Banking_Work-Study_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Finance__Private_Banking_Work-Study_SMU.json",
+      "major": "Finance (Private Banking Work-Study)",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Finance__Finance_Analytics_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Finance__Finance_Analytics_SMU.json",
+      "major": "Finance (Finance Analytics)",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Finance__Real_Estate_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Finance__Real_Estate_SMU.json",
+      "major": "Finance (Real Estate)",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Finance__Wealth_Management_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Finance__Wealth_Management_SMU.json",
+      "major": "Finance (Wealth Management)",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Finance__International_Trading_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Finance__International_Trading_SMU.json",
+      "major": "Finance (International Trading)",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Finance__Banking_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Finance__Banking_SMU.json",
+      "major": "Finance (Banking)",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Innovation___Entrepreneurship_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Innovation___Entrepreneurship_SMU.json",
+      "major": "Innovation & Entrepreneurship",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Marketing_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Marketing_SMU.json",
+      "major": "Marketing",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Marketing__Marketing_Analytics_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Marketing__Marketing_Analytics_SMU.json",
+      "major": "Marketing (Marketing Analytics)",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Operations_Management_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Operations_Management_SMU.json",
+      "major": "Operations Management",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Operations_Management__Operations_Analytics_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Operations_Management__Operations_Analytics_SMU.json",
+      "major": "Operations Management (Operations Analytics)",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Operations_Management__Maritime_Business___Operations_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Operations_Management__Maritime_Business___Operations_SMU.json",
+      "major": "Operations Management (Maritime Business & Operations)",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Organisational_Behaviour___Human_Resources_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Organisational_Behaviour___Human_Resources_SMU.json",
+      "major": "Organisational Behaviour & Human Resources",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Quantitative_Finance_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Quantitative_Finance_SMU.json",
+      "major": "Quantitative Finance",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Strategic_Management_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Strategic_Management_SMU.json",
+      "major": "Strategic Management",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Digital_Business_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Digital_Business_SMU.json",
+      "major": "Digital Business",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Sustainability_Management_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Sustainability_Management_SMU.json",
+      "major": "Sustainability Management",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Economics_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Economics_SMU.json",
+      "major": "Economics",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Economics__Quantitative_Economics_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Economics__Quantitative_Economics_SMU.json",
+      "major": "Economics (Quantitative Economics)",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Economics__Real_Estate_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Economics__Real_Estate_SMU.json",
+      "major": "Economics (Real Estate)",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Actuarial_Science_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Actuarial_Science_SMU.json",
+      "major": "Actuarial Science",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Actuarial_Science__Industry_Integration_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Actuarial_Science__Industry_Integration_SMU.json",
+      "major": "Actuarial Science (Industry Integration)",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Health_Economics___Management_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Health_Economics___Management_SMU.json",
+      "major": "Health Economics & Management",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Data_Science_and_Analytics_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Data_Science_and_Analytics_SMU.json",
+      "major": "Data Science and Analytics",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Information_Systems_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Information_Systems_SMU.json",
+      "major": "Information Systems",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Information_Systems__Business_Analytics_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Information_Systems__Business_Analytics_SMU.json",
+      "major": "Information Systems (Business Analytics)",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Information_Systems__Financial_Technology_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Information_Systems__Financial_Technology_SMU.json",
+      "major": "Information Systems (Financial Technology)",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Information_Systems__Smart-City_Management_and_Technology_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Information_Systems__Smart-City_Management_and_Technology_SMU.json",
+      "major": "Information Systems (Smart-City Management and Technology)",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Information_Systems__Product_Development_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Information_Systems__Product_Development_SMU.json",
+      "major": "Information Systems (Product Development)",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Information_Systems__Business_Analytics___Financial_Technology_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Information_Systems__Business_Analytics___Financial_Technology_SMU.json",
+      "major": "Information Systems (Business Analytics & Financial Technology)",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Information_Systems__Smart-City_Management_and_Technology___Business_Analytics_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Information_Systems__Smart-City_Management_and_Technology___Business_Analytics_SMU.json",
+      "major": "Information Systems (Smart-City Management and Technology & Business Analytics)",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Information_Systems__Smart-City_Management_and_Technology___Financial_Technology_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Information_Systems__Smart-City_Management_and_Technology___Financial_Technology_SMU.json",
+      "major": "Information Systems (Smart-City Management and Technology & Financial Technology)",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Information_Systems__Product_Development_and_Financial_Technology_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Information_Systems__Product_Development_and_Financial_Technology_SMU.json",
+      "major": "Information Systems (Product Development and Financial Technology)",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Information_Systems__Product_Development_and_Smart-City_Management___Technology_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Information_Systems__Product_Development_and_Smart-City_Management___Technology_SMU.json",
+      "major": "Information Systems (Product Development and Smart-City Management & Technology)",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Computer_Science_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Computer_Science_SMU.json",
+      "major": "Computer Science",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Computer_Science__Artificial_Intelligence_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Computer_Science__Artificial_Intelligence_SMU.json",
+      "major": "Computer Science (Artificial Intelligence)",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Computer_Science__Cybersecurity_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Computer_Science__Cybersecurity_SMU.json",
+      "major": "Computer Science (Cybersecurity)",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Computer_Science__Cyber-Physical_Systems_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Computer_Science__Cyber-Physical_Systems_SMU.json",
+      "major": "Computer Science (Cyber-Physical Systems)",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Computer_Science__Artificial_Intelligence___Cybersecurity_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Computer_Science__Artificial_Intelligence___Cybersecurity_SMU.json",
+      "major": "Computer Science (Artificial Intelligence & Cybersecurity)",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Computer_Science__Artificial_Intelligence_and_Cyber-Physical_Systems_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Computer_Science__Artificial_Intelligence_and_Cyber-Physical_Systems_SMU.json",
+      "major": "Computer Science (Artificial Intelligence and Cyber-Physical Systems)",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Computer_Science__Cybersecurity___Cyber-Physical_Systems_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Computer_Science__Cybersecurity___Cyber-Physical_Systems_SMU.json",
+      "major": "Computer Science (Cybersecurity & Cyber-Physical Systems)",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Computing___Law_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Computing___Law_SMU.json",
+      "major": "Computing & Law",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Software_Engineering_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Software_Engineering_SMU.json",
+      "major": "Software Engineering",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Computing_Studies__Artificial_Intelligence_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Computing_Studies__Artificial_Intelligence_SMU.json",
+      "major": "Computing Studies (Artificial Intelligence)",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Computing_Studies__Cybersecurity_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Computing_Studies__Cybersecurity_SMU.json",
+      "major": "Computing Studies (Cybersecurity)",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Computing_Studies__Cyber-Physical_Systems_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Computing_Studies__Cyber-Physical_Systems_SMU.json",
+      "major": "Computing Studies (Cyber-Physical Systems)",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Technology_for_Business_Solutions__Business_Analytics_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Technology_for_Business_Solutions__Business_Analytics_SMU.json",
+      "major": "Technology for Business Solutions (Business Analytics)",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Technology_for_Business_Solutions__Financial_Technology_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Technology_for_Business_Solutions__Financial_Technology_SMU.json",
+      "major": "Technology for Business Solutions (Financial Technology)",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "IT_Solution_Management_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\IT_Solution_Management_SMU.json",
+      "major": "IT Solution Management",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Law_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Law_SMU.json",
+      "major": "Law",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Legal_Studies_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Legal_Studies_SMU.json",
+      "major": "Legal Studies",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Politics__Law_and_Economics_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Politics__Law_and_Economics_SMU.json",
+      "major": "Politics, Law and Economics",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Political_Science_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Political_Science_SMU.json",
+      "major": "Political Science",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Psychology_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Psychology_SMU.json",
+      "major": "Psychology",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Sociology_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Sociology_SMU.json",
+      "major": "Sociology",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Global_Asia_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Global_Asia_SMU.json",
+      "major": "Global Asia",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Public_Policy_and_Public_Management_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Public_Policy_and_Public_Management_SMU.json",
+      "major": "Public Policy and Public Management",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Sustainable_Societies_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Sustainable_Societies_SMU.json",
+      "major": "Sustainable Societies",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Arts_and_Culture_Management_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Arts_and_Culture_Management_SMU.json",
+      "major": "Arts and Culture Management",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Deferred_Declaration_of_Degree_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Deferred_Declaration_of_Degree_SMU.json",
+      "major": "Deferred Declaration of Degree",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Individualised_Major_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Individualised_Major_SMU.json",
+      "major": "Individualised Major",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "Individualised_Second_Major_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\Individualised_Second_Major_SMU.json",
+      "major": "Individualised Second Major",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    },
+    {
+      "name": "SMU-Duke-NUS_Medicine_Pathway_SMU.json",
+      "path": "C:\\Users\\Josh\\Desktop\\Josh's webstie\\adviseekapp\\public\\school-data\\Quiz\\Open_ended_quiz_questions\\SMU-Duke-NUS_Medicine_Pathway_SMU.json",
+      "major": "SMU-Duke-NUS Medicine Pathway",
+      "school": "SMU",
+      "question_count": 300,
+      "criteria_counts": {
+        "Interests": 100,
+        "Skills": 100,
+        "Experiences": 100
+      }
+    }
+  ]
+}
