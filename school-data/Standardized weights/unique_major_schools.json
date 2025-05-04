@@ -1,0 +1,822 @@
+[
+  {
+    "major": "Accountancy and Business",
+    "school": "NTU"
+  },
+  {
+    "major": "Accountancy and Data Science and Artificial Intelligence",
+    "school": "NTU"
+  },
+  {
+    "major": "Accounting",
+    "school": "SMU"
+  },
+  {
+    "major": "Accounting Data and Analytics",
+    "school": "SMU"
+  },
+  {
+    "major": "Actuarial Science",
+    "school": "SMU"
+  },
+  {
+    "major": "Actuarial Science (Industry Integration)",
+    "school": "SMU"
+  },
+  {
+    "major": "Aerospace Engineering",
+    "school": "NTU"
+  },
+  {
+    "major": "Anthropology",
+    "school": "NUS"
+  },
+  {
+    "major": "Architecture",
+    "school": "NUS"
+  },
+  {
+    "major": "Art History",
+    "school": "NTU"
+  },
+  {
+    "major": "Art and Education",
+    "school": "NTU"
+  },
+  {
+    "major": "Art, Design and Media",
+    "school": "NTU"
+  },
+  {
+    "major": "Artificial Intelligence and Society",
+    "school": "NTU"
+  },
+  {
+    "major": "Arts and Culture Management",
+    "school": "SMU"
+  },
+  {
+    "major": "Bioengineering",
+    "school": "NTU"
+  },
+  {
+    "major": "Biological Sciences",
+    "school": "NTU"
+  },
+  {
+    "major": "Biological Sciences and Psychology",
+    "school": "NTU"
+  },
+  {
+    "major": "Biology and Education",
+    "school": "NTU"
+  },
+  {
+    "major": "Biomedical Engineering",
+    "school": "NUS"
+  },
+  {
+    "major": "Biomedical Sciences and BioBusiness",
+    "school": "NTU"
+  },
+  {
+    "major": "Business Administration",
+    "school": "NUS"
+  },
+  {
+    "major": "Business Analytics",
+    "school": "NUS"
+  },
+  {
+    "major": "Business and Computer Engineering",
+    "school": "NTU"
+  },
+  {
+    "major": "Business and Computing",
+    "school": "NTU"
+  },
+  {
+    "major": "Chemical Engineering",
+    "school": "NUS"
+  },
+  {
+    "major": "Chemical and Biomolecular Engineering",
+    "school": "NTU"
+  },
+  {
+    "major": "Chemistry",
+    "school": "NUS"
+  },
+  {
+    "major": "Chemistry and Biological Chemistry",
+    "school": "NTU"
+  },
+  {
+    "major": "Chemistry and Education",
+    "school": "NTU"
+  },
+  {
+    "major": "Chinese",
+    "school": "NTU"
+  },
+  {
+    "major": "Chinese Language",
+    "school": "NUS"
+  },
+  {
+    "major": "Chinese Medicine",
+    "school": "NTU"
+  },
+  {
+    "major": "Chinese Studies",
+    "school": "NUS"
+  },
+  {
+    "major": "Chinese Studies and Education",
+    "school": "NTU"
+  },
+  {
+    "major": "Chinese and English",
+    "school": "NTU"
+  },
+  {
+    "major": "Chinese and Linguistics and Multilingual Studies",
+    "school": "NTU"
+  },
+  {
+    "major": "Civil Engineering",
+    "school": "NTU"
+  },
+  {
+    "major": "Civil Engineering",
+    "school": "NUS"
+  },
+  {
+    "major": "Communication Management",
+    "school": "SMU"
+  },
+  {
+    "major": "Communication Management (Data, Design & Communication)",
+    "school": "SMU"
+  },
+  {
+    "major": "Communication Studies",
+    "school": "NTU"
+  },
+  {
+    "major": "Communications and New Media",
+    "school": "NUS"
+  },
+  {
+    "major": "Computer Engineering",
+    "school": "NTU"
+  },
+  {
+    "major": "Computer Engineering",
+    "school": "NUS"
+  },
+  {
+    "major": "Computer Science",
+    "school": "NTU"
+  },
+  {
+    "major": "Computer Science",
+    "school": "NUS"
+  },
+  {
+    "major": "Computer Science",
+    "school": "SMU"
+  },
+  {
+    "major": "Computer Science (Artificial Intelligence & Cybersecurity)",
+    "school": "SMU"
+  },
+  {
+    "major": "Computer Science (Artificial Intelligence and Cyber-Physical Systems)",
+    "school": "SMU"
+  },
+  {
+    "major": "Computer Science (Artificial Intelligence)",
+    "school": "SMU"
+  },
+  {
+    "major": "Computer Science (Cyber-Physical Systems)",
+    "school": "SMU"
+  },
+  {
+    "major": "Computer Science (Cybersecurity & Cyber-Physical Systems)",
+    "school": "SMU"
+  },
+  {
+    "major": "Computer Science (Cybersecurity)",
+    "school": "SMU"
+  },
+  {
+    "major": "Computer Science and Economics",
+    "school": "NTU"
+  },
+  {
+    "major": "Computing & Law",
+    "school": "SMU"
+  },
+  {
+    "major": "Computing Studies (Artificial Intelligence)",
+    "school": "SMU"
+  },
+  {
+    "major": "Computing Studies (Cyber-Physical Systems)",
+    "school": "SMU"
+  },
+  {
+    "major": "Computing Studies (Cybersecurity)",
+    "school": "SMU"
+  },
+  {
+    "major": "Data Science and Analytics",
+    "school": "NUS"
+  },
+  {
+    "major": "Data Science and Analytics",
+    "school": "SMU"
+  },
+  {
+    "major": "Data Science and Artificial Intelligence",
+    "school": "NTU"
+  },
+  {
+    "major": "Deferred Declaration of Degree",
+    "school": "SMU"
+  },
+  {
+    "major": "Dentistry",
+    "school": "NUS"
+  },
+  {
+    "major": "Digital Business",
+    "school": "SMU"
+  },
+  {
+    "major": "Drama and Education",
+    "school": "NTU"
+  },
+  {
+    "major": "Economics",
+    "school": "NTU"
+  },
+  {
+    "major": "Economics",
+    "school": "NUS"
+  },
+  {
+    "major": "Economics",
+    "school": "SMU"
+  },
+  {
+    "major": "Economics (Quantitative Economics)",
+    "school": "SMU"
+  },
+  {
+    "major": "Economics (Real Estate)",
+    "school": "SMU"
+  },
+  {
+    "major": "Economics and Media Analytics",
+    "school": "NTU"
+  },
+  {
+    "major": "Economics and Psychology",
+    "school": "NTU"
+  },
+  {
+    "major": "Economics and Public Policy and Global Affairs",
+    "school": "NTU"
+  },
+  {
+    "major": "Electrical Engineering",
+    "school": "NUS"
+  },
+  {
+    "major": "Electrical and Electronic Engineering",
+    "school": "NTU"
+  },
+  {
+    "major": "Engineering Science",
+    "school": "NUS"
+  },
+  {
+    "major": "Engineering and Economics",
+    "school": "NTU"
+  },
+  {
+    "major": "English",
+    "school": "NTU"
+  },
+  {
+    "major": "English Language & Linguistics and Education",
+    "school": "NTU"
+  },
+  {
+    "major": "English Language and Linguistics",
+    "school": "NUS"
+  },
+  {
+    "major": "English Literature",
+    "school": "NUS"
+  },
+  {
+    "major": "English Literature and Art History",
+    "school": "NTU"
+  },
+  {
+    "major": "English Literature and Education",
+    "school": "NTU"
+  },
+  {
+    "major": "English and History",
+    "school": "NTU"
+  },
+  {
+    "major": "English and Philosophy",
+    "school": "NTU"
+  },
+  {
+    "major": "Environmental Earth Systems Science",
+    "school": "NTU"
+  },
+  {
+    "major": "Environmental Earth Systems Science and Public Policy & Global Affairs",
+    "school": "NTU"
+  },
+  {
+    "major": "Environmental Engineering",
+    "school": "NTU"
+  },
+  {
+    "major": "Environmental Engineering",
+    "school": "NUS"
+  },
+  {
+    "major": "Environmental Studies",
+    "school": "NUS"
+  },
+  {
+    "major": "Finance",
+    "school": "SMU"
+  },
+  {
+    "major": "Finance (Banking)",
+    "school": "SMU"
+  },
+  {
+    "major": "Finance (Finance Analytics)",
+    "school": "SMU"
+  },
+  {
+    "major": "Finance (International Trading)",
+    "school": "SMU"
+  },
+  {
+    "major": "Finance (Private Banking Work-Study)",
+    "school": "SMU"
+  },
+  {
+    "major": "Finance (Real Estate)",
+    "school": "SMU"
+  },
+  {
+    "major": "Finance (Wealth Management)",
+    "school": "SMU"
+  },
+  {
+    "major": "Financial Forensics",
+    "school": "SMU"
+  },
+  {
+    "major": "Food & Consumer Sciences and Education",
+    "school": "NTU"
+  },
+  {
+    "major": "Food Science and Technology",
+    "school": "NUS"
+  },
+  {
+    "major": "Geography",
+    "school": "NUS"
+  },
+  {
+    "major": "Geography and Education",
+    "school": "NTU"
+  },
+  {
+    "major": "Global Asia",
+    "school": "SMU"
+  },
+  {
+    "major": "Global Studies",
+    "school": "NUS"
+  },
+  {
+    "major": "Health Economics & Management",
+    "school": "SMU"
+  },
+  {
+    "major": "History",
+    "school": "NTU"
+  },
+  {
+    "major": "History",
+    "school": "NUS"
+  },
+  {
+    "major": "History and Chinese",
+    "school": "NTU"
+  },
+  {
+    "major": "History and Education",
+    "school": "NTU"
+  },
+  {
+    "major": "History and Linguistics & Multilingual Studies",
+    "school": "NTU"
+  },
+  {
+    "major": "IT Solution Management",
+    "school": "SMU"
+  },
+  {
+    "major": "Individualised Major",
+    "school": "SMU"
+  },
+  {
+    "major": "Individualised Second Major",
+    "school": "SMU"
+  },
+  {
+    "major": "Industrial Design",
+    "school": "NUS"
+  },
+  {
+    "major": "Information Engineering and Media",
+    "school": "NTU"
+  },
+  {
+    "major": "Information Security",
+    "school": "NUS"
+  },
+  {
+    "major": "Information Systems",
+    "school": "NUS"
+  },
+  {
+    "major": "Information Systems",
+    "school": "SMU"
+  },
+  {
+    "major": "Information Systems (Business Analytics & Financial Technology)",
+    "school": "SMU"
+  },
+  {
+    "major": "Information Systems (Business Analytics)",
+    "school": "SMU"
+  },
+  {
+    "major": "Information Systems (Financial Technology)",
+    "school": "SMU"
+  },
+  {
+    "major": "Information Systems (Product Development and Financial Technology)",
+    "school": "SMU"
+  },
+  {
+    "major": "Information Systems (Product Development and Smart-City Management & Technology)",
+    "school": "SMU"
+  },
+  {
+    "major": "Information Systems (Product Development)",
+    "school": "SMU"
+  },
+  {
+    "major": "Information Systems (Smart-City Management and Technology & Business Analytics)",
+    "school": "SMU"
+  },
+  {
+    "major": "Information Systems (Smart-City Management and Technology & Financial Technology)",
+    "school": "SMU"
+  },
+  {
+    "major": "Information Systems (Smart-City Management and Technology)",
+    "school": "SMU"
+  },
+  {
+    "major": "Innovation & Entrepreneurship",
+    "school": "SMU"
+  },
+  {
+    "major": "Japanese Studies",
+    "school": "NUS"
+  },
+  {
+    "major": "Law",
+    "school": "NUS"
+  },
+  {
+    "major": "Law",
+    "school": "SMU"
+  },
+  {
+    "major": "Legal Studies",
+    "school": "SMU"
+  },
+  {
+    "major": "Life Sciences",
+    "school": "NUS"
+  },
+  {
+    "major": "Linguistics & Multilingual Studies and English",
+    "school": "NTU"
+  },
+  {
+    "major": "Linguistics & Multilingual Studies and Philosophy",
+    "school": "NTU"
+  },
+  {
+    "major": "Linguistics and Multilingual Studies",
+    "school": "NTU"
+  },
+  {
+    "major": "Malay Studies",
+    "school": "NUS"
+  },
+  {
+    "major": "Malay Studies and Education",
+    "school": "NTU"
+  },
+  {
+    "major": "Maritime Studies",
+    "school": "NTU"
+  },
+  {
+    "major": "Marketing",
+    "school": "SMU"
+  },
+  {
+    "major": "Marketing (Marketing Analytics)",
+    "school": "SMU"
+  },
+  {
+    "major": "Materials Engineering",
+    "school": "NTU"
+  },
+  {
+    "major": "Mathematical Sciences",
+    "school": "NTU"
+  },
+  {
+    "major": "Mathematical Sciences and Economics",
+    "school": "NTU"
+  },
+  {
+    "major": "Mathematical and Computer Sciences",
+    "school": "NTU"
+  },
+  {
+    "major": "Mathematics",
+    "school": "NUS"
+  },
+  {
+    "major": "Mathematics & Computational Thinking and Education",
+    "school": "NTU"
+  },
+  {
+    "major": "Mechanical Engineering",
+    "school": "NTU"
+  },
+  {
+    "major": "Mechanical Engineering",
+    "school": "NUS"
+  },
+  {
+    "major": "Medicine",
+    "school": "NTU"
+  },
+  {
+    "major": "Medicine",
+    "school": "NUS"
+  },
+  {
+    "major": "Modern Languages",
+    "school": "NTU"
+  },
+  {
+    "major": "Music",
+    "school": "NUS"
+  },
+  {
+    "major": "Music and Education",
+    "school": "NTU"
+  },
+  {
+    "major": "Nursing",
+    "school": "NUS"
+  },
+  {
+    "major": "Operations Management",
+    "school": "SMU"
+  },
+  {
+    "major": "Operations Management (Maritime Business & Operations)",
+    "school": "SMU"
+  },
+  {
+    "major": "Operations Management (Operations Analytics)",
+    "school": "SMU"
+  },
+  {
+    "major": "Organisational Behaviour & Human Resources",
+    "school": "SMU"
+  },
+  {
+    "major": "Pharmaceutical Science",
+    "school": "NUS"
+  },
+  {
+    "major": "Philosophy",
+    "school": "NTU"
+  },
+  {
+    "major": "Philosophy",
+    "school": "NUS"
+  },
+  {
+    "major": "Philosophy and Chinese",
+    "school": "NTU"
+  },
+  {
+    "major": "Philosophy and History",
+    "school": "NTU"
+  },
+  {
+    "major": "Philosophy, Politics and Economics",
+    "school": "NTU"
+  },
+  {
+    "major": "Physics",
+    "school": "NUS"
+  },
+  {
+    "major": "Physics & Energy Studies and Education",
+    "school": "NTU"
+  },
+  {
+    "major": "Physics and Applied Physics",
+    "school": "NTU"
+  },
+  {
+    "major": "Physics and Mathematical Sciences",
+    "school": "NTU"
+  },
+  {
+    "major": "Political Science",
+    "school": "NUS"
+  },
+  {
+    "major": "Political Science",
+    "school": "SMU"
+  },
+  {
+    "major": "Politics, Law and Economics",
+    "school": "SMU"
+  },
+  {
+    "major": "Premier Scholars Programmes",
+    "school": "NTU"
+  },
+  {
+    "major": "Process Engineering and Synthetic Chemistry",
+    "school": "NTU"
+  },
+  {
+    "major": "Psychology",
+    "school": "NTU"
+  },
+  {
+    "major": "Psychology",
+    "school": "NUS"
+  },
+  {
+    "major": "Psychology",
+    "school": "SMU"
+  },
+  {
+    "major": "Psychology and Biological Sciences",
+    "school": "NTU"
+  },
+  {
+    "major": "Psychology and Linguistics & Multilingual Studies",
+    "school": "NTU"
+  },
+  {
+    "major": "Psychology and Media Analytics",
+    "school": "NTU"
+  },
+  {
+    "major": "Public Policy and Global Affairs",
+    "school": "NTU"
+  },
+  {
+    "major": "Public Policy and Public Management",
+    "school": "SMU"
+  },
+  {
+    "major": "Quantitative Finance",
+    "school": "SMU"
+  },
+  {
+    "major": "Real Estate",
+    "school": "NUS"
+  },
+  {
+    "major": "Renaissance Engineering",
+    "school": "NTU"
+  },
+  {
+    "major": "Robotics",
+    "school": "NTU"
+  },
+  {
+    "major": "SMU-Duke-NUS Medicine Pathway",
+    "school": "SMU"
+  },
+  {
+    "major": "Social Work",
+    "school": "NUS"
+  },
+  {
+    "major": "Sociology",
+    "school": "NTU"
+  },
+  {
+    "major": "Sociology",
+    "school": "NUS"
+  },
+  {
+    "major": "Sociology",
+    "school": "SMU"
+  },
+  {
+    "major": "Software Engineering",
+    "school": "SMU"
+  },
+  {
+    "major": "South Asian Studies",
+    "school": "NUS"
+  },
+  {
+    "major": "Southeast Asian Studies",
+    "school": "NUS"
+  },
+  {
+    "major": "Sport Science and Education",
+    "school": "NTU"
+  },
+  {
+    "major": "Sport Science and Management",
+    "school": "NTU"
+  },
+  {
+    "major": "Statistics",
+    "school": "NUS"
+  },
+  {
+    "major": "Strategic Management",
+    "school": "SMU"
+  },
+  {
+    "major": "Sustainability Management",
+    "school": "SMU"
+  },
+  {
+    "major": "Sustainable Societies",
+    "school": "SMU"
+  },
+  {
+    "major": "Tamil Studies and Education",
+    "school": "NTU"
+  },
+  {
+    "major": "Technology for Business Solutions (Business Analytics)",
+    "school": "SMU"
+  },
+  {
+    "major": "Technology for Business Solutions (Financial Technology)",
+    "school": "SMU"
+  },
+  {
+    "major": "Theatre and Performance Studies",
+    "school": "NUS"
+  },
+  {
+    "major": "Work-Study Degree Programmes",
+    "school": "NTU"
+  }
+]
