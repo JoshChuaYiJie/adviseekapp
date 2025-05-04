@@ -117,8 +117,8 @@ def split_majors_to_files(input_file, output_dir):
 
 if __name__ == "__main__":
     # Configuration
-    INPUT_FILE = "majors_questions.json"  # Path to your input JSON file
-    OUTPUT_DIR = "output"  # Directory for output files
+    INPUT_FILE = r"C:\Users\Josh\Desktop\Josh's webstie\adviseekapp\public\school-data\Quiz\Open_ended_quiz_questions\open_ended_quiz_questions.json"  # Path to your input JSON file
+    OUTPUT_DIR = r"C:\Users\Josh\Desktop\Josh's webstie\adviseekapp\public\school-data\Quiz\Open_ended_quiz_questions"
     
     # Run the splitting process
     split_majors_to_files(INPUT_FILE, OUTPUT_DIR)
