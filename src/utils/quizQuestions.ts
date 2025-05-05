@@ -36,7 +36,7 @@ export const useAllMcqQuestions = () => {
         }> = [
           {
             type: 'interest-part1',
-            filePath: '/src/contexts/quiz/quiz_refer/Mcq_questions/RIASEC Intrests Questions pt1',
+            filePath: '/quiz_refer/Mcq_questions/RIASEC_interest_questions_pt1.json',
             options: ['Extremely disinterested', 'Slightly disinterested', 'Neutral', 'Slightly interested', 'Extremely interested'],
             optionScores: {
               'Extremely disinterested': 1,
@@ -48,7 +48,7 @@ export const useAllMcqQuestions = () => {
           },
           {
             type: 'interest-part2',
-            filePath: '/src/contexts/quiz/quiz_refer/Mcq_questions/RIASEC Intrest Questions pt2',
+            filePath: '/quiz_refer/Mcq_questions/RIASEC_interest_questions_pt2.json',
             options: ['Extremely disinterested', 'Slightly disinterested', 'Neutral', 'Slightly interested', 'Extremely interested'],
             optionScores: {
               'Extremely disinterested': 1,
@@ -60,7 +60,7 @@ export const useAllMcqQuestions = () => {
           },
           {
             type: 'competence',
-            filePath: '/src/contexts/quiz/quiz_refer/Mcq_questions/RIASEC Competence Questions',
+            filePath: '/quiz_refer/Mcq_questions/RIASEC_competence_questions.json',
             options: ['Extremely unconfident', 'Slightly unconfident', 'Neutral', 'Slightly confident', 'Extremely confident'],
             optionScores: {
               'Extremely unconfident': 1,
@@ -72,7 +72,7 @@ export const useAllMcqQuestions = () => {
           },
           {
             type: 'work-values',
-            filePath: '/src/contexts/quiz/quiz_refer/Mcq_questions/WorkValues Questions',
+            filePath: '/quiz_refer/Mcq_questions/Work_value_questions.json',
             options: ['Not Important At All', 'Not Very Important', 'Somewhat Important', 'Very Important', 'Extremely Important'],
             optionScores: {
               'Not Important At All': 1,
@@ -144,7 +144,7 @@ export const useQuizQuestions = (quizType: string) => {
         // Based on the quiz type, load the appropriate question file and options with scores
         switch (quizType) {
           case 'interest-part1':
-            questionsArray = await fetch('/src/contexts/quiz/quiz_refer/Mcq_questions/RIASEC Intrests Questions pt1').then(res => res.json());
+            questionsArray = await fetch('/quiz_refer/Mcq_questions/RIASEC_interest_questions_pt1.json').then(res => res.json());
             options = ['Extremely disinterested', 'Slightly disinterested', 'Neutral', 'Slightly interested', 'Extremely interested'];
             optionScores = {
               'Extremely disinterested': 1,
@@ -155,7 +155,7 @@ export const useQuizQuestions = (quizType: string) => {
             };
             break;
           case 'interest-part2':
-            questionsArray = await fetch('/src/contexts/quiz/quiz_refer/Mcq_questions/RIASEC Intrest Questions pt2').then(res => res.json());
+            questionsArray = await fetch('/quiz_refer/Mcq_questions/RIASEC_interest_questions_pt2.json').then(res => res.json());
             options = ['Extremely disinterested', 'Slightly disinterested', 'Neutral', 'Slightly interested', 'Extremely interested'];
             optionScores = {
               'Extremely disinterested': 1,
@@ -166,7 +166,7 @@ export const useQuizQuestions = (quizType: string) => {
             };
             break;
           case 'competence':
-            questionsArray = await fetch('/src/contexts/quiz/quiz_refer/Mcq_questions/RIASEC Competence Questions').then(res => res.json());
+            questionsArray = await fetch('/quiz_refer/Mcq_questions/RIASEC_competence_questions.json').then(res => res.json());
             options = ['Extremely unconfident', 'Slightly unconfident', 'Neutral', 'Slightly confident', 'Extremely confident'];
             optionScores = {
               'Extremely unconfident': 1,
@@ -177,7 +177,7 @@ export const useQuizQuestions = (quizType: string) => {
             };
             break;
           case 'work-values':
-            questionsArray = await fetch('/src/contexts/quiz/quiz_refer/Mcq_questions/WorkValues Questions').then(res => res.json());
+            questionsArray = await fetch('/quiz_refer/Mcq_questions/Work_value_questions.json').then(res => res.json());
             options = ['Not Important At All', 'Not Very Important', 'Somewhat Important', 'Very Important', 'Extremely Important'];
             optionScores = {
               'Not Important At All': 1,
