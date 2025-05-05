@@ -97,37 +97,14 @@ export const useAllMcqQuestions = () => {
           const { type, filePath, options, optionScores } = quizFile;
           
           try {
-            const questionsText = await fetch(filePath).then(res => res.text());
-            const lines = questionsText.split('\n').filter(line => line.trim() !== '');
-            
-            // Process each line to extract questions with potential JSON structure
-            tempQuestions[type] = lines.map((line, index) => {
-              let question = line.trim();
-              
-              // Try to extract rephrased_text from JSON if present
-              try {
-                if (line.includes('{') && line.includes('}')) {
-                  const jsonMatch = line.match(/{.*}/);
-                  if (jsonMatch) {
-                    const jsonData = JSON.parse(jsonMatch[0]);
-                    if (jsonData.rephrased_text) {
-                      question = jsonData.rephrased_text;
-                    }
-                  }
-                }
-              } catch (err) {
-                console.error('Error parsing JSON in question:', err);
-                // Keep original text if parsing fails
-              }
-
-              return {
-                id: `${type}-q-${index + 1}`,
-                question,
-                options,
-                category: type,
-                optionScores
-              };
-            });
+            const questionsArray = await fetch(filePath).then(res => res.json());
+            tempQuestions[type] = questionsArray.map((q: any, index: number) => ({
+              id: q.question_number || `${type}-q-${index + 1}`,
+              question: q.rephrased_text,
+              options,
+              category: type,
+              optionScores
+            }));
           } catch (err) {
             console.error(`Error loading questions for ${type}:`, err);
             tempQuestions[type] = []; // Set empty array for this type
@@ -160,14 +137,14 @@ export const useQuizQuestions = (quizType: string) => {
       try {
         setLoading(true);
         
-        let questionsText = '';
+        let questionsArray: any[] = [];
         let options: string[] = [];
         let optionScores: Record<string, number> = {};
         
         // Based on the quiz type, load the appropriate question file and options with scores
         switch (quizType) {
           case 'interest-part1':
-            questionsText = await fetch('/src/contexts/quiz/quiz_refer/Mcq_questions/RIASEC Intrests Questions pt1').then(res => res.text());
+            questionsArray = await fetch('/src/contexts/quiz/quiz_refer/Mcq_questions/RIASEC Intrests Questions pt1').then(res => res.json());
             options = ['Extremely disinterested', 'Slightly disinterested', 'Neutral', 'Slightly interested', 'Extremely interested'];
             optionScores = {
               'Extremely disinterested': 1,
@@ -178,7 +155,7 @@ export const useQuizQuestions = (quizType: string) => {
             };
             break;
           case 'interest-part2':
-            questionsText = await fetch('/src/contexts/quiz/quiz_refer/Mcq_questions/RIASEC Intrest Questions pt2').then(res => res.text());
+            questionsArray = await fetch('/src/contexts/quiz/quiz_refer/Mcq_questions/RIASEC Intrest Questions pt2').then(res => res.json());
             options = ['Extremely disinterested', 'Slightly disinterested', 'Neutral', 'Slightly interested', 'Extremely interested'];
             optionScores = {
               'Extremely disinterested': 1,
@@ -189,7 +166,7 @@ export const useQuizQuestions = (quizType: string) => {
             };
             break;
           case 'competence':
-            questionsText = await fetch('/src/contexts/quiz/quiz_refer/Mcq_questions/RIASEC Competence Questions').then(res => res.text());
+            questionsArray = await fetch('/src/contexts/quiz/quiz_refer/Mcq_questions/RIASEC Competence Questions').then(res => res.json());
             options = ['Extremely unconfident', 'Slightly unconfident', 'Neutral', 'Slightly confident', 'Extremely confident'];
             optionScores = {
               'Extremely unconfident': 1,
@@ -200,7 +177,7 @@ export const useQuizQuestions = (quizType: string) => {
             };
             break;
           case 'work-values':
-            questionsText = await fetch('/src/contexts/quiz/quiz_refer/Mcq_questions/WorkValues Questions').then(res => res.text());
+            questionsArray = await fetch('/src/contexts/quiz/quiz_refer/Mcq_questions/WorkValues Questions').then(res => res.json());
             options = ['Not Important At All', 'Not Very Important', 'Somewhat Important', 'Very Important', 'Extremely Important'];
             optionScores = {
               'Not Important At All': 1,
@@ -216,37 +193,13 @@ export const useQuizQuestions = (quizType: string) => {
             return;
         }
         
-        // Parse questions from plain text, looking for "rephrased_text" pattern
-        const lines = questionsText.split('\n').filter(line => line.trim() !== '');
-        
-        // Process each line to extract questions with potential JSON structure
-        const parsedQuestions: McqQuestion[] = lines.map((line, index) => {
-          let question = line.trim();
-          
-          // Try to extract rephrased_text from JSON if present
-          try {
-            if (line.includes('{') && line.includes('}')) {
-              const jsonMatch = line.match(/{.*}/);
-              if (jsonMatch) {
-                const jsonData = JSON.parse(jsonMatch[0]);
-                if (jsonData.rephrased_text) {
-                  question = jsonData.rephrased_text;
-                }
-              }
-            }
-          } catch (err) {
-            console.error('Error parsing JSON in question:', err);
-            // Keep original text if parsing fails
-          }
-
-          return {
-            id: `${quizType}-q-${index + 1}`,
-            question,
-            options,
-            category: quizType,
-            optionScores
-          };
-        });
+        const parsedQuestions: McqQuestion[] = questionsArray.map((q, index) => ({
+          id: q.question_number || `${quizType}-q-${index + 1}`,
+          question: q.rephrased_text,
+          options,
+          category: quizType,
+          optionScores
+        }));
         
         setQuestions(parsedQuestions);
       } catch (err) {
