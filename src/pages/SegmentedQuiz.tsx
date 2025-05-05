@@ -29,7 +29,12 @@ const QuizQuestion = ({
           {question.options.map((option, index) => (
             <div key={option} className="flex items-center space-x-3">
               <RadioGroupItem id={`${question.id}-${index}`} value={option} />
-              <Label htmlFor={`${question.id}-${index}`} className="text-lg">{option}</Label>
+              <Label htmlFor={`${question.id}-${index}`} className="text-lg">
+                {option} 
+                <span className="ml-2 text-sm text-gray-500">
+                  ({question.optionScores?.[option] || index + 1})
+                </span>
+              </Label>
             </div>
           ))}
         </RadioGroup>
@@ -43,6 +48,7 @@ const SegmentedQuiz = () => {
   const { questions, loading, error } = useQuizQuestions(segmentId || '');
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [scores, setScores] = useState<Record<string, number>>({});
   const [progress, setProgress] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
@@ -59,9 +65,17 @@ const SegmentedQuiz = () => {
   const handleAnswerChange = (answer: string) => {
     if (!questions[currentQuestionIndex]) return;
     
+    const questionId = questions[currentQuestionIndex].id;
+    const score = questions[currentQuestionIndex].optionScores?.[answer] || 0;
+    
     setAnswers(prev => ({
       ...prev,
-      [questions[currentQuestionIndex].id]: answer
+      [questionId]: answer
+    }));
+    
+    setScores(prev => ({
+      ...prev,
+      [questionId]: score
     }));
   };
   
@@ -93,9 +107,13 @@ const SegmentedQuiz = () => {
     setSubmitting(true);
     
     try {
-      // Save answers to localStorage for now 
-      // (this would be replaced with a database save in production)
+      // Save answers and scores to localStorage
       localStorage.setItem(`quiz_answers_${segmentId}`, JSON.stringify(answers));
+      localStorage.setItem(`quiz_scores_${segmentId}`, JSON.stringify(scores));
+      
+      // Calculate and store the total score for this segment
+      const totalScore = Object.values(scores).reduce((sum, score) => sum + score, 0);
+      localStorage.setItem(`quiz_total_score_${segmentId}`, totalScore.toString());
       
       // Mark this segment as completed
       const completedSegments = JSON.parse(localStorage.getItem("completed_quiz_segments") || "[]");
