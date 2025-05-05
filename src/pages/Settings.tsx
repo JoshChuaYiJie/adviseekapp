@@ -10,10 +10,15 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 
 const Settings = () => {
-  const { isCurrentlyDark, toggleMode } = useTheme();
+  const { isCurrentlyDark, setTheme } = useTheme();
   const [activeTab, setActiveTab] = useState("general");
   const [openSection, setOpenSection] = useState<string | null>(null);
   const navigate = useNavigate();
+  
+  // Function to toggle between dark and light mode
+  const toggleTheme = () => {
+    setTheme(isCurrentlyDark ? "light" : "dark");
+  };
 
   return (
     <div className="min-h-screen bg-background p-6">
@@ -52,7 +57,7 @@ const Settings = () => {
                   <Switch 
                     id="dark-mode" 
                     checked={isCurrentlyDark}
-                    onCheckedChange={toggleMode}
+                    onCheckedChange={toggleTheme}
                   />
                 </div>
               </div>
