@@ -7,11 +7,20 @@ import { MyResume } from "./MyResume";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { QuizSegments } from "./QuizSegments";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+
+// Type for quiz scores
+type QuizScores = Record<string, {
+  total: number,
+  maxPossible: number,
+  percentage: number
+}>;
 
 export const AboutMe = () => {
   const { isCurrentlyDark } = useTheme();
   const [quizCompleted, setQuizCompleted] = useState(false);
-  const [quizScores, setQuizScores] = useState<Record<string, number>>({});
+  const [quizScores, setQuizScores] = useState<QuizScores>({});
   const { t } = useTranslation();
   const navigate = useNavigate();
   
@@ -21,12 +30,23 @@ export const AboutMe = () => {
     setQuizCompleted(completedSegments.length > 0);
     
     // Load quiz scores for display
-    const scores: Record<string, number> = {};
+    const scores: QuizScores = {};
     
-    ['interest-part1', 'interest-part2', 'competence', 'work-values'].forEach(segment => {
+    const quizTypes = ['interest-part1', 'interest-part2', 'competence', 'work-values'];
+    
+    quizTypes.forEach(segment => {
+      // Get scores from localStorage
       const totalScore = localStorage.getItem(`quiz_total_score_${segment}`);
       if (totalScore) {
-        scores[segment] = parseInt(totalScore);
+        const scoreData = JSON.parse(localStorage.getItem(`quiz_scores_${segment}`) || '{}');
+        const questionCount = Object.keys(scoreData).length;
+        const maxPossible = questionCount * 5; // Max score is 5 per question
+        
+        scores[segment] = {
+          total: parseInt(totalScore),
+          maxPossible: maxPossible,
+          percentage: maxPossible > 0 ? (parseInt(totalScore) / maxPossible) * 100 : 0
+        };
       }
     });
     
@@ -36,6 +56,17 @@ export const AboutMe = () => {
   const handleTakeQuiz = () => {
     // Redirect to the pickAI page
     navigate("/pickAI");
+  };
+
+  // Helper function to get formatted quiz type name
+  const formatQuizType = (type: string): string => {
+    switch (type) {
+      case 'interest-part1': return 'Interest Part 1';
+      case 'interest-part2': return 'Interest Part 2';
+      case 'competence': return 'Competence';
+      case 'work-values': return 'Work Values';
+      default: return type.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
+    }
   };
 
   return (
@@ -65,14 +96,26 @@ export const AboutMe = () => {
                   <p className="mb-4">Based on your quiz answers, we've generated the following profile:</p>
                   
                   {Object.keys(quizScores).length > 0 ? (
-                    <div className="space-y-4">
-                      <h3 className="text-xl font-semibold">Quiz Scores</h3>
-                      {Object.entries(quizScores).map(([segment, score]) => (
-                        <div key={segment} className="flex justify-between items-center">
-                          <span className="capitalize">{segment.replace('-', ' ')}</span>
-                          <span className="font-medium">{score} points</span>
-                        </div>
-                      ))}
+                    <div className="space-y-6">
+                      <h3 className="text-xl font-semibold">Quiz Results</h3>
+                      <div className="grid gap-4 md:grid-cols-2">
+                        {Object.entries(quizScores).map(([segment, data]) => (
+                          <Card key={segment} className={isCurrentlyDark ? 'bg-gray-800' : 'bg-white'}>
+                            <CardHeader className="pb-2">
+                              <CardTitle className="text-lg">{formatQuizType(segment)}</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                              <div className="space-y-2">
+                                <div className="flex justify-between text-sm">
+                                  <span>Score: {data.total} / {data.maxPossible}</span>
+                                  <span>{Math.round(data.percentage)}%</span>
+                                </div>
+                                <Progress value={data.percentage} className="h-2" />
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
                       <p className="mt-6 italic text-sm text-gray-500 dark:text-gray-400">
                         A detailed AI-generated summary of your profile based on these scores will be available soon.
                       </p>

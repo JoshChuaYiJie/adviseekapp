@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -167,16 +166,16 @@ const SegmentedQuiz = () => {
   return (
     <div className={`min-h-screen ${isCurrentlyDark ? 'bg-gray-900 text-white' : 'bg-gradient-to-br from-[#f8fafc] via-[#ede9fe] to-[#f3e8ff]'}`}>
       <div className="container mx-auto">
-        <div className="sticky top-0 z-50 bg-white/70 backdrop-blur-md border-b border-purple-100 p-4 shadow-sm">
+        <div className="sticky top-0 z-50 bg-white/70 dark:bg-gray-800/70 backdrop-blur-md border-b border-purple-100 dark:border-gray-700 p-4 shadow-sm">
           <div className="mb-2 flex justify-between items-center">
-            <h1 className="text-2xl font-extrabold text-purple-700 font-sans drop-shadow-sm">
+            <h1 className="text-2xl font-extrabold text-purple-700 dark:text-purple-400 font-sans drop-shadow-sm">
               {segmentId.charAt(0).toUpperCase() + segmentId.slice(1).replace("-", " ")} Quiz
             </h1>
             <span className="text-lg font-medium text-purple-400">
               {currentQuestionIndex + 1} of {questions.length}
             </span>
           </div>
-          <Progress value={progress} className="h-2 bg-purple-100" />
+          <Progress value={progress} className="h-2 bg-purple-100 dark:bg-purple-900" />
         </div>
         
         <div className="py-4">

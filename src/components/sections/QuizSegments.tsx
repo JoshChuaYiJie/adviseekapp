@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTheme } from "@/contexts/ThemeContext";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { LockIcon } from "lucide-react";
+import { McqQuestionsDisplay } from "@/components/McqQuestionsDisplay";
 
 type QuizSegment = {
   id: string;
@@ -68,6 +69,8 @@ export const QuizSegments = () => {
   const handleStartQuiz = (segmentId: string) => {
     navigate(`/quiz/${segmentId}`);
   };
+
+  const isExploreTab = activeTab === "explore";
   
   return (
     <div className="space-y-6">
@@ -87,6 +90,9 @@ export const QuizSegments = () => {
               {segment.completed && <span className="ml-2">✓</span>}
             </TabsTrigger>
           ))}
+          <TabsTrigger value="explore">
+            Questions Explorer
+          </TabsTrigger>
         </TabsList>
         
         {quizSegments.map(segment => (
@@ -140,6 +146,10 @@ export const QuizSegments = () => {
             </div>
           </TabsContent>
         ))}
+
+        <TabsContent value="explore" className="space-y-6">
+          <McqQuestionsDisplay />
+        </TabsContent>
       </Tabs>
     </div>
   );
