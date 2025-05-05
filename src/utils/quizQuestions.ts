@@ -9,13 +9,13 @@ export type McqQuestion = {
 };
 
 // Define all quiz types
-export type QuizType = 'interest-part1' | 'interest-part2' | 'competence' | 'work-values';
+export type QuizType = 'interest-part 1' | 'interest-part 2' | 'competence' | 'work-values';
 
 // New hook to load all MCQ questions from all files
 export const useAllMcqQuestions = () => {
   const [allQuestions, setAllQuestions] = useState<Record<QuizType, McqQuestion[]>>({
-    'interest-part1': [],
-    'interest-part2': [],
+    'interest-part 1': [],
+    'interest-part 2': [],
     'competence': [],
     'work-values': []
   });
@@ -35,7 +35,7 @@ export const useAllMcqQuestions = () => {
           optionScores: Record<string, number>
         }> = [
           {
-            type: 'interest-part1',
+            type: 'interest-part 1',
             filePath: '/quiz_refer/Mcq_questions/RIASEC_interest_questions_pt1.json',
             options: ['Extremely disinterested', 'Slightly disinterested', 'Neutral', 'Slightly interested', 'Extremely interested'],
             optionScores: {
@@ -47,7 +47,7 @@ export const useAllMcqQuestions = () => {
             }
           },
           {
-            type: 'interest-part2',
+            type: 'interest-part 2',
             filePath: '/quiz_refer/Mcq_questions/RIASEC_interest_questions_pt2.json',
             options: ['Extremely disinterested', 'Slightly disinterested', 'Neutral', 'Slightly interested', 'Extremely interested'],
             optionScores: {
@@ -86,8 +86,8 @@ export const useAllMcqQuestions = () => {
 
         // Create a temporary object to hold all questions
         const tempQuestions: Record<QuizType, McqQuestion[]> = {
-          'interest-part1': [],
-          'interest-part2': [],
+          'interest-part 1': [],
+          'interest-part 2': [],
           'competence': [],
           'work-values': []
         };
@@ -143,7 +143,7 @@ export const useQuizQuestions = (quizType: string) => {
         
         // Based on the quiz type, load the appropriate question file and options with scores
         switch (quizType) {
-          case 'interest-part1':
+          case 'interest-part 1':
             questionsArray = await fetch('/quiz_refer/Mcq_questions/RIASEC_interest_questions_pt1.json').then(res => res.json());
             options = ['Extremely disinterested', 'Slightly disinterested', 'Neutral', 'Slightly interested', 'Extremely interested'];
             optionScores = {
@@ -154,7 +154,7 @@ export const useQuizQuestions = (quizType: string) => {
               'Extremely interested': 5
             };
             break;
-          case 'interest-part2':
+          case 'interest-part 2':
             questionsArray = await fetch('/quiz_refer/Mcq_questions/RIASEC_interest_questions_pt2.json').then(res => res.json());
             options = ['Extremely disinterested', 'Slightly disinterested', 'Neutral', 'Slightly interested', 'Extremely interested'];
             optionScores = {
