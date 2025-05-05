@@ -1,652 +1,123 @@
-
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { supabase } from "@/integrations/supabase/client";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { toast } from "@/components/ui/sonner";
-import { ArrowLeft, Moon, Sun, Laptop, Bell, Mail, Languages, Shield, Trash2, KeyRound, BookOpen, User } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Switch } from "@/components/ui/switch";
+import { ApiKeySettings } from "@/components/settings/ApiKeySettings"; 
+import { DeepseekApiSettings } from "@/components/settings/DeepseekApiSettings";
 import { useTheme } from "@/contexts/ThemeContext";
-import { useTranslation } from "react-i18next";
-import type { UserSettings } from "@/integrations/supabase/client";
-
-const profileFormSchema = z.object({
-  email: z.string().email(),
-  name: z.string().min(2).max(50).optional(),
-  bio: z.string().max(500).optional(),
-});
-
-const notificationsFormSchema = z.object({
-  emailNotifications: z.boolean().default(true),
-  appNotifications: z.boolean().default(true),
-  newsletterSubscription: z.boolean().default(false),
-});
-
-const accountFormSchema = z.object({
-  currentPassword: z.string().min(1, { message: "Current password is required" }),
-  newPassword: z.string().min(8, { message: "Password must be at least 8 characters" }),
-  confirmPassword: z.string(),
-}).refine(data => data.newPassword === data.confirmPassword, {
-  message: "Passwords do not match",
-  path: ["confirmPassword"],
-});
+import { useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 
 const Settings = () => {
+  const [activeTab, setActiveTab] = useState("general");
+  const { isCurrentlyDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
-  const [user, setUser] = useState<any>(null);
-  const [userSettings, setUserSettings] = useState<UserSettings | null>(null);
-  const [loading, setLoading] = useState(true);
-  const { theme, setTheme } = useTheme();
-  const { t, i18n } = useTranslation();
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      setLoading(true);
-      
-      // Get current user
-      const { data: { user: currentUser } } = await supabase.auth.getUser();
-      
-      if (currentUser) {
-        setUser(currentUser);
-        
-        // Fetch user settings if they exist
-        const { data: userSettingsData, error } = await supabase
-          .from('user_settings')
-          .select('*')
-          .eq('id', currentUser.id)
-          .single();
-        
-        if (userSettingsData) {
-          setUserSettings(userSettingsData);
-        } else if (error && error.code !== 'PGRST116') {
-          // PGRST116 is "Row not found" error, which is expected if the user hasn't set up their settings yet
-          console.error("Error fetching user settings:", error);
-        }
-      }
-      
-      setLoading(false);
-    };
-    
-    fetchUserData();
-  }, []);
-
-  const handleLanguageChange = (value: string) => {
-    i18n.changeLanguage(value);
-  };
-
-  // Profile form
-  const profileForm = useForm<z.infer<typeof profileFormSchema>>({
-    resolver: zodResolver(profileFormSchema),
-    defaultValues: {
-      email: user?.email || "",
-      name: userSettings?.name || "",
-      bio: userSettings?.bio || "",
-    },
-  });
-
-  // Update profile form values when user data loads
-  useEffect(() => {
-    if (user) {
-      profileForm.setValue("email", user.email || "");
-    }
-    if (userSettings) {
-      profileForm.setValue("name", userSettings.name || "");
-      profileForm.setValue("bio", userSettings.bio || "");
-    }
-  }, [user, userSettings, profileForm]);
-
-  // Notifications form
-  const notificationsForm = useForm<z.infer<typeof notificationsFormSchema>>({
-    resolver: zodResolver(notificationsFormSchema),
-    defaultValues: {
-      emailNotifications: userSettings?.email_notifications ?? true,
-      appNotifications: userSettings?.app_notifications ?? true,
-      newsletterSubscription: userSettings?.newsletter_subscription ?? false,
-    },
-  });
-
-  // Update notification form values when user settings load
-  useEffect(() => {
-    if (userSettings) {
-      notificationsForm.setValue("emailNotifications", userSettings.email_notifications);
-      notificationsForm.setValue("appNotifications", userSettings.app_notifications);
-      notificationsForm.setValue("newsletterSubscription", userSettings.newsletter_subscription);
-    }
-  }, [userSettings, notificationsForm]);
-
-  // Account form
-  const accountForm = useForm<z.infer<typeof accountFormSchema>>({
-    resolver: zodResolver(accountFormSchema),
-    defaultValues: {
-      currentPassword: "",
-      newPassword: "",
-      confirmPassword: "",
-    },
-  });
-
-  const handleReplayTutorial = () => {
-    // Set tutorial completed to false in localStorage
-    if (user) {
-      localStorage.removeItem(`tutorial_completed_${user.id}`);
-      toast.success("Tutorial enabled. It will show next time you visit the dashboard.");
-      navigate('/dashboard');
-    }
-  };
-
-  const handleProfileSubmit = async (data: z.infer<typeof profileFormSchema>) => {
-    try {
-      if (!user) {
-        toast.error("You must be logged in to update your profile");
-        return;
-      }
-      
-      // Upsert user settings (insert if not exists, update if exists)
-      const { error } = await supabase.from('user_settings').upsert({
-        id: user.id,
-        name: data.name,
-        bio: data.bio,
-      });
-      
-      if (error) {
-        throw error;
-      }
-      
-      toast.success("Profile updated successfully!");
-      
-      // Update local state
-      setUserSettings(prev => prev ? { ...prev, name: data.name || null, bio: data.bio || null } : null);
-    } catch (error: any) {
-      toast.error("Failed to update profile: " + error.message);
-      console.error(error);
-    }
-  };
-
-  const handleNotificationsSubmit = async (data: z.infer<typeof notificationsFormSchema>) => {
-    try {
-      if (!user) {
-        toast.error("You must be logged in to update notification preferences");
-        return;
-      }
-      
-      // Upsert user notification preferences
-      const { error } = await supabase.from('user_settings').upsert({
-        id: user.id,
-        email_notifications: data.emailNotifications,
-        app_notifications: data.appNotifications,
-        newsletter_subscription: data.newsletterSubscription,
-      });
-      
-      if (error) {
-        throw error;
-      }
-      
-      toast.success("Notification preferences updated!");
-      
-      // Update local state
-      setUserSettings(prev => prev ? {
-        ...prev,
-        email_notifications: data.emailNotifications,
-        app_notifications: data.appNotifications,
-        newsletter_subscription: data.newsletterSubscription,
-      } : null);
-    } catch (error: any) {
-      toast.error("Failed to update notification preferences: " + error.message);
-      console.error(error);
-    }
-  };
-
-  const handlePasswordChange = async (data: z.infer<typeof accountFormSchema>) => {
-    try {
-      const { error } = await supabase.auth.updateUser({
-        password: data.newPassword
-      });
-      
-      if (error) throw error;
-      
-      toast.success("Password updated successfully!");
-      accountForm.reset();
-    } catch (error: any) {
-      toast.error("Failed to update password: " + error.message);
-      console.error(error);
-    }
-  };
-
-  const handleDeleteAccount = async () => {
-    try {
-      // In a real implementation, we would delete the user's account via Supabase
-      toast.success("Account deleted successfully");
-      await supabase.auth.signOut();
-      navigate('/');
-    } catch (error) {
-      toast.error("Failed to delete account");
-      console.error(error);
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="container mx-auto py-10 flex justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
 
   return (
-    <div className="container mx-auto py-10 max-w-4xl">
-      <div className="flex items-center mb-6">
-        <Button variant="ghost" size="icon" onClick={() => navigate('/dashboard')} className="mr-2">
-          <ArrowLeft className="h-5 w-5" />
-        </Button>
-        <h1 className="text-2xl font-bold">{t('settings.title')}</h1>
+    <div className="min-h-screen bg-background p-6">
+      <div className="container max-w-4xl mx-auto">
+        <div className="mb-8 flex items-center">
+          <Button 
+            variant="ghost" 
+            onClick={() => navigate(-1)}
+            className="mr-4"
+          >
+            <ArrowLeft className="h-5 w-5 mr-1" />
+            Back
+          </Button>
+          <h1 className="text-3xl font-bold">Settings</h1>
+        </div>
+
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
+          <TabsList>
+            <TabsTrigger value="general">General</TabsTrigger>
+            <TabsTrigger value="api">API Keys</TabsTrigger>
+            <TabsTrigger value="account">Account</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="general" className="space-y-8">
+            <div className="bg-card p-6 rounded-lg border shadow-sm">
+              <h2 className="text-xl font-semibold mb-6">Appearance</h2>
+              
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label htmlFor="dark-mode" className="text-base">Dark Mode</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Enable dark mode for a more comfortable viewing experience in low light
+                    </p>
+                  </div>
+                  <Switch 
+                    id="dark-mode" 
+                    checked={isCurrentlyDark}
+                    onCheckedChange={toggleTheme}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-card p-6 rounded-lg border shadow-sm">
+              <h2 className="text-xl font-semibold mb-6">Notifications</h2>
+              
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label htmlFor="email-notifications" className="text-base">Email Notifications</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Receive updates about your applications and account via email
+                    </p>
+                  </div>
+                  <Switch id="email-notifications" defaultChecked />
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label htmlFor="deadline-reminders" className="text-base">Deadline Reminders</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Get notifications before important application deadlines
+                    </p>
+                  </div>
+                  <Switch id="deadline-reminders" defaultChecked />
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="api" className="space-y-8">
+            <div className="bg-card p-6 rounded-lg border shadow-sm">
+              <ApiKeySettings />
+            </div>
+            
+            <div className="bg-card p-6 rounded-lg border shadow-sm">
+              <DeepseekApiSettings />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="account" className="space-y-8">
+            <div className="bg-card p-6 rounded-lg border shadow-sm">
+              <h2 className="text-xl font-semibold mb-6">Personal Information</h2>
+              
+              {/* Placeholder for account settings */}
+              <p className="text-muted-foreground">
+                You can update your personal information and manage your account here.
+                This section is under development.
+              </p>
+            </div>
+            
+            <div className="bg-destructive/10 p-6 rounded-lg border border-destructive/20">
+              <h2 className="text-xl font-semibold text-destructive mb-6">Danger Zone</h2>
+              <div className="flex flex-col space-y-4">
+                <Button variant="destructive">Delete My Account</Button>
+                <p className="text-sm text-muted-foreground">
+                  This will permanently delete your account and all associated data.
+                  This action cannot be undone.
+                </p>
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
       </div>
-      
-      <Tabs defaultValue="profile" className="w-full space-y-6">
-        <TabsList className="grid grid-cols-4 mb-6">
-          <TabsTrigger value="profile" className="flex items-center gap-2">
-            <User className="h-4 w-4" />
-            <span>{t('settings.profile')}</span>
-          </TabsTrigger>
-          <TabsTrigger value="appearance" className="flex items-center gap-2">
-            <Sun className="h-4 w-4" />
-            <span>{t('settings.appearance')}</span>
-          </TabsTrigger>
-          <TabsTrigger value="notifications" className="flex items-center gap-2">
-            <Bell className="h-4 w-4" />
-            <span>{t('settings.notifications')}</span>
-          </TabsTrigger>
-          <TabsTrigger value="account" className="flex items-center gap-2">
-            <KeyRound className="h-4 w-4" />
-            <span>{t('settings.account')}</span>
-          </TabsTrigger>
-        </TabsList>
-        
-        {/* Profile Tab */}
-        <TabsContent value="profile">
-          <Card>
-            <CardHeader>
-              <CardTitle>{t('settings.profile')}</CardTitle>
-              <CardDescription>
-                Manage your personal information and how it appears to others.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Form {...profileForm}>
-                <form onSubmit={profileForm.handleSubmit(handleProfileSubmit)} className="space-y-4">
-                  <FormField
-                    control={profileForm.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email Address</FormLabel>
-                        <FormControl>
-                          <Input placeholder="your.email@example.com" {...field} readOnly />
-                        </FormControl>
-                        <FormDescription>
-                          This is the email address associated with your account.
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={profileForm.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Full Name</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Your Name" {...field} value={field.value || ''} />
-                        </FormControl>
-                        <FormDescription>
-                          This is the name that will be shown on your profile.
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={profileForm.control}
-                    name="bio"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Bio</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Tell us about yourself" {...field} value={field.value || ''} />
-                        </FormControl>
-                        <FormDescription>
-                          A brief introduction that will be displayed on your profile.
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <div className="flex justify-end">
-                    <Button type="submit">{t('save')}</Button>
-                  </div>
-                </form>
-              </Form>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        {/* Appearance Tab */}
-        <TabsContent value="appearance">
-          <Card>
-            <CardHeader>
-              <CardTitle>{t('settings.appearance')}</CardTitle>
-              <CardDescription>
-                Customize how Adviseek looks on your device.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-2">
-                <Label>{t('settings.theme.title')}</Label>
-                <div className="flex flex-wrap gap-4">
-                  <div className="space-y-2">
-                    <Button 
-                      type="button"
-                      variant={theme === "light" ? "default" : "outline"} 
-                      className="w-full flex items-center justify-center gap-2"
-                      onClick={() => {
-                        setTheme("light");
-                        toast.success("Light theme applied");
-                      }}
-                    >
-                      <Sun className="h-5 w-5" />
-                      {t('settings.theme.light')}
-                    </Button>
-                  </div>
-                  <div className="space-y-2">
-                    <Button 
-                      type="button"
-                      variant={theme === "dark" ? "default" : "outline"} 
-                      className="w-full flex items-center justify-center gap-2"
-                      onClick={() => {
-                        setTheme("dark");
-                        toast.success("Dark theme applied");
-                      }}
-                    >
-                      <Moon className="h-5 w-5" />
-                      {t('settings.theme.dark')}
-                    </Button>
-                  </div>
-                  <div className="space-y-2">
-                    <Button 
-                      type="button"
-                      variant={theme === "system" ? "default" : "outline"} 
-                      className="w-full flex items-center justify-center gap-2"
-                      onClick={() => {
-                        setTheme("system");
-                        toast.success("System theme applied");
-                      }}
-                    >
-                      <Laptop className="h-5 w-5" />
-                      {t('settings.theme.system')}
-                    </Button>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <Label>{t('settings.language')}</Label>
-                <Select value={i18n.language} onValueChange={handleLanguageChange}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a language" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="en">{t('settings.languages.english')}</SelectItem>
-                    <SelectItem value="zh">{t('settings.languages.mandarin')}</SelectItem>
-                    <SelectItem value="ms">{t('settings.languages.malay')}</SelectItem>
-                    <SelectItem value="ta">{t('settings.languages.tamil')}</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div className="pt-4">
-                <Button 
-                  variant="outline"
-                  className="w-full flex items-center justify-center gap-2"
-                  onClick={handleReplayTutorial}
-                >
-                  <BookOpen className="h-5 w-5" />
-                  {t('settings.replay_tutorial')}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        {/* Notifications Tab */}
-        <TabsContent value="notifications">
-          <Card>
-            <CardHeader>
-              <CardTitle>{t('settings.notifications')}</CardTitle>
-              <CardDescription>
-                Configure how and when you receive notifications.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Form {...notificationsForm}>
-                <form onSubmit={notificationsForm.handleSubmit(handleNotificationsSubmit)} className="space-y-6">
-                  <FormField
-                    control={notificationsForm.control}
-                    name="emailNotifications"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-center justify-between border p-4 rounded-lg">
-                        <div className="space-y-0.5">
-                          <FormLabel className="text-base">Email Notifications</FormLabel>
-                          <FormDescription>
-                            Receive important updates and alerts via email.
-                          </FormDescription>
-                        </div>
-                        <FormControl>
-                          <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={notificationsForm.control}
-                    name="appNotifications"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-center justify-between border p-4 rounded-lg">
-                        <div className="space-y-0.5">
-                          <FormLabel className="text-base">In-App Notifications</FormLabel>
-                          <FormDescription>
-                            Show notifications within the application.
-                          </FormDescription>
-                        </div>
-                        <FormControl>
-                          <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={notificationsForm.control}
-                    name="newsletterSubscription"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-center justify-between border p-4 rounded-lg">
-                        <div className="space-y-0.5">
-                          <FormLabel className="text-base">Newsletter Subscription</FormLabel>
-                          <FormDescription>
-                            Receive our newsletter with tips and updates.
-                          </FormDescription>
-                        </div>
-                        <FormControl>
-                          <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <div className="flex justify-end">
-                    <Button type="submit">Save Preferences</Button>
-                  </div>
-                </form>
-              </Form>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        
-        {/* Account Tab */}
-        <TabsContent value="account">
-          <Card>
-            <CardHeader>
-              <CardTitle>{t('settings.account')}</CardTitle>
-              <CardDescription>
-                Manage your account settings and security.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <Form {...accountForm}>
-                <form onSubmit={accountForm.handleSubmit(handlePasswordChange)} className="space-y-4">
-                  <h3 className="font-medium text-lg">Change Password</h3>
-                  <FormField
-                    control={accountForm.control}
-                    name="currentPassword"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Current Password</FormLabel>
-                        <FormControl>
-                          <Input type="password" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={accountForm.control}
-                    name="newPassword"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>New Password</FormLabel>
-                        <FormControl>
-                          <Input type="password" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={accountForm.control}
-                    name="confirmPassword"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Confirm New Password</FormLabel>
-                        <FormControl>
-                          <Input type="password" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <div className="flex justify-end">
-                    <Button type="submit">Update Password</Button>
-                  </div>
-                </form>
-              </Form>
-              
-              <div className="border-t pt-4">
-                <h3 className="font-medium text-lg mb-4">Privacy & Export</h3>
-                <div className="flex flex-col gap-4">
-                  <div className="flex flex-row items-center justify-between border p-4 rounded-lg">
-                    <div className="space-y-0.5">
-                      <h4 className="font-medium">Profile Visibility</h4>
-                      <p className="text-sm text-muted-foreground">
-                        Control who can see your profile information.
-                      </p>
-                    </div>
-                    <Select defaultValue="everyone">
-                      <SelectTrigger className="w-[150px]">
-                        <SelectValue placeholder="Select audience" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="everyone">Everyone</SelectItem>
-                        <SelectItem value="connections">Only Connections</SelectItem>
-                        <SelectItem value="none">Private</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <Button variant="outline" className="flex items-center gap-2">
-                    <Shield className="h-4 w-4" />
-                    Export Personal Data
-                  </Button>
-                </div>
-              </div>
-              
-              <div className="border-t pt-4">
-                <h3 className="font-medium text-lg text-red-600 mb-4">Danger Zone</h3>
-                <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-                  <DialogTrigger asChild>
-                    <Button variant="destructive" className="flex items-center gap-2">
-                      <Trash2 className="h-4 w-4" />
-                      Delete Account
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle className="text-red-600">Are you absolutely sure?</DialogTitle>
-                      <DialogDescription>
-                        This action cannot be undone. This will permanently delete your account and remove all your data from our servers.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="grid gap-4 py-4">
-                      <p className="text-sm">
-                        Please type <strong>DELETE</strong> to confirm.
-                      </p>
-                      <Input placeholder="Type DELETE to confirm" />
-                    </div>
-                    <DialogFooter>
-                      <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>
-                        Cancel
-                      </Button>
-                      <Button 
-                        variant="destructive" 
-                        onClick={() => {
-                          handleDeleteAccount();
-                          setIsDeleteDialogOpen(false);
-                        }}
-                      >
-                        Confirm Deletion
-                      </Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
     </div>
   );
 };

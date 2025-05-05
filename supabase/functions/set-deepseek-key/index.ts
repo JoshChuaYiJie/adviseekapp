@@ -1,39 +1,107 @@
 
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+interface RequestData {
+  apiKey: string;
+}
 
 serve(async (req) => {
-  // Handle CORS preflight requests
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
-
   try {
-    // This is just a stub function for demonstration
-    // In reality, we would use the Supabase dashboard to set secrets
-    // We cannot programmatically set env vars from edge functions
+    const { apiKey } = await req.json() as RequestData;
+    
+    if (!apiKey || typeof apiKey !== "string") {
+      throw new Error("Invalid API key");
+    }
+    
+    // Create a Supabase client with the auth context of the logged-in user
+    const supabaseClient = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
+      {
+        global: { headers: { Authorization: req.headers.get("Authorization")! } },
+      }
+    );
+
+    // Get the user ID from the authenticated request
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    
+    if (!user) {
+      throw new Error("Not authorized");
+    }
+    
+    // Encrypt the API key using Deno crypto
+    const encoder = new TextEncoder();
+    const keyData = encoder.encode(Deno.env.get("ENCRYPTION_KEY") || "default_encryption_key");
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    
+    const key = await crypto.subtle.importKey(
+      "raw",
+      keyData,
+      { name: "AES-GCM", length: 256 },
+      false,
+      ["encrypt"]
+    );
+    
+    const encryptedBuffer = await crypto.subtle.encrypt(
+      { name: "AES-GCM", iv },
+      key,
+      encoder.encode(apiKey)
+    );
+    
+    // Convert encrypted buffer to string for storage
+    const encryptedBytes = new Uint8Array(encryptedBuffer);
+    const encryptedBase64 = btoa(String.fromCharCode(...encryptedBytes));
+    const ivBase64 = btoa(String.fromCharCode(...iv));
+    
+    // Store the encrypted API key
+    const { data: existingKey, error: fetchError } = await supabaseClient
+      .from("api_keys")
+      .select("id")
+      .eq("user_id", user.id)
+      .eq("key_type", "deepseek")
+      .limit(1);
+      
+    if (fetchError) {
+      throw fetchError;
+    }
+
+    let result;
+    
+    if (existingKey?.length > 0) {
+      // Update existing key
+      result = await supabaseClient
+        .from("api_keys")
+        .update({
+          encrypted_key: encryptedBase64,
+          iv: ivBase64,
+          updated_at: new Date().toISOString()
+        })
+        .eq("id", existingKey[0].id);
+    } else {
+      // Insert new key
+      result = await supabaseClient
+        .from("api_keys")
+        .insert({
+          user_id: user.id,
+          key_type: "deepseek",
+          encrypted_key: encryptedBase64,
+          iv: ivBase64
+        });
+    }
+    
+    if (result.error) {
+      throw result.error;
+    }
     
     return new Response(
-      JSON.stringify({ 
-        success: true, 
-        message: "This would set the API key if permitted. Please use the Supabase dashboard to set the DEEPSEEK_API_KEY secret." 
-      }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      JSON.stringify({ success: true }),
+      { headers: { "Content-Type": "application/json" } }
     );
   } catch (error) {
-    console.error('Error setting API key:', error);
-    
     return new Response(
       JSON.stringify({ error: error.message }),
-      { 
-        status: 500, 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      }
+      { status: 400, headers: { "Content-Type": "application/json" } }
     );
   }
 });

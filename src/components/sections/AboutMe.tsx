@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -6,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MyResume } from "./MyResume";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { QuizSegments } from "./QuizSegments";
 
 export const AboutMe = () => {
   const { isCurrentlyDark } = useTheme();
@@ -23,6 +23,7 @@ export const AboutMe = () => {
       <Tabs defaultValue="profile" className="w-full">
         <TabsList className="mb-4">
           <TabsTrigger value="profile">About Me</TabsTrigger>
+          <TabsTrigger value="quiz">Quiz Sections</TabsTrigger>
           <TabsTrigger value="resume">My Resume</TabsTrigger>
         </TabsList>
         
@@ -51,6 +52,10 @@ export const AboutMe = () => {
               </div>
             )}
           </div>
+        </TabsContent>
+        
+        <TabsContent value="quiz">
+          <QuizSegments />
         </TabsContent>
         
         <TabsContent value="resume">
