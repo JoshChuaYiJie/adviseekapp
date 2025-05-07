@@ -5,11 +5,14 @@ import {
   formCode, 
   getMatchingMajors, 
   mapRiasecToCode, 
-  mapWorkValueToCode 
+  mapWorkValueToCode,
+  MajorRecommendations as MajorRecommendationsType
 } from '@/utils/recommendationUtils';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { InfoIcon } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
 
 // Define props interface
 interface MajorRecommendationsProps {
@@ -19,10 +22,11 @@ interface MajorRecommendationsProps {
 
 export const MajorRecommendations = ({ topRiasec, topWorkValues }: MajorRecommendationsProps) => {
   const { isCurrentlyDark } = useTheme();
-  const [recommendedMajors, setRecommendedMajors] = useState<string[]>([]);
+  const [recommendations, setRecommendations] = useState<MajorRecommendationsType | null>(null);
   const [loading, setLoading] = useState(true);
   const [riasecCode, setRiasecCode] = useState('');
   const [workValueCode, setWorkValueCode] = useState('');
+  const [activeTab, setActiveTab] = useState<string>('all');
 
   useEffect(() => {
     const fetchRecommendations = async () => {
@@ -35,9 +39,22 @@ export const MajorRecommendations = ({ topRiasec, topWorkValues }: MajorRecommen
       setRiasecCode(rCode);
       setWorkValueCode(wvCode);
       
-      // Get matching majors
-      const majors = await getMatchingMajors(rCode, wvCode);
-      setRecommendedMajors(majors);
+      // Get matching majors with the new flexible matching logic
+      const majorsRecommendations = await getMatchingMajors(rCode, wvCode);
+      setRecommendations(majorsRecommendations);
+      
+      // Set the active tab based on matching results
+      if (majorsRecommendations.exactMatches.length > 0) {
+        setActiveTab('exact');
+      } else if (majorsRecommendations.permutationMatches.length > 0) {
+        setActiveTab('permutation');
+      } else if (majorsRecommendations.riasecMatches.length > 0) {
+        setActiveTab('riasec');
+      } else if (majorsRecommendations.workValueMatches.length > 0) {
+        setActiveTab('workValue');
+      } else {
+        setActiveTab('all');
+      }
       
       setLoading(false);
     };
@@ -46,6 +63,67 @@ export const MajorRecommendations = ({ topRiasec, topWorkValues }: MajorRecommen
       fetchRecommendations();
     }
   }, [topRiasec, topWorkValues]);
+
+  // Determine which majors to display based on what matches we found
+  const getMajorsToDisplay = () => {
+    if (!recommendations) return [];
+    
+    switch (activeTab) {
+      case 'exact':
+        return recommendations.exactMatches;
+      case 'permutation':
+        return recommendations.permutationMatches;
+      case 'riasec':
+        return recommendations.riasecMatches;
+      case 'workValue':
+        return recommendations.workValueMatches;
+      case 'all':
+        // Return the best available matches in order of priority
+        if (recommendations.exactMatches.length > 0)
+          return recommendations.exactMatches;
+        if (recommendations.permutationMatches.length > 0)
+          return recommendations.permutationMatches;
+        if (recommendations.riasecMatches.length > 0)
+          return recommendations.riasecMatches;
+        if (recommendations.workValueMatches.length > 0)
+          return recommendations.workValueMatches;
+        return [];
+      default:
+        return [];
+    }
+  };
+
+  // Get the count of available majors for each match type
+  const getMatchCounts = () => {
+    if (!recommendations) return { exact: 0, permutation: 0, riasec: 0, workValue: 0 };
+    return {
+      exact: recommendations.exactMatches.length,
+      permutation: recommendations.permutationMatches.length,
+      riasec: recommendations.riasecMatches.length,
+      workValue: recommendations.workValueMatches.length
+    };
+  };
+
+  const majorCounts = getMatchCounts();
+  const majorsToDisplay = getMajorsToDisplay();
+  const hasNoMatches = !majorsToDisplay.length;
+
+  const getMatchDescription = () => {
+    if (!recommendations) return '';
+    
+    switch (activeTab) {
+      case 'exact':
+        return 'Exact matches for both your RIASEC and Work Values codes.';
+      case 'permutation':
+        return 'Matches with the same elements in your codes but in different orders.';
+      case 'riasec':
+        return 'Matches based only on your RIASEC personality type.';
+      case 'workValue':
+        return 'Matches based only on your Work Values.';
+      default:
+        return 'All available recommendations.';
+    }
+  };
 
   if (loading) {
     return (
@@ -76,11 +154,39 @@ export const MajorRecommendations = ({ topRiasec, topWorkValues }: MajorRecommen
         </div>
       </div>
 
-      {recommendedMajors.length > 0 ? (
+      {!hasNoMatches ? (
         <div>
-          <h3 className="text-lg font-medium mb-4">Recommended Majors</h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-medium">Recommended Majors</h3>
+            <Badge className={`${isCurrentlyDark ? 'bg-purple-700' : 'bg-purple-100 text-purple-800'}`}>
+              {majorsToDisplay.length} majors found
+            </Badge>
+          </div>
+
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
+            <TabsList className="mb-2">
+              <TabsTrigger value="all" disabled={!recommendations}>All</TabsTrigger>
+              <TabsTrigger value="exact" disabled={!majorCounts.exact}>
+                Exact Matches {majorCounts.exact > 0 && `(${majorCounts.exact})`}
+              </TabsTrigger>
+              <TabsTrigger value="permutation" disabled={!majorCounts.permutation}>
+                Similar {majorCounts.permutation > 0 && `(${majorCounts.permutation})`}
+              </TabsTrigger>
+              <TabsTrigger value="riasec" disabled={!majorCounts.riasec}>
+                RIASEC Only {majorCounts.riasec > 0 && `(${majorCounts.riasec})`}
+              </TabsTrigger>
+              <TabsTrigger value="workValue" disabled={!majorCounts.workValue}>
+                Work Values Only {majorCounts.workValue > 0 && `(${majorCounts.workValue})`}
+              </TabsTrigger>
+            </TabsList>
+            
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+              {getMatchDescription()}
+            </p>
+          </Tabs>
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {recommendedMajors.map((major, index) => (
+            {majorsToDisplay.map((major, index) => (
               <Card key={index} className={`p-4 ${isCurrentlyDark ? 'bg-gray-700' : 'bg-white'} hover:shadow-md transition-shadow`}>
                 <p className="font-medium text-md">{major}</p>
               </Card>
@@ -90,10 +196,12 @@ export const MajorRecommendations = ({ topRiasec, topWorkValues }: MajorRecommen
       ) : (
         <div className={`p-6 rounded-lg text-center ${isCurrentlyDark ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-600'}`}>
           <InfoIcon className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-          <h4 className="text-lg font-medium mb-2">No Exact Matches Found</h4>
+          <h4 className="text-lg font-medium mb-2">No Matches Found</h4>
+          <p className="mb-4">
+            We couldn't find majors that match your RIASEC code ({riasecCode}) and work values code ({workValueCode}).
+          </p>
           <p>
-            We couldn't find majors that exactly match your RIASEC code ({riasecCode}) and work values code ({workValueCode}).
-            Try completing more quizzes or consider exploring majors that align with your individual RIASEC or work value components.
+            Try completing more quizzes or consider exploring majors based on your individual components instead.
           </p>
         </div>
       )}

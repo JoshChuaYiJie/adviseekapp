@@ -8,6 +8,12 @@ export const mapRiasecToCode = (component: string): string => {
     case 'S': return 'S';
     case 'E': return 'E';
     case 'C': return 'C';
+    case 'Realistic': return 'R';
+    case 'Investigative': return 'I';
+    case 'Artistic': return 'A';
+    case 'Social': return 'S';
+    case 'Enterprising': return 'E';
+    case 'Conventional': return 'C';
     default: return '';
   }
 };
@@ -43,11 +49,32 @@ export interface OccupationMajorMapping {
   majors: string[];
 }
 
-// Function to get matching majors based on RIASEC and Work Value codes
+// Helper function to check if two codes are permutations of each other
+export const arePermutations = (code1: string, code2: string): boolean => {
+  if (code1.length !== code2.length) return false;
+  
+  const sortedCode1 = [...code1].sort().join('');
+  const sortedCode2 = [...code2].sort().join('');
+  
+  return sortedCode1 === sortedCode2;
+};
+
+// Define interface for matched majors by category
+export interface MajorRecommendations {
+  exactMatches: string[];
+  permutationMatches: string[];
+  riasecMatches: string[];
+  workValueMatches: string[];
+  riasecCode: string;
+  workValueCode: string;
+  matchType: 'exact' | 'permutation' | 'riasec' | 'workValue' | 'none';
+}
+
+// Function to get matching majors based on RIASEC and Work Value codes with flexible matching
 export const getMatchingMajors = async (
   riasecCode: string,
   workValueCode: string
-): Promise<string[]> => {
+): Promise<MajorRecommendations> => {
   try {
     // Fetch the occupation-major mappings
     const response = await fetch('/quiz_refer/occupation_major_mappings.json');
@@ -57,24 +84,103 @@ export const getMatchingMajors = async (
 
     const mappings = await response.json() as OccupationMajorMapping[];
     
-    // Find all occupations with matching codes
-    const matchingOccupations = mappings.filter(occupation => 
+    // Initialize result object
+    const result: MajorRecommendations = {
+      exactMatches: [],
+      permutationMatches: [],
+      riasecMatches: [],
+      workValueMatches: [],
+      riasecCode,
+      workValueCode,
+      matchType: 'none'
+    };
+    
+    // 1. Find exact matches (both codes match exactly)
+    const exactMatches = mappings.filter(occupation => 
       occupation.RIASEC_code === riasecCode && 
       occupation.work_value_code === workValueCode
     );
-
-    // Extract all majors from matching occupations
-    const allMajors: string[] = [];
-    matchingOccupations.forEach(occupation => {
-      allMajors.push(...occupation.majors);
-    });
-
-    // Remove duplicates
-    const uniqueMajors = Array.from(new Set(allMajors));
     
-    return uniqueMajors;
+    exactMatches.forEach(occupation => {
+      result.exactMatches.push(...occupation.majors);
+    });
+    
+    // Remove duplicates
+    result.exactMatches = [...new Set(result.exactMatches)];
+    
+    // If we have exact matches, return them
+    if (result.exactMatches.length > 0) {
+      result.matchType = 'exact';
+      return result;
+    }
+    
+    // 2. Find permutation matches (both codes are permutations)
+    const permutationMatches = mappings.filter(occupation => 
+      arePermutations(occupation.RIASEC_code, riasecCode) && 
+      arePermutations(occupation.work_value_code, workValueCode)
+    );
+    
+    permutationMatches.forEach(occupation => {
+      result.permutationMatches.push(...occupation.majors);
+    });
+    
+    // Remove duplicates
+    result.permutationMatches = [...new Set(result.permutationMatches)];
+    
+    // If we have permutation matches, return them
+    if (result.permutationMatches.length > 0) {
+      result.matchType = 'permutation';
+      return result;
+    }
+    
+    // 3. Find RIASEC-only matches (exact or permutation)
+    const riasecMatches = mappings.filter(occupation => 
+      occupation.RIASEC_code === riasecCode || 
+      arePermutations(occupation.RIASEC_code, riasecCode)
+    );
+    
+    riasecMatches.forEach(occupation => {
+      result.riasecMatches.push(...occupation.majors);
+    });
+    
+    // Remove duplicates
+    result.riasecMatches = [...new Set(result.riasecMatches)];
+    
+    // If we have RIASEC matches, return them
+    if (result.riasecMatches.length > 0) {
+      result.matchType = 'riasec';
+      return result;
+    }
+    
+    // 4. Find Work Value-only matches (exact or permutation)
+    const workValueMatches = mappings.filter(occupation => 
+      occupation.work_value_code === workValueCode || 
+      arePermutations(occupation.work_value_code, workValueCode)
+    );
+    
+    workValueMatches.forEach(occupation => {
+      result.workValueMatches.push(...occupation.majors);
+    });
+    
+    // Remove duplicates
+    result.workValueMatches = [...new Set(result.workValueMatches)];
+    
+    // If we have Work Value matches, set the match type
+    if (result.workValueMatches.length > 0) {
+      result.matchType = 'workValue';
+    }
+    
+    return result;
   } catch (error) {
     console.error('Error fetching major recommendations:', error);
-    return [];
+    return {
+      exactMatches: [],
+      permutationMatches: [],
+      riasecMatches: [],
+      workValueMatches: [],
+      riasecCode,
+      workValueCode,
+      matchType: 'none'
+    };
   }
 };
