@@ -294,11 +294,9 @@ export const AboutMe = () => {
         </TabsContent>
         
         <TabsContent value="explorer">
-          <Card>
-            <CardContent className="p-6">
-              <McqQuestionsDisplay />
-            </CardContent>
-          </Card>
+          <div className="w-full p-6">
+            <McqQuestionsDisplay />
+          </div>
         </TabsContent>
         
         <TabsContent value="resume">
