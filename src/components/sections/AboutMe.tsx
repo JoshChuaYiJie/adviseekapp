@@ -6,9 +6,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MyResume } from "./MyResume";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { QuizSegments } from "./QuizSegments";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { LockIcon, ChevronRightIcon } from "lucide-react";
+import { McqQuestionsDisplay } from "@/components/McqQuestionsDisplay";
 import { 
   calculateRiasecScores, 
   calculateWorkValueScores, 
@@ -30,6 +31,15 @@ interface PersonalityComponent {
   average: number;
   score: number;
 }
+
+// Type for quiz segment
+type QuizSegment = {
+  id: string;
+  title: string;
+  description: string;
+  locked?: boolean;
+  completed?: boolean;
+};
 
 export const AboutMe = () => {
   const { isCurrentlyDark } = useTheme();
@@ -105,133 +115,190 @@ export const AboutMe = () => {
     }
   };
   
-  const handleTakeQuiz = () => {
-    // Redirect to the pickAI page
-    navigate("/pickAI");
+  const handleTakeQuiz = (segmentId: string) => {
+    // Redirect to the quiz page with the specific segment
+    navigate(`/quiz/${segmentId}`);
   };
 
-  // Helper function to get formatted quiz type name
-  const formatQuizType = (type: string): string => {
-    switch (type) {
-      case 'interest-part 1': return 'Interest Part 1';
-      case 'interest-part 2': return 'Interest Part 2';
-      case 'competence': return 'Competence';
-      case 'work-values': return 'Work Values';
-      default: return type.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
-    }
+  // Get completed segments from localStorage
+  const getCompletedSegments = () => {
+    const completed = localStorage.getItem("completed_quiz_segments");
+    return completed ? JSON.parse(completed) : [];
   };
+  
+  const completedSegments = getCompletedSegments();
+  const allSegmentsCompleted = ["interest-part 1", "interest-part 2", "competence", "work-values"].every(
+    segment => completedSegments.includes(segment)
+  );
+
+  // Quiz segments data
+  const quizSegments: QuizSegment[] = [
+    {
+      id: "interest-part 1",
+      title: "Interest Part 1",
+      description: "Answer questions about your interests in different activities and subjects.",
+      completed: completedSegments.includes("interest-part 1")
+    },
+    {
+      id: "interest-part 2",
+      title: "Interest Part 2",
+      description: "Continue exploring your interests with additional questions.",
+      completed: completedSegments.includes("interest-part 2")
+    },
+    {
+      id: "competence",
+      title: "Competence",
+      description: "Rate your confidence in performing various tasks and activities.",
+      completed: completedSegments.includes("competence")
+    },
+    {
+      id: "work-values",
+      title: "Work Values",
+      description: "Identify what aspects of work are most important to you.",
+      completed: completedSegments.includes("work-values")
+    },
+    {
+      id: "open-ended",
+      title: "Open-ended Questions",
+      description: "Answer questions specific to your chosen field of study.",
+      locked: !allSegmentsCompleted,
+      completed: completedSegments.includes("open-ended")
+    }
+  ];
+
+  // Helper function to render a quiz box
+  const renderQuizBox = (segment: QuizSegment) => (
+    <div key={segment.id} className={`p-4 rounded-lg border ${isCurrentlyDark ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} shadow-sm transition-all hover:shadow-md`}>
+      <div className="flex justify-between items-start">
+        <div>
+          <h3 className="font-medium text-lg flex items-center">
+            {segment.title}
+            {segment.completed && <span className="ml-2 text-green-500">✓</span>}
+          </h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{segment.description}</p>
+        </div>
+
+        {segment.locked ? (
+          <div className="p-2 rounded-full bg-gray-200 dark:bg-gray-700">
+            <LockIcon size={16} className="text-gray-500 dark:text-gray-400" />
+          </div>
+        ) : segment.completed ? (
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => handleTakeQuiz(segment.id)}
+            className="text-xs"
+          >
+            Retake
+          </Button>
+        ) : (
+          <Button 
+            variant="default" 
+            size="sm"
+            onClick={() => handleTakeQuiz(segment.id)}
+            className="text-xs"
+          >
+            Take Quiz <ChevronRightIcon size={14} className="ml-1" />
+          </Button>
+        )}
+      </div>
+      {segment.completed && (
+        <div className="mt-3">
+          <div className="flex justify-between text-xs">
+            <span>Completed</span>
+            <span>100%</span>
+          </div>
+          <Progress value={100} className="h-1 mt-1" />
+        </div>
+      )}
+    </div>
+  );
+
+  // Create a circular chart representation using divs and styling
+  const renderProfileChart = (title: string, components: PersonalityComponent[], descriptions: Record<string, { title: string; description: string }>) => (
+    <div className="flex-1 flex flex-col items-center">
+      <div className={`w-40 h-40 rounded-full ${isCurrentlyDark ? 'bg-gray-800' : 'bg-gray-100'} flex items-center justify-center relative overflow-hidden border ${isCurrentlyDark ? 'border-gray-700' : 'border-gray-200'}`}>
+        {components.length > 0 ? (
+          components.map((comp, index) => {
+            const rotation = index * (360 / components.length);
+            const color = index === 0 ? 'bg-purple-500' : index === 1 ? 'bg-blue-500' : 'bg-green-500';
+            
+            return (
+              <div 
+                key={comp.component}
+                className={`absolute top-0 left-0 w-full h-full ${color} opacity-70`}
+                style={{ 
+                  clipPath: `polygon(50% 50%, ${50 + 50 * Math.cos(rotation * Math.PI / 180)}% ${50 + 50 * Math.sin(rotation * Math.PI / 180)}%, ${50 + 50 * Math.cos((rotation + (360 / components.length)) * Math.PI / 180)}% ${50 + 50 * Math.sin((rotation + (360 / components.length)) * Math.PI / 180)}%)` 
+                }}
+              />
+            );
+          })
+        ) : (
+          <div className="text-center px-4 text-sm text-gray-500 dark:text-gray-400">
+            Complete quizzes to see your profile
+          </div>
+        )}
+        <div className={`z-10 w-24 h-24 rounded-full flex items-center justify-center ${isCurrentlyDark ? 'bg-gray-900' : 'bg-white'} text-center`}>
+          <span className="font-semibold">{title}</span>
+        </div>
+      </div>
+      
+      {components.length > 0 && (
+        <div className="mt-4 w-full">
+          {components.map((comp) => (
+            <div key={comp.component} className="mb-2 text-sm">
+              <div className="flex justify-between">
+                <span className="font-medium">{descriptions[comp.component]?.title || comp.component}</span>
+                <span>{comp.score}%</span>
+              </div>
+              <Progress value={comp.score} className="h-1 mt-1" />
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 
   return (
     <div className="space-y-6">
       <Tabs defaultValue="profile" className="w-full">
         <TabsList className="mb-4">
           <TabsTrigger value="profile">About Me</TabsTrigger>
-          <TabsTrigger value="quiz">Quiz Sections</TabsTrigger>
+          <TabsTrigger value="explorer">Questions Explorer</TabsTrigger>
           <TabsTrigger value="resume">My Resume</TabsTrigger>
         </TabsList>
         
         <TabsContent value="profile" className="space-y-6">
           <div className={`p-6 ${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg shadow`}>
-            {!quizCompleted ? (
-              <div className="flex flex-col items-center justify-center py-12 space-y-6 text-center">
-                <Button size="lg" onClick={handleTakeQuiz} className="px-8">Take Quiz</Button>
+            <div className="py-4">
+              <h2 className="text-2xl font-medium mb-4">Your Personal Profile</h2>
+              
+              <p className="text-md text-center mb-6 text-gray-600 dark:text-gray-300">
+                Adviseek AI needs to know more about you in order to provide the best advice. 
+                Finish more quizzes for more detailed advice!
+              </p>
+              
+              <div className="grid gap-4 mb-8">
+                {quizSegments.map(renderQuizBox)}
               </div>
-            ) : (
-              <div className="py-6">
-                <h2 className="text-2xl font-medium mb-4">Your Personal Profile</h2>
-                <div className="bg-gray-100 dark:bg-gray-700 p-6 rounded-md space-y-8">
-                  {/* Raw quiz scores section */}
-                  {Object.keys(quizScores).length > 0 && (
-                    <div>
-                      <h3 className="text-xl font-semibold mb-4">Quiz Results</h3>
-                      <div className="grid gap-4 md:grid-cols-2">
-                        {Object.entries(quizScores).map(([segment, data]) => (
-                          <Card key={segment} className={isCurrentlyDark ? 'bg-gray-800' : 'bg-white'}>
-                            <CardHeader className="pb-2">
-                              <CardTitle className="text-lg">{formatQuizType(segment)}</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                              <div className="space-y-2">
-                                <div className="flex justify-between text-sm">
-                                  <span>Score: {data.total} / {data.maxPossible}</span>
-                                  <span>{Math.round(data.percentage)}%</span>
-                                </div>
-                                <Progress value={data.percentage} className="h-2" />
-                              </div>
-                            </CardContent>
-                          </Card>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* RIASEC Personality section */}
-                  {topRiasec.length > 0 && (
-                    <div className="mt-8">
-                      <h3 className="text-xl font-semibold mb-4">Your Personality Traits (RIASEC)</h3>
-                      <div className="space-y-6">
-                        {topRiasec.map(({ component, score }) => (
-                          <div key={component} className="bg-white dark:bg-gray-800 p-4 rounded-md shadow">
-                            <div className="flex justify-between items-center mb-2">
-                              <h4 className="text-lg font-medium">
-                                {component}: {riasecDescriptions[component]?.title || component}
-                              </h4>
-                              <span className="text-sm font-semibold bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 px-2 py-1 rounded">
-                                {score}%
-                              </span>
-                            </div>
-                            <p className="text-gray-600 dark:text-gray-300 text-sm">
-                              {riasecDescriptions[component]?.description || "No description available."}
-                            </p>
-                            <Progress value={score} className="h-2 mt-2" />
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Work Values section */}
-                  {topWorkValues.length > 0 && (
-                    <div className="mt-8">
-                      <h3 className="text-xl font-semibold mb-4">Your Core Work Values</h3>
-                      <div className="space-y-6">
-                        {topWorkValues.map(({ component, score }) => (
-                          <div key={component} className="bg-white dark:bg-gray-800 p-4 rounded-md shadow">
-                            <div className="flex justify-between items-center mb-2">
-                              <h4 className="text-lg font-medium">
-                                {workValueDescriptions[component]?.title || component}
-                              </h4>
-                              <span className="text-sm font-semibold bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded">
-                                {score}%
-                              </span>
-                            </div>
-                            <p className="text-gray-600 dark:text-gray-300 text-sm">
-                              {workValueDescriptions[component]?.description || "No description available."}
-                            </p>
-                            <Progress value={score} className="h-2 mt-2" />
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Show a message if no personality profiles have been generated */}
-                  {quizCompleted && topRiasec.length === 0 && topWorkValues.length === 0 && (
-                    <div className="p-4 bg-yellow-50 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 rounded-md">
-                      <p className="text-center">
-                        Quiz data has been recorded, but your personality profile couldn't be generated.
-                        This might happen if the quiz questions don't have associated personality components.
-                      </p>
-                    </div>
-                  )}
+              
+              <div className="mt-10">
+                <h3 className="text-xl font-medium mb-6 text-center">Your Profile Summary</h3>
+                <div className="flex flex-col md:flex-row gap-8 justify-around">
+                  {renderProfileChart("Personality", topRiasec, riasecDescriptions)}
+                  {renderProfileChart("Values", topWorkValues, workValueDescriptions)}
                 </div>
               </div>
-            )}
+            </div>
           </div>
         </TabsContent>
         
-        <TabsContent value="quiz">
-          <QuizSegments />
+        <TabsContent value="explorer">
+          <Card>
+            <CardContent className="p-6">
+              <McqQuestionsDisplay />
+            </CardContent>
+          </Card>
         </TabsContent>
         
         <TabsContent value="resume">
