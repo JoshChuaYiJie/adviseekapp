@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 
 export type QuizType = 'interest-part 1' | 'interest-part 2' | 'competence' | 'work-values';
@@ -7,6 +8,18 @@ export interface QuizQuestion {
   question: string;
   options: string[];
   optionScores: Record<string, number>;
+  riasec_component?: string;
+  work_value_component?: string;
+}
+
+export interface McqQuestion {
+  id: string;
+  question: string;
+  options: string[];
+  category: string;
+  optionScores: Record<string, number>;
+  riasec_component?: string;
+  work_value_component?: string;
 }
 
 interface QuizQuestionsMap {
@@ -119,7 +132,9 @@ export const useAllMcqQuestions = () => {
               id: `${fileType}-${index}`,
               question: item.rephrased_text || item.question || 'Question text missing',
               options,
-              optionScores
+              optionScores,
+              riasec_component: item.riasec_component || undefined,
+              work_value_component: item.work_value_component || undefined
             };
           });
         }
@@ -211,7 +226,9 @@ export const useQuizQuestions = (quizType: string) => {
           question: q.rephrased_text,
           options,
           category: quizType,
-          optionScores
+          optionScores,
+          riasec_component: q.riasec_component,
+          work_value_component: q.work_value_component
         }));
         
         setQuestions(parsedQuestions);
@@ -227,4 +244,166 @@ export const useQuizQuestions = (quizType: string) => {
   }, [quizType]);
   
   return { questions, loading, error };
+};
+
+// New utility functions for calculating personality traits
+export const calculateRiasecScores = () => {
+  const riasecScores: Record<string, { total: number; count: number; average: number }> = {
+    'R': { total: 0, count: 0, average: 0 },
+    'I': { total: 0, count: 0, average: 0 },
+    'A': { total: 0, count: 0, average: 0 },
+    'S': { total: 0, count: 0, average: 0 },
+    'E': { total: 0, count: 0, average: 0 },
+    'C': { total: 0, count: 0, average: 0 }
+  };
+
+  // RIASEC quiz types to process
+  const riasecQuizTypes = ['interest-part 1', 'interest-part 2', 'competence'];
+  
+  // Process each quiz type
+  riasecQuizTypes.forEach(quizType => {
+    const scores = JSON.parse(localStorage.getItem(`quiz_scores_${quizType}`) || '{}');
+    const questions = JSON.parse(localStorage.getItem(`quiz_questions_${quizType}`) || '[]');
+    
+    // Map each question to its RIASEC component
+    const questionComponents: Record<string, string> = {};
+    questions.forEach((q: any) => {
+      if (q.id && q.riasec_component) {
+        questionComponents[q.id] = q.riasec_component;
+      }
+    });
+    
+    // Add scores to the appropriate RIASEC component
+    Object.entries(scores).forEach(([questionId, score]) => {
+      const component = questionComponents[questionId];
+      if (component && riasecScores[component]) {
+        riasecScores[component].total += Number(score);
+        riasecScores[component].count += 1;
+      }
+    });
+  });
+  
+  // Calculate averages
+  Object.keys(riasecScores).forEach(component => {
+    if (riasecScores[component].count > 0) {
+      riasecScores[component].average = riasecScores[component].total / riasecScores[component].count;
+    }
+  });
+  
+  return riasecScores;
+};
+
+export const calculateWorkValueScores = () => {
+  const workValueScores: Record<string, { total: number; count: number; average: number }> = {};
+  
+  // Load work values quiz data
+  const scores = JSON.parse(localStorage.getItem(`quiz_scores_work-values`) || '{}');
+  const questions = JSON.parse(localStorage.getItem(`quiz_questions_work-values`) || '[]');
+  
+  // Map each question to its work value component
+  const questionComponents: Record<string, string> = {};
+  questions.forEach((q: any) => {
+    if (q.id && q.work_value_component) {
+      questionComponents[q.id] = q.work_value_component;
+      
+      // Initialize the work value in our scores object if it doesn't exist
+      if (!workValueScores[q.work_value_component]) {
+        workValueScores[q.work_value_component] = { total: 0, count: 0, average: 0 };
+      }
+    }
+  });
+  
+  // Add scores to the appropriate work value component
+  Object.entries(scores).forEach(([questionId, score]) => {
+    const component = questionComponents[questionId];
+    if (component && workValueScores[component]) {
+      workValueScores[component].total += Number(score);
+      workValueScores[component].count += 1;
+    }
+  });
+  
+  // Calculate averages
+  Object.keys(workValueScores).forEach(component => {
+    if (workValueScores[component].count > 0) {
+      workValueScores[component].average = workValueScores[component].total / workValueScores[component].count;
+    }
+  });
+  
+  return workValueScores;
+};
+
+export const getTopComponents = (scores: Record<string, { total: number; count: number; average: number }>, limit = 3) => {
+  return Object.entries(scores)
+    .filter(([_, data]) => data.count > 0) // Only consider components with answered questions
+    .sort((a, b) => b[1].average - a[1].average) // Sort by average score descending
+    .slice(0, limit) // Take top N
+    .map(([component, data]) => ({
+      component,
+      average: data.average,
+      score: Math.round(data.average * 20) // Convert to a 0-100 scale for display
+    }));
+};
+
+// RIASEC component descriptions
+export const riasecDescriptions: Record<string, { title: string; description: string }> = {
+  'R': { 
+    title: 'Realistic',
+    description: 'You enjoy working with tools, machines, or nature. You prefer practical, hands-on activities and tangible results.'
+  },
+  'I': { 
+    title: 'Investigative',
+    description: 'You enjoy solving complex problems and exploring ideas. You prefer analytical, intellectual, and scientific activities.'
+  },
+  'A': { 
+    title: 'Artistic',
+    description: 'You enjoy creative expression and unstructured environments. You prefer artistic, innovative, and imaginative activities.'
+  },
+  'S': { 
+    title: 'Social',
+    description: 'You enjoy helping, teaching, and counseling others. You prefer activities that involve interaction with people.'
+  },
+  'E': { 
+    title: 'Enterprising',
+    description: 'You enjoy leading, persuading, and managing others. You prefer competitive and leadership activities.'
+  },
+  'C': { 
+    title: 'Conventional',
+    description: 'You enjoy organizing, data processing, and working with clear rules. You prefer structured and orderly activities.'
+  }
+};
+
+// Work value descriptions
+export const workValueDescriptions: Record<string, { title: string; description: string }> = {
+  'Achievement': { 
+    title: 'Achievement', 
+    description: 'You value accomplishment and using your abilities to their fullest potential.' 
+  },
+  'Working Conditions': { 
+    title: 'Working Conditions', 
+    description: 'You value job security, good working environments, and comfortable settings.' 
+  },
+  'Recognition': { 
+    title: 'Recognition', 
+    description: 'You value being recognized for your contributions and receiving appreciation.' 
+  },
+  'Relationships': { 
+    title: 'Relationships', 
+    description: 'You value positive social interactions and good working relationships.' 
+  },
+  'Support': { 
+    title: 'Support', 
+    description: 'You value supportive management and competent supervision.' 
+  },
+  'Independence': { 
+    title: 'Independence', 
+    description: 'You value autonomy and the ability to work independently.' 
+  },
+  'Altruism': { 
+    title: 'Altruism', 
+    description: 'You value helping others and contributing to society.' 
+  },
+  'Others': { 
+    title: 'Other Values', 
+    description: 'You have unique values that drive your career decisions.' 
+  },
 };
