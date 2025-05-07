@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 
 export type QuizType = 'interest-part 1' | 'interest-part 2' | 'competence' | 'work-values';
@@ -262,6 +261,11 @@ export const calculateRiasecScores = () => {
   
   // Process each quiz type
   riasecQuizTypes.forEach(quizType => {
+    // Skip if the quiz hasn't been taken
+    if (!localStorage.getItem(`quiz_scores_${quizType}`)) {
+      return;
+    }
+    
     const scores = JSON.parse(localStorage.getItem(`quiz_scores_${quizType}`) || '{}');
     const questions = JSON.parse(localStorage.getItem(`quiz_questions_${quizType}`) || '[]');
     
@@ -286,6 +290,7 @@ export const calculateRiasecScores = () => {
   // Calculate averages
   Object.keys(riasecScores).forEach(component => {
     if (riasecScores[component].count > 0) {
+      // Calculate average on a scale of 0-5 (since each question is scored from 1-5)
       riasecScores[component].average = riasecScores[component].total / riasecScores[component].count;
     }
   });
@@ -295,6 +300,11 @@ export const calculateRiasecScores = () => {
 
 export const calculateWorkValueScores = () => {
   const workValueScores: Record<string, { total: number; count: number; average: number }> = {};
+  
+  // Skip if the work values quiz hasn't been taken
+  if (!localStorage.getItem(`quiz_scores_work-values`)) {
+    return workValueScores;
+  }
   
   // Load work values quiz data
   const scores = JSON.parse(localStorage.getItem(`quiz_scores_work-values`) || '{}');
@@ -325,6 +335,7 @@ export const calculateWorkValueScores = () => {
   // Calculate averages
   Object.keys(workValueScores).forEach(component => {
     if (workValueScores[component].count > 0) {
+      // Calculate average on a scale of 0-5 (since each question is scored from 1-5)
       workValueScores[component].average = workValueScores[component].total / workValueScores[component].count;
     }
   });

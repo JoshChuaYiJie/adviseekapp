@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -6,7 +7,7 @@ import { MyResume } from "./MyResume";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { Progress } from "@/components/ui/progress";
-import { LockIcon, ChevronRightIcon } from "lucide-react";
+import { LockIcon, ChevronRightIcon, InfoIcon } from "lucide-react";
 import { McqQuestionsDisplay } from "@/components/McqQuestionsDisplay";
 import { 
   calculateRiasecScores, 
@@ -15,6 +16,8 @@ import {
   riasecDescriptions, 
   workValueDescriptions 
 } from "@/utils/quizQuestions";
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
+import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
 
 // Type for quiz scores
 type QuizScores = Record<string, {
@@ -39,12 +42,32 @@ type QuizSegment = {
   completed?: boolean;
 };
 
+// Type for chart data
+interface ChartDataItem {
+  name: string;
+  value: number;
+  description: string;
+  color: string;
+}
+
+// Colors for charts
+const CHART_COLORS = [
+  "#9b87f5", // Primary Purple
+  "#8B5CF6", // Vivid Purple
+  "#D946EF", // Magenta Pink
+  "#F97316", // Bright Orange
+  "#0EA5E9", // Ocean Blue
+  "#33C3F0", // Sky Blue
+];
+
 export const AboutMe = () => {
   const { isCurrentlyDark } = useTheme();
   const [quizCompleted, setQuizCompleted] = useState(false);
   const [quizScores, setQuizScores] = useState<QuizScores>({});
   const [topRiasec, setTopRiasec] = useState<PersonalityComponent[]>([]);
   const [topWorkValues, setTopWorkValues] = useState<PersonalityComponent[]>([]);
+  const [riasecChartData, setRiasecChartData] = useState<ChartDataItem[]>([]);
+  const [workValuesChartData, setWorkValuesChartData] = useState<ChartDataItem[]>([]);
   const { t } = useTranslation();
   const navigate = useNavigate();
   
@@ -76,7 +99,7 @@ export const AboutMe = () => {
     
     setQuizScores(scores);
     
-    // Calculate top RIASEC components
+    // Calculate top RIASEC components and chart data
     if (completedSegments.length > 0) {
       // Store the quiz questions in localStorage so we can associate them with components
       quizTypes.forEach(async segment => {
@@ -93,12 +116,41 @@ export const AboutMe = () => {
         }
       });
       
-      // Calculate and set top components
+      // Calculate RIASEC scores
       const riasecScores = calculateRiasecScores();
-      const workValueScores = calculateWorkValueScores();
-      
       setTopRiasec(getTopComponents(riasecScores));
+      
+      // Create RIASEC chart data
+      const hasRiasecData = Object.values(riasecScores).some(score => score.count > 0);
+      if (hasRiasecData) {
+        const chartData: ChartDataItem[] = Object.entries(riasecScores)
+          .filter(([_, data]) => data.count > 0)
+          .map(([component, data], index) => ({
+            name: riasecDescriptions[component]?.title || component,
+            value: data.average * 20, // Convert to percentage (0-100)
+            description: riasecDescriptions[component]?.description || "",
+            color: CHART_COLORS[index % CHART_COLORS.length]
+          }));
+        setRiasecChartData(chartData);
+      }
+      
+      // Calculate Work Values scores
+      const workValueScores = calculateWorkValueScores();
       setTopWorkValues(getTopComponents(workValueScores));
+      
+      // Create Work Values chart data
+      const hasWorkValueData = Object.values(workValueScores).some(score => score.count > 0);
+      if (hasWorkValueData) {
+        const chartData: ChartDataItem[] = Object.entries(workValueScores)
+          .filter(([_, data]) => data.count > 0)
+          .map(([component, data], index) => ({
+            name: workValueDescriptions[component]?.title || component,
+            value: data.average * 20, // Convert to percentage (0-100)
+            description: workValueDescriptions[component]?.description || "",
+            color: CHART_COLORS[index % CHART_COLORS.length]
+          }));
+        setWorkValuesChartData(chartData);
+      }
     }
   }, []);
   
@@ -212,44 +264,74 @@ export const AboutMe = () => {
     </div>
   );
 
-  // Create a circular chart representation using divs and styling
-  const renderProfileChart = (title: string, components: PersonalityComponent[], descriptions: Record<string, { title: string; description: string }>) => (
-    <div className="flex-1 flex flex-col items-center">
-      <div className={`w-40 h-40 rounded-full ${isCurrentlyDark ? 'bg-gray-800' : 'bg-gray-100'} flex items-center justify-center relative overflow-hidden border ${isCurrentlyDark ? 'border-gray-700' : 'border-gray-200'}`}>
-        {components.length > 0 ? (
-          components.map((comp, index) => {
-            const rotation = index * (360 / components.length);
-            const color = index === 0 ? 'bg-purple-500' : index === 1 ? 'bg-blue-500' : 'bg-green-500';
-            
-            return (
-              <div 
-                key={comp.component}
-                className={`absolute top-0 left-0 w-full h-full ${color} opacity-70`}
-                style={{ 
-                  clipPath: `polygon(50% 50%, ${50 + 50 * Math.cos(rotation * Math.PI / 180)}% ${50 + 50 * Math.sin(rotation * Math.PI / 180)}%, ${50 + 50 * Math.cos((rotation + (360 / components.length)) * Math.PI / 180)}% ${50 + 50 * Math.sin((rotation + (360 / components.length)) * Math.PI / 180)}%)` 
-                }}
-              />
-            );
-          })
-        ) : (
-          <div className="text-center px-4 text-sm text-gray-500 dark:text-gray-400">
-            Complete quizzes to see your profile
-          </div>
-        )}
-        <div className={`z-10 w-24 h-24 rounded-full flex items-center justify-center ${isCurrentlyDark ? 'bg-gray-900' : 'bg-white'} text-center`}>
-          <span className="font-semibold">{title}</span>
+  // Custom tooltip component for the pie charts
+  const CustomTooltip = ({ active, payload }: any) => {
+    if (active && payload && payload.length) {
+      const data = payload[0].payload;
+      return (
+        <div className={`p-3 rounded-md shadow-lg ${isCurrentlyDark ? 'bg-gray-800 text-gray-200' : 'bg-white text-gray-800'}`}>
+          <p className="font-medium">{data.name}</p>
+          <p className="text-sm">{Math.round(data.value)}%</p>
+          <p className="text-xs mt-1 max-w-xs">{data.description}</p>
         </div>
+      );
+    }
+    return null;
+  };
+
+  // Render a pie chart with the provided data
+  const renderPieChart = (title: string, data: ChartDataItem[], empty: boolean) => (
+    <div className="flex-1 flex flex-col items-center">
+      <h3 className="text-lg font-medium mb-4">{title}</h3>
+      
+      <div className="w-full h-[240px] mb-4">
+        {empty ? (
+          <div className={`w-full h-full rounded-lg flex items-center justify-center ${isCurrentlyDark ? 'bg-gray-800 text-gray-400' : 'bg-gray-100 text-gray-500'}`}>
+            <div className="text-center px-4">
+              <InfoIcon className="w-8 h-8 mx-auto mb-2 opacity-70" />
+              <p>Complete quizzes to see your {title.toLowerCase()} profile</p>
+            </div>
+          </div>
+        ) : (
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie
+                data={data}
+                cx="50%"
+                cy="50%"
+                labelLine={false}
+                outerRadius={80}
+                innerRadius={30}
+                fill="#8884d8"
+                dataKey="value"
+                nameKey="name"
+              >
+                {data.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.color} />
+                ))}
+              </Pie>
+              <Tooltip content={<CustomTooltip />} />
+              <Legend />
+            </PieChart>
+          </ResponsiveContainer>
+        )}
       </div>
       
-      {components.length > 0 && (
-        <div className="mt-4 w-full">
-          {components.map((comp) => (
-            <div key={comp.component} className="mb-2 text-sm">
+      {!empty && data.length > 0 && (
+        <div className="w-full mt-2 px-4">
+          {data.slice(0, 3).map((item) => (
+            <div key={item.name} className="mb-2 text-sm">
               <div className="flex justify-between">
-                <span className="font-medium">{descriptions[comp.component]?.title || comp.component}</span>
-                <span>{comp.score}%</span>
+                <span className="font-medium">{item.name}</span>
+                <span>{Math.round(item.value)}%</span>
               </div>
-              <Progress value={comp.score} className="h-1 mt-1" />
+              <Progress 
+                value={item.value} 
+                className="h-1 mt-1"
+                style={{ backgroundColor: isCurrentlyDark ? '#374151' : '#f3f4f6' }}
+                // Apply custom color to progress bar
+                indicatorClassName="bg-gradient-to-r from-purple-500 to-blue-500"
+              />
             </div>
           ))}
         </div>
@@ -282,9 +364,19 @@ export const AboutMe = () => {
               
               <div className="mt-10">
                 <h3 className="text-xl font-medium mb-6 text-center">Your Profile Summary</h3>
+                
                 <div className="flex flex-col md:flex-row gap-8 justify-around">
-                  {renderProfileChart("Personality", topRiasec, riasecDescriptions)}
-                  {renderProfileChart("Values", topWorkValues, workValueDescriptions)}
+                  {renderPieChart(
+                    "Personality", 
+                    riasecChartData, 
+                    riasecChartData.length === 0
+                  )}
+                  
+                  {renderPieChart(
+                    "Values", 
+                    workValuesChartData, 
+                    workValuesChartData.length === 0
+                  )}
                 </div>
               </div>
             </div>
