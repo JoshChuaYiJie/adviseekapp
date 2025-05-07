@@ -17,12 +17,12 @@ const QuestionSkeleton = () => (
 
 export const McqQuestionsDisplay = () => {
   const { allQuestions, loading, error } = useAllMcqQuestions();
-  const [activeTab, setActiveTab] = useState<QuizType>('interest-part1');
+  const [activeTab, setActiveTab] = useState<QuizType>('interest-part 1');
   const { isCurrentlyDark } = useTheme();
   
   const quizTypeLabels: Record<QuizType, string> = {
-    'interest-part1': 'Interest Part 1',
-    'interest-part2': 'Interest Part 2',
+    'interest-part 1': 'Interest Part 1',
+    'interest-part 2': 'Interest Part 2',
     'competence': 'Competence',
     'work-values': 'Work Values'
   };

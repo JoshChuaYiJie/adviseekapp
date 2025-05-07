@@ -19,7 +19,7 @@ type QuizSegment = {
 export const QuizSegments = () => {
   const { isCurrentlyDark } = useTheme();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("interest-part1");
+  const [activeTab, setActiveTab] = useState("interest-part 1");
   
   // Get completed segments from localStorage
   const getCompletedSegments = () => {
@@ -28,22 +28,22 @@ export const QuizSegments = () => {
   };
   
   const completedSegments = getCompletedSegments();
-  const allSegmentsCompleted = ["interest-part1", "interest-part2", "competence", "work-values"].every(
+  const allSegmentsCompleted = ["interest-part 1", "interest-part 2", "competence", "work-values"].every(
     segment => completedSegments.includes(segment)
   );
   
   const quizSegments: QuizSegment[] = [
     {
-      id: "interest-part1",
+      id: "interest-part 1",
       title: "Interest Part 1",
       description: "Answer questions about your interests in different activities and subjects.",
-      completed: completedSegments.includes("interest-part1")
+      completed: completedSegments.includes("interest-part 1")
     },
     {
-      id: "interest-part2",
+      id: "interest-part 2",
       title: "Interest Part 2",
       description: "Continue exploring your interests with additional questions.",
-      completed: completedSegments.includes("interest-part2")
+      completed: completedSegments.includes("interest-part 2")
     },
     {
       id: "competence",

@@ -32,7 +32,7 @@ export const AboutMe = () => {
     // Load quiz scores for display
     const scores: QuizScores = {};
     
-    const quizTypes = ['interest-part1', 'interest-part2', 'competence', 'work-values'];
+    const quizTypes = ['interest-part 1', 'interest-part 2', 'competence', 'work-values'];
     
     quizTypes.forEach(segment => {
       // Get scores from localStorage
@@ -61,8 +61,8 @@ export const AboutMe = () => {
   // Helper function to get formatted quiz type name
   const formatQuizType = (type: string): string => {
     switch (type) {
-      case 'interest-part1': return 'Interest Part 1';
-      case 'interest-part2': return 'Interest Part 2';
+      case 'interest-part 1': return 'Interest Part 1';
+      case 'interest-part 2': return 'Interest Part 2';
       case 'competence': return 'Competence';
       case 'work-values': return 'Work Values';
       default: return type.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
