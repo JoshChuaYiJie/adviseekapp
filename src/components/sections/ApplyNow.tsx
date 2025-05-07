@@ -1,7 +1,6 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
@@ -13,6 +12,7 @@ import {
   UniversityData,
   Major
 } from "@/utils/universityDataUtils";
+import { Card } from "@/components/ui/card";
 
 export const ApplyNow = () => {
   const [selectedUniversity, setSelectedUniversity] = useState("");
@@ -140,7 +140,7 @@ export const ApplyNow = () => {
   };
 
   return (
-    <div className="space-y-6 w-full max-w-full">
+    <div className="w-full h-full space-y-6">
       <div className={`mb-8 p-6 ${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg shadow w-full`}>
         <h3 className="text-lg font-semibold mb-2">{t("apply.select_header", "Select University and Programme")}</h3>
         

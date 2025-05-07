@@ -33,7 +33,7 @@ export const McqQuestionsDisplay = () => {
 
   if (error) {
     return (
-      <div className="p-6 rounded-lg bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200">
+      <div className="w-full p-6 rounded-lg bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200">
         <h3 className="text-lg font-medium mb-2">Error Loading Questions</h3>
         <p>{error}</p>
         <Button 
@@ -48,7 +48,7 @@ export const McqQuestionsDisplay = () => {
   }
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="w-full h-full">
       <h2 className="text-2xl font-bold mb-6">MCQ Questions Explorer</h2>
       
       <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
@@ -61,8 +61,8 @@ export const McqQuestionsDisplay = () => {
         </TabsList>
         
         {Object.keys(allQuestions).map((type) => (
-          <TabsContent key={type} value={type} className="space-y-6">
-            <Card className={`p-6 ${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg shadow`}>
+          <TabsContent key={type} value={type} className="space-y-6 w-full">
+            <Card className={`p-6 ${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg shadow w-full`}>
               <h3 className="text-xl font-semibold mb-4">{quizTypeLabels[type as QuizType]}</h3>
               
               {loading ? (

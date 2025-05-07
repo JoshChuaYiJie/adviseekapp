@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -6,7 +5,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MyResume } from "./MyResume";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { LockIcon, ChevronRightIcon } from "lucide-react";
 import { McqQuestionsDisplay } from "@/components/McqQuestionsDisplay";
@@ -260,16 +258,16 @@ export const AboutMe = () => {
   );
 
   return (
-    <div className="space-y-6">
-      <Tabs defaultValue="profile" className="w-full">
-        <TabsList className="mb-4">
+    <div className="w-full h-full space-y-6">
+      <Tabs defaultValue="profile" className="w-full h-full">
+        <TabsList className="mb-4 flex-wrap">
           <TabsTrigger value="profile">About Me</TabsTrigger>
           <TabsTrigger value="explorer">Questions Explorer</TabsTrigger>
           <TabsTrigger value="resume">My Resume</TabsTrigger>
         </TabsList>
         
-        <TabsContent value="profile" className="space-y-6">
-          <div className={`p-6 ${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg shadow`}>
+        <TabsContent value="profile" className="w-full space-y-6">
+          <div className={`p-6 ${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg shadow w-full`}>
             <div className="py-4">
               <h2 className="text-2xl font-medium mb-4">Your Personal Profile</h2>
               
@@ -293,13 +291,11 @@ export const AboutMe = () => {
           </div>
         </TabsContent>
         
-        <TabsContent value="explorer">
-          <div className="w-full p-6">
-            <McqQuestionsDisplay />
-          </div>
+        <TabsContent value="explorer" className="w-full h-full">
+          <McqQuestionsDisplay />
         </TabsContent>
         
-        <TabsContent value="resume">
+        <TabsContent value="resume" className="w-full h-full">
           <MyResume />
         </TabsContent>
       </Tabs>

@@ -18,9 +18,9 @@ export const MyResume = () => {
   } = useResumeManager();
 
   return (
-    <div className="space-y-6">
+    <div className="w-full h-full space-y-6">
       {/* Upload and Build Resume Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
         <UploadResumeCard onFileUpload={handleFileUpload} />
         <BuildResumeCard />
       </div>
