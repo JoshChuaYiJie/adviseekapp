@@ -50,14 +50,18 @@ export const AppliedProgrammes = () => {
     const loadData = async () => {
       setIsLoading(true);
       try {
+        console.log(`Loading university data for: ${selectedUniversity}`);
         const data = await loadUniversityData(selectedUniversity);
         setUniversityData(data);
         
-        if (data) {
+        if (data && data.programs && data.programs.length > 0) {
+          console.log(`Data loaded successfully with ${data.programs.length} programs`);
           const degrees = getDegrees(data);
           setAvailableDegrees(degrees);
+          console.log(`${degrees.length} degrees found:`, degrees);
         } else {
-          toast.error("Failed to load university data");
+          console.error("No programs found in loaded data", data);
+          toast.error("Failed to load university data - No programs found");
         }
       } catch (error) {
         console.error("Error loading university data:", error);
@@ -79,6 +83,7 @@ export const AppliedProgrammes = () => {
 
     const majors = getMajorsForDegree(universityData, selectedDegree);
     setAvailableMajors(majors);
+    console.log(`Found ${majors.length} majors for ${selectedDegree}:`, majors);
   }, [universityData, selectedDegree]);
 
   // Reset selections when dependencies change
@@ -95,12 +100,14 @@ export const AppliedProgrammes = () => {
   }, [selectedDegree]);
 
   const handleUniversityChange = (value: string) => {
+    console.log(`University selected: ${value}`);
     setSelectedUniversity(value);
     setSelectedDegree("");
     setSelectedMajor("");
   };
 
   const handleDegreeChange = (value: string) => {
+    console.log(`Degree selected: ${value}`);
     setSelectedDegree(value);
     setSelectedMajor("");
   };
@@ -152,11 +159,15 @@ export const AppliedProgrammes = () => {
               <SelectValue placeholder={isLoading ? "Loading..." : t("degree.select", "Select a degree")} />
             </SelectTrigger>
             <SelectContent className={isCurrentlyDark ? 'bg-gray-700 text-white border-gray-600' : ''}>
-              {availableDegrees.map((degree) => (
-                <SelectItem key={degree} value={degree}>
-                  {degree}
-                </SelectItem>
-              ))}
+              {availableDegrees.length > 0 ? (
+                availableDegrees.map((degree) => (
+                  <SelectItem key={degree} value={degree}>
+                    {degree}
+                  </SelectItem>
+                ))
+              ) : (
+                <SelectItem value="" disabled>No degrees found</SelectItem>
+              )}
             </SelectContent>
           </Select>
         )}
@@ -167,11 +178,15 @@ export const AppliedProgrammes = () => {
               <SelectValue placeholder={isLoading ? "Loading..." : t("major.select", "Select a major")} />
             </SelectTrigger>
             <SelectContent className={isCurrentlyDark ? 'bg-gray-700 text-white border-gray-600' : ''}>
-              {availableMajors.map((major) => (
-                <SelectItem key={major.major} value={major.major}>
-                  {major.major} {major.college ? `(${major.college})` : ''}
-                </SelectItem>
-              ))}
+              {availableMajors.length > 0 ? (
+                availableMajors.map((major) => (
+                  <SelectItem key={major.major} value={major.major}>
+                    {major.major} {major.college ? `(${major.college})` : ''}
+                  </SelectItem>
+                ))
+              ) : (
+                <SelectItem value="" disabled>No majors found</SelectItem>
+              )}
             </SelectContent>
           </Select>
         )}

@@ -30,6 +30,7 @@ export const loadUniversityData = async (university: string): Promise<University
   
   // Check cache first
   if (dataCache[normalizedName]) {
+    console.log(`Using cached data for ${university}`);
     return dataCache[normalizedName];
   }
   
@@ -54,6 +55,8 @@ export const loadUniversityData = async (university: string): Promise<University
         return null;
     }
     
+    console.log(`Fetching university data from ${filePath} for ${university}`);
+    
     // Add error handling with detailed logging
     try {
       const response = await fetch(filePath);
@@ -62,6 +65,13 @@ export const loadUniversityData = async (university: string): Promise<University
       }
       
       const data = await response.json();
+      console.log(`Successfully loaded data for ${university}`, data);
+      
+      if (!data || !data.programs || !Array.isArray(data.programs)) {
+        console.error(`Invalid data format for ${university}:`, data);
+        return { programs: [] };
+      }
+      
       dataCache[normalizedName] = data;
       return data;
     } catch (error) {
@@ -79,15 +89,21 @@ export const loadUniversityData = async (university: string): Promise<University
 // Extract all degrees from university data
 export const getDegrees = (data: UniversityData | null): string[] => {
   if (!data || !Array.isArray(data.programs)) {
+    console.log('No valid programs array in data:', data);
     return [];
   }
   
   const degrees = new Set<string>();
   data.programs.forEach((program) => {
-    if (program.degree) degrees.add(program.degree);
+    if (program.degree) {
+      degrees.add(program.degree);
+      console.log(`Added degree: ${program.degree}`);
+    }
   });
   
-  return Array.from(degrees).sort();
+  const result = Array.from(degrees).sort();
+  console.log(`Found ${result.length} unique degrees:`, result);
+  return result;
 };
 
 // Get all majors for a specific degree

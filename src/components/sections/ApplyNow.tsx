@@ -40,14 +40,18 @@ export const ApplyNow = () => {
     const loadData = async () => {
       setIsLoading(true);
       try {
+        console.log(`Loading university data for: ${selectedUniversity}`);
         const data = await loadUniversityData(selectedUniversity);
         setUniversityData(data);
         
-        if (data) {
+        if (data && data.programs && data.programs.length > 0) {
+          console.log(`Data loaded successfully with ${data.programs.length} programs`);
           const degrees = getDegrees(data);
           setAvailableDegrees(degrees);
+          console.log(`${degrees.length} degrees found:`, degrees);
         } else {
-          toast.error("Failed to load university data");
+          console.error("No programs found in loaded data", data);
+          toast.error("Failed to load university data - No programs found");
         }
       } catch (error) {
         console.error("Error loading university data:", error);
@@ -69,6 +73,7 @@ export const ApplyNow = () => {
 
     const majors = getMajorsForDegree(universityData, selectedDegree);
     setAvailableMajors(majors);
+    console.log(`Found ${majors.length} majors for ${selectedDegree}:`, majors);
   }, [universityData, selectedDegree]);
 
   // Reset selections when dependencies change
@@ -85,6 +90,7 @@ export const ApplyNow = () => {
   }, [selectedDegree]);
 
   const handleUniversityChange = (university: string) => {
+    console.log(`University selected: ${university}`);
     setSelectedUniversity(university);
     setSelectedDegree("");
     setSelectedMajor("");
@@ -92,12 +98,14 @@ export const ApplyNow = () => {
   };
 
   const handleDegreeChange = (degree: string) => {
+    console.log(`Degree selected: ${degree}`);
     setSelectedDegree(degree);
     setSelectedMajor("");
     setQuestions([]);
   };
 
   const handleMajorChange = (major: string) => {
+    console.log(`Major selected: ${major}`);
     setSelectedMajor(major);
     
     // Load application questions for this programme
@@ -170,11 +178,15 @@ export const ApplyNow = () => {
                   <SelectValue placeholder={isLoading ? "Loading..." : t("apply.select_degree", "Select Degree")} />
                 </SelectTrigger>
                 <SelectContent className={isCurrentlyDark ? 'bg-gray-700 text-white border-gray-600' : ''}>
-                  {availableDegrees.map(degree => (
-                    <SelectItem key={degree} value={degree}>
-                      {degree}
-                    </SelectItem>
-                  ))}
+                  {availableDegrees.length > 0 ? (
+                    availableDegrees.map(degree => (
+                      <SelectItem key={degree} value={degree}>
+                        {degree}
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <SelectItem value="" disabled>No degrees found</SelectItem>
+                  )}
                 </SelectContent>
               </Select>
             </div>
@@ -193,11 +205,15 @@ export const ApplyNow = () => {
                   <SelectValue placeholder={isLoading ? "Loading..." : t("apply.select_programme", "Select Programme")} />
                 </SelectTrigger>
                 <SelectContent className={isCurrentlyDark ? 'bg-gray-700 text-white border-gray-600' : ''}>
-                  {availableMajors.map(major => (
-                    <SelectItem key={major.major} value={major.major}>
-                      {major.major} {major.college ? `(${major.college})` : ''}
-                    </SelectItem>
-                  ))}
+                  {availableMajors.length > 0 ? (
+                    availableMajors.map(major => (
+                      <SelectItem key={major.major} value={major.major}>
+                        {major.major} {major.college ? `(${major.college})` : ''}
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <SelectItem value="" disabled>No majors found</SelectItem>
+                  )}
                 </SelectContent>
               </Select>
             </div>
