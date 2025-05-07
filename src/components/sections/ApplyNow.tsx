@@ -185,7 +185,7 @@ export const ApplyNow = () => {
                       </SelectItem>
                     ))
                   ) : (
-                    <SelectItem value="" disabled>No degrees found</SelectItem>
+                    <SelectItem value="no-degrees" disabled>No degrees found</SelectItem>
                   )}
                 </SelectContent>
               </Select>
@@ -212,7 +212,7 @@ export const ApplyNow = () => {
                       </SelectItem>
                     ))
                   ) : (
-                    <SelectItem value="" disabled>No majors found</SelectItem>
+                    <SelectItem value="no-majors" disabled>No majors found</SelectItem>
                   )}
                 </SelectContent>
               </Select>
