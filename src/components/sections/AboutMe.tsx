@@ -134,12 +134,7 @@ export const AboutMe = () => {
           <div className={`p-6 ${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg shadow`}>
             {!quizCompleted ? (
               <div className="flex flex-col items-center justify-center py-12 space-y-6 text-center">
-                <h2 className="text-2xl font-medium">Adviseek AI needs to know more about you in order to provide the best advice</h2>
                 <Button size="lg" onClick={handleTakeQuiz} className="px-8">Take Quiz</Button>
-                <p className="text-sm text-gray-500 dark:text-gray-400 max-w-lg">
-                  Take a 50 question quiz, 25 general questions and 25 open ended questions. 
-                  It will not take more than 15 minutes.
-                </p>
               </div>
             ) : (
               <div className="py-6">
