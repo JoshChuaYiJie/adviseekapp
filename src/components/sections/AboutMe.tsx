@@ -17,7 +17,7 @@ import {
   workValueDescriptions 
 } from "@/utils/quizQuestions";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
-import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
+import { MajorRecommendations } from "./MajorRecommendations";
 
 // Type for quiz scores
 type QuizScores = Record<string, {
@@ -68,6 +68,7 @@ export const AboutMe = () => {
   const [topWorkValues, setTopWorkValues] = useState<PersonalityComponent[]>([]);
   const [riasecChartData, setRiasecChartData] = useState<ChartDataItem[]>([]);
   const [workValuesChartData, setWorkValuesChartData] = useState<ChartDataItem[]>([]);
+  const [showRecommendations, setShowRecommendations] = useState(false);
   const { t } = useTranslation();
   const navigate = useNavigate();
   
@@ -329,8 +330,6 @@ export const AboutMe = () => {
                 value={item.value} 
                 className="h-1 mt-1"
                 style={{ backgroundColor: isCurrentlyDark ? '#374151' : '#f3f4f6' }}
-                // Apply custom color to progress bar
-                indicatorClassName="bg-gradient-to-r from-purple-500 to-blue-500"
               />
             </div>
           ))}
@@ -339,6 +338,14 @@ export const AboutMe = () => {
     </div>
   );
 
+  // Toggle recommendations visibility
+  const handleToggleRecommendations = () => {
+    setShowRecommendations(prev => !prev);
+  };
+
+  // Check if we can show recommendations (have enough data)
+  const canShowRecommendations = topRiasec.length >= 3 && topWorkValues.length >= 3;
+
   return (
     <div className="w-full h-full space-y-6">
       <Tabs defaultValue="profile" className="w-full h-full">
@@ -346,6 +353,9 @@ export const AboutMe = () => {
           <TabsTrigger value="profile">About Me</TabsTrigger>
           <TabsTrigger value="explorer">Questions Explorer</TabsTrigger>
           <TabsTrigger value="resume">My Resume</TabsTrigger>
+          {canShowRecommendations && (
+            <TabsTrigger value="recommendations">Recommendations</TabsTrigger>
+          )}
         </TabsList>
         
         <TabsContent value="profile" className="w-full space-y-6">
@@ -378,6 +388,23 @@ export const AboutMe = () => {
                     workValuesChartData.length === 0
                   )}
                 </div>
+                
+                {canShowRecommendations && (
+                  <div className="mt-8 flex justify-center">
+                    <Button onClick={handleToggleRecommendations}>
+                      {showRecommendations ? "Hide Recommendations" : "View Major Recommendations"}
+                    </Button>
+                  </div>
+                )}
+                
+                {showRecommendations && canShowRecommendations && (
+                  <div className="mt-6">
+                    <MajorRecommendations 
+                      topRiasec={topRiasec} 
+                      topWorkValues={topWorkValues} 
+                    />
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -390,6 +417,18 @@ export const AboutMe = () => {
         <TabsContent value="resume" className="w-full h-full">
           <MyResume />
         </TabsContent>
+        
+        {canShowRecommendations && (
+          <TabsContent value="recommendations" className="w-full h-full">
+            <div className={`p-6 ${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg shadow w-full`}>
+              <h2 className="text-2xl font-medium mb-4">Your Major Recommendations</h2>
+              <MajorRecommendations 
+                topRiasec={topRiasec} 
+                topWorkValues={topWorkValues} 
+              />
+            </div>
+          </TabsContent>
+        )}
       </Tabs>
     </div>
   );
