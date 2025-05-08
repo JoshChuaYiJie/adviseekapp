@@ -8,9 +8,10 @@ import { RiasecChart } from "./RiasecChart";
 import { WorkValuesChart } from "./WorkValuesChart";
 import { useNavigate } from "react-router-dom";
 import { FileText } from "lucide-react";
+import { MyResume } from "./MyResume";
 
 export const AboutMe = () => {
-  const [activeTab, setActiveTab] = useState<"quiz" | "profile">("quiz");
+  const [activeTab, setActiveTab] = useState<"quiz" | "profile" | "resume">("quiz");
   const navigate = useNavigate();
 
   const handleResumeClick = () => {
@@ -40,18 +41,18 @@ export const AboutMe = () => {
             My Profile
           </Button>
           <Button 
-            variant="outline" 
-            onClick={handleResumeClick}
+            variant={activeTab === "resume" ? "default" : "outline"} 
+            onClick={() => setActiveTab("resume")}
           >
             <FileText className="mr-2 h-4 w-4" />
-            Resume
+            My Resume
           </Button>
         </div>
       </div>
 
       {activeTab === "quiz" ? (
         <QuizSegments />
-      ) : (
+      ) : activeTab === "profile" ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <RiasecChart />
           <WorkValuesChart />
@@ -99,6 +100,8 @@ export const AboutMe = () => {
             </CardFooter>
           </Card>
         </div>
+      ) : (
+        <MyResume />
       )}
     </div>
   );
