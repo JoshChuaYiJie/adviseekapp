@@ -5,6 +5,8 @@ import { useQuiz } from '@/contexts/QuizContext';
 import { QuizStep } from './QuizStep';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle, CheckCircle2, XCircle } from "lucide-react";
 
 interface QuizFormProps {
   onSubmit: () => void;
@@ -22,10 +24,37 @@ export const QuizForm: React.FC<QuizFormProps> = ({ onSubmit, onCancel, quizType
     isSubmitting, 
     error, 
     submitResponses,
-    responses
+    responses,
+    debugInfo
   } = useQuiz();
   
   const [questionsByStep, setQuestionsByStep] = useState<Array<Array<any>>>([]);
+  const [authStatus, setAuthStatus] = useState<'checking' | 'authenticated' | 'unauthenticated'>('checking');
+  const [userId, setUserId] = useState<string | null>(null);
+  const [submissionError, setSubmissionError] = useState<string | null>(null);
+  
+  // Check authentication status
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          setAuthStatus('authenticated');
+          setUserId(session.user.id);
+          console.log("User authenticated:", session.user.id);
+        } else {
+          setAuthStatus('unauthenticated');
+          setUserId(null);
+          console.log("User not authenticated");
+        }
+      } catch (err) {
+        console.error("Error checking authentication:", err);
+        setAuthStatus('unauthenticated');
+      }
+    };
+    
+    checkAuth();
+  }, []);
   
   // Group questions into steps (5 questions per step)
   useEffect(() => {
@@ -58,11 +87,28 @@ export const QuizForm: React.FC<QuizFormProps> = ({ onSubmit, onCancel, quizType
     }
   };
   
-  // Handle form submission
+  // Handle form submission with enhanced error handling
   const handleSubmit = async () => {
     try {
+      setSubmissionError(null);
+      
+      // Check authentication status before submitting
+      if (authStatus !== 'authenticated') {
+        console.warn("Attempting to submit quiz without authentication");
+        toast({
+          title: "Authentication required",
+          description: "You need to be logged in to save your responses permanently",
+          variant: "warning"
+        });
+      }
+      
       console.log(`Submitting quiz responses with type: ${quizType || 'general'}`);
       console.log('Current responses:', responses);
+      console.log('Response count:', Object.keys(responses).length);
+      
+      // Log current authentication state
+      const { data: { session } } = await supabase.auth.getSession();
+      console.log("Auth session before submit:", session ? `User ID: ${session.user.id}` : "No active session");
       
       await submitResponses(quizType);
       
@@ -73,12 +119,15 @@ export const QuizForm: React.FC<QuizFormProps> = ({ onSubmit, onCancel, quizType
       
       onSubmit();
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.error("Error during quiz submission:", error);
+      setSubmissionError(errorMessage);
+      
       toast({
         title: "Submission failed",
-        description: "There was a problem saving your responses. Please try again.",
+        description: "There was a problem saving your responses. See details below.",
         variant: "destructive"
       });
-      console.error("Error during quiz submission:", error);
     }
   };
   
@@ -98,6 +147,7 @@ export const QuizForm: React.FC<QuizFormProps> = ({ onSubmit, onCancel, quizType
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center p-8 min-h-[60vh]">
+        <XCircle className="h-12 w-12 text-red-500 mb-4" />
         <h2 className="text-2xl font-bold text-red-600">Error</h2>
         <p className="mt-4 text-gray-700">{error}</p>
         <Button onClick={onCancel} className="mt-8">Close</Button>
@@ -107,6 +157,41 @@ export const QuizForm: React.FC<QuizFormProps> = ({ onSubmit, onCancel, quizType
   
   return (
     <div className="p-6">
+      {/* Authentication status indicator */}
+      {authStatus === 'checking' ? (
+        <Alert className="mb-4 bg-amber-50 border-amber-200">
+          <AlertCircle className="h-4 w-4 text-amber-500" />
+          <AlertTitle>Checking authentication status...</AlertTitle>
+        </Alert>
+      ) : authStatus === 'unauthenticated' ? (
+        <Alert className="mb-4 bg-amber-50 border-amber-200">
+          <AlertCircle className="h-4 w-4 text-amber-500" />
+          <AlertTitle>Not logged in</AlertTitle>
+          <AlertDescription>
+            Your responses will only be saved locally. Log in to save your progress across devices.
+          </AlertDescription>
+        </Alert>
+      ) : (
+        <Alert className="mb-4 bg-green-50 border-green-200">
+          <CheckCircle2 className="h-4 w-4 text-green-500" />
+          <AlertTitle>Authenticated as {userId}</AlertTitle>
+          <AlertDescription>
+            Your responses will be saved to your account.
+          </AlertDescription>
+        </Alert>
+      )}
+      
+      {/* Submission error display */}
+      {submissionError && (
+        <Alert className="mb-4 bg-red-50 border-red-200">
+          <XCircle className="h-4 w-4 text-red-500" />
+          <AlertTitle>Error saving responses</AlertTitle>
+          <AlertDescription>
+            {submissionError}
+          </AlertDescription>
+        </Alert>
+      )}
+      
       {/* Progress indicator */}
       <div className="mb-8">
         <div className="flex justify-between items-center mb-2">
@@ -165,6 +250,18 @@ export const QuizForm: React.FC<QuizFormProps> = ({ onSubmit, onCancel, quizType
           )}
         </div>
       </div>
+      
+      {/* Debug information */}
+      {debugInfo && process.env.NODE_ENV === 'development' && (
+        <div className="mt-8 p-4 bg-gray-100 rounded-md text-xs overflow-auto max-h-60">
+          <details>
+            <summary className="font-mono font-bold cursor-pointer">Debug Information</summary>
+            <pre className="mt-2 whitespace-pre-wrap">
+              {JSON.stringify(debugInfo, null, 2)}
+            </pre>
+          </details>
+        </div>
+      )}
     </div>
   );
 };

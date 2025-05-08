@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -9,6 +10,18 @@ import { useToast } from "@/hooks/use-toast";
 import { useQuizQuestions, McqQuestion } from "@/utils/quizQuestions";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { supabase } from "@/integrations/supabase/client";
+import { 
+  AlertCircle, 
+  CheckCircle2, 
+  XCircle,
+  AlertTriangle,
+  Bug
+} from "lucide-react";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { Card } from "@/components/ui/card";
+
+// Import debugging helper
+import { validateUserResponsesTable, testInsertResponse } from "@/contexts/quiz/utils/databaseHelpers";
 
 const QuizQuestion = ({ 
   question, 
@@ -93,10 +106,26 @@ const SegmentedQuiz = () => {
   const [submitting, setSubmitting] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [userId, setUserId] = useState<string | null>(null);
+  const [authStatus, setAuthStatus] = useState<'checking' | 'authenticated' | 'unauthenticated'>('checking');
+  const [debugLog, setDebugLog] = useState<Array<{timestamp: Date, message: string, data?: any}>>([]);
+  const [showDebug, setShowDebug] = useState(false);
+  const [validationResults, setValidationResults] = useState<any>(null);
+  const [submissionError, setSubmissionError] = useState<string | null>(null);
   const questionsRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
   const { isCurrentlyDark } = useTheme();
+  
+  // Add a debug log entry
+  const addDebugLog = (message: string, data?: any) => {
+    const entry = { 
+      timestamp: new Date(), 
+      message, 
+      data 
+    };
+    console.log(`DEBUG: ${message}`, data);
+    setDebugLog(prev => [...prev, entry]);
+  };
   
   useEffect(() => {
     const handleScroll = () => {
@@ -125,12 +154,38 @@ const SegmentedQuiz = () => {
   // Check for user authentication
   useEffect(() => {
     const checkUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setUserId(session?.user?.id || null);
-      
-      if (session?.user && segmentId) {
-        // Load previously saved answers for this segment
-        loadPreviousAnswers(session.user.id);
+      try {
+        setAuthStatus('checking');
+        addDebugLog("Checking user authentication status");
+        
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) {
+          addDebugLog("Error getting session", sessionError);
+          setAuthStatus('unauthenticated');
+          return;
+        }
+        
+        if (session?.user) {
+          setUserId(session.user.id);
+          setAuthStatus('authenticated');
+          addDebugLog("User is authenticated", { 
+            userId: session.user.id, 
+            email: session.user.email 
+          });
+          
+          if (segmentId) {
+            // Load previously saved answers for this segment
+            loadPreviousAnswers(session.user.id);
+          }
+        } else {
+          setUserId(null);
+          setAuthStatus('unauthenticated');
+          addDebugLog("No active session found");
+        }
+      } catch (err) {
+        addDebugLog("Exception in checkUser", err);
+        setAuthStatus('unauthenticated');
       }
     };
     
@@ -138,7 +193,9 @@ const SegmentedQuiz = () => {
     
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      addDebugLog("Auth state changed", { event, userId: session?.user?.id });
       setUserId(session?.user?.id || null);
+      setAuthStatus(session?.user ? 'authenticated' : 'unauthenticated');
     });
     
     return () => {
@@ -146,10 +203,38 @@ const SegmentedQuiz = () => {
     };
   }, [segmentId]);
   
+  // Validate DB setup
+  useEffect(() => {
+    const validateDb = async () => {
+      if (authStatus === 'authenticated') {
+        try {
+          addDebugLog("Validating database configuration");
+          const results = await validateUserResponsesTable();
+          setValidationResults(results);
+          addDebugLog("Database validation results", results);
+          
+          if (!results.success) {
+            toast({
+              title: "Database Configuration Warning",
+              description: "There might be issues with the database setup that could affect saving your responses.",
+              variant: "warning"
+            });
+          }
+        } catch (err) {
+          addDebugLog("Error during database validation", err);
+        }
+      }
+    };
+    
+    validateDb();
+  }, [authStatus, toast]);
+  
   const loadPreviousAnswers = async (userId: string) => {
     if (!segmentId) return;
     
     try {
+      addDebugLog("Loading previous answers", { userId, segmentId });
+      
       // Get user responses for this segment
       const { data, error } = await supabase
         .from('user_responses')
@@ -158,11 +243,18 @@ const SegmentedQuiz = () => {
         .eq('quiz_type', segmentId);
       
       if (error) {
-        console.error('Error loading previous answers:', error);
+        addDebugLog("Error loading previous answers", error);
+        toast({
+          title: "Error",
+          description: `Failed to load previous answers: ${error.message}`,
+          variant: "destructive"
+        });
         return;
       }
       
       if (data && data.length > 0) {
+        addDebugLog(`Found ${data.length} previous responses`, data.slice(0, 2));
+        
         const savedAnswers: Record<string, string> = {};
         const savedScores: Record<string, number> = {};
         
@@ -183,9 +275,11 @@ const SegmentedQuiz = () => {
           title: "Previous answers loaded",
           description: "Your previous responses for this quiz have been loaded.",
         });
+      } else {
+        addDebugLog("No previous answers found");
       }
     } catch (err) {
-      console.error("Error loading previous answers:", err);
+      addDebugLog("Exception in loadPreviousAnswers", err);
     }
   };
   
@@ -206,6 +300,14 @@ const SegmentedQuiz = () => {
       ...prev,
       [questionId]: score
     }));
+    
+    addDebugLog("Answer changed", { 
+      questionId, 
+      answer, 
+      score,
+      totalAnswered: Object.keys({...answers, [questionId]: answer}).length,
+      totalQuestions: questions.length
+    });
   };
   
   const handleQuestionVisible = () => {
@@ -237,6 +339,27 @@ const SegmentedQuiz = () => {
     return true;
   };
   
+  const testInsert = async () => {
+    try {
+      addDebugLog("Running manual insert test");
+      const result = await testInsertResponse();
+      addDebugLog("Test insert result", result);
+      
+      toast({
+        title: result.success ? "Test successful" : "Test failed",
+        description: result.message,
+        variant: result.success ? "default" : "destructive"
+      });
+    } catch (err) {
+      addDebugLog("Exception in testInsert", err);
+      toast({
+        title: "Test error",
+        description: String(err),
+        variant: "destructive"
+      });
+    }
+  };
+  
   const handleSubmit = async () => {
     // Check if all questions have answers
     if (!findFirstUnansweredQuestion()) {
@@ -244,9 +367,10 @@ const SegmentedQuiz = () => {
     }
     
     setSubmitting(true);
+    setSubmissionError(null);
     
     try {
-      // Save answers and scores to localStorage
+      // Save answers and scores to localStorage for backup
       localStorage.setItem(`quiz_answers_${segmentId}`, JSON.stringify(answers));
       localStorage.setItem(`quiz_scores_${segmentId}`, JSON.stringify(scores));
       
@@ -254,15 +378,36 @@ const SegmentedQuiz = () => {
       const totalScore = Object.values(scores).reduce((sum, score) => sum + score, 0);
       localStorage.setItem(`quiz_total_score_${segmentId}`, totalScore.toString());
       
-      // Mark this segment as completed
+      // Mark this segment as completed in localStorage
       const completedSegments = JSON.parse(localStorage.getItem("completed_quiz_segments") || "[]");
       if (!completedSegments.includes(segmentId)) {
         completedSegments.push(segmentId);
         localStorage.setItem("completed_quiz_segments", JSON.stringify(completedSegments));
       }
       
+      addDebugLog("Local data saved", { 
+        answers: Object.keys(answers).length,
+        scores: Object.keys(scores).length,
+        totalScore,
+        completedSegments
+      });
+      
       // If user is logged in, save responses to Supabase as well
       if (userId && segmentId) {
+        // Get the current authentication status before saving
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (!session) {
+          addDebugLog("Session lost before saving to Supabase");
+          setSubmissionError("Your authentication session expired. Please login again to save your answers to your account.");
+          throw new Error("Authentication session expired");
+        }
+        
+        addDebugLog("Verified authentication before saving", { 
+          userId: session.user.id,
+          segmentId 
+        });
+        
         // Format the data for submission
         const formattedResponses = Object.entries(answers).map(([questionId, response]) => ({
           user_id: userId,
@@ -272,30 +417,67 @@ const SegmentedQuiz = () => {
           quiz_type: segmentId
         }));
         
-        console.log(`Saving ${formattedResponses.length} responses to Supabase...`);
-        console.log('Sample response:', JSON.stringify(formattedResponses[0]));
+        addDebugLog(`Saving ${formattedResponses.length} responses to Supabase`, 
+          formattedResponses.length > 0 ? formattedResponses[0] : null
+        );
         
         // Use upsert to handle duplicates gracefully
+        let successCount = 0;
+        let errorCount = 0;
+        const errors = [];
+        
         for (let i = 0; i < formattedResponses.length; i++) {
           const response = formattedResponses[i];
-          const { error } = await supabase
+          
+          addDebugLog(`Saving response ${i+1}/${formattedResponses.length}`, {
+            question_id: response.question_id,
+            response_length: response.response ? response.response.length : 0,
+            score: response.score
+          });
+          
+          const { data, error } = await supabase
             .from('user_responses')
             .upsert(response, {
               onConflict: 'user_id,question_id',
               ignoreDuplicates: false
-            });
+            })
+            .select();
               
           if (error) {
-            console.error(`Error saving response ${i+1}:`, error);
-            toast({
-              title: "Warning",
-              description: `Problem saving some answers. ${error.message}`,
-              variant: "destructive"
+            addDebugLog(`Error saving response ${i+1}/${formattedResponses.length}`, {
+              error: {
+                code: error.code,
+                message: error.message,
+                details: error.details
+              }
             });
+            errorCount++;
+            errors.push(error);
+          } else {
+            successCount++;
+          }
+        }
+        
+        addDebugLog("Save results", { successCount, errorCount });
+
+        if (errorCount > 0) {
+          const firstError = errors[0];
+          toast({
+            title: "Warning",
+            description: `Saved ${successCount} of ${formattedResponses.length} answers. Some errors occurred.`,
+            variant: "warning"
+          });
+          
+          if (successCount === 0) {
+            // All saves failed
+            setSubmissionError(`Failed to save responses: ${firstError.message}`);
+            throw new Error(`Failed to save responses: ${firstError.message}`);
           }
         }
 
         // Also save the completion status
+        addDebugLog("Saving quiz completion status", { userId, segmentId });
+        
         const { error: completionError } = await supabase
           .from('quiz_completion')
           .upsert({
@@ -308,11 +490,12 @@ const SegmentedQuiz = () => {
           });
             
         if (completionError) {
-          console.error("Error saving quiz completion:", completionError);
+          addDebugLog("Error saving quiz completion", completionError);
         } else {
-          console.log("Quiz completion status saved successfully");
+          addDebugLog("Quiz completion status saved successfully");
         }
       } else if (!userId) {
+        addDebugLog("Not logged in, only saved locally");
         toast({
           title: "Not logged in",
           description: "Your answers are saved locally. Login to sync across devices.",
@@ -328,7 +511,13 @@ const SegmentedQuiz = () => {
       // Redirect to dashboard
       navigate("/?section=about-me");
     } catch (error) {
-      console.error("Error saving quiz answers:", error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      addDebugLog("Error saving quiz answers", error);
+      
+      if (!submissionError) {
+        setSubmissionError(errorMessage);
+      }
+      
       toast({
         title: "Error",
         description: "Failed to save your answers. Please try again.",
@@ -371,7 +560,37 @@ const SegmentedQuiz = () => {
             </span>
           </div>
           <Progress value={progress} className="h-2 bg-purple-100 dark:bg-purple-900" />
+          
+          {/* Authentication status indicator */}
+          <div className="mt-2">
+            {authStatus === 'checking' ? (
+              <div className="flex items-center text-xs text-amber-600">
+                <AlertCircle className="h-3 w-3 mr-1" />
+                <span>Checking authentication...</span>
+              </div>
+            ) : authStatus === 'authenticated' ? (
+              <div className="flex items-center text-xs text-green-600">
+                <CheckCircle2 className="h-3 w-3 mr-1" />
+                <span>Logged in as {userId?.substring(0, 8)}...</span>
+              </div>
+            ) : (
+              <div className="flex items-center text-xs text-amber-600">
+                <AlertTriangle className="h-3 w-3 mr-1" />
+                <span>Not logged in - responses only saved locally</span>
+              </div>
+            )}
+          </div>
         </div>
+        
+        {submissionError && (
+          <Alert className="mt-4 mx-4 bg-red-50 dark:bg-red-900/20 border-red-200">
+            <XCircle className="h-4 w-4 text-red-500" />
+            <AlertTitle>Error saving responses</AlertTitle>
+            <AlertDescription>
+              {submissionError}
+            </AlertDescription>
+          </Alert>
+        )}
         
         <div ref={questionsRef} className="pb-24">
           {questions.map((question, index) => (
@@ -387,7 +606,89 @@ const SegmentedQuiz = () => {
           ))}
         </div>
         
-        <div className="fixed bottom-8 flex justify-center w-full z-40">
+        <div className="fixed bottom-8 flex flex-col items-center w-full z-40">
+          {/* Debug controls (only in development) */}
+          {process.env.NODE_ENV === 'development' && (
+            <div className="mb-4 flex space-x-2">
+              <Button 
+                size="sm" 
+                variant="outline"
+                onClick={() => setShowDebug(!showDebug)}
+                className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md text-xs"
+              >
+                <Bug className="h-3 w-3 mr-1" />
+                {showDebug ? 'Hide Debug' : 'Show Debug'}
+              </Button>
+              
+              {authStatus === 'authenticated' && (
+                <Button 
+                  size="sm" 
+                  variant="outline"
+                  onClick={testInsert}
+                  className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md text-xs"
+                >
+                  <Bug className="h-3 w-3 mr-1" />
+                  Test Insert
+                </Button>
+              )}
+            </div>
+          )}
+          
+          {/* Debug info panel */}
+          {showDebug && (
+            <Card className="w-11/12 max-w-3xl mb-4 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md text-xs overflow-hidden shadow-lg">
+              <ScrollArea className="h-60">
+                <div className="p-3">
+                  <h3 className="font-bold mb-2">Debug Information</h3>
+                  
+                  <div className="mb-3">
+                    <h4 className="font-semibold">Authentication</h4>
+                    <div className="pl-2">
+                      <p>Status: {authStatus}</p>
+                      <p>User ID: {userId || 'None'}</p>
+                    </div>
+                  </div>
+                  
+                  <div className="mb-3">
+                    <h4 className="font-semibold">Quiz Data</h4>
+                    <div className="pl-2">
+                      <p>Quiz Type: {segmentId}</p>
+                      <p>Questions: {questions.length}</p>
+                      <p>Answered: {Object.keys(answers).length}</p>
+                      <p>Progress: {progress.toFixed(1)}%</p>
+                    </div>
+                  </div>
+                  
+                  {validationResults && (
+                    <div className="mb-3">
+                      <h4 className="font-semibold">Database Validation</h4>
+                      <div className="pl-2">
+                        <p>RLS Enabled: {validationResults.hasRlsEnabled ? '✅' : '❌'}</p>
+                        <p>Unique Constraint: {validationResults.hasUniqueConstraint ? '✅' : '❌'}</p>
+                        <p>Correct Policy: {validationResults.hasCorrectPolicy ? '✅' : '❌'}</p>
+                        <p>{validationResults.details}</p>
+                      </div>
+                    </div>
+                  )}
+                  
+                  <div>
+                    <h4 className="font-semibold">Log ({debugLog.length} entries)</h4>
+                    <div className="pl-2">
+                      {debugLog.map((entry, i) => (
+                        <div key={i} className="mb-1 font-mono">
+                          <span className="text-xs text-gray-500">
+                            {entry.timestamp.toLocaleTimeString()} - 
+                          </span>
+                          <span className="ml-1">{entry.message}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </ScrollArea>
+            </Card>
+          )}
+          
           <Button 
             onClick={handleSubmit} 
             disabled={submitting || Object.keys(answers).length !== questions.length}

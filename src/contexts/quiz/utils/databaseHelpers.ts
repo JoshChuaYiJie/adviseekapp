@@ -7,14 +7,179 @@ export function fromTable(tableName: TableName) {
   return supabase.from(tableName);
 }
 
-// Get current user ID helper
+// Get current user ID helper with enhanced debugging
 export const getUserId = async (): Promise<string | null> => {
   try {
-    const { data: { session } } = await supabase.auth.getSession();
+    // Fetch the current session with detailed logging
+    console.log("Fetching current user session...");
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    
+    if (sessionError) {
+      console.error("Error getting session:", sessionError);
+      return null;
+    }
+    
+    if (!session) {
+      console.log("No active session found - user is not authenticated");
+      return null;
+    }
+    
+    console.log("User authenticated with ID:", session.user?.id);
     return session?.user?.id || null;
   } catch (error) {
-    console.error("Error getting user ID:", error);
+    console.error("Exception in getUserId:", error);
     return null;
+  }
+};
+
+// Function to validate RLS policies and constraints
+export const validateUserResponsesTable = async (): Promise<{
+  success: boolean;
+  hasUniqueConstraint: boolean;
+  hasRlsEnabled: boolean;
+  hasCorrectPolicy: boolean;
+  details: string;
+}> => {
+  try {
+    console.log("Validating user_responses table configuration...");
+    
+    // Check for RLS enabled
+    const { data: rlsData, error: rlsError } = await supabase
+      .rpc('check_table_rls', { table_name: 'user_responses' });
+      
+    if (rlsError) {
+      console.error("Error checking RLS:", rlsError);
+      return {
+        success: false,
+        hasUniqueConstraint: false,
+        hasRlsEnabled: false,
+        hasCorrectPolicy: false,
+        details: `Error checking RLS: ${rlsError.message}`
+      };
+    }
+    
+    const hasRlsEnabled = rlsData === true;
+    console.log("RLS enabled on user_responses:", hasRlsEnabled);
+    
+    // Check for unique constraint on user_id and question_id
+    const { data: constraintData, error: constraintError } = await supabase
+      .rpc('check_unique_constraint', { 
+        table_name: 'user_responses', 
+        column_names: ['user_id', 'question_id'] 
+      });
+      
+    if (constraintError) {
+      console.error("Error checking constraint:", constraintError);
+      return {
+        success: false,
+        hasUniqueConstraint: false,
+        hasRlsEnabled: hasRlsEnabled,
+        hasCorrectPolicy: false,
+        details: `Error checking constraint: ${constraintError.message}`
+      };
+    }
+    
+    const hasUniqueConstraint = constraintData === true;
+    console.log("Unique constraint exists on (user_id, question_id):", hasUniqueConstraint);
+    
+    // Check for correct RLS policy
+    const { data: policyData, error: policyError } = await supabase
+      .rpc('check_policy_exists', { 
+        table_name: 'user_responses', 
+        policy_name: 'Users can insert their own responses' 
+      });
+      
+    if (policyError) {
+      console.error("Error checking policy:", policyError);
+      return {
+        success: false,
+        hasUniqueConstraint: hasUniqueConstraint,
+        hasRlsEnabled: hasRlsEnabled,
+        hasCorrectPolicy: false,
+        details: `Error checking policy: ${policyError.message}`
+      };
+    }
+    
+    const hasCorrectPolicy = policyData === true;
+    console.log("Correct RLS policy exists:", hasCorrectPolicy);
+    
+    return {
+      success: true,
+      hasUniqueConstraint,
+      hasRlsEnabled,
+      hasCorrectPolicy,
+      details: `Table validated: RLS=${hasRlsEnabled}, UniqueConstraint=${hasUniqueConstraint}, CorrectPolicy=${hasCorrectPolicy}`
+    };
+  } catch (error) {
+    console.error("Exception in validateUserResponsesTable:", error);
+    return {
+      success: false,
+      hasUniqueConstraint: false,
+      hasRlsEnabled: false,
+      hasCorrectPolicy: false,
+      details: `Exception: ${error instanceof Error ? error.message : String(error)}`
+    };
+  }
+};
+
+// Test function to manually insert a response to verify permissions
+export const testInsertResponse = async (): Promise<{
+  success: boolean;
+  message: string;
+  details: any;
+}> => {
+  try {
+    const userId = await getUserId();
+    
+    if (!userId) {
+      return {
+        success: false,
+        message: "Cannot test insert: No authenticated user found",
+        details: null
+      };
+    }
+    
+    // Create a test response
+    const testResponse = {
+      user_id: userId,
+      question_id: 9999, // Use a high number unlikely to conflict
+      response: "This is a test response",
+      quiz_type: "test",
+      score: 0
+    };
+    
+    console.log("Attempting test insert with data:", testResponse);
+    
+    const { data, error } = await supabase
+      .from('user_responses')
+      .upsert(testResponse, { 
+        onConflict: 'user_id,question_id',
+        ignoreDuplicates: false 
+      })
+      .select();
+      
+    if (error) {
+      console.error("Test insert failed:", error);
+      return {
+        success: false,
+        message: `Test insert failed: ${error.message}`,
+        details: error
+      };
+    }
+    
+    console.log("Test insert succeeded:", data);
+    return {
+      success: true,
+      message: "Test insert successful",
+      details: data
+    };
+  } catch (error) {
+    console.error("Exception in testInsertResponse:", error);
+    return {
+      success: false,
+      message: `Exception during test insert: ${error instanceof Error ? error.message : String(error)}`,
+      details: error
+    };
   }
 };
 
