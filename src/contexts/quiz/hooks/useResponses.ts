@@ -24,12 +24,19 @@ export const useResponses = () => {
 
     return Object.entries(responses).map(([questionId, response]) => {
       const isArray = Array.isArray(response);
+      // Calculate score based on response
+      let score = 0;
+      if (!isArray && !isNaN(parseInt(response as string))) {
+        score = parseInt(response as string);
+      }
+      
       return {
         user_id: userId,
         question_id: parseInt(questionId),
         response: isArray ? null : response as string,
-        response_array: isArray ? JSON.stringify(response) : null,
-        quiz_type: quizType || null // Store which quiz this response is for
+        response_array: isArray ? response : null,
+        quiz_type: quizType || null, // Store which quiz this response is for
+        score: score // Add score field for analysis
       };
     });
   };
@@ -39,6 +46,10 @@ export const useResponses = () => {
     try {
       setIsSubmitting(true);
       const formattedResponses = await formatResponsesForDb(quizType);
+      
+      if (formattedResponses.length === 0) {
+        throw new Error("No responses to submit");
+      }
       
       // Save responses to database using upsert to handle duplicates gracefully
       const { error: responseError } = await fromTable('user_responses')
@@ -50,6 +61,8 @@ export const useResponses = () => {
       if (responseError) {
         throw new Error(`Failed to save responses: ${responseError.message}`);
       }
+
+      console.log(`Successfully saved ${formattedResponses.length} responses for quiz type: ${quizType || 'general'}`);
 
       // Return user ID for further processing
       return await getUserId();
@@ -64,7 +77,7 @@ export const useResponses = () => {
       const userId = await getUserId();
       if (!userId) return;
 
-      // Using the supabase client directly to ensure type safety
+      // Using the supabase client directly
       const { data, error } = await supabase
         .from('user_responses')
         .select('*')
@@ -82,7 +95,7 @@ export const useResponses = () => {
           // Handle both string responses and array responses
           if (item.response_array) {
             try {
-              loadedResponses[item.question_id] = JSON.parse(item.response_array as string);
+              loadedResponses[item.question_id] = item.response_array;
             } catch (e) {
               console.error('Error parsing response array:', e);
             }

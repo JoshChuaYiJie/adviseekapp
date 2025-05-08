@@ -1,18 +1,18 @@
 
 import { Module } from '@/integrations/supabase/client';
 
-export interface Recommendation {
-  module_id: number;
-  reason: string;
-  module?: Module;
-}
+export type RecommendedModule = {
+  module: Module;
+  reasoning: string[];
+  rating?: number;
+};
 
-export interface FeedbackItem {
+export type UserFeedbackItem = {
+  id: number;
+  user_id: string;
   module_id: number;
   rating: number;
-}
+  created_at: string;
+};
 
-export interface ModuleSelection {
-  module: Module;
-  reason: string;
-}
+export type ModuleSelection = Module;

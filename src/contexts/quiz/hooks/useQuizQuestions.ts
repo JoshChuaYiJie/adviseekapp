@@ -1,80 +1,71 @@
 
 import { useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 import { QuizQuestion } from '@/integrations/supabase/client';
-import { fromTable, getUserId } from '../utils/databaseHelpers';
-import { getPredefinedQuestions } from '../utils/predefinedQuestions';
-import { useToast } from '@/hooks/use-toast';
+import predefinedQuestions from '../utils/predefinedQuestions';
 
-export const useQuizQuestions = () => {
+export const useQuizQuestions = (segment?: string) => {
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { toast } = useToast();
 
-  // Insert predefined quiz questions
-  const insertPredefinedQuestions = async () => {
-    try {
-      const { error } = await fromTable('quiz_questions')
-        .insert(getPredefinedQuestions());
-      
-      if (error) {
-        throw new Error(`Failed to insert predefined questions: ${error.message}`);
-      }
-    } catch (err) {
-      console.error("Error inserting predefined questions:", err);
-      throw err;
-    }
-  };
-  
-  // Load quiz questions
   useEffect(() => {
-    const loadQuestions = async () => {
+    if (!segment) {
+      setQuestions([]);
+      setIsLoading(false);
+      return;
+    }
+
+    const fetchQuestions = async () => {
       try {
         setIsLoading(true);
-        
-        // First try to fetch questions from Supabase
-        const { data: existingQuestions, error } = await fromTable('quiz_questions')
-          .select()
-          .order('id');
+        setError(null);
+
+        // Try to fetch questions from the database first
+        const { data, error } = await supabase
+          .from('quiz_questions')
+          .select('*')
+          .eq('section', segment);
         
         if (error) {
-          console.error("Error loading questions:", error);
-          throw new Error(`Failed to load questions: ${error.message}`);
-        }
-        
-        // If no questions exist, we need to insert our predefined questions
-        if (!existingQuestions || existingQuestions.length === 0) {
-          // Insert predefined questions
-          await insertPredefinedQuestions();
+          console.warn(`Error fetching questions from database: ${error.message}. Falling back to predefined questions.`);
           
-          // Fetch the newly inserted questions
-          const { data: newQuestions, error: newError } = await fromTable('quiz_questions')
-            .select()
-            .order('id');
-            
-          if (newError) {
-            throw new Error(`Failed to load new questions: ${newError.message}`);
+          // Fall back to predefined questions
+          if (segment in predefinedQuestions) {
+            const sectionQuestions = predefinedQuestions[segment as keyof typeof predefinedQuestions];
+            setQuestions(sectionQuestions);
+          } else {
+            throw new Error(`No questions found for segment: ${segment}`);
           }
-          
-          setQuestions((newQuestions as QuizQuestion[]) || []);
+        } else if (data && data.length > 0) {
+          // Use data from database if available
+          setQuestions(data as QuizQuestion[]);
+          console.log(`Loaded ${data.length} questions for ${segment} from database`);
         } else {
-          setQuestions(existingQuestions as QuizQuestion[]);
+          // Fall back to predefined questions
+          if (segment in predefinedQuestions) {
+            const sectionQuestions = predefinedQuestions[segment as keyof typeof predefinedQuestions];
+            setQuestions(sectionQuestions);
+            console.log(`Loaded ${sectionQuestions.length} predefined questions for ${segment}`);
+          } else {
+            throw new Error(`No questions found for segment: ${segment}`);
+          }
         }
       } catch (err) {
-        console.error("Error in loadQuestions:", err);
-        setError(err instanceof Error ? err.message : "Failed to load questions");
-        toast({
-          title: "Error",
-          description: "Failed to load quiz questions. Please try refreshing.",
-          variant: "destructive",
-        });
+        const errorMessage = err instanceof Error ? err.message : 'Failed to load quiz questions';
+        setError(errorMessage);
+        console.error(errorMessage);
       } finally {
         setIsLoading(false);
       }
     };
-    
-    loadQuestions();
-  }, [toast]);
 
-  return { questions, isLoading, error };
+    fetchQuestions();
+  }, [segment]);
+
+  return {
+    questions,
+    isLoading,
+    error
+  };
 };
