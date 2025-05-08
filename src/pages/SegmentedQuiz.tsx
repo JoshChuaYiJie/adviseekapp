@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -9,6 +8,7 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { useToast } from "@/hooks/use-toast";
 import { useQuizQuestions, McqQuestion } from "@/utils/quizQuestions";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { supabase } from "@/integrations/supabase/client";
 
 const QuizQuestion = ({ 
   question, 
@@ -92,6 +92,7 @@ const SegmentedQuiz = () => {
   const [progress, setProgress] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [userId, setUserId] = useState<string | null>(null);
   const questionsRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -120,6 +121,73 @@ const SegmentedQuiz = () => {
       setProgress((answered / questions.length) * 100);
     }
   }, [answers, questions.length]);
+
+  // Check for user authentication
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setUserId(session?.user?.id || null);
+      
+      if (session?.user && segmentId) {
+        // Load previously saved answers for this segment
+        loadPreviousAnswers(session.user.id);
+      }
+    };
+    
+    checkUser();
+    
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setUserId(session?.user?.id || null);
+    });
+    
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [segmentId]);
+  
+  const loadPreviousAnswers = async (userId: string) => {
+    if (!segmentId) return;
+    
+    try {
+      // Get user responses for this segment
+      const { data, error } = await supabase
+        .from('user_responses')
+        .select('question_id, response, score')
+        .eq('user_id', userId)
+        .eq('quiz_type', segmentId);
+      
+      if (error) {
+        console.error('Error loading previous answers:', error);
+        return;
+      }
+      
+      if (data && data.length > 0) {
+        const savedAnswers: Record<string, string> = {};
+        const savedScores: Record<string, number> = {};
+        
+        data.forEach(item => {
+          if (item.response) {
+            savedAnswers[item.question_id] = item.response;
+          }
+          
+          if (item.score) {
+            savedScores[item.question_id] = item.score;
+          }
+        });
+        
+        setAnswers(savedAnswers);
+        setScores(savedScores);
+        
+        toast({
+          title: "Previous answers loaded",
+          description: "Your previous responses for this quiz have been loaded.",
+        });
+      }
+    } catch (err) {
+      console.error("Error loading previous answers:", err);
+    }
+  };
   
   const handleAnswerChange = (questionId: string, answer: string) => {
     if (!questions) return;
@@ -191,6 +259,52 @@ const SegmentedQuiz = () => {
       if (!completedSegments.includes(segmentId)) {
         completedSegments.push(segmentId);
         localStorage.setItem("completed_quiz_segments", JSON.stringify(completedSegments));
+      }
+      
+      // If user is logged in, save responses to Supabase as well
+      if (userId && segmentId) {
+        // Format the data for submission
+        const formattedResponses = Object.entries(answers).map(([questionId, response]) => ({
+          user_id: userId,
+          question_id: parseInt(questionId),
+          response: response,
+          score: scores[questionId] || 0,
+          quiz_type: segmentId
+        }));
+        
+        // Use upsert to handle duplicates gracefully
+        const { error } = await supabase
+          .from('user_responses')
+          .upsert(formattedResponses, {
+            onConflict: 'user_id,question_id',
+            ignoreDuplicates: false
+          });
+          
+        if (error) {
+          console.error("Error saving responses to Supabase:", error);
+          toast({
+            title: "Warning",
+            description: "Your answers were saved locally, but we couldn't sync them to your account.",
+            variant: "destructive"
+          });
+        } else {
+          // Also save the completion status
+          await supabase.from('quiz_completion')
+            .upsert({
+              user_id: userId,
+              quiz_type: segmentId,
+              completed_at: new Date().toISOString()
+            }, {
+              onConflict: 'user_id,quiz_type',
+              ignoreDuplicates: false
+            });
+        }
+      } else if (!userId) {
+        toast({
+          title: "Not logged in",
+          description: "Your answers are saved locally. Login to sync across devices.",
+          variant: "default"
+        });
       }
       
       toast({

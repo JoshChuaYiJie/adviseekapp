@@ -15,7 +15,7 @@ export const useResponses = () => {
   };
 
   // Format responses for database
-  const formatResponsesForDb = async () => {
+  const formatResponsesForDb = async (quizType?: string) => {
     const userId = await getUserId();
     if (!userId) {
       throw new Error("You must be logged in to submit responses");
@@ -27,20 +27,24 @@ export const useResponses = () => {
         user_id: userId,
         question_id: parseInt(questionId),
         response: isArray ? null : response as string,
-        response_array: isArray ? JSON.stringify(response) : null
+        response_array: isArray ? JSON.stringify(response) : null,
+        quiz_type: quizType || null // Store which quiz this response is for
       };
     });
   };
 
   // Submit responses to database
-  const submitResponses = async () => {
+  const submitResponses = async (quizType?: string) => {
     try {
       setIsSubmitting(true);
-      const formattedResponses = await formatResponsesForDb();
+      const formattedResponses = await formatResponsesForDb(quizType);
       
-      // Save responses to database
+      // Save responses to database using upsert to handle duplicates gracefully
       const { error: responseError } = await fromTable('user_responses')
-        .insert(formattedResponses);
+        .upsert(formattedResponses, { 
+          onConflict: 'user_id,question_id',
+          ignoreDuplicates: false 
+        });
       
       if (responseError) {
         throw new Error(`Failed to save responses: ${responseError.message}`);
@@ -53,10 +57,49 @@ export const useResponses = () => {
     }
   };
 
+  // Load user's responses from database
+  const loadResponses = async () => {
+    try {
+      const userId = await getUserId();
+      if (!userId) return;
+
+      const { data, error } = await fromTable('user_responses')
+        .select('*')
+        .eq('user_id', userId);
+
+      if (error) {
+        console.error('Error loading responses:', error);
+        return;
+      }
+
+      if (data && data.length > 0) {
+        const loadedResponses: Record<number, string | string[]> = {};
+        
+        data.forEach(item => {
+          // Handle both string responses and array responses
+          if (item.response_array) {
+            try {
+              loadedResponses[item.question_id] = JSON.parse(item.response_array);
+            } catch (e) {
+              console.error('Error parsing response array:', e);
+            }
+          } else if (item.response) {
+            loadedResponses[item.question_id] = item.response;
+          }
+        });
+
+        setResponses(loadedResponses);
+      }
+    } catch (error) {
+      console.error('Error in loadResponses:', error);
+    }
+  };
+
   return {
     responses,
     isSubmitting,
     handleResponse,
-    submitResponses
+    submitResponses,
+    loadResponses
   };
 };

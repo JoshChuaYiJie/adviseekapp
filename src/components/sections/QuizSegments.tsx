@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -7,6 +6,8 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { LockIcon } from "lucide-react";
 import { McqQuestionsDisplay } from "@/components/McqQuestionsDisplay";
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 type QuizSegment = {
   id: string;
@@ -19,15 +20,101 @@ type QuizSegment = {
 export const QuizSegments = () => {
   const { isCurrentlyDark } = useTheme();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("interest-part 1");
+  const [userId, setUserId] = useState<string | null>(null);
+  const [completedSegments, setCompletedSegments] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+  
+  useEffect(() => {
+    // Check for authenticated user
+    const checkAuth = async () => {
+      setLoading(true);
+      const { data: { session } } = await supabase.auth.getSession();
+      const currentUserId = session?.user?.id || null;
+      setUserId(currentUserId);
+      
+      // Get completed segments
+      let completed: string[] = [];
+      
+      if (currentUserId) {
+        // Try to get from Supabase first
+        try {
+          const { data, error } = await supabase
+            .from('quiz_completion')
+            .select('quiz_type')
+            .eq('user_id', currentUserId);
+            
+          if (error) {
+            console.error('Error fetching quiz completions:', error);
+            // Fallback to localStorage
+            completed = getCompletedSegmentsFromLocalStorage();
+          } else if (data) {
+            completed = data.map(item => item.quiz_type);
+            // Update localStorage for consistency
+            localStorage.setItem('completed_quiz_segments', JSON.stringify(completed));
+          }
+        } catch (err) {
+          console.error('Error checking completed quizzes:', err);
+          // Fallback to localStorage
+          completed = getCompletedSegmentsFromLocalStorage();
+        }
+      } else {
+        // Not logged in, use localStorage
+        completed = getCompletedSegmentsFromLocalStorage();
+      }
+      
+      setCompletedSegments(completed);
+      setLoading(false);
+    };
+    
+    checkAuth();
+    
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setUserId(session?.user?.id || null);
+      
+      // If user just logged in, fetch their completed quizzes
+      if (event === 'SIGNED_IN' && session?.user?.id) {
+        fetchCompletedQuizzes(session.user.id);
+      }
+    });
+    
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
   
   // Get completed segments from localStorage
-  const getCompletedSegments = () => {
+  const getCompletedSegmentsFromLocalStorage = () => {
     const completed = localStorage.getItem("completed_quiz_segments");
     return completed ? JSON.parse(completed) : [];
   };
   
-  const completedSegments = getCompletedSegments();
+  // Fetch completed quizzes from Supabase
+  const fetchCompletedQuizzes = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('quiz_completion')
+        .select('quiz_type')
+        .eq('user_id', userId);
+        
+      if (error) {
+        console.error('Error fetching quiz completions:', error);
+        return;
+      }
+      
+      if (data) {
+        const completed = data.map(item => item.quiz_type);
+        setCompletedSegments(completed);
+        // Update localStorage for consistency
+        localStorage.setItem('completed_quiz_segments', JSON.stringify(completed));
+      }
+    } catch (err) {
+      console.error('Error fetching completed quizzes:', err);
+    }
+  };
+  
   const allSegmentsCompleted = ["interest-part 1", "interest-part 2", "competence", "work-values"].every(
     segment => completedSegments.includes(segment)
   );
@@ -67,10 +154,25 @@ export const QuizSegments = () => {
   ];
   
   const handleStartQuiz = (segmentId: string) => {
+    if (!userId) {
+      toast({
+        title: "Not Logged In",
+        description: "Please log in to save your quiz progress across devices.",
+        variant: "default"
+      });
+    }
     navigate(`/quiz/${segmentId}`);
   };
 
   const isExploreTab = activeTab === "explore";
+  
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center p-6">
+        <div className="animate-spin h-8 w-8 border-t-2 border-b-2 border-purple-500 rounded-full"></div>
+      </div>
+    );
+  }
   
   return (
     <div className="space-y-6">
@@ -151,6 +253,15 @@ export const QuizSegments = () => {
           <McqQuestionsDisplay />
         </TabsContent>
       </Tabs>
+      
+      {!userId && (
+        <Alert className="bg-amber-50 text-amber-800 dark:bg-amber-900 dark:text-amber-200 border-amber-200">
+          <AlertTitle>Not signed in</AlertTitle>
+          <AlertDescription>
+            Sign in to save your quiz progress across devices.
+          </AlertDescription>
+        </Alert>
+      )}
     </div>
   );
 };
