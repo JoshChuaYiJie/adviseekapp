@@ -6,9 +6,16 @@ import { Button } from "@/components/ui/button";
 import { QuizSegments } from "./QuizSegments";
 import { RiasecChart } from "./RiasecChart";
 import { WorkValuesChart } from "./WorkValuesChart";
+import { useNavigate } from "react-router-dom";
+import { FileText } from "lucide-react";
 
 export const AboutMe = () => {
   const [activeTab, setActiveTab] = useState<"quiz" | "profile">("quiz");
+  const navigate = useNavigate();
+
+  const handleResumeClick = () => {
+    navigate("/resumebuilder");
+  };
 
   return (
     <div className="space-y-8">
@@ -31,6 +38,13 @@ export const AboutMe = () => {
             onClick={() => setActiveTab("profile")}
           >
             My Profile
+          </Button>
+          <Button 
+            variant="outline" 
+            onClick={handleResumeClick}
+          >
+            <FileText className="mr-2 h-4 w-4" />
+            Resume
           </Button>
         </div>
       </div>
