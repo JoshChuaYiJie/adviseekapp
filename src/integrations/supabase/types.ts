@@ -101,36 +101,6 @@ export type Database = {
         }
         Relationships: []
       }
-      modules: {
-        Row: {
-          aus_cus: number
-          course_code: string
-          description: string | null
-          id: number
-          semester: string
-          title: string
-          university: string
-        }
-        Insert: {
-          aus_cus: number
-          course_code: string
-          description?: string | null
-          id?: number
-          semester: string
-          title: string
-          university: string
-        }
-        Update: {
-          aus_cus?: number
-          course_code?: string
-          description?: string | null
-          id?: number
-          semester?: string
-          title?: string
-          university?: string
-        }
-        Relationships: []
-      }
       profiles: {
         Row: {
           created_at: string
@@ -169,62 +139,6 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
-      }
-      quiz_questions: {
-        Row: {
-          id: number
-          options: Json | null
-          question_text: string
-          question_type: string
-          section: string
-        }
-        Insert: {
-          id?: number
-          options?: Json | null
-          question_text: string
-          question_type: string
-          section: string
-        }
-        Update: {
-          id?: number
-          options?: Json | null
-          question_text?: string
-          question_type?: string
-          section?: string
-        }
-        Relationships: []
-      }
-      recommendations: {
-        Row: {
-          created_at: string
-          id: number
-          module_id: number
-          reason: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: number
-          module_id: number
-          reason: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: number
-          module_id?: number
-          reason?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "recommendations_module_id_fkey"
-            columns: ["module_id"]
-            isOneToOne: false
-            referencedRelation: "modules"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       resumes: {
         Row: {
@@ -311,15 +225,7 @@ export type Database = {
           rating?: number
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "user_feedback_module_id_fkey"
-            columns: ["module_id"]
-            isOneToOne: false
-            referencedRelation: "modules"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       user_responses: {
         Row: {
@@ -352,15 +258,7 @@ export type Database = {
           score?: number | null
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "user_responses_question_id_fkey"
-            columns: ["question_id"]
-            isOneToOne: false
-            referencedRelation: "quiz_questions"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       user_selections: {
         Row: {
@@ -381,15 +279,7 @@ export type Database = {
           module_id?: number
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "user_selections_module_id_fkey"
-            columns: ["module_id"]
-            isOneToOne: false
-            referencedRelation: "modules"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       user_settings: {
         Row: {

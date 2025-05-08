@@ -64,7 +64,9 @@ export const useResponses = () => {
       const userId = await getUserId();
       if (!userId) return;
 
-      const { data, error } = await fromTable('user_responses')
+      // Using the supabase client directly to ensure type safety
+      const { data, error } = await supabase
+        .from('user_responses')
         .select('*')
         .eq('user_id', userId);
 
@@ -80,7 +82,7 @@ export const useResponses = () => {
           // Handle both string responses and array responses
           if (item.response_array) {
             try {
-              loadedResponses[item.question_id] = JSON.parse(item.response_array);
+              loadedResponses[item.question_id] = JSON.parse(item.response_array as string);
             } catch (e) {
               console.error('Error parsing response array:', e);
             }
