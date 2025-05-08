@@ -24,8 +24,8 @@ const QuizContext = createContext<QuizContextType>({
   setCurrentStep: () => {},
   handleResponse: () => {},
   submitResponses: async () => {},
-  rateModule: async () => {},
-  refineRecommendations: async () => {},
+  rateModule: async () => Promise.resolve(),
+  refineRecommendations: async () => Promise.resolve(),
   getFinalSelections: async () => [],
   resetQuiz: () => {},
 });
@@ -158,33 +158,29 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
   };
   
   // Placeholder functions for recommendations (disabled)
-  const rateModule = async (moduleId: number, rating: number) => {
+  const rateModule = async (moduleId: number, rating: number): Promise<void> => {
     try {
       console.log("Rating disabled - recommendations feature is on hold");
-      return true;
     } catch (err) {
       console.error("Error rating module:", err);
-      return false;
     }
   };
 
-  const refineRecommendations = async () => {
+  const refineRecommendations = async (selectedModuleIds: number[]): Promise<void> => {
     try {
       console.log("Refine recommendations disabled - recommendations feature is on hold");
-      return [];
     } catch (err) {
       console.error("Error refining recommendations:", err);
-      return [];
     }
   };
 
   const getFinalSelections = async () => {
     try {
       console.log("Get final selections disabled - recommendations feature is on hold");
-      return [];
+      return [] as Module[];
     } catch (err) {
       console.error("Error getting final selections:", err);
-      return [];
+      return [] as Module[];
     }
   };
   

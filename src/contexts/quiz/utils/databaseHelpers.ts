@@ -1,8 +1,9 @@
 
 import { supabase } from "@/integrations/supabase/client";
+import type { TableName } from "@/integrations/supabase/client";
 
 // Helper function to make type-safe Supabase queries
-export function fromTable(tableName: string) {
+export function fromTable(tableName: TableName) {
   return supabase.from(tableName);
 }
 
