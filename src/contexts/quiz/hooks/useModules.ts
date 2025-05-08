@@ -43,17 +43,16 @@ export const useModules = () => {
       setIsLoading(true);
       setError(null);
       
-      // Use explicit typing with the 'modules' table
+      // Use raw SQL query instead of ORM since modules isn't in the types
       const { data, error } = await supabase
-        .from('modules')
-        .select('*');
+        .rpc('get_all_modules');
       
       if (error) {
         throw new Error(`Error fetching modules: ${error.message}`);
       }
       
       // Use type assertion to ensure data fits the Module type
-      setModules(data as Module[]);
+      setModules(data as unknown as Module[]);
     } catch (err) {
       console.error('Error in loadModules:', err);
       setError(err instanceof Error ? err.message : 'Failed to load modules');
@@ -65,17 +64,15 @@ export const useModules = () => {
   // Get a single module by ID
   const getModuleById = async (moduleId: number): Promise<Module | null> => {
     try {
+      // Use raw SQL query
       const { data, error } = await supabase
-        .from('modules')
-        .select('*')
-        .eq('id', moduleId)
-        .single();
+        .rpc('get_module_by_id', { module_id: moduleId });
       
       if (error) {
         throw error;
       }
       
-      return data as Module;
+      return data.length > 0 ? (data[0] as unknown as Module) : null;
     } catch (err) {
       console.error(`Error fetching module with ID ${moduleId}:`, err);
       return null;
@@ -87,16 +84,15 @@ export const useModules = () => {
     if (moduleIds.length === 0) return [];
     
     try {
+      // Use raw SQL query
       const { data, error } = await supabase
-        .from('modules')
-        .select('*')
-        .in('id', moduleIds);
+        .rpc('get_modules_by_ids', { module_ids: moduleIds });
       
       if (error) {
         throw error;
       }
       
-      return data as Module[];
+      return data as unknown as Module[];
     } catch (err) {
       console.error('Error fetching modules by IDs:', err);
       return [];

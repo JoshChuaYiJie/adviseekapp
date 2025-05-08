@@ -1,5 +1,5 @@
+import { QuizQuestion } from '@/integrations/supabase/client';
 
-// Predefined quiz questions to be inserted into the database
 export const getPredefinedQuestions = () => {
   // Define the 25 questions as specified in the requirements
   return [
@@ -153,4 +153,12 @@ export const getPredefinedQuestions = () => {
       options: ["Yes", "No"]
     }
   ];
+};
+
+// Export the predefined questions as a constant
+export const predefinedQuestions: Record<string, QuizQuestion[]> = {
+  "Interest": getPredefinedQuestions().filter(q => q.section === "Interest"),
+  "Feasibility": getPredefinedQuestions().filter(q => q.section === "Feasibility"),
+  "Career Goals": getPredefinedQuestions().filter(q => q.section === "Career Goals"),
+  "Learning Style": getPredefinedQuestions().filter(q => q.section === "Learning Style")
 };

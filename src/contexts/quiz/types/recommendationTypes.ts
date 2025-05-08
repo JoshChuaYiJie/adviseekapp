@@ -16,3 +16,12 @@ export type UserFeedbackItem = {
 };
 
 export type ModuleSelection = Module;
+
+export type Recommendation = {
+  id: number;
+  user_id: string;
+  module_id: number;
+  reason: string;
+  created_at: string;
+  module?: Module;
+};

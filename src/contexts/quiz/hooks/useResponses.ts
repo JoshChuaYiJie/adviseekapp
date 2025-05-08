@@ -51,15 +51,18 @@ export const useResponses = () => {
         throw new Error("No responses to submit");
       }
       
-      // Save responses to database using upsert to handle duplicates gracefully
-      const { error: responseError } = await fromTable('user_responses')
-        .upsert(formattedResponses, { 
-          onConflict: 'user_id,question_id',
-          ignoreDuplicates: false 
-        });
-      
-      if (responseError) {
-        throw new Error(`Failed to save responses: ${responseError.message}`);
+      // Save responses to database using raw query
+      for (const response of formattedResponses) {
+        const { error } = await supabase
+          .from('user_responses')
+          .upsert(response, { 
+            onConflict: 'user_id,question_id',
+            ignoreDuplicates: false 
+          });
+        
+        if (error) {
+          console.error(`Error saving response: ${error.message}`);
+        }
       }
 
       console.log(`Successfully saved ${formattedResponses.length} responses for quiz type: ${quizType || 'general'}`);
@@ -94,11 +97,7 @@ export const useResponses = () => {
         data.forEach(item => {
           // Handle both string responses and array responses
           if (item.response_array) {
-            try {
-              loadedResponses[item.question_id] = item.response_array;
-            } catch (e) {
-              console.error('Error parsing response array:', e);
-            }
+            loadedResponses[item.question_id] = item.response_array as string[];
           } else if (item.response) {
             loadedResponses[item.question_id] = item.response;
           }
