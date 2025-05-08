@@ -24,8 +24,15 @@ export const useQuizQuestions = (segment?: string) => {
         // For now, just use predefined questions since the Supabase schema doesn't include quiz_questions
         if (segment in predefinedQuestions) {
           const sectionQuestions = predefinedQuestions[segment as keyof typeof predefinedQuestions];
-          setQuestions(sectionQuestions);
-          console.log(`Loaded ${sectionQuestions.length} predefined questions for ${segment}`);
+          
+          // Add missing ID property if needed to match QuizQuestion type
+          const questionsWithIds = sectionQuestions.map((q, index) => ({
+            ...q,
+            id: q.id || index + 1 // Use existing id or generate one from index
+          }));
+          
+          setQuestions(questionsWithIds as QuizQuestion[]);
+          console.log(`Loaded ${questionsWithIds.length} predefined questions for ${segment}`);
         } else {
           throw new Error(`No questions found for segment: ${segment}`);
         }

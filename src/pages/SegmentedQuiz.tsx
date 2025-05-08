@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -273,33 +272,45 @@ const SegmentedQuiz = () => {
           quiz_type: segmentId
         }));
         
+        console.log(`Saving ${formattedResponses.length} responses to Supabase...`);
+        console.log('Sample response:', JSON.stringify(formattedResponses[0]));
+        
         // Use upsert to handle duplicates gracefully
-        const { error } = await supabase
-          .from('user_responses')
-          .upsert(formattedResponses, {
-            onConflict: 'user_id,question_id',
-            ignoreDuplicates: false
-          });
-          
-        if (error) {
-          console.error("Error saving responses to Supabase:", error);
-          toast({
-            title: "Warning",
-            description: "Your answers were saved locally, but we couldn't sync them to your account.",
-            variant: "destructive"
-          });
-        } else {
-          // Also save the completion status
-          await supabase
-            .from('quiz_completion')
-            .upsert({
-              user_id: userId,
-              quiz_type: segmentId,
-              completed_at: new Date().toISOString()
-            }, {
-              onConflict: 'user_id,quiz_type',
+        for (let i = 0; i < formattedResponses.length; i++) {
+          const response = formattedResponses[i];
+          const { error } = await supabase
+            .from('user_responses')
+            .upsert(response, {
+              onConflict: 'user_id,question_id',
               ignoreDuplicates: false
             });
+              
+          if (error) {
+            console.error(`Error saving response ${i+1}:`, error);
+            toast({
+              title: "Warning",
+              description: `Problem saving some answers. ${error.message}`,
+              variant: "destructive"
+            });
+          }
+        }
+
+        // Also save the completion status
+        const { error: completionError } = await supabase
+          .from('quiz_completion')
+          .upsert({
+            user_id: userId,
+            quiz_type: segmentId,
+            completed_at: new Date().toISOString()
+          }, {
+            onConflict: 'user_id,quiz_type',
+            ignoreDuplicates: false
+          });
+            
+        if (completionError) {
+          console.error("Error saving quiz completion:", completionError);
+        } else {
+          console.log("Quiz completion status saved successfully");
         }
       } else if (!userId) {
         toast({

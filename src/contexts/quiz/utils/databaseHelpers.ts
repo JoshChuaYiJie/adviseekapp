@@ -1,11 +1,10 @@
 
 import { supabase } from "@/integrations/supabase/client";
-import type { TableName } from "@/integrations/supabase/client";
 
-// Helper function to get supabase table reference with proper typing
-export const fromTable = <T extends TableName>(tableName: T) => {
+// Helper function to make type-safe Supabase queries
+export function fromTable(tableName: string) {
   return supabase.from(tableName);
-};
+}
 
 // Get current user ID helper
 export const getUserId = async (): Promise<string | null> => {

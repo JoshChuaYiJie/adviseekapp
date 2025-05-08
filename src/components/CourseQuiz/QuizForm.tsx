@@ -4,13 +4,16 @@ import { Button } from '@/components/ui/button';
 import { useQuiz } from '@/contexts/QuizContext';
 import { QuizStep } from './QuizStep';
 import { Progress } from '@/components/ui/progress';
+import { useToast } from '@/hooks/use-toast';
 
 interface QuizFormProps {
   onSubmit: () => void;
   onCancel: () => void;
+  quizType?: string;
 }
 
-export const QuizForm: React.FC<QuizFormProps> = ({ onSubmit, onCancel }) => {
+export const QuizForm: React.FC<QuizFormProps> = ({ onSubmit, onCancel, quizType }) => {
+  const { toast } = useToast();
   const { 
     currentStep, 
     setCurrentStep, 
@@ -18,7 +21,8 @@ export const QuizForm: React.FC<QuizFormProps> = ({ onSubmit, onCancel }) => {
     isLoading, 
     isSubmitting, 
     error, 
-    submitResponses 
+    submitResponses,
+    responses
   } = useQuiz();
   
   const [questionsByStep, setQuestionsByStep] = useState<Array<Array<any>>>([]);
@@ -56,8 +60,26 @@ export const QuizForm: React.FC<QuizFormProps> = ({ onSubmit, onCancel }) => {
   
   // Handle form submission
   const handleSubmit = async () => {
-    await submitResponses();
-    onSubmit();
+    try {
+      console.log(`Submitting quiz responses with type: ${quizType || 'general'}`);
+      console.log('Current responses:', responses);
+      
+      await submitResponses(quizType);
+      
+      toast({
+        title: "Quiz submitted",
+        description: "Your responses have been saved successfully.",
+      });
+      
+      onSubmit();
+    } catch (error) {
+      toast({
+        title: "Submission failed",
+        description: "There was a problem saving your responses. Please try again.",
+        variant: "destructive"
+      });
+      console.error("Error during quiz submission:", error);
+    }
   };
   
   // Display loading state

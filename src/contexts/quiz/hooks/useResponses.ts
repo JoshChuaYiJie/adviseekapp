@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { fromTable, getUserId } from '../utils/databaseHelpers';
+import { getUserId } from '../utils/databaseHelpers';
 import { supabase } from '@/integrations/supabase/client';
 
 export const useResponses = () => {
@@ -51,7 +51,14 @@ export const useResponses = () => {
         throw new Error("No responses to submit");
       }
       
-      // Save responses to database using raw query
+      // Save responses to Supabase database table
+      console.log(`Submitting ${formattedResponses.length} responses for quiz type: ${quizType || 'general'}`);
+      console.log('Response data sample:', JSON.stringify(formattedResponses[0]));
+
+      // Using individual upserts for more reliable error handling
+      let successCount = 0;
+      const errors = [];
+      
       for (const response of formattedResponses) {
         const { error } = await supabase
           .from('user_responses')
@@ -62,13 +69,48 @@ export const useResponses = () => {
         
         if (error) {
           console.error(`Error saving response: ${error.message}`);
+          errors.push(error.message);
+        } else {
+          successCount++;
         }
       }
 
-      console.log(`Successfully saved ${formattedResponses.length} responses for quiz type: ${quizType || 'general'}`);
+      if (errors.length > 0) {
+        console.warn(`${errors.length} errors occurred while saving responses.`);
+        console.warn(`First error: ${errors[0]}`);
+      }
+
+      console.log(`Successfully saved ${successCount} of ${formattedResponses.length} responses for quiz type: ${quizType || 'general'}`);
+
+      // Save quiz completion status
+      if (quizType && successCount > 0) {
+        const userId = await getUserId();
+        if (userId) {
+          const { error: completionError } = await supabase
+            .from('quiz_completion')
+            .upsert({
+              user_id: userId,
+              quiz_type: quizType,
+              completed_at: new Date().toISOString()
+            }, { 
+              onConflict: 'user_id,quiz_type',
+              ignoreDuplicates: false
+            });
+            
+          if (completionError) {
+            console.error('Error saving quiz completion:', completionError);
+          } else {
+            console.log(`Saved completion status for quiz: ${quizType}`);
+          }
+        }
+      }
 
       // Return user ID for further processing
       return await getUserId();
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      console.error(`Error in submitResponses: ${errorMessage}`);
+      throw error;
     } finally {
       setIsSubmitting(false);
     }
@@ -79,6 +121,8 @@ export const useResponses = () => {
     try {
       const userId = await getUserId();
       if (!userId) return;
+
+      console.log("Loading responses for user:", userId);
 
       // Using the supabase client directly
       const { data, error } = await supabase
@@ -92,6 +136,7 @@ export const useResponses = () => {
       }
 
       if (data && data.length > 0) {
+        console.log(`Loaded ${data.length} responses from database`);
         const loadedResponses: Record<number, string | string[]> = {};
         
         data.forEach(item => {
@@ -104,6 +149,8 @@ export const useResponses = () => {
         });
 
         setResponses(loadedResponses);
+      } else {
+        console.log("No responses found for user");
       }
     } catch (error) {
       console.error('Error in loadResponses:', error);

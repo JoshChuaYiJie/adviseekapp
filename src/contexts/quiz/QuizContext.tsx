@@ -1,11 +1,10 @@
 
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { Module, QuizQuestion } from '@/integrations/supabase/client';
-import { QuizContextType, RecommendedModule } from './types';
+import { QuizContextType } from './types';
 import { useQuizQuestions } from './hooks/useQuizQuestions';
 import { useModules } from './hooks/useModules';
 import { useResponses } from './hooks/useResponses';
-import { useRecommendations } from './hooks/useRecommendations';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -43,10 +42,13 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
   const [error, setError] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [completedQuizzes, setCompletedQuizzes] = useState<string[]>([]);
-  
+  const [recommendations, setRecommendations] = useState<any[]>([]);
+  const [userFeedback, setUserFeedback] = useState<Record<number, number>>({});
+  const [finalSelections, setFinalSelections] = useState<Module[]>([]);
+
   // Custom hooks
   const { questions, isLoading: questionsLoading, error: questionsError } = useQuizQuestions();
-  const { modules, loadModules, error: modulesError } = useModules();
+  const { modules, error: modulesError } = useModules();
   const { 
     responses, 
     isSubmitting, 
@@ -54,21 +56,9 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
     submitResponses: submitUserResponses,
     loadResponses
   } = useResponses();
-  const { 
-    recommendations, 
-    userFeedback, 
-    finalSelections, 
-    isLoading: recommendationsLoading, 
-    setIsLoading,
-    generateRecommendations,
-    loadRecommendations,
-    rateModule,
-    refineRecommendations,
-    getFinalSelections
-  } = useRecommendations(modules);
   
   // Combined loading state
-  const isLoading = questionsLoading || recommendationsLoading;
+  const isLoading = questionsLoading;
   
   // Combine errors
   useEffect(() => {
@@ -103,9 +93,6 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
             // Update localStorage for compatibility
             localStorage.setItem('completed_quiz_segments', JSON.stringify(completed));
           }
-          
-          // Load user's recommendations
-          await loadRecommendations(currentUserId);
         }
       } catch (err) {
         console.error('Error checking authentication:', err);
@@ -124,7 +111,6 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
         if (newUserId) {
           // If user just logged in, load their data
           loadResponses();
-          loadRecommendations(newUserId);
         }
       }
     });
@@ -134,16 +120,9 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
     };
   }, []);
   
-  // Load modules on mount
-  useEffect(() => {
-    loadModules();
-  }, []);
-  
   // Submit responses
   const submitResponses = async (quizType?: string) => {
     try {
-      setIsLoading(true);
-      
       // Submit user responses and get user ID
       const currentUserId = await submitUserResponses(quizType);
       if (!currentUserId) {
@@ -152,22 +131,6 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
       
       // Save quiz completion status
       if (quizType && currentUserId) {
-        // Direct supabase client call since this table isn't in the types yet
-        const { error: completionError } = await supabase
-          .from('quiz_completion')
-          .upsert({
-            user_id: currentUserId,
-            quiz_type: quizType,
-            completed_at: new Date().toISOString()
-          }, { 
-            onConflict: 'user_id,quiz_type',
-            ignoreDuplicates: false
-          });
-          
-        if (completionError) {
-          console.error('Error saving quiz completion:', completionError);
-        }
-        
         // Update local state
         setCompletedQuizzes(prev => {
           if (!prev.includes(quizType)) {
@@ -183,9 +146,6 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
           localStorage.setItem('completed_quiz_segments', JSON.stringify(localCompletions));
         }
       }
-      
-      // Generate recommendations
-      await generateRecommendations(currentUserId);
     } catch (err) {
       console.error("Error submitting responses:", err);
       setError(err instanceof Error ? err.message : "Failed to submit responses");
@@ -194,8 +154,37 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
         description: "Failed to submit your responses. Please try again.",
         variant: "destructive",
       });
-    } finally {
-      setIsLoading(false);
+    }
+  };
+  
+  // Placeholder functions for recommendations (disabled)
+  const rateModule = async (moduleId: number, rating: number) => {
+    try {
+      console.log("Rating disabled - recommendations feature is on hold");
+      return true;
+    } catch (err) {
+      console.error("Error rating module:", err);
+      return false;
+    }
+  };
+
+  const refineRecommendations = async () => {
+    try {
+      console.log("Refine recommendations disabled - recommendations feature is on hold");
+      return [];
+    } catch (err) {
+      console.error("Error refining recommendations:", err);
+      return [];
+    }
+  };
+
+  const getFinalSelections = async () => {
+    try {
+      console.log("Get final selections disabled - recommendations feature is on hold");
+      return [];
+    } catch (err) {
+      console.error("Error getting final selections:", err);
+      return [];
     }
   };
   
