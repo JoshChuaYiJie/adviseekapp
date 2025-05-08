@@ -149,6 +149,27 @@ export type Database = {
         }
         Relationships: []
       }
+      quiz_completion: {
+        Row: {
+          completed_at: string
+          id: number
+          quiz_type: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string
+          id?: number
+          quiz_type: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string
+          id?: number
+          quiz_type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       quiz_questions: {
         Row: {
           id: number
@@ -305,24 +326,30 @@ export type Database = {
           created_at: string
           id: number
           question_id: number
+          quiz_type: string | null
           response: string | null
           response_array: Json | null
+          score: number | null
           user_id: string
         }
         Insert: {
           created_at?: string
           id?: number
           question_id: number
+          quiz_type?: string | null
           response?: string | null
           response_array?: Json | null
+          score?: number | null
           user_id: string
         }
         Update: {
           created_at?: string
           id?: number
           question_id?: number
+          quiz_type?: string | null
           response?: string | null
           response_array?: Json | null
+          score?: number | null
           user_id?: string
         }
         Relationships: [

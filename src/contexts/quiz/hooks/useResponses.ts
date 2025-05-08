@@ -1,6 +1,7 @@
 
 import { useState } from 'react';
 import { fromTable, getUserId } from '../utils/databaseHelpers';
+import { supabase } from '@/integrations/supabase/client';
 
 export const useResponses = () => {
   const [responses, setResponses] = useState<Record<number, string | string[]>>({});

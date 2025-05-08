@@ -21,6 +21,7 @@ const QuizContext = createContext<QuizContextType>({
   userFeedback: {},
   modules: [],
   finalSelections: [],
+  completedQuizzes: [],
   setCurrentStep: () => {},
   handleResponse: () => {},
   submitResponses: async () => {},
@@ -150,7 +151,8 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
       }
       
       // Save quiz completion status
-      if (quizType) {
+      if (quizType && currentUserId) {
+        // Direct supabase client call since this table isn't in the types yet
         const { error: completionError } = await supabase
           .from('quiz_completion')
           .upsert({

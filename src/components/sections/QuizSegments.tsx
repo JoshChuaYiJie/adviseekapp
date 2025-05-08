@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -40,6 +41,7 @@ export const QuizSegments = () => {
       if (currentUserId) {
         // Try to get from Supabase first
         try {
+          // Direct supabase client call since this table isn't in the types yet
           const { data, error } = await supabase
             .from('quiz_completion')
             .select('quiz_type')
@@ -94,6 +96,7 @@ export const QuizSegments = () => {
   // Fetch completed quizzes from Supabase
   const fetchCompletedQuizzes = async (userId: string) => {
     try {
+      // Direct supabase client call since this table isn't in the types yet
       const { data, error } = await supabase
         .from('quiz_completion')
         .select('quiz_type')

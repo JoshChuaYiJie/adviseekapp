@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -289,7 +290,8 @@ const SegmentedQuiz = () => {
           });
         } else {
           // Also save the completion status
-          await supabase.from('quiz_completion')
+          await supabase
+            .from('quiz_completion')
             .upsert({
               user_id: userId,
               quiz_type: segmentId,
