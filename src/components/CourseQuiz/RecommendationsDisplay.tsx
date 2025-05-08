@@ -45,7 +45,13 @@ export const RecommendationsDisplay: React.FC<RecommendationsDisplayProps> = ({ 
   const handleShowSelections = async () => {
     const selectionsResult = await getFinalSelections();
     if (selectionsResult && selectionsResult.length > 0) {
-      setSelections(selectionsResult);
+      // Convert the Module[] array to the expected format
+      const formattedSelections = selectionsResult.map(module => ({
+        module,
+        reason: "Selected based on your preferences"
+      }));
+      
+      setSelections(formattedSelections);
       setModalOpen(true);
     } else {
       toast({
@@ -94,7 +100,7 @@ export const RecommendationsDisplay: React.FC<RecommendationsDisplayProps> = ({ 
                 Back
               </Button>
               <Button 
-                onClick={() => refineRecommendations()}
+                onClick={() => refineRecommendations([])}
                 disabled={ratedModulesCount < 5}
               >
                 Refine Recommendations
@@ -115,31 +121,31 @@ export const RecommendationsDisplay: React.FC<RecommendationsDisplayProps> = ({ 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {recommendations.map((rec) => (
             <div 
-              key={rec.module_id} 
+              key={rec.module.id} 
               className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-all hover:scale-[1.02]"
             >
-              <h3 className="font-bold text-xl mb-2">{rec.module?.title}</h3>
+              <h3 className="font-bold text-xl mb-2">{rec.module.title}</h3>
               <div className="text-sm text-gray-600 mb-2">
-                {rec.module?.course_code} • {rec.module?.university} • {rec.module?.aus_cus} AU/CU • {rec.module?.semester}
+                {rec.module.course_code} • {rec.module.university} • {rec.module.aus_cus} AU/CU • {rec.module.semester}
               </div>
-              <p className="text-gray-800 mb-4 text-sm">{rec.module?.description || "No description available."}</p>
-              <p className="text-gray-700 italic text-sm mb-4">{rec.reason}</p>
+              <p className="text-gray-800 mb-4 text-sm">{rec.module.description || "No description available."}</p>
+              <p className="text-gray-700 italic text-sm mb-4">{rec.reasoning && rec.reasoning.length > 0 ? rec.reasoning[0] : "Recommended based on your quiz responses."}</p>
               
               <div className="mt-4">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm font-medium">Rate this module</span>
-                  <span className="text-sm font-medium">{getRating(rec.module_id)}/10</span>
+                  <span className="text-sm font-medium">{getRating(rec.module.id)}/10</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className="text-xs">1</span>
                   <Slider
-                    value={[getRating(rec.module_id)]}
+                    value={[getRating(rec.module.id)]}
                     min={1}
                     max={10}
                     step={1}
-                    onValueChange={([value]) => handleRatingChange(rec.module_id, value)}
+                    onValueChange={([value]) => handleRatingChange(rec.module.id, value)}
                     className="flex-1"
-                    aria-label={`Rate module ${rec.module?.course_code}, 1 to 10`}
+                    aria-label={`Rate module ${rec.module.course_code}, 1 to 10`}
                   />
                   <span className="text-xs">10</span>
                 </div>

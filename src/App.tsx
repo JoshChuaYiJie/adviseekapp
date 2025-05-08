@@ -9,7 +9,6 @@ import NotFound from "./pages/NotFound";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import UniversitySelection from "./pages/UniversitySelection";
-import PickAI from "./pages/PickAI";
 import SegmentedQuiz from "./pages/SegmentedQuiz";
 import Recommendations from "./pages/Recommendations";
 import { QuizProvider } from "@/contexts/QuizContext";
@@ -39,7 +38,6 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/dashboard" element={<Index />} />
               <Route path="/university-selection" element={<UniversitySelection />} />
-              <Route path="/pickAI" element={<PickAI />} />
               <Route path="/quiz/:segmentId" element={<SegmentedQuiz />} />
               <Route path="/recommendations" element={<Recommendations />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />

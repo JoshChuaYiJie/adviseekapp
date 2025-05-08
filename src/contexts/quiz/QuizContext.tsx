@@ -1,7 +1,7 @@
 
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { Module, QuizQuestion } from '@/integrations/supabase/client';
-import { QuizContextType } from './types';
+import { QuizContextType, RecommendedModule } from './types';
 import { useQuizQuestions } from './hooks/useQuizQuestions';
 import { useModules } from './hooks/useModules';
 import { useResponses } from './hooks/useResponses';
@@ -205,13 +205,13 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
   };
   
   // Memoize the context value to prevent unnecessary rerenders
-  const contextValue = useMemo(() => ({
+  const contextValue = useMemo<QuizContextType>(() => ({
     currentStep,
     responses,
     questions,
     isLoading,
     isSubmitting,
-    error,
+    error: error || null,
     recommendations,
     userFeedback,
     modules,

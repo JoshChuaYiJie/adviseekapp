@@ -1,13 +1,19 @@
 
-import { supabase, TableName } from '@/integrations/supabase/client';
+import { supabase } from "@/integrations/supabase/client";
+import type { TableName } from "@/integrations/supabase/client";
 
-// Helper function to work with Supabase tables with proper typing
-export const fromTable = (table: TableName) => {
-  return supabase.from(table);
+// Helper function to get supabase table reference with proper typing
+export const fromTable = (tableName: string) => {
+  return supabase.from(tableName);
 };
 
-// Get current user ID or null if not logged in
+// Get current user ID helper
 export const getUserId = async (): Promise<string | null> => {
-  const { data } = await supabase.auth.getSession();
-  return data.session?.user.id || null;
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    return session?.user?.id || null;
+  } catch (error) {
+    console.error("Error getting user ID:", error);
+    return null;
+  }
 };
