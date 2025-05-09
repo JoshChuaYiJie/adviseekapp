@@ -319,26 +319,8 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      check_table_exists: {
-        Args: { table_name: string }
-        Returns: boolean
-      }
-      check_column_exists: {
-        Args: { table_name: string; column_name: string }
-        Returns: boolean
-      }
-      check_table_rls: {
-        Args: { table_name: string }
-        Returns: boolean
-      }
-      check_unique_constraint: {
-        Args: { table_name: string; column_names: string[] }
-        Returns: boolean
-      }
-      check_policy_exists: {
-        Args: { table_name: string; policy_name: string }
-        Returns: boolean
-      },
+      [_ in never]: never
+    }
     Enums: {
       achievement_type:
         | "community_contributor"

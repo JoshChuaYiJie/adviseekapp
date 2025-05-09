@@ -1,6 +1,8 @@
-import { supabase } from "@/integrations/supabase/client";
-import { type Json, type Database } from "@/integrations/supabase/types";
 
+import { supabase } from "@/integrations/supabase/client";
+import { type Json } from "@/integrations/supabase/types";
+
+// Define the type for validation result
 interface ValidationResult {
   success: boolean;
   hasUniqueConstraint: boolean;
@@ -9,6 +11,7 @@ interface ValidationResult {
   details: string;
 }
 
+// Define the type for user response
 interface UserResponse {
   user_id: string;
   question_id: string;
@@ -19,6 +22,7 @@ interface UserResponse {
   [key: string]: any;
 }
 
+// Define RIASEC score types
 type RiasecScores = {
   R: number; // Realistic
   I: number; // Investigative
@@ -28,8 +32,25 @@ type RiasecScores = {
   C: number; // Conventional
 };
 
-export function fromTable<T extends keyof Database['public']['Tables']>(tableName: T) {
-  return supabase.from(tableName);
+// Define Work Values score types
+type WorkValuesScores = {
+  Achievement: number;
+  Independence: number;
+  Recognition: number;
+  Relationships: number;
+  Support: number;
+  WorkingConditions: number;
+};
+
+// Define RPC parameter types
+type CheckTableRlsParams = { table_name: string };
+type CheckUniqueConstraintParams = { table_name: string; column_names: string[] };
+type CheckPolicyExistsParams = { table_name: string; policy_name: string };
+
+// Helper function to safely make Supabase queries with dynamic table names
+export function fromTable(tableName: string) {
+  // Using type assertion to allow dynamic table names
+  return supabase.from(tableName as any);
 }
 
 export const getUserId = async (): Promise<string | null> => {
@@ -55,8 +76,7 @@ export const getUserId = async (): Promise<string | null> => {
 
 export const calculateRiasecProfile = async (userId: string): Promise<RiasecScores> => {
   try {
-    const { data, error } = await supabase
-      .from('user_responses')
+    const { data, error } = await fromTable('user_responses')
       .select('question_id, response, score')
       .eq('user_id', userId)
       .eq('quiz_type', 'interest');
@@ -70,14 +90,17 @@ export const calculateRiasecProfile = async (userId: string): Promise<RiasecScor
       R: 0, I: 0, A: 0, S: 0, E: 0, C: 0
     };
 
-    data?.forEach(response => {
-      if (response.score && response.question_id.startsWith('RIASEC_')) {
-        const category = response.question_id.split('_')[1][0] as keyof RiasecScores;
-        if (category in riasecScores) {
-          riasecScores[category] += response.score;
+    // Type guard to ensure data is an array of UserResponse
+    if (Array.isArray(data)) {
+      data.forEach(response => {
+        if (response.score && response.question_id.startsWith('RIASEC_')) {
+          const category = response.question_id.split('_')[1][0] as keyof RiasecScores;
+          if (category in riasecScores) {
+            riasecScores[category] += response.score;
+          }
         }
-      }
-    });
+      });
+    }
 
     return riasecScores;
   } catch (error) {
@@ -86,12 +109,69 @@ export const calculateRiasecProfile = async (userId: string): Promise<RiasecScor
   }
 };
 
+export const calculateWorkValuesProfile = async (userId: string): Promise<WorkValuesScores> => {
+  try {
+    const { data, error } = await fromTable('user_responses')
+      .select('question_id, response, score')
+      .eq('user_id', userId)
+      .eq('quiz_type', 'work_values');
+
+    if (error) {
+      console.error("Error fetching Work Values responses:", error);
+      return {
+        Achievement: 0,
+        Independence: 0,
+        Recognition: 0,
+        Relationships: 0,
+        Support: 0,
+        WorkingConditions: 0
+      };
+    }
+
+    const workValuesScores: WorkValuesScores = {
+      Achievement: 0,
+      Independence: 0,
+      Recognition: 0,
+      Relationships: 0,
+      Support: 0,
+      WorkingConditions: 0
+    };
+
+    // Type guard to ensure data is an array of UserResponse
+    if (Array.isArray(data)) {
+      data.forEach(response => {
+        if (response.score && response.question_id.startsWith('WV_')) {
+          const categoryFull = response.question_id.split('_')[1];
+          const category = categoryFull as keyof WorkValuesScores;
+          
+          if (category in workValuesScores) {
+            workValuesScores[category] += response.score;
+          }
+        }
+      });
+    }
+
+    return workValuesScores;
+  } catch (error) {
+    console.error("Error calculating Work Values profile:", error);
+    return {
+      Achievement: 0,
+      Independence: 0,
+      Recognition: 0,
+      Relationships: 0,
+      Support: 0,
+      WorkingConditions: 0
+    };
+  }
+};
+
 export const validateUserResponsesTable = async (): Promise<ValidationResult> => {
   try {
+    // Check for RLS enabled
     const { data: rlsData, error: rlsError } = await supabase
       .rpc('check_table_rls', {
         table_name: 'user_responses'
-      } as Database['public']['Functions']['check_table_rls']['Args']);
+      } as CheckTableRlsParams);
 
     if (rlsError) {
       console.error("Error checking RLS:", rlsError);
@@ -106,11 +186,12 @@ export const validateUserResponsesTable = async (): Promise<ValidationResult> =>
 
     const hasRlsEnabled = rlsData === true;
 
+    // Check for unique constraint
     const { data: constraintData, error: constraintError } = await supabase
       .rpc('check_unique_constraint', {
         table_name: 'user_responses',
         column_names: ['user_id', 'question_id']
-      } as Database['public']['Functions']['check_unique_constraint']['Args']);
+      } as CheckUniqueConstraintParams);
 
     if (constraintError) {
       console.error("Error checking constraint:", constraintError);
@@ -125,11 +206,12 @@ export const validateUserResponsesTable = async (): Promise<ValidationResult> =>
 
     const hasUniqueConstraint = constraintData === true;
 
+    // Check for policy
     const { data: policyData, error: policyError } = await supabase
       .rpc('check_policy_exists', {
         table_name: 'user_responses',
         policy_name: 'Users can insert their own responses'
-      } as Database['public']['Functions']['check_policy_exists']['Args']);
+      } as CheckPolicyExistsParams);
 
     if (policyError) {
       console.error("Error checking policy:", policyError);
