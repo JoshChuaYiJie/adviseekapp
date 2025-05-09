@@ -1,10 +1,17 @@
-
-import { supabase, type RpcParams } from "@/integrations/supabase/client";
+import { supabase, type Module } from "@/integrations/supabase/client";
 import { type Json } from "@/integrations/supabase/types";
 
-// Helper function to make type-safe Supabase queries
+interface ValidationResult {
+  success: boolean;
+  hasUniqueConstraint: boolean;
+  hasRlsEnabled: boolean;
+  hasCorrectPolicy: boolean;
+  details: string;
+}
+
+// Helper function to make Supabase queries
 export function fromTable(tableName: string) {
-  return supabase.from(tableName as any);
+  return supabase.from(tableName);
 }
 
 // Get current user ID helper with enhanced debugging
@@ -32,22 +39,14 @@ export const getUserId = async (): Promise<string | null> => {
 };
 
 // Function to validate RLS policies and constraints
-export const validateUserResponsesTable = async (): Promise<{
-  success: boolean;
-  hasUniqueConstraint: boolean;
-  hasRlsEnabled: boolean;
-  hasCorrectPolicy: boolean;
-  details: string;
-}> => {
+export const validateUserResponsesTable = async (): Promise<ValidationResult> => {
   try {
-    console.log("Validating user_responses table configuration...");
-    
     // Check for RLS enabled
     const { data: rlsData, error: rlsError } = await supabase
-      .rpc('check_table_rls', { 
-        table_name: 'user_responses' 
-      } as RpcParams);
-      
+      .rpc('check_table_rls', {
+        table_name: 'user_responses'
+      });
+
     if (rlsError) {
       console.error("Error checking RLS:", rlsError);
       return {
@@ -58,37 +57,35 @@ export const validateUserResponsesTable = async (): Promise<{
         details: `Error checking RLS: ${rlsError.message}`
       };
     }
-    
+
     const hasRlsEnabled = rlsData === true;
-    console.log("RLS enabled on user_responses:", hasRlsEnabled);
-    
-    // Check for unique constraint on user_id and question_id
+
+    // Check for unique constraint
     const { data: constraintData, error: constraintError } = await supabase
-      .rpc('check_unique_constraint', { 
+      .rpc('check_unique_constraint', {
         table_name: 'user_responses',
         column_names: ['user_id', 'question_id']
-      } as RpcParams);
-      
+      });
+
     if (constraintError) {
       console.error("Error checking constraint:", constraintError);
       return {
         success: false,
         hasUniqueConstraint: false,
-        hasRlsEnabled: hasRlsEnabled,
+        hasRlsEnabled,
         hasCorrectPolicy: false,
         details: `Error checking constraint: ${constraintError.message}`
       };
     }
-    
+
     const hasUniqueConstraint = constraintData === true;
-    console.log("Unique constraint exists on (user_id, question_id):", hasUniqueConstraint);
-    
-    // Check for correct RLS policy
+
+    // Check for policy
     const { data: policyData, error: policyError } = await supabase
-      .rpc('check_policy_exists', { 
+      .rpc('check_policy_exists', {
         table_name: 'user_responses',
         policy_name: 'Users can insert their own responses'
-      } as RpcParams);
+      });
       
     if (policyError) {
       console.error("Error checking policy:", policyError);
