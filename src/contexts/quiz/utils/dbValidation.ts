@@ -51,7 +51,7 @@ export const checkColumnExists = async (tableName: string, columnName: string): 
 export const checkRlsEnabled = async (tableName: string): Promise<boolean> => {
   try {
     const { data, error } = await supabase
-      .rpc('check_table_rls', { 
+      .rpc('check_rls_enabled', { 
         table_name: tableName 
       } as CheckTableRlsParams);
       

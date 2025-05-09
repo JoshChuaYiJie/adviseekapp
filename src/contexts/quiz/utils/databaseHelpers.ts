@@ -169,7 +169,7 @@ export const validateUserResponsesTable = async (): Promise<ValidationResult> =>
   try {
     // Check for RLS enabled
     const { data: rlsData, error: rlsError } = await supabase
-      .rpc('check_table_rls', {
+      .rpc('check_rls_enabled', {
         table_name: 'user_responses'
       } as CheckTableRlsParams);
 
