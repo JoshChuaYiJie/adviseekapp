@@ -54,7 +54,7 @@ export type Database = {
           id?: string
           post_id: string
           updated_at?: string
-          user_id: string
+          user_id?: string
         }
         Update: {
           content?: string
@@ -89,7 +89,7 @@ export type Database = {
           id?: string
           title: string
           updated_at?: string
-          user_id: string
+          user_id?: string
         }
         Update: {
           content?: string
