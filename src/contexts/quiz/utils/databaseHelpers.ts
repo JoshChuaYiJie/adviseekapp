@@ -1,14 +1,14 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { type Json } from "@/integrations/supabase/types";
+import type { TableName } from "@/integrations/supabase/client";
 
 // Type definition for RPC parameters
 type RpcParams = Record<string, unknown>;
 
 // Helper function to make type-safe Supabase queries
-export function fromTable<T extends string>(tableName: T) {
-  // Use "as any" to bypass TypeScript's type checking for this operation
-  return supabase.from(tableName as any);
+export function fromTable(tableName: TableName) {
+  return supabase.from(tableName);
 }
 
 // Get current user ID helper with enhanced debugging
