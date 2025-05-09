@@ -237,7 +237,7 @@ const SegmentedQuiz = () => {
       // Get user responses for this segment
       const { data, error } = await supabase
         .from('user_responses')
-        .select('id, response, score')
+        .select('question_id, response, score')
         .eq('user_id', userId)
         .eq('quiz_type', segmentId);
       
@@ -259,11 +259,11 @@ const SegmentedQuiz = () => {
         
         data.forEach(item => {
           if (item.response) {
-            savedAnswers[item.id] = item.response;
+            savedAnswers[item.question_id] = item.response;
           }
           
           if (item.score) {
-            savedScores[item.id] = item.score;
+            savedScores[item.question_id] = item.score;
           }
         });
         
@@ -410,7 +410,7 @@ const SegmentedQuiz = () => {
         // Format the data for submission
         const formattedResponses = Object.entries(answers).map(([questionId, response]) => ({
           user_id: userId,
-          id: questionId, // Use string directly
+          question_id: questionId, // Use the correct column name here
           response: response,
           score: scores[questionId] || 0,
           quiz_type: segmentId
@@ -429,7 +429,7 @@ const SegmentedQuiz = () => {
           const response = formattedResponses[i];
           
           addDebugLog(`Saving response ${i+1}/${formattedResponses.length}`, {
-            id: response.id,
+            question_id: response.question_id,
             response_length: response.response ? response.response.length : 0,
             score: response.score
           });
@@ -437,7 +437,7 @@ const SegmentedQuiz = () => {
           const { data, error } = await supabase
             .from('user_responses')
             .upsert(response, {
-              onConflict: 'user_id,id',
+              onConflict: 'user_id,question_id',
               ignoreDuplicates: false
             })
             .select();
