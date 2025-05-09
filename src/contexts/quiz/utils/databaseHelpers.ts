@@ -1,13 +1,6 @@
 import { supabase, type RpcParams } from "@/integrations/supabase/client";
 import { type Json } from "@/integrations/supabase/types";
 
-interface RpcParams {
-  table_name: string;
-  column_name?: string;
-  column_names?: string[];
-  policy_name?: string;
-}
-
 // Helper function to make type-safe Supabase queries
 export function fromTable(tableName: string) {
   return supabase.from(tableName as any);
