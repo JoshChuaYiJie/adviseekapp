@@ -1,4 +1,5 @@
-import { supabase, type RpcParams } from "@/integrations/supabase/client";
+
+import { supabase } from "@/integrations/supabase/client";
 import { type Json } from "@/integrations/supabase/types";
 
 // Helper function to make type-safe Supabase queries
@@ -44,7 +45,7 @@ export const validateUserResponsesTable = async (): Promise<{
     
     // Check for RLS enabled
     const { data: rlsData, error: rlsError } = await supabase
-      .rpc('check_table_rls', { table_name: 'user_responses' } as RpcParams);
+      .rpc('check_table_rls', { table_name: 'user_responses' } as Record<string, unknown>);
       
     if (rlsError) {
       console.error("Error checking RLS:", rlsError);
@@ -65,7 +66,7 @@ export const validateUserResponsesTable = async (): Promise<{
       .rpc('check_unique_constraint', { 
         table_name: 'user_responses', 
         column_names: ['user_id', 'question_id'] 
-      } as RpcParams);
+      } as Record<string, unknown>);
       
     if (constraintError) {
       console.error("Error checking constraint:", constraintError);
@@ -86,7 +87,7 @@ export const validateUserResponsesTable = async (): Promise<{
       .rpc('check_policy_exists', { 
         table_name: 'user_responses', 
         policy_name: 'Users can insert their own responses' 
-      } as RpcParams);
+      } as Record<string, unknown>);
       
     if (policyError) {
       console.error("Error checking policy:", policyError);
