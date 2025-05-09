@@ -1,11 +1,5 @@
-import { supabase } from '@/integrations/supabase/client';
 
-interface RpcParams {
-  table_name: string;
-  column_name?: string;
-  column_names?: string[];
-  policy_name?: string;
-}
+import { supabase, type RpcParams } from '@/integrations/supabase/client';
 
 // Check if a table exists in the database
 export const checkTableExists = async (tableName: string): Promise<boolean> => {
