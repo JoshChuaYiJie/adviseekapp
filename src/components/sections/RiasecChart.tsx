@@ -7,13 +7,13 @@ import { Button } from '@/components/ui/button';
 import { Bug } from 'lucide-react';
 
 export const RiasecChart = () => {
-  const [riasecData, setRiasecData] = useState<Array<{name: string, value: number}>>([]);
+  const [riasecData, setRiasecData] = useState<Array<{name: string, value: number, displayName: string}>>([]);
   const [loading, setLoading] = useState(true);
   const [showAnimation, setShowAnimation] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [debugMode, setDebugMode] = useState(false);
   
-  // Distinct color palette for RIASEC
+  // RIASEC color palette
   const COLORS = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'];
 
   useEffect(() => {
@@ -28,20 +28,18 @@ export const RiasecChart = () => {
           
           // For debugging, inspect responses directly
           if (process.env.NODE_ENV !== 'production') {
-            const responses = await inspectResponses(userId, 'RIASEC');
+            const responses = await inspectResponses(userId, 'riasec');
             console.log("RIASEC-related responses:", responses);
           }
           
           const profile = await calculateRiasecProfile(userId);
           console.log('Raw RIASEC Profile:', profile);
           
-          // Calculate total for percentages
-          const totalValue = Object.values(profile).reduce((sum, val) => sum + val, 0);
-          
-          // Convert to array format for chart data with percentages
+          // Convert to array format for chart data
           const chartData = Object.entries(profile)
             .map(([name, value]) => ({
-              name,
+              name: getRiasecFullName(name), // Full name for tooltips
+              displayName: name, // Single letter for display
               value: typeof value === 'number' ? value : 0
             }))
             .filter(item => item.value > 0)
@@ -51,7 +49,7 @@ export const RiasecChart = () => {
           setRiasecData(chartData);
           
           if (chartData.length === 0) {
-            setError("No RIASEC data available. Please complete the interest and competence quizzes.");
+            setError("No RIASEC data available. Please complete the RIASEC quizzes.");
           } else {
             // Add slight delay for animation
             setTimeout(() => setShowAnimation(true), 100);
@@ -71,6 +69,19 @@ export const RiasecChart = () => {
     loadRiasecProfile();
   }, []);
 
+  // Helper to get full names for RIASEC codes
+  const getRiasecFullName = (code: string) => {
+    const names: Record<string, string> = {
+      'R': 'Realistic',
+      'I': 'Investigative',
+      'A': 'Artistic',
+      'S': 'Social',
+      'E': 'Enterprising',
+      'C': 'Conventional'
+    };
+    return names[code] || code;
+  };
+
   const toggleDebugMode = () => {
     setDebugMode(!debugMode);
   };
@@ -87,11 +98,11 @@ export const RiasecChart = () => {
     return (
       <Card className="w-full">
         <CardHeader>
-          <CardTitle>RIASEC Profile</CardTitle>
+          <CardTitle>Personality Profile</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col items-center justify-center h-[200px]">
           <p className="text-gray-500 text-center mb-4">
-            {error || "Complete interest and competence quizzes to see your RIASEC profile."}
+            {error || "Complete the Interest and Competence quizzes to see your RIASEC profile."}
           </p>
           {process.env.NODE_ENV !== 'production' && (
             <Button variant="outline" size="sm" onClick={toggleDebugMode}>
@@ -103,8 +114,8 @@ export const RiasecChart = () => {
             <div className="w-full mt-4 p-4 bg-gray-50 dark:bg-gray-800 rounded text-xs font-mono overflow-auto">
               <p>Make sure you've completed these quizzes:</p>
               <ul className="list-disc pl-6">
-                <li>Interest - Part 1</li>
-                <li>Interest - Part 2</li>
+                <li>Interest (Part 1)</li>
+                <li>Interest (Part 2)</li>
                 <li>Competence</li>
               </ul>
               <p className="mt-2">Your responses should have component values like:</p>
@@ -123,10 +134,13 @@ export const RiasecChart = () => {
     );
   }
 
+  // Calculate total values for percentage display
+  const totalValues = riasecData.reduce((sum, item) => sum + item.value, 0);
+
   return (
     <Card className={`w-full transition-all duration-500 ${showAnimation ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
       <CardHeader>
-        <CardTitle>RIASEC Profile</CardTitle>
+        <CardTitle>Personality Profile</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="h-[300px]">
@@ -137,7 +151,7 @@ export const RiasecChart = () => {
                 cx="50%"
                 cy="50%"
                 labelLine={false}
-                label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                label={({ displayName, percent }) => `${displayName} (${(percent * 100).toFixed(0)}%)`}
                 outerRadius={80}
                 fill="#8884d8"
                 dataKey="value"
@@ -148,17 +162,29 @@ export const RiasecChart = () => {
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
-              <Tooltip formatter={(value) => [`Score: ${value}`, '']} />
-              <Legend />
+              <Tooltip 
+                formatter={(value, name, props) => {
+                  // Calculate percentage
+                  const percent = ((value as number) / totalValues * 100).toFixed(1);
+                  return [`${percent}%`, props?.payload?.name || name];
+                }}
+              />
+              <Legend formatter={(value, entry) => {
+                // Type safety check to access the payload property
+                if (entry && entry.payload && typeof entry.payload === 'object' && 'name' in entry.payload) {
+                  return entry.payload.name as string;
+                }
+                return '';
+              }} />
             </PieChart>
           </ResponsiveContainer>
         </div>
         <div className="mt-4 text-sm text-gray-500">
-          <p><strong>R</strong>: Realistic - Practical, physical, hands-on problem solver</p>
+          <p><strong>R</strong>: Realistic - Practical, mechanical, hands-on tasks</p>
           <p><strong>I</strong>: Investigative - Analytical, intellectual, scientific</p>
           <p><strong>A</strong>: Artistic - Creative, original, independent</p>
-          <p><strong>S</strong>: Social - Cooperative, supportive, helper</p>
-          <p><strong>E</strong>: Enterprising - Competitive environments, leadership</p>
+          <p><strong>S</strong>: Social - Helping, instructing, caregiving</p>
+          <p><strong>E</strong>: Enterprising - Persuading, leading, managing</p>
           <p><strong>C</strong>: Conventional - Detail-oriented, organizing, clerical</p>
         </div>
       </CardContent>
