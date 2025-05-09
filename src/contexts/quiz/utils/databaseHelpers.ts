@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { type Json } from "@/integrations/supabase/types";
 import type { TableName } from "@/integrations/supabase/client";
@@ -148,7 +147,7 @@ export const testInsertResponse = async (): Promise<{
     // Create a test response
     const testResponse = {
       user_id: userId,
-      question_id: 9999,
+      question_id: "9999",
       response: "This is a test response",
       quiz_type: "test",
       score: 0
@@ -216,13 +215,12 @@ export const calculateRiasecProfile = async (userId: string): Promise<Record<str
       'C': 0  // Conventional
     };
     
-    // Map question IDs to RIASEC categories (simplified example)
-    // This would be based on your actual question mappings
-    const questionToRiasec: Record<number, keyof typeof riasecComponents> = {
+    // Map question IDs to RIASEC categories (should use string keys)
+    const questionToRiasec: Record<string, keyof typeof riasecComponents> = {
       // Map your questions to RIASEC components
-      // Example: 1: 'R', 2: 'I', etc.
-      1: 'R', 2: 'I', 3: 'A', 4: 'S', 5: 'E', 6: 'C',
-      7: 'R', 8: 'I', 9: 'A', 10: 'S', 11: 'E', 12: 'C',
+      // Example: '1': 'R', '2': 'I', etc.
+      '1': 'R', '2': 'I', '3': 'A', '4': 'S', '5': 'E', '6': 'C',
+      '7': 'R', '8': 'I', '9': 'A', '10': 'S', '11': 'E', '12': 'C',
       // Add more mappings based on your actual questions
     };
     
@@ -272,13 +270,12 @@ export const calculateWorkValuesProfile = async (userId: string): Promise<Record
       'Working Conditions': 0
     };
     
-    // Map question IDs to work value categories (simplified example)
-    // This would be based on your actual question mappings
-    const questionToWorkValue: Record<number, keyof typeof workValues> = {
+    // Map question IDs to work value categories (should use string keys)
+    const questionToWorkValue: Record<string, keyof typeof workValues> = {
       // Map your questions to work value categories
-      // Example: 100: 'Achievement', 101: 'Independence', etc.
-      100: 'Achievement', 101: 'Independence', 102: 'Recognition',
-      103: 'Relationships', 104: 'Support', 105: 'Working Conditions',
+      // Example: '100': 'Achievement', '101': 'Independence', etc.
+      '100': 'Achievement', '101': 'Independence', '102': 'Recognition',
+      '103': 'Relationships', '104': 'Support', '105': 'Working Conditions',
       // Add more mappings based on your actual questions
     };
     

@@ -410,7 +410,7 @@ const SegmentedQuiz = () => {
         // Format the data for submission
         const formattedResponses = Object.entries(answers).map(([questionId, response]) => ({
           user_id: userId,
-          question_id: parseInt(questionId),
+          question_id: questionId, // Use string directly
           response: response,
           score: scores[questionId] || 0,
           quiz_type: segmentId
