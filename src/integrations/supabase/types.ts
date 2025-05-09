@@ -231,7 +231,7 @@ export type Database = {
         Row: {
           created_at: string
           id: number
-          question_id: number
+          question_id: string
           quiz_type: string | null
           response: string | null
           response_array: Json | null
@@ -241,7 +241,7 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: number
-          question_id: number
+          question_id: string
           quiz_type?: string | null
           response?: string | null
           response_array?: Json | null
@@ -251,7 +251,7 @@ export type Database = {
         Update: {
           created_at?: string
           id?: number
-          question_id?: number
+          question_id?: string
           quiz_type?: string | null
           response?: string | null
           response_array?: Json | null
