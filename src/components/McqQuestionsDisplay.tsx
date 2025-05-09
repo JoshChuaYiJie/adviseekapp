@@ -1,11 +1,13 @@
 
 import { useState } from 'react';
-import { useAllMcqQuestions, QuizType } from '@/utils/quizQuestions';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useTheme } from '@/contexts/ThemeContext';
+
+// Define QuizType type
+export type QuizType = 'interest-part 1' | 'interest-part 2' | 'competence' | 'work-values';
 
 const QuestionSkeleton = () => (
   <div className="space-y-3 mb-6">
@@ -16,9 +18,16 @@ const QuestionSkeleton = () => (
 );
 
 export const McqQuestionsDisplay = () => {
-  const { allQuestions, loading, error } = useAllMcqQuestions();
   const [activeTab, setActiveTab] = useState<QuizType>('interest-part 1');
   const { isCurrentlyDark } = useTheme();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [allQuestions, setAllQuestions] = useState<Record<QuizType, any[]>>({
+    'interest-part 1': [],
+    'interest-part 2': [],
+    'competence': [],
+    'work-values': []
+  });
   
   const quizTypeLabels: Record<QuizType, string> = {
     'interest-part 1': 'Interest Part 1',
@@ -91,9 +100,9 @@ export const McqQuestionsDisplay = () => {
                           <div className="mt-2 text-sm text-gray-500 dark:text-gray-400">
                             <p className="font-semibold">Options:</p>
                             <ul className="list-disc pl-5 mt-1">
-                              {q.options.map((option, i) => (
+                              {q.options?.map((option: string, i: number) => (
                                 <li key={i}>
-                                  {option} <span className="ml-1 text-xs">(Score: {q.optionScores[option]})</span>
+                                  {option} <span className="ml-1 text-xs">(Score: {q.optionScores?.[option]})</span>
                                 </li>
                               ))}
                             </ul>

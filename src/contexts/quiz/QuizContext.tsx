@@ -2,9 +2,8 @@
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { Module, QuizQuestion } from '@/integrations/supabase/client';
 import { QuizContextType } from './types';
-import { useQuizQuestions } from './hooks/useQuizQuestions';
-import { useModules } from './hooks/useModules';
 import { useResponses } from './hooks/useResponses';
+import { useModules } from './hooks/useModules';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -45,9 +44,10 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
   const [recommendations, setRecommendations] = useState<any[]>([]);
   const [userFeedback, setUserFeedback] = useState<Record<number, number>>({});
   const [finalSelections, setFinalSelections] = useState<Module[]>([]);
+  const [questions, setQuestions] = useState<QuizQuestion[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Custom hooks
-  const { questions, isLoading: questionsLoading, error: questionsError } = useQuizQuestions();
   const { modules, error: modulesError } = useModules();
   const { 
     responses, 
@@ -57,14 +57,11 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
     loadResponses
   } = useResponses();
   
-  // Combined loading state
-  const isLoading = questionsLoading;
-  
   // Combine errors
   useEffect(() => {
-    const combinedError = questionsError || modulesError;
+    const combinedError = modulesError;
     setError(combinedError);
-  }, [questionsError, modulesError]);
+  }, [modulesError]);
   
   // Check for authenticated user and load their data
   useEffect(() => {
@@ -143,7 +140,7 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
         const localCompletions = JSON.parse(localStorage.getItem('completed_quiz_segments') || '[]');
         if (!localCompletions.includes(quizType)) {
           localCompletions.push(quizType);
-          localStorage.setItem('completed_quiz_segments', JSON.stringify(localCompletions));
+          localStorage.setItem("completed_quiz_segments", JSON.stringify(localCompletions));
         }
       }
     } catch (err) {

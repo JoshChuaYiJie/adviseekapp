@@ -6,7 +6,6 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useToast } from "@/hooks/use-toast";
-import { useQuizQuestions, McqQuestion } from "@/utils/quizQuestions";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { supabase } from "@/integrations/supabase/client";
 import { 
@@ -21,6 +20,17 @@ import { Card } from "@/components/ui/card";
 
 // Import debugging helper
 import { validateUserResponsesTable, testInsertResponse } from "@/contexts/quiz/utils/databaseHelpers";
+
+// Define question type locally instead of importing from quizQuestions
+interface McqQuestion {
+  id: string;
+  question: string;
+  options: string[];
+  category: string;
+  optionScores: Record<string, number>;
+  riasec_component?: string;
+  work_value_component?: string;
+}
 
 const QuizQuestion = ({ 
   question, 
@@ -96,7 +106,9 @@ const QuizQuestion = ({
 
 const SegmentedQuiz = () => {
   const { segmentId } = useParams<{ segmentId: string }>();
-  const { questions, loading, error } = useQuizQuestions(segmentId || '');
+  const [questions, setQuestions] = useState<McqQuestion[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [visibleCount, setVisibleCount] = useState(0);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
@@ -125,6 +137,93 @@ const SegmentedQuiz = () => {
     console.log(`DEBUG: ${message}`, data);
     setDebugLog(prev => [...prev, entry]);
   };
+  
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      if (!segmentId) return;
+      
+      try {
+        setLoading(true);
+        
+        let questionsArray: any[] = [];
+        let options: string[] = [];
+        let optionScores: Record<string, number> = {};
+        
+        // Based on the quiz type, load the appropriate question file and options with scores
+        switch (segmentId) {
+          case 'interest-part 1':
+            questionsArray = await fetch('/quiz_refer/Mcq_questions/RIASEC_interest_questions_pt1.json').then(res => res.json());
+            options = ['Extremely disinterested', 'Slightly disinterested', 'Neutral', 'Slightly interested', 'Extremely interested'];
+            optionScores = {
+              'Extremely disinterested': 1,
+              'Slightly disinterested': 2,
+              'Neutral': 3, 
+              'Slightly interested': 4,
+              'Extremely interested': 5
+            };
+            break;
+          case 'interest-part 2':
+            questionsArray = await fetch('/quiz_refer/Mcq_questions/RIASEC_interest_questions_pt2.json').then(res => res.json());
+            options = ['Extremely disinterested', 'Slightly disinterested', 'Neutral', 'Slightly interested', 'Extremely interested'];
+            optionScores = {
+              'Extremely disinterested': 1,
+              'Slightly disinterested': 2,
+              'Neutral': 3, 
+              'Slightly interested': 4,
+              'Extremely interested': 5
+            };
+            break;
+          case 'competence':
+            questionsArray = await fetch('/quiz_refer/Mcq_questions/RIASEC_competence_questions.json').then(res => res.json());
+            options = ['Extremely unconfident', 'Slightly unconfident', 'Neutral', 'Slightly confident', 'Extremely confident'];
+            optionScores = {
+              'Extremely unconfident': 1,
+              'Slightly unconfident': 2,
+              'Neutral': 3,
+              'Slightly confident': 4,
+              'Extremely confident': 5
+            };
+            break;
+          case 'work-values':
+            questionsArray = await fetch('/quiz_refer/Mcq_questions/Work_value_questions.json').then(res => res.json());
+            options = ['Not Important At All', 'Not Very Important', 'Somewhat Important', 'Very Important', 'Extremely Important'];
+            optionScores = {
+              'Not Important At All': 1,
+              'Not Very Important': 2,
+              'Somewhat Important': 3,
+              'Very Important': 4,
+              'Extremely Important': 5
+            };
+            break;
+          default:
+            setError(`Unknown quiz type: ${segmentId}`);
+            setLoading(false);
+            return;
+        }
+        
+        const parsedQuestions: McqQuestion[] = questionsArray.map((q, index) => ({
+          id: q.question_number, // Use the question_number as the id
+          question: q.rephrased_text || q.question,
+          options,
+          category: segmentId,
+          optionScores,
+          riasec_component: q.riasec_component,
+          work_value_component: q.work_value_component
+        }));
+        
+        setQuestions(parsedQuestions);
+        addDebugLog(`Loaded ${parsedQuestions.length} questions for ${segmentId}`);
+      } catch (err) {
+        console.error('Error loading quiz questions:', err);
+        setError('Failed to load quiz questions. Please try again.');
+        addDebugLog(`Error loading quiz questions: ${err}`);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchQuestions();
+  }, [segmentId]);
   
   useEffect(() => {
     const handleScroll = () => {
@@ -410,7 +509,7 @@ const SegmentedQuiz = () => {
         // Format the data for submission
         const formattedResponses = Object.entries(answers).map(([questionId, response]) => ({
           user_id: userId,
-          question_id: questionId, // Use the correct column name here
+          question_id: questionId, // Using the correct column name
           response: response,
           score: scores[questionId] || 0,
           quiz_type: segmentId

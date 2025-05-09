@@ -229,6 +229,7 @@ export type Database = {
       }
       user_responses: {
         Row: {
+          component: string | null
           created_at: string
           id: number
           question_id: string
@@ -239,6 +240,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          component?: string | null
           created_at?: string
           id?: number
           question_id: string
@@ -249,6 +251,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          component?: string | null
           created_at?: string
           id?: number
           question_id?: string
