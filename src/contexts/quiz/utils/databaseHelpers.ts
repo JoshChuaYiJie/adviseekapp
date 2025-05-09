@@ -1,12 +1,9 @@
-import { supabase, type TableName, type RpcParams } from "@/integrations/supabase/client";
+import { supabase, type RpcParams } from "@/integrations/supabase/client";
 import { type Json } from "@/integrations/supabase/types";
 
-// Type definition for RPC parameters
-type RpcParams = Record<string, unknown>;
-
 // Helper function to make type-safe Supabase queries
-export function fromTable(tableName: TableName) {
-  return supabase.from(tableName);
+export function fromTable(tableName: string) {
+  return supabase.from(tableName as any);
 }
 
 // Get current user ID helper with enhanced debugging
@@ -146,7 +143,7 @@ export const testInsertResponse = async (): Promise<{
     // Create a test response
     const testResponse = {
       user_id: userId,
-      question_id: "9999",
+      question_id: "9999", // Using string type as expected by the database
       response: "This is a test response",
       quiz_type: "test",
       score: 0
