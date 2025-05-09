@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { type Json } from "@/integrations/supabase/types";
 
@@ -93,10 +92,10 @@ export const calculateRiasecProfile = async (userId: string): Promise<RiasecScor
     // Type guard to ensure data is an array of UserResponse
     if (Array.isArray(data)) {
       data.forEach((response: any) => {
-        if (response && response.score && response.question_id && response.question_id.startsWith('RIASEC_')) {
+        if (response && response.question_id && response.question_id.startsWith('RIASEC_')) {
           const category = response.question_id.split('_')[1][0] as keyof RiasecScores;
           if (category in riasecScores) {
-            riasecScores[category] += response.score;
+            riasecScores[category] += Number(response.score || (response.response ? parseInt(response.response) : 0));
           }
         }
       });
@@ -140,12 +139,21 @@ export const calculateWorkValuesProfile = async (userId: string): Promise<WorkVa
     // Type guard to ensure data is an array of UserResponse
     if (Array.isArray(data)) {
       data.forEach((response: any) => {
-        if (response && response.score && response.question_id && response.question_id.startsWith('WV_')) {
-          const categoryFull = response.question_id.split('_')[1];
-          const category = categoryFull as keyof WorkValuesScores;
+        // Check different possible question_id formats for work values
+        if (response && response.question_id) {
+          let category = null;
           
-          if (category in workValuesScores) {
-            workValuesScores[category] += response.score;
+          // Handle different formats: WV_Achievement, WorkValues_Achievement, etc.
+          if (response.question_id.startsWith('WV_')) {
+            category = response.question_id.split('_')[1];
+          } else if (response.question_id.startsWith('WorkValues_')) {
+            category = response.question_id.split('_')[1];
+          } else if (response.question_id.includes('WorkingConditions')) {
+            category = 'WorkingConditions';
+          }
+          
+          if (category && category in workValuesScores) {
+            workValuesScores[category as keyof WorkValuesScores] += Number(response.score || (response.response ? parseInt(response.response) : 0));
           }
         }
       });
