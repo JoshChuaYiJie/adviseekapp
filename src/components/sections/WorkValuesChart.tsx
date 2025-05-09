@@ -7,6 +7,7 @@ import { calculateWorkValuesProfile, getUserId } from '@/contexts/quiz/utils/dat
 export const WorkValuesChart = () => {
   const [workValuesData, setWorkValuesData] = useState<Array<{name: string, value: number}>>([]);
   const [loading, setLoading] = useState(true);
+  const [showAnimation, setShowAnimation] = useState(false);
 
   useEffect(() => {
     const loadWorkValuesProfile = async () => {
@@ -23,6 +24,10 @@ export const WorkValuesChart = () => {
           }));
           
           setWorkValuesData(chartData);
+          // Trigger animation after data loads
+          setTimeout(() => {
+            setShowAnimation(true);
+          }, 100);
         }
       } catch (error) {
         console.error("Error loading Work Values profile:", error);
@@ -34,7 +39,8 @@ export const WorkValuesChart = () => {
     loadWorkValuesProfile();
   }, []);
 
-  const COLORS = ['#FF8042', '#00C49F', '#FFBB28', '#0088FE', '#FF6384', '#9966FF'];
+  // Different colors from RIASEC chart
+  const COLORS = ['#8B5CF6', '#D946EF', '#F97316', '#0EA5E9', '#10B981', '#F59E0B'];
 
   if (loading) {
     return (
@@ -58,7 +64,7 @@ export const WorkValuesChart = () => {
   }
 
   return (
-    <Card className="w-full">
+    <Card className={`w-full transition-all duration-500 ${showAnimation ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
       <CardHeader>
         <CardTitle>Work Values Profile</CardTitle>
       </CardHeader>
@@ -75,6 +81,8 @@ export const WorkValuesChart = () => {
                 outerRadius={80}
                 fill="#8884d8"
                 dataKey="value"
+                animationBegin={0}
+                animationDuration={1000}
               >
                 {workValuesData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />

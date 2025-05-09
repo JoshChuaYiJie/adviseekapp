@@ -1,6 +1,5 @@
-import { supabase } from "@/integrations/supabase/client";
+import { supabase, type TableName, type RpcParams } from "@/integrations/supabase/client";
 import { type Json } from "@/integrations/supabase/types";
-import type { TableName } from "@/integrations/supabase/client";
 
 // Type definition for RPC parameters
 type RpcParams = Record<string, unknown>;
