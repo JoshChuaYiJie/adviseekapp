@@ -19,14 +19,21 @@ interface UserResponse {
   [key: string]: any;
 }
 
-// Helper function to make Supabase queries
+type RiasecScores = {
+  R: number; // Realistic
+  I: number; // Investigative
+  A: number; // Artistic
+  S: number; // Social
+  E: number; // Enterprising
+  C: number; // Conventional
+};
+
 export function fromTable<T extends keyof Database['public']['Tables']>(tableName: T) {
   return supabase.from(tableName);
 }
 
 export const getUserId = async (): Promise<string | null> => {
   try {
-    console.log("Fetching current user session...");
     const { data: { session }, error: sessionError } = await supabase.auth.getSession();
     
     if (sessionError) {
@@ -39,17 +46,48 @@ export const getUserId = async (): Promise<string | null> => {
       return null;
     }
     
-    console.log("User authenticated with ID:", session.user?.id);
-    return session?.user?.id || null;
+    return session.user?.id || null;
   } catch (error) {
     console.error("Exception in getUserId:", error);
     return null;
   }
 };
 
+export const calculateRiasecProfile = async (userId: string): Promise<RiasecScores> => {
+  try {
+    const { data, error } = await supabase
+      .from('user_responses')
+      .select('question_id, response, score')
+      .eq('user_id', userId)
+      .eq('quiz_type', 'interest');
+
+    if (error) {
+      console.error("Error fetching RIASEC responses:", error);
+      return { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 };
+    }
+
+    const riasecScores: RiasecScores = {
+      R: 0, I: 0, A: 0, S: 0, E: 0, C: 0
+    };
+
+    data?.forEach(response => {
+      if (response.score && response.question_id.startsWith('RIASEC_')) {
+        const category = response.question_id.split('_')[1][0] as keyof RiasecScores;
+        if (category in riasecScores) {
+          riasecScores[category] += response.score;
+        }
+      }
+    });
+
+    return riasecScores;
+  } catch (error) {
+    console.error("Error calculating RIASEC profile:", error);
+    return { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 };
+  }
+};
+
 export const validateUserResponsesTable = async (): Promise<ValidationResult> => {
   try {
-    // Check for RLS enabled
     const { data: rlsData, error: rlsError } = await supabase
       .rpc('check_table_rls', {
         table_name: 'user_responses'
@@ -68,12 +106,11 @@ export const validateUserResponsesTable = async (): Promise<ValidationResult> =>
 
     const hasRlsEnabled = rlsData === true;
 
-    // Check for unique constraint
     const { data: constraintData, error: constraintError } = await supabase
       .rpc('check_unique_constraint', {
         table_name: 'user_responses',
         column_names: ['user_id', 'question_id']
-      }as Database['public']['Functions']['check_unique_constraint']['Args']);
+      } as Database['public']['Functions']['check_unique_constraint']['Args']);
 
     if (constraintError) {
       console.error("Error checking constraint:", constraintError);
@@ -88,12 +125,11 @@ export const validateUserResponsesTable = async (): Promise<ValidationResult> =>
 
     const hasUniqueConstraint = constraintData === true;
 
-    // Check for policy
     const { data: policyData, error: policyError } = await supabase
       .rpc('check_policy_exists', {
         table_name: 'user_responses',
         policy_name: 'Users can insert their own responses'
-      }as Database['public']['Functions']['check_policy_exists']['Args']);
+      } as Database['public']['Functions']['check_policy_exists']['Args']);
 
     if (policyError) {
       console.error("Error checking policy:", policyError);
