@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
@@ -16,13 +15,14 @@ export const WorkValuesChart = () => {
         const userId = await getUserId();
         if (userId) {
           const profile = await calculateWorkValuesProfile(userId);
-          
-          // Convert to array format for chart
-          const chartData = Object.entries(profile).map(([name, value]) => ({
-            name,
-            value: value || 0
-          }));
-          
+          // Convert to array format for chart, filter out zero values, ensure numbers
+          const chartData = Object.entries(profile)
+            .filter(([_, value]) => typeof value === 'number' && value > 0)
+            .map(([name, value]) => ({
+              name,
+              value: Number(value) || 0
+            }));
+          console.log('Work Values Chart Data:', chartData); // Debug log
           setWorkValuesData(chartData);
           // Trigger animation after data loads
           setTimeout(() => {
@@ -39,8 +39,8 @@ export const WorkValuesChart = () => {
     loadWorkValuesProfile();
   }, []);
 
-  // Different colors from RIASEC chart
-  const COLORS = ['#8B5CF6', '#D946EF', '#F97316', '#0EA5E9', '#10B981', '#F59E0B'];
+  // Distinct color palette for Work Values (different from RIASEC)
+  const COLORS = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'];
 
   if (loading) {
     return (
