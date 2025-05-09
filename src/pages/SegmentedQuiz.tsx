@@ -507,13 +507,20 @@ const SegmentedQuiz = () => {
         });
         
         // Format the data for submission
-        const formattedResponses = Object.entries(answers).map(([questionId, response]) => ({
-          user_id: userId,
-          question_id: questionId, // Using the correct column name
-          response: response,
-          score: scores[questionId] || 0,
-          quiz_type: segmentId
-        }));
+        const formattedResponses = Object.entries(answers).map(([questionId, response]) => {
+          // Find the corresponding question to get the component
+          const question = questions.find(q => q.id === questionId);
+          const component = question?.riasec_component || question?.work_value_component || null;
+          
+          return {
+            user_id: userId,
+            question_id: questionId,
+            response: response,
+            score: scores[questionId] || 0,
+            quiz_type: segmentId,
+            component: component // Save the RIASEC or work value component
+          };
+        });
         
         addDebugLog(`Saving ${formattedResponses.length} responses to Supabase`, 
           formattedResponses.length > 0 ? formattedResponses[0] : null
@@ -530,7 +537,8 @@ const SegmentedQuiz = () => {
           addDebugLog(`Saving response ${i+1}/${formattedResponses.length}`, {
             question_id: response.question_id,
             response_length: response.response ? response.response.length : 0,
-            score: response.score
+            score: response.score,
+            component: response.component
           });
           
           const { data, error } = await supabase

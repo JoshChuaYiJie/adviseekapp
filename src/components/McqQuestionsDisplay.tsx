@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
@@ -8,6 +8,17 @@ import { useTheme } from '@/contexts/ThemeContext';
 
 // Define QuizType type
 export type QuizType = 'interest-part 1' | 'interest-part 2' | 'competence' | 'work-values';
+
+// Define McqQuestion interface
+interface McqQuestion {
+  id: string;
+  question: string;
+  options: string[];
+  category: string;
+  optionScores: Record<string, number>;
+  riasec_component?: string;
+  work_value_component?: string;
+}
 
 const QuestionSkeleton = () => (
   <div className="space-y-3 mb-6">
@@ -20,9 +31,9 @@ const QuestionSkeleton = () => (
 export const McqQuestionsDisplay = () => {
   const [activeTab, setActiveTab] = useState<QuizType>('interest-part 1');
   const { isCurrentlyDark } = useTheme();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [allQuestions, setAllQuestions] = useState<Record<QuizType, any[]>>({
+  const [allQuestions, setAllQuestions] = useState<Record<QuizType, McqQuestion[]>>({
     'interest-part 1': [],
     'interest-part 2': [],
     'competence': [],
@@ -35,6 +46,96 @@ export const McqQuestionsDisplay = () => {
     'competence': 'Competence',
     'work-values': 'Work Values'
   };
+  
+  useEffect(() => {
+    const loadQuestions = async () => {
+      setLoading(true);
+      try {
+        const options = {
+          'interest-part 1': {
+            options: ['Extremely disinterested', 'Slightly disinterested', 'Neutral', 'Slightly interested', 'Extremely interested'],
+            optionScores: {
+              'Extremely disinterested': 1,
+              'Slightly disinterested': 2,
+              'Neutral': 3, 
+              'Slightly interested': 4,
+              'Extremely interested': 5
+            }
+          },
+          'interest-part 2': {
+            options: ['Extremely disinterested', 'Slightly disinterested', 'Neutral', 'Slightly interested', 'Extremely interested'],
+            optionScores: {
+              'Extremely disinterested': 1,
+              'Slightly disinterested': 2,
+              'Neutral': 3, 
+              'Slightly interested': 4,
+              'Extremely interested': 5
+            }
+          },
+          'competence': {
+            options: ['Extremely unconfident', 'Slightly unconfident', 'Neutral', 'Slightly confident', 'Extremely confident'],
+            optionScores: {
+              'Extremely unconfident': 1,
+              'Slightly unconfident': 2,
+              'Neutral': 3,
+              'Slightly confident': 4,
+              'Extremely confident': 5
+            }
+          },
+          'work-values': {
+            options: ['Not Important At All', 'Not Very Important', 'Somewhat Important', 'Very Important', 'Extremely Important'],
+            optionScores: {
+              'Not Important At All': 1,
+              'Not Very Important': 2,
+              'Somewhat Important': 3,
+              'Very Important': 4,
+              'Extremely Important': 5
+            }
+          }
+        };
+        
+        const results: Record<QuizType, McqQuestion[]> = {
+          'interest-part 1': [],
+          'interest-part 2': [],
+          'competence': [],
+          'work-values': []
+        };
+
+        // Load questions for each quiz type
+        for (const quizType of Object.keys(quizTypeLabels) as QuizType[]) {
+          const response = await fetch(`/quiz_refer/Mcq_questions/${quizType === 'interest-part 1' ? 'RIASEC_interest_questions_pt1.json' : 
+                                        quizType === 'interest-part 2' ? 'RIASEC_interest_questions_pt2.json' : 
+                                        quizType === 'competence' ? 'RIASEC_competence_questions.json' : 
+                                        'Work_value_questions.json'}`);
+                                        
+          if (!response.ok) {
+            throw new Error(`Failed to load ${quizType} questions`);
+          }
+          
+          const data = await response.json();
+          
+          results[quizType] = data.map((q: any) => ({
+            id: q.question_number,
+            question: q.rephrased_text || q.question,
+            options: options[quizType].options,
+            category: quizType,
+            optionScores: options[quizType].optionScores,
+            riasec_component: q.riasec_component,
+            work_value_component: q.work_value_component
+          }));
+        }
+        
+        setAllQuestions(results);
+      } catch (err) {
+        console.error('Error loading questions:', err);
+        setError(err instanceof Error ? err.message : 'Failed to load questions');
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    loadQuestions();
+  }, []);
   
   const handleTabChange = (value: string) => {
     setActiveTab(value as QuizType);
@@ -107,6 +208,16 @@ export const McqQuestionsDisplay = () => {
                               ))}
                             </ul>
                           </div>
+                          {q.riasec_component && (
+                            <p className="mt-2 text-sm text-blue-600 dark:text-blue-400">
+                              <span className="font-semibold">RIASEC Component:</span> {q.riasec_component}
+                            </p>
+                          )}
+                          {q.work_value_component && (
+                            <p className="mt-2 text-sm text-purple-600 dark:text-purple-400">
+                              <span className="font-semibold">Work Value Component:</span> {q.work_value_component}
+                            </p>
+                          )}
                         </div>
                       </div>
                     </div>

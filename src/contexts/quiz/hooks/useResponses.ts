@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { getUserId, testInsertResponse } from '../utils/databaseHelpers';
 import { supabase } from "@/integrations/supabase/client";
@@ -45,13 +44,15 @@ export const useResponses = () => {
         score = Number(response[0]);
       }
       
+      // Note: component value will be set separately when submitting to Supabase
       const responseObj = {
         user_id: userId,
         question_id: String(questionId), // Ensure question_id is a string
         response: isArray ? null : String(response), // Ensure response is a string when not array
         response_array: isArray ? response : null,
         quiz_type: quizType || null,
-        score: score || 0 // Ensure we always have a numeric score
+        score: score || 0, // Ensure we always have a numeric score
+        component: null // This will be populated elsewhere when needed
       };
       
       return responseObj;
@@ -118,7 +119,8 @@ export const useResponses = () => {
             response: response.response,
             response_array: response.response_array,
             quiz_type: response.quiz_type,
-            score: response.score
+            score: response.score,
+            component: response.component // Include the component field
           }, { 
             onConflict: 'user_id,question_id',
             ignoreDuplicates: false 
