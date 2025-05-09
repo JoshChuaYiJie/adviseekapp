@@ -128,7 +128,7 @@ export const useAllMcqQuestions = () => {
             }
             
             return {
-              id: `${fileType}-${index}`,
+              id: item.question_number, // Use the question_number as the id
               question: item.rephrased_text || item.question || 'Question text missing',
               options,
               optionScores,
@@ -221,7 +221,7 @@ export const useQuizQuestions = (quizType: string) => {
         }
         
         const parsedQuestions: McqQuestion[] = questionsArray.map((q, index) => ({
-          id: q.question_number || `${quizType}-q-${index + 1}`,
+          id: q.question_number, // Use the question_number as the id
           question: q.rephrased_text,
           options,
           category: quizType,
