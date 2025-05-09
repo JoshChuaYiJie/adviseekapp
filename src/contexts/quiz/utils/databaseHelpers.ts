@@ -1,8 +1,9 @@
 import { supabase } from "@/integrations/supabase/client";
 
 // Helper function to make type-safe Supabase queries
-export function fromTable<T extends string>(tableName: T) {
-  return supabase.from(tableName);
+export function fromTable(tableName: string) {
+  // Use a type assertion to override TypeScript's type checking for this operation
+  return supabase.from(tableName as any);
 }
 
 // Get current user ID helper with enhanced debugging
@@ -43,7 +44,7 @@ export const validateUserResponsesTable = async (): Promise<{
     
     // Check for RLS enabled
     const { data: rlsData, error: rlsError } = await supabase
-      .rpc('check_table_rls', { table_name: 'user_responses' });
+      .rpc('check_table_rls', { table_name: 'user_responses' } as any);
       
     if (rlsError) {
       console.error("Error checking RLS:", rlsError);
@@ -64,7 +65,7 @@ export const validateUserResponsesTable = async (): Promise<{
       .rpc('check_unique_constraint', { 
         table_name: 'user_responses', 
         column_names: ['user_id', 'question_id'] 
-      });
+      } as any);
       
     if (constraintError) {
       console.error("Error checking constraint:", constraintError);
@@ -85,7 +86,7 @@ export const validateUserResponsesTable = async (): Promise<{
       .rpc('check_policy_exists', { 
         table_name: 'user_responses', 
         policy_name: 'Users can insert their own responses' 
-      });
+      } as any);
       
     if (policyError) {
       console.error("Error checking policy:", policyError);
@@ -148,8 +149,7 @@ export const testInsertResponse = async (): Promise<{
     
     console.log("Attempting test insert with data:", testResponse);
     
-    const { data, error } = await supabase
-      .from('user_responses')
+    const { data, error } = await fromTable('user_responses')
       .upsert(testResponse, { 
         onConflict: 'user_id,question_id',
         ignoreDuplicates: false 

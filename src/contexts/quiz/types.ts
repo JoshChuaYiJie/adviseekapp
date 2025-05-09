@@ -13,7 +13,7 @@ export interface QuizContextType {
   modules: Module[];
   finalSelections: Module[];
   completedQuizzes: string[];
-  debugInfo?: any; // Add debugInfo property
+  debugInfo?: any; // Debug info property added
   setCurrentStep: (step: number) => void;
   handleResponse: (questionId: number, response: string | string[]) => void;
   submitResponses: (quizType?: string) => Promise<any>;

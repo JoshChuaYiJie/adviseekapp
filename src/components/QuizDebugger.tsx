@@ -100,7 +100,7 @@ export const QuizDebugger: React.FC<QuizDebugData> = ({
       toast({
         title: "Not authenticated",
         description: "Please log in to view your responses",
-        variant: "warning"
+        variant: "destructive"
       });
       return;
     }
@@ -135,7 +135,7 @@ export const QuizDebugger: React.FC<QuizDebugData> = ({
         toast({
           title: "No responses found",
           description: "No responses found for your account",
-          variant: "warning"
+          variant: "destructive"
         });
       }
     } catch (err) {

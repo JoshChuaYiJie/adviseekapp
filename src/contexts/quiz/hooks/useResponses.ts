@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from '@/hooks/use-toast';
 
 export const useResponses = () => {
+  const { toast } = useToast();
   const [responses, setResponses] = useState<Record<number, string | string[]>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [lastError, setLastError] = useState<Error | null>(null);

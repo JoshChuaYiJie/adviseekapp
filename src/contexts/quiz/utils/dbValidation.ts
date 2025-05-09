@@ -1,124 +1,71 @@
 
-/**
- * Utility functions to validate database configurations like RLS policies and constraints
- */
+import { supabase } from '@/integrations/supabase/client';
 
-import { supabase } from "@/integrations/supabase/client";
+// Helper function to make type-safe Supabase queries that accepts any table name
+function fromTable(tableName: string) {
+  // Use a type assertion to override TypeScript's type checking for this operation
+  return supabase.from(tableName as any);
+}
 
-/**
- * Check if a table has Row Level Security (RLS) enabled
- */
+// Check if a table exists in the database
+export const checkTableExists = async (tableName: string): Promise<boolean> => {
+  try {
+    const { data, error } = await supabase
+      .rpc('check_table_exists', { table_name: tableName } as any);
+      
+    if (error) {
+      console.error(`Error checking if table ${tableName} exists:`, error);
+      return false;
+    }
+    
+    return data === true;
+  } catch (error) {
+    console.error(`Exception checking if table ${tableName} exists:`, error);
+    return false;
+  }
+};
+
+// Check if a column exists in a table
+export const checkColumnExists = async (tableName: string, columnName: string): Promise<boolean> => {
+  try {
+    const { data, error } = await supabase
+      .rpc('check_column_exists', { 
+        table_name: tableName,
+        column_name: columnName 
+      } as any);
+      
+    if (error) {
+      console.error(`Error checking if column ${columnName} exists in ${tableName}:`, error);
+      return false;
+    }
+    
+    return data === true;
+  } catch (error) {
+    console.error(`Exception checking if column ${columnName} exists in ${tableName}:`, error);
+    return false;
+  }
+};
+
+// Check if a table has Row Level Security enabled
 export const checkRlsEnabled = async (tableName: string): Promise<boolean> => {
   try {
-    const { data, error } = await supabase.rpc('check_rls_enabled', {
-      table_name: tableName
-    });
-    
+    const { data, error } = await supabase
+      .rpc('check_table_rls', { table_name: tableName } as any);
+      
     if (error) {
-      console.error('Error checking RLS:', error);
+      console.error(`Error checking RLS for table ${tableName}:`, error);
       return false;
     }
     
     return data === true;
-  } catch (err) {
-    console.error('Exception checking RLS:', err);
+  } catch (error) {
+    console.error(`Exception checking RLS for table ${tableName}:`, error);
     return false;
   }
 };
 
-/**
- * Check if a specific policy exists on a table
- */
-export const checkPolicyExists = async (tableName: string, policyName: string): Promise<boolean> => {
-  try {
-    const { data, error } = await supabase.rpc('check_policy_exists', {
-      table_name: tableName,
-      policy_name: policyName
-    });
-    
-    if (error) {
-      console.error('Error checking policy:', error);
-      return false;
-    }
-    
-    return data === true;
-  } catch (err) {
-    console.error('Exception checking policy:', err);
-    return false;
-  }
-};
-
-/**
- * Check if a table has a unique constraint on specified columns
- */
-export const checkUniqueConstraint = async (
-  tableName: string, 
-  columns: string[]
-): Promise<boolean> => {
-  try {
-    const { data, error } = await supabase.rpc('check_unique_constraint', {
-      table_name: tableName,
-      column_names: columns
-    });
-    
-    if (error) {
-      console.error('Error checking unique constraint:', error);
-      return false;
-    }
-    
-    return data === true;
-  } catch (err) {
-    console.error('Exception checking constraint:', err);
-    return false;
-  }
-};
-
-/**
- * Check if the user_responses table is properly configured
- */
-export const validateUserResponsesTable = async (): Promise<{
-  success: boolean;
-  hasRls: boolean;
-  hasUniqueConstraint: boolean;
-  hasInsertPolicy: boolean;
-  hasUpdatePolicy: boolean;
-  hasSelectPolicy: boolean;
-  details: string;
-}> => {
-  try {
-    const hasRls = await checkRlsEnabled('user_responses');
-    const hasUniqueConstraint = await checkUniqueConstraint('user_responses', ['user_id', 'question_id']);
-    const hasInsertPolicy = await checkPolicyExists('user_responses', 'Users can insert their own responses');
-    const hasUpdatePolicy = await checkPolicyExists('user_responses', 'Users can update their own responses');
-    const hasSelectPolicy = await checkPolicyExists('user_responses', 'Users can view their own responses');
-    
-    const details = [
-      `RLS ${hasRls ? 'enabled' : 'disabled'}`,
-      `Unique constraint ${hasUniqueConstraint ? 'exists' : 'missing'} on (user_id, question_id)`,
-      `Insert policy ${hasInsertPolicy ? 'exists' : 'missing'}`,
-      `Update policy ${hasUpdatePolicy ? 'exists' : 'missing'}`,
-      `Select policy ${hasSelectPolicy ? 'exists' : 'missing'}`
-    ].join(', ');
-    
-    return {
-      success: hasRls && hasUniqueConstraint && hasInsertPolicy && hasUpdatePolicy && hasSelectPolicy,
-      hasRls,
-      hasUniqueConstraint,
-      hasInsertPolicy,
-      hasUpdatePolicy,
-      hasSelectPolicy,
-      details
-    };
-  } catch (err) {
-    console.error('Exception validating user_responses table:', err);
-    return {
-      success: false,
-      hasRls: false,
-      hasUniqueConstraint: false,
-      hasInsertPolicy: false,
-      hasUpdatePolicy: false,
-      hasSelectPolicy: false,
-      details: `Error: ${err instanceof Error ? err.message : String(err)}`
-    };
-  }
+export default {
+  checkTableExists,
+  checkColumnExists,
+  checkRlsEnabled
 };

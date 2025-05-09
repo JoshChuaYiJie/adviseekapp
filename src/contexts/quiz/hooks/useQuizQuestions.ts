@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { QuizQuestion } from '@/integrations/supabase/client';
-import { predefinedQuestions } from '../utils/predefinedQuestions';
+import { RIASEC_INTEREST_PART1, RIASEC_INTEREST_PART2, RIASEC_COMPETENCE, WORK_VALUES } from '../utils/predefinedQuestions';
 
 export const useQuizQuestions = (segment?: string) => {
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
@@ -21,21 +21,23 @@ export const useQuizQuestions = (segment?: string) => {
         setIsLoading(true);
         setError(null);
 
-        // For now, just use predefined questions since the Supabase schema doesn't include quiz_questions
-        if (segment in predefinedQuestions) {
-          const sectionQuestions = predefinedQuestions[segment as keyof typeof predefinedQuestions];
-          
-          // Add missing ID property if needed to match QuizQuestion type
-          const questionsWithIds = sectionQuestions.map((q, index) => ({
-            ...q,
-            id: q.id || index + 1 // Use existing id or generate one from index
-          }));
-          
-          setQuestions(questionsWithIds as QuizQuestion[]);
-          console.log(`Loaded ${questionsWithIds.length} predefined questions for ${segment}`);
+        // Map segment to the appropriate question set
+        let questionSet: QuizQuestion[] = [];
+        
+        if (segment === 'interest-part 1') {
+          questionSet = RIASEC_INTEREST_PART1;
+        } else if (segment === 'interest-part 2') {
+          questionSet = RIASEC_INTEREST_PART2;
+        } else if (segment === 'competence') {
+          questionSet = RIASEC_COMPETENCE;
+        } else if (segment === 'work-values') {
+          questionSet = WORK_VALUES;
         } else {
           throw new Error(`No questions found for segment: ${segment}`);
         }
+        
+        setQuestions(questionSet);
+        console.log(`Loaded ${questionSet.length} predefined questions for ${segment}`);
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Failed to load quiz questions';
         setError(errorMessage);

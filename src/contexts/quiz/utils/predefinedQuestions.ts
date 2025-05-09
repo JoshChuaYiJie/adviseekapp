@@ -1,7 +1,7 @@
 import { QuizQuestion } from "@/integrations/supabase/client";
 
 // Add an ID to each question
-const addIdsToQuestions = (questions: any[], startId = 1): QuizQuestion[] => {
+const addIdsToQuestions = (questions: Omit<QuizQuestion, 'id'>[], startId = 1): QuizQuestion[] => {
   return questions.map((q, index) => ({
     ...q,
     id: startId + index
@@ -82,7 +82,7 @@ const interestPart1Questions = [
     question_type: "single-select",
     options: ["1", "2", "3", "4", "5"]
   },
-];
+] as const;
 
 // Interest Part 2 Questions
 const interestPart2Questions = [
@@ -158,7 +158,7 @@ const interestPart2Questions = [
     question_type: "single-select",
     options: ["1", "2", "3", "4", "5"]
   },
-];
+] as const;
 
 // Competence Questions
 const competenceQuestions = [
@@ -234,7 +234,7 @@ const competenceQuestions = [
     question_type: "single-select",
     options: ["1", "2", "3", "4", "5"]
   },
-];
+] as const;
 
 // Work Value Questions
 const workValueQuestions = [
@@ -304,16 +304,16 @@ const workValueQuestions = [
     question_type: "single-select",
     options: ["1", "2", "3", "4", "5"]
   },
-    {
+  {
     section: "Work Values",
     question_text: "How important is it for you to have a job that is well-paid?",
     question_type: "single-select",
     options: ["1", "2", "3", "4", "5"]
   },
-];
+] as const;
 
 // Export the questions with IDs added
-export const RIASEC_INTEREST_PART1 = addIdsToQuestions(interestPart1Questions, 1);
-export const RIASEC_INTEREST_PART2 = addIdsToQuestions(interestPart2Questions, 100);
-export const RIASEC_COMPETENCE = addIdsToQuestions(competenceQuestions, 200);
-export const WORK_VALUES = addIdsToQuestions(workValueQuestions, 300);
+export const RIASEC_INTEREST_PART1: QuizQuestion[] = addIdsToQuestions(interestPart1Questions as any, 1);
+export const RIASEC_INTEREST_PART2: QuizQuestion[] = addIdsToQuestions(interestPart2Questions as any, 100);
+export const RIASEC_COMPETENCE: QuizQuestion[] = addIdsToQuestions(competenceQuestions as any, 200);
+export const WORK_VALUES: QuizQuestion[] = addIdsToQuestions(workValueQuestions as any, 300);
