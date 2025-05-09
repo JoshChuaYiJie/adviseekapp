@@ -2,8 +2,8 @@
 import { supabase } from '@/integrations/supabase/client';
 
 // Helper function to make type-safe Supabase queries that accepts any table name
-function fromTable(tableName: string) {
-  // Use a type assertion to override TypeScript's type checking for this operation
+function fromTable<T extends string>(tableName: T) {
+  // Use "as any" to override TypeScript's type checking for this operation
   return supabase.from(tableName as any);
 }
 

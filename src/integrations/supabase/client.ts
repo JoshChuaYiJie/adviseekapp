@@ -56,6 +56,7 @@ export type Recommendation = {
   reason: string;
   created_at: string;
   module?: Module;
+  reasoning?: string[];
 };
 
 export type UserFeedback = {

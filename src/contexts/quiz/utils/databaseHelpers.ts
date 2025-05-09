@@ -1,8 +1,9 @@
 import { supabase } from "@/integrations/supabase/client";
+import { type Json } from "@/integrations/supabase/types";
 
 // Helper function to make type-safe Supabase queries
-export function fromTable(tableName: string) {
-  // Use a type assertion to override TypeScript's type checking for this operation
+export function fromTable<T extends string>(tableName: T) {
+  // Use "as any" to bypass TypeScript's type checking for this operation
   return supabase.from(tableName as any);
 }
 
@@ -43,7 +44,7 @@ export const validateUserResponsesTable = async (): Promise<{
     console.log("Validating user_responses table configuration...");
     
     // Check for RLS enabled
-    const { data: rlsData, error: rlsError } = await supabase
+    const { data: rlsData, error: rlsError } = await fromTable('check_table_rls')
       .rpc('check_table_rls', { table_name: 'user_responses' } as any);
       
     if (rlsError) {
@@ -61,7 +62,7 @@ export const validateUserResponsesTable = async (): Promise<{
     console.log("RLS enabled on user_responses:", hasRlsEnabled);
     
     // Check for unique constraint on user_id and question_id
-    const { data: constraintData, error: constraintError } = await supabase
+    const { data: constraintData, error: constraintError } = await fromTable('check_unique_constraint')
       .rpc('check_unique_constraint', { 
         table_name: 'user_responses', 
         column_names: ['user_id', 'question_id'] 
@@ -82,7 +83,7 @@ export const validateUserResponsesTable = async (): Promise<{
     console.log("Unique constraint exists on (user_id, question_id):", hasUniqueConstraint);
     
     // Check for correct RLS policy
-    const { data: policyData, error: policyError } = await supabase
+    const { data: policyData, error: policyError } = await fromTable('check_policy_exists')
       .rpc('check_policy_exists', { 
         table_name: 'user_responses', 
         policy_name: 'Users can insert their own responses' 
@@ -153,8 +154,7 @@ export const testInsertResponse = async (): Promise<{
       .upsert(testResponse, { 
         onConflict: 'user_id,question_id',
         ignoreDuplicates: false 
-      })
-      .select();
+      });
       
     if (error) {
       console.error("Test insert failed:", error);

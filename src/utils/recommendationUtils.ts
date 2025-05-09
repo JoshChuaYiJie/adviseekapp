@@ -1,4 +1,9 @@
+
 // Function to map RIASEC components to their codes
+import { Module, Recommendation } from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/supabase/client";
+import { getUserId } from "@/contexts/quiz/utils/databaseHelpers";
+
 export const mapRiasecToCode = (component: string): string => {
   switch (component) {
     case 'R': return 'R';
