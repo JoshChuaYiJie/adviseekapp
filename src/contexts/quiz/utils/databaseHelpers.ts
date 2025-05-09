@@ -133,6 +133,8 @@ export const testInsertResponse = async (): Promise<{
   details: any;
 }> => {
   try {
+    // Get the session first
+    const { data: { session } } = await supabase.auth.getSession();
     const userId = await getUserId();
     
     if (!userId) {
@@ -146,14 +148,20 @@ export const testInsertResponse = async (): Promise<{
     // Create a test response
     const testResponse = {
       user_id: userId,
-      question_id: 9999, // Use a high number unlikely to conflict
+      question_id: 9999,
       response: "This is a test response",
       quiz_type: "test",
       score: 0
     };
     
-    console.log("Attempting test insert with data:", testResponse);
-    
+    // Correct debug logging
+    console.log("Debug - Auth State:", {
+      sessionExists: !!session,
+      userId: userId,
+      authUserId: session?.user?.id,
+      testResponse: testResponse
+    });
+
     const { data, error } = await fromTable('user_responses')
       .upsert(testResponse, { 
         onConflict: 'user_id,question_id',
