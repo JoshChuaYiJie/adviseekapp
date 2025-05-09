@@ -152,11 +152,17 @@ export const WorkValuesChart = () => {
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
-              <Tooltip formatter={(value, name, props) => [
-                `Score: ${value}`, 
-                props.payload.name
-              ]} />
-              <Legend formatter={(value, entry) => entry.payload.name} />
+              <Tooltip 
+                formatter={(value, name, props) => [
+                  `Score: ${value}`, 
+                  props.payload.name
+                ]} 
+              />
+              <Legend formatter={(value, entry) => {
+                // Use the name property from the original data item
+                const item = entry.payload;
+                return item ? item.name : '';
+              }} />
             </PieChart>
           </ResponsiveContainer>
         </div>

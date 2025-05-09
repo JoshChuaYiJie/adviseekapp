@@ -1,10 +1,12 @@
 
-import { Module, QuizQuestion } from '@/integrations/supabase/client';
+import { Module } from "@/integrations/supabase/client";
+import { McqQuestion } from "@/utils/quizQuestions";
 
+// Type for the Quiz Context
 export interface QuizContextType {
   currentStep: number;
-  responses: Record<number, string | string[]>;
-  questions: QuizQuestion[];
+  responses: Record<string | number, string | string[]>;
+  questions: McqQuestion[]; // Changed from QuizQuestion[] to McqQuestion[]
   isLoading: boolean;
   isSubmitting: boolean;
   error: string | null;
@@ -13,10 +15,9 @@ export interface QuizContextType {
   modules: Module[];
   finalSelections: Module[];
   completedQuizzes: string[];
-  debugInfo?: any; // Debug info property added
   setCurrentStep: (step: number) => void;
-  handleResponse: (questionId: number, response: string | string[]) => void;
-  submitResponses: (quizType?: string) => Promise<any>;
+  handleResponse: (questionId: string | number, answer: string | string[]) => void;
+  submitResponses: (quizType?: string) => Promise<void>;
   rateModule: (moduleId: number, rating: number) => Promise<void>;
   refineRecommendations: (selectedModuleIds: number[]) => Promise<void>;
   getFinalSelections: () => Promise<Module[]>;

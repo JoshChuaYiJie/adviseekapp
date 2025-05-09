@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { Module } from '@/integrations/supabase/client';
 import { QuizContextType } from './types';
@@ -191,7 +190,7 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
   const contextValue = useMemo<QuizContextType>(() => ({
     currentStep,
     responses,
-    questions,
+    questions, // This is now correctly typed as McqQuestion[]
     isLoading,
     isSubmitting,
     error: error || null,

@@ -1,5 +1,3 @@
-
-import { createClient } from "@/integrations/supabase/client";
 import { supabase } from "@/integrations/supabase/client";
 
 // Get current user ID
@@ -19,7 +17,7 @@ export const calculateRiasecProfile = async (userId: string) => {
       .select('question_id, response, score, component')
       .eq('user_id', userId)
       .in('quiz_type', ['interest-part 1', 'interest-part 2', 'competence'])
-      .is('component', 'not.null');
+      .not('component', 'is', null); // Fixed syntax for checking non-null values
     
     if (error) {
       console.error('Error fetching RIASEC responses:', error);
@@ -93,7 +91,7 @@ export const calculateWorkValuesProfile = async (userId: string) => {
       .select('question_id, response, score, component')
       .eq('user_id', userId)
       .eq('quiz_type', 'work-values')
-      .is('component', 'not.null');
+      .not('component', 'is', null); // Fixed syntax for checking non-null values
     
     if (error) {
       console.error('Error fetching Work Values responses:', error);
