@@ -9,9 +9,9 @@ interface ValidationResult {
   details: string;
 }
 
-// Helper function to make Supabase queries
+// Helper function to make Supabase queries - use type assertion for dynamic table names
 export function fromTable(tableName: string) {
-  return supabase.from(tableName);
+  return supabase.from(tableName as any);
 }
 
 // Get current user ID helper with enhanced debugging
@@ -191,10 +191,8 @@ export const testInsertResponse = async (): Promise<{
 // Calculate RIASEC profile from user responses
 export const calculateRiasecProfile = async (userId: string): Promise<Record<string, number>> => {
   try {
-    // Modified to use string interpolation for the query instead of problematic .in() function
-    // This gets responses for interest and competence quizzes
-    const { data, error } = await supabase
-      .from('user_responses')
+    // Using the fromTable helper function to avoid type issues
+    const { data, error } = await fromTable('user_responses')
       .select('*, question_id')
       .eq('user_id', userId)
       .or('quiz_type.eq.interest-part 1,quiz_type.eq.interest-part 2,quiz_type.eq.competence');
@@ -217,11 +215,8 @@ export const calculateRiasecProfile = async (userId: string): Promise<Record<str
     console.log(`Found ${data.length} RIASEC responses for user ${userId}`);
 
     // Process responses by manually assigning scores based on question_id
-    // Map question IDs to RIASEC components based on your schema
-    // This is a simplified example - adapt to your actual data structure
     data.forEach(response => {
       // Get the question ID and determine which RIASEC component it belongs to
-      // This is a placeholder - you'll need to implement your actual mapping logic
       const questionId = response.question_id;
       
       // Example mapping logic (replace with your actual logic)
@@ -258,9 +253,8 @@ export const calculateRiasecProfile = async (userId: string): Promise<Record<str
 // Calculate Work Values profile from user responses
 export const calculateWorkValuesProfile = async (userId: string): Promise<Record<string, number>> => {
   try {
-    // Modified to use direct query without the join that was causing issues
-    const { data, error } = await supabase
-      .from('user_responses')
+    // Using the fromTable helper function to avoid type issues
+    const { data, error } = await fromTable('user_responses')
       .select('*, question_id')
       .eq('user_id', userId)
       .eq('quiz_type', 'work-values');
@@ -288,7 +282,6 @@ export const calculateWorkValuesProfile = async (userId: string): Promise<Record
     console.log(`Found ${data.length} work values responses for user ${userId}`);
 
     // Process responses by manually assigning scores based on question_id
-    // Map question IDs to work value components based on your schema
     data.forEach(response => {
       // Get the question ID and determine which work value component it belongs to
       const questionId = parseInt(response.question_id);
