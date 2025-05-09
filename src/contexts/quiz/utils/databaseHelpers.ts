@@ -113,7 +113,7 @@ export const calculateWorkValuesProfile = async (userId: string): Promise<WorkVa
     const { data, error } = await fromTable('user_responses')
       .select('question_id, response, score')
       .eq('user_id', userId)
-      .eq('quiz_type', 'work_values');
+      .eq('quiz_type', 'work-values');
 
     if (error) {
       console.error("Error fetching Work Values responses:", error);
