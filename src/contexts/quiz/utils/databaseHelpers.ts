@@ -92,8 +92,8 @@ export const calculateRiasecProfile = async (userId: string): Promise<RiasecScor
 
     // Type guard to ensure data is an array of UserResponse
     if (Array.isArray(data)) {
-      data.forEach(response => {
-        if (response.score && response.question_id.startsWith('RIASEC_')) {
+      data.forEach((response: any) => {
+        if (response && response.score && response.question_id && response.question_id.startsWith('RIASEC_')) {
           const category = response.question_id.split('_')[1][0] as keyof RiasecScores;
           if (category in riasecScores) {
             riasecScores[category] += response.score;
@@ -139,8 +139,8 @@ export const calculateWorkValuesProfile = async (userId: string): Promise<WorkVa
 
     // Type guard to ensure data is an array of UserResponse
     if (Array.isArray(data)) {
-      data.forEach(response => {
-        if (response.score && response.question_id.startsWith('WV_')) {
+      data.forEach((response: any) => {
+        if (response && response.score && response.question_id && response.question_id.startsWith('WV_')) {
           const categoryFull = response.question_id.split('_')[1];
           const category = categoryFull as keyof WorkValuesScores;
           
@@ -241,6 +241,61 @@ export const validateUserResponsesTable = async (): Promise<ValidationResult> =>
       hasRlsEnabled: false,
       hasCorrectPolicy: false,
       details: `Exception: ${error instanceof Error ? error.message : String(error)}`
+    };
+  }
+};
+
+// The missing testInsertResponse function used in QuizDebugger.tsx and useResponses.ts
+export const testInsertResponse = async () => {
+  try {
+    const userId = await getUserId();
+
+    if (!userId) {
+      return {
+        success: false,
+        message: "Authentication required. Please log in to test response insertion.",
+        details: null
+      };
+    }
+
+    // Create a test response object
+    const testResponse = {
+      user_id: userId,
+      question_id: `test_${Date.now()}`,
+      response: "Test response",
+      response_array: null,
+      quiz_type: "test",
+      score: 0
+    };
+
+    console.log("Attempting test insert with data:", testResponse);
+
+    // Attempt to insert the test response
+    const { data, error } = await fromTable('user_responses')
+      .insert(testResponse)
+      .select();
+
+    if (error) {
+      console.error("Test insert failed:", error);
+      return {
+        success: false,
+        message: `Insert failed: ${error.message}`,
+        details: error
+      };
+    }
+
+    console.log("Test insert successful:", data);
+    return {
+      success: true,
+      message: "Successfully inserted test response",
+      details: data
+    };
+  } catch (error) {
+    console.error("Exception in testInsertResponse:", error);
+    return {
+      success: false,
+      message: `Exception occurred: ${error instanceof Error ? error.message : String(error)}`,
+      details: error
     };
   }
 };

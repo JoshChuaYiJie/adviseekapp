@@ -1,5 +1,10 @@
+
 import { supabase } from '@/integrations/supabase/client';
-import type { Database } from '@/integrations/supabase/types';
+
+// Define RPC parameter types
+type CheckTableExistsParams = { table_name: string };
+type CheckColumnExistsParams = { table_name: string; column_name: string };
+type CheckTableRlsParams = { table_name: string };
 
 // Check if a table exists in the database
 export const checkTableExists = async (tableName: string): Promise<boolean> => {
@@ -7,7 +12,7 @@ export const checkTableExists = async (tableName: string): Promise<boolean> => {
     const { data, error } = await supabase
       .rpc('check_table_exists', { 
         table_name: tableName 
-      } as Database['public']['Functions']['check_table_exists']['Args']);
+      } as CheckTableExistsParams);
       
     if (error) {
       console.error(`Error checking if table ${tableName} exists:`, error);
@@ -28,7 +33,7 @@ export const checkColumnExists = async (tableName: string, columnName: string): 
       .rpc('check_column_exists', { 
         table_name: tableName,
         column_name: columnName 
-      } as Database['public']['Functions']['check_column_exists']['Args']);
+      } as CheckColumnExistsParams);
       
     if (error) {
       console.error(`Error checking if column ${columnName} exists in ${tableName}:`, error);
@@ -48,7 +53,7 @@ export const checkRlsEnabled = async (tableName: string): Promise<boolean> => {
     const { data, error } = await supabase
       .rpc('check_table_rls', { 
         table_name: tableName 
-      } as Database['public']['Functions']['check_table_rls']['Args']);
+      } as CheckTableRlsParams);
       
     if (error) {
       console.error(`Error checking RLS for table ${tableName}:`, error);
