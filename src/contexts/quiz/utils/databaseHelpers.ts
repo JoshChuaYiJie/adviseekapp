@@ -1,13 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { type Json } from "@/integrations/supabase/types";
 
-interface RpcParams {
-  table_name: string;
-  column_name?: string;
-  column_names?: string[];
-  policy_name?: string;
-}
-
 // Helper function to make type-safe Supabase queries
 export function fromTable(tableName: string) {
   return supabase.from(tableName as any);
@@ -52,7 +45,7 @@ export const validateUserResponsesTable = async (): Promise<{
     const { data: rlsData, error: rlsError } = await supabase
       .rpc('check_table_rls', { 
         table_name: 'user_responses' 
-      } satisfies RpcParams);
+      } as any);
       
     if (rlsError) {
       console.error("Error checking RLS:", rlsError);
@@ -73,7 +66,7 @@ export const validateUserResponsesTable = async (): Promise<{
       .rpc('check_unique_constraint', { 
         table_name: 'user_responses',
         column_names: ['user_id', 'question_id']
-      } satisfies RpcParams);
+      } as any);
       
     if (constraintError) {
       console.error("Error checking constraint:", constraintError);
@@ -94,7 +87,7 @@ export const validateUserResponsesTable = async (): Promise<{
       .rpc('check_policy_exists', { 
         table_name: 'user_responses',
         policy_name: 'Users can insert their own responses'
-      } satisfies RpcParams);
+      } as any);
       
     if (policyError) {
       console.error("Error checking policy:", policyError);
@@ -222,7 +215,6 @@ export const calculateRiasecProfile = async (userId: string): Promise<Record<str
     // Map question IDs to RIASEC categories (should use string keys)
     const questionToRiasec: Record<string, keyof typeof riasecComponents> = {
       // Map your questions to RIASEC components
-      // Example: '1': 'R', '2': 'I', etc.
       '1': 'R', '2': 'I', '3': 'A', '4': 'S', '5': 'E', '6': 'C',
       '7': 'R', '8': 'I', '9': 'A', '10': 'S', '11': 'E', '12': 'C',
       // Add more mappings based on your actual questions
@@ -264,7 +256,7 @@ export const calculateWorkValuesProfile = async (userId: string): Promise<Record
     if (error) throw error;
     if (!data || data.length === 0) return {};
     
-    // Define work value categories
+    // Define work value categories with proper initialization
     const workValues = {
       'Achievement': 0,
       'Independence': 0,
@@ -274,16 +266,33 @@ export const calculateWorkValuesProfile = async (userId: string): Promise<Record
       'Working Conditions': 0
     };
     
-    // Map question IDs to work value categories (should use string keys)
+    // Enhanced mapping of question IDs to work value categories with more sample data
     const questionToWorkValue: Record<string, keyof typeof workValues> = {
-      // Map your questions to work value categories
-      // Example: '100': 'Achievement', '101': 'Independence', etc.
-      '100': 'Achievement', '101': 'Independence', '102': 'Recognition',
-      '103': 'Relationships', '104': 'Support', '105': 'Working Conditions',
-      // Add more mappings based on your actual questions
+      // Map work values questions to categories
+      '100': 'Achievement', 
+      '101': 'Independence', 
+      '102': 'Recognition',
+      '103': 'Relationships', 
+      '104': 'Support', 
+      '105': 'Working Conditions',
+      '106': 'Achievement', 
+      '107': 'Independence', 
+      '108': 'Recognition',
+      '109': 'Relationships', 
+      '110': 'Support', 
+      '111': 'Working Conditions',
+      '112': 'Achievement', 
+      '113': 'Independence', 
+      '114': 'Recognition',
+      '115': 'Relationships', 
+      '116': 'Support', 
+      '117': 'Working Conditions',
+      // Add more mappings as needed
     };
     
-    // Calculate scores for each category
+    console.log("Work Values raw data:", data);
+    
+    // Calculate scores for each category with enhanced logging
     data.forEach(response => {
       const category = questionToWorkValue[response.question_id];
       if (category) {
@@ -295,9 +304,13 @@ export const calculateWorkValuesProfile = async (userId: string): Promise<Record
           }
         }
         workValues[category] += score;
+        console.log(`Adding ${score} to ${category}, new total: ${workValues[category]}`);
+      } else {
+        console.log(`No category mapping found for question ID: ${response.question_id}`);
       }
     });
     
+    console.log("Final Work Values profile:", workValues);
     return workValues;
   } catch (error) {
     console.error("Error calculating work values profile:", error);
