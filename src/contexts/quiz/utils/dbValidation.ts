@@ -1,11 +1,19 @@
-
 import { supabase } from '@/integrations/supabase/client';
+
+interface RpcParams {
+  table_name: string;
+  column_name?: string;
+  column_names?: string[];
+  policy_name?: string;
+}
 
 // Check if a table exists in the database
 export const checkTableExists = async (tableName: string): Promise<boolean> => {
   try {
     const { data, error } = await supabase
-      .rpc('check_table_exists', { table_name: tableName } as Record<string, unknown>);
+      .rpc('check_table_exists', { 
+        table_name: tableName 
+      } satisfies RpcParams);
       
     if (error) {
       console.error(`Error checking if table ${tableName} exists:`, error);
@@ -26,7 +34,7 @@ export const checkColumnExists = async (tableName: string, columnName: string): 
       .rpc('check_column_exists', { 
         table_name: tableName,
         column_name: columnName 
-      } as Record<string, unknown>);
+      } satisfies RpcParams);
       
     if (error) {
       console.error(`Error checking if column ${columnName} exists in ${tableName}:`, error);
@@ -44,7 +52,9 @@ export const checkColumnExists = async (tableName: string, columnName: string): 
 export const checkRlsEnabled = async (tableName: string): Promise<boolean> => {
   try {
     const { data, error } = await supabase
-      .rpc('check_table_rls', { table_name: tableName } as Record<string, unknown>);
+      .rpc('check_table_rls', { 
+        table_name: tableName 
+      } satisfies RpcParams);
       
     if (error) {
       console.error(`Error checking RLS for table ${tableName}:`, error);

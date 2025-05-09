@@ -1,6 +1,12 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { type Json } from "@/integrations/supabase/types";
+
+interface RpcParams {
+  table_name: string;
+  column_name?: string;
+  column_names?: string[];
+  policy_name?: string;
+}
 
 // Helper function to make type-safe Supabase queries
 export function fromTable(tableName: string) {
@@ -10,7 +16,6 @@ export function fromTable(tableName: string) {
 // Get current user ID helper with enhanced debugging
 export const getUserId = async (): Promise<string | null> => {
   try {
-    // Fetch the current session with detailed logging
     console.log("Fetching current user session...");
     const { data: { session }, error: sessionError } = await supabase.auth.getSession();
     
@@ -45,7 +50,9 @@ export const validateUserResponsesTable = async (): Promise<{
     
     // Check for RLS enabled
     const { data: rlsData, error: rlsError } = await supabase
-      .rpc('check_table_rls', { table_name: 'user_responses' } as Record<string, unknown>);
+      .rpc('check_table_rls', { 
+        table_name: 'user_responses' 
+      } satisfies RpcParams);
       
     if (rlsError) {
       console.error("Error checking RLS:", rlsError);
@@ -64,9 +71,9 @@ export const validateUserResponsesTable = async (): Promise<{
     // Check for unique constraint on user_id and question_id
     const { data: constraintData, error: constraintError } = await supabase
       .rpc('check_unique_constraint', { 
-        table_name: 'user_responses', 
-        column_names: ['user_id', 'question_id'] 
-      } as Record<string, unknown>);
+        table_name: 'user_responses',
+        column_names: ['user_id', 'question_id']
+      } satisfies RpcParams);
       
     if (constraintError) {
       console.error("Error checking constraint:", constraintError);
@@ -85,9 +92,9 @@ export const validateUserResponsesTable = async (): Promise<{
     // Check for correct RLS policy
     const { data: policyData, error: policyError } = await supabase
       .rpc('check_policy_exists', { 
-        table_name: 'user_responses', 
-        policy_name: 'Users can insert their own responses' 
-      } as Record<string, unknown>);
+        table_name: 'user_responses',
+        policy_name: 'Users can insert their own responses'
+      } satisfies RpcParams);
       
     if (policyError) {
       console.error("Error checking policy:", policyError);
