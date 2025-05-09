@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { getUserId, testInsertResponse } from '../utils/databaseHelpers';
 import { supabase } from "@/integrations/supabase/client";
@@ -19,7 +20,7 @@ export const useResponses = () => {
   };
 
   // Format responses for database
-  const formatResponsesForDb = async (quizType?: string) => {
+  const formatResponsesForDb = async (quizType?: string, questions?: any[] | null) => {
     console.log("Fetching current user ID for response formatting...");
     const userId = await getUserId();
     
@@ -44,7 +45,15 @@ export const useResponses = () => {
         score = Number(response[0]);
       }
       
-      // Note: component value will be set separately when submitting to Supabase
+      // Find the matching question to get component information
+      let component = null;
+      if (questions) {
+        const question = questions.find(q => q.id === questionId);
+        if (question) {
+          component = question.riasec_component || question.work_value_component || null;
+        }
+      }
+      
       const responseObj = {
         user_id: userId,
         question_id: String(questionId), // Ensure question_id is a string
@@ -52,7 +61,7 @@ export const useResponses = () => {
         response_array: isArray ? response : null,
         quiz_type: quizType || null,
         score: score || 0, // Ensure we always have a numeric score
-        component: null // This will be populated elsewhere when needed
+        component // Include the component value
       };
       
       return responseObj;
@@ -65,7 +74,7 @@ export const useResponses = () => {
   };
 
   // Submit responses to database with enhanced error handling
-  const submitResponses = async (quizType?: string) => {
+  const submitResponses = async (quizType?: string, questions?: any[] | null) => {
     // Clear previous error state
     setLastError(null);
     setDebugInfo(null);
@@ -90,7 +99,7 @@ export const useResponses = () => {
       console.log("User authenticated with ID:", session.user.id);
       console.log("Preparing to save responses for quiz:", quizType);
       
-      const formattedResponses = await formatResponsesForDb(quizType);
+      const formattedResponses = await formatResponsesForDb(quizType, questions);
       
       if (formattedResponses.length === 0) {
         const emptyError = new Error("No responses to submit");

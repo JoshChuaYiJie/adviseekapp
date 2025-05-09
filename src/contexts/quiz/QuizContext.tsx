@@ -1,11 +1,12 @@
 
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
-import { Module, QuizQuestion } from '@/integrations/supabase/client';
+import { Module } from '@/integrations/supabase/client';
 import { QuizContextType } from './types';
 import { useResponses } from './hooks/useResponses';
 import { useModules } from './hooks/useModules';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { McqQuestion } from '@/utils/quizQuestions';
 
 // Create the context with default values
 const QuizContext = createContext<QuizContextType>({
@@ -44,7 +45,7 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
   const [recommendations, setRecommendations] = useState<any[]>([]);
   const [userFeedback, setUserFeedback] = useState<Record<number, number>>({});
   const [finalSelections, setFinalSelections] = useState<Module[]>([]);
-  const [questions, setQuestions] = useState<QuizQuestion[]>([]);
+  const [questions, setQuestions] = useState<McqQuestion[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   // Custom hooks
@@ -121,7 +122,7 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
   const submitResponses = async (quizType?: string) => {
     try {
       // Submit user responses and get user ID
-      const currentUserId = await submitUserResponses(quizType);
+      const currentUserId = await submitUserResponses(quizType, questions);
       if (!currentUserId) {
         throw new Error("You must be logged in to submit responses");
       }

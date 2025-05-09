@@ -35,7 +35,10 @@ export const RiasecChart = () => {
           const profile = await calculateRiasecProfile(userId);
           console.log('Raw RIASEC Profile:', profile);
           
-          // Convert to array format for chart data
+          // Calculate total for percentages
+          const totalValue = Object.values(profile).reduce((sum, val) => sum + val, 0);
+          
+          // Convert to array format for chart data with percentages
           const chartData = Object.entries(profile)
             .map(([name, value]) => ({
               name,
@@ -104,11 +107,14 @@ export const RiasecChart = () => {
                 <li>Interest - Part 2</li>
                 <li>Competence</li>
               </ul>
-              <p className="mt-2">Your responses should have question_id values that follow patterns like:</p>
+              <p className="mt-2">Your responses should have component values like:</p>
               <ul className="list-disc pl-6">
-                <li>RIASEC_R_1</li>
-                <li>R1</li>
-                <li>interest_R_1</li>
+                <li>Realistic</li>
+                <li>Investigative</li>
+                <li>Artistic</li>
+                <li>Social</li>
+                <li>Enterprising</li>
+                <li>Conventional</li>
               </ul>
             </div>
           )}

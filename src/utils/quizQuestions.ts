@@ -162,7 +162,7 @@ export const loadQuizQuestions = async (quizType: QuizType): Promise<McqQuestion
   }
 };
 
-// Hook to use quiz questions
+// Custom hook for loading quiz questions
 export const useQuizData = (quizType: QuizType) => {
   const [questions, setQuestions] = useState<McqQuestion[]>([]);
   const [loading, setLoading] = useState(true);

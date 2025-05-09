@@ -1,234 +1,158 @@
+
+import { createClient } from "@/integrations/supabase/client";
 import { supabase } from "@/integrations/supabase/client";
-import { type Json } from "@/integrations/supabase/types";
 
-// Define the type for validation result
-interface ValidationResult {
-  success: boolean;
-  hasUniqueConstraint: boolean;
-  hasRlsEnabled: boolean;
-  hasCorrectPolicy: boolean;
-  details: string;
-}
-
-// Define the type for user response
-interface UserResponse {
-  user_id: string;
-  question_id: string;
-  response: string | null;
-  response_array: string[] | null;
-  quiz_type: string | null;
-  score: number;
-  [key: string]: any;
-}
-
-// Define RIASEC score types
-type RiasecScores = {
-  R: number; // Realistic
-  I: number; // Investigative
-  A: number; // Artistic
-  S: number; // Social
-  E: number; // Enterprising
-  C: number; // Conventional
-};
-
-// Define Work Values score types
-type WorkValuesScores = {
-  Achievement: number;
-  Independence: number;
-  Recognition: number;
-  Relationships: number;
-  Support: number;
-  WorkingConditions: number;
-};
-
-// Define RPC parameter types
-type CheckTableRlsParams = { table_name: string };
-type CheckUniqueConstraintParams = { table_name: string; column_names: string[] };
-type CheckPolicyExistsParams = { table_name: string; policy_name: string };
-
-// Helper function to safely make Supabase queries with dynamic table names
-export function fromTable(tableName: string) {
-  // Using type assertion to allow dynamic table names
-  return supabase.from(tableName as any);
-}
-
+// Get current user ID
 export const getUserId = async (): Promise<string | null> => {
-  try {
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-    
-    if (sessionError) {
-      console.error("Error getting session:", sessionError);
-      return null;
-    }
-    
-    if (!session) {
-      console.log("No active session found - user is not authenticated");
-      return null;
-    }
-    
-    return session.user?.id || null;
-  } catch (error) {
-    console.error("Exception in getUserId:", error);
-    return null;
-  }
+  const { data: { session } } = await supabase.auth.getSession();
+  return session?.user?.id || null;
 };
 
-export const calculateRiasecProfile = async (userId: string): Promise<RiasecScores> => {
+// Calculate RIASEC profile from user responses
+export const calculateRiasecProfile = async (userId: string) => {
   try {
-    console.log("Calculating RIASEC profile for user:", userId);
+    console.log(`Calculating RIASEC profile for user ${userId}`);
     
-    // Query all quiz types that could contain RIASEC data
-    const quizTypes = ['interest-part 1', 'interest-part 2', 'competence'];
-    let allResponses: any[] = [];
+    // Get all responses for RIASEC-related quiz types
+    const { data: responses, error } = await supabase
+      .from('user_responses')
+      .select('question_id, response, score, component')
+      .eq('user_id', userId)
+      .in('quiz_type', ['interest-part 1', 'interest-part 2', 'competence'])
+      .is('component', 'not.null');
     
-    // Fetch data for all relevant quiz types
-    for (const quizType of quizTypes) {
-      console.log(`Fetching responses for quiz type: ${quizType}`);
-      const { data, error } = await fromTable('user_responses')
-        .select('question_id, response, score')
-        .eq('user_id', userId)
-        .eq('quiz_type', quizType);
-
-      if (error) {
-        console.error(`Error fetching RIASEC responses for ${quizType}:`, error);
-      } else if (data && data.length > 0) {
-        console.log(`Found ${data.length} responses for quiz type ${quizType}`);
-        allResponses = [...allResponses, ...data];
-      } else {
-        console.log(`No responses found for quiz type ${quizType}`);
-      }
+    if (error) {
+      console.error('Error fetching RIASEC responses:', error);
+      throw error;
     }
 
-    console.log(`Total RIASEC responses found: ${allResponses.length}`);
-    
-    if (allResponses.length === 0) {
-      console.log("No RIASEC data found, sample quiz data to check:", await sampleUserResponses(userId));
+    if (!responses || responses.length === 0) {
+      console.log('No RIASEC responses found');
+      return { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 };
     }
 
-    const riasecScores: RiasecScores = {
-      R: 0, I: 0, A: 0, S: 0, E: 0, C: 0
-    };
-
-    // Process all responses FLAG OUT
-    allResponses.forEach((response: any) => {
-      if (response && response.question_id) {
-        let category = null;
+    console.log(`Found ${responses.length} RIASEC-related responses`);
+    
+    // Group responses by component
+    const componentGroups: Record<string, { totalScore: number, count: number }> = {};
+    
+    responses.forEach(response => {
+      if (response.component && response.score) {
+        // Extract the first letter of the component and capitalize it
+        const componentKey = response.component.charAt(0).toUpperCase();
         
-        // Match various possible RIASEC question_id formats
-        if (response.question_id.startsWith('RIASEC_')) {
-          category = response.question_id.split('_')[1][0];
-        } else if (response.question_id.match(/^[RIASEC]\d+$/)) {
-          category = response.question_id[0]; // Format like "R1", "I2", etc.
-        } else if (response.question_id.includes('_R_') || response.question_id.includes('_I_') ||
-                  response.question_id.includes('_A_') || response.question_id.includes('_S_') ||
-                  response.question_id.includes('_E_') || response.question_id.includes('_C_')) {
-          // Format like "quiz_R_1", "interest_I_2", etc.
-          const match = response.question_id.match(/_([RIASEC])_/);
-          if (match) {
-            category = match[1];
-          }
+        if (!componentGroups[componentKey]) {
+          componentGroups[componentKey] = { totalScore: 0, count: 0 };
         }
         
-        if (category && category in riasecScores) {
-          const scoreValue = Number(response.score || (response.response ? parseInt(response.response) : 0));
-          riasecScores[category as keyof RiasecScores] += scoreValue;
-          console.log(`Added score ${scoreValue} to category ${category}, from question ${response.question_id}`);
-        }
+        componentGroups[componentKey].totalScore += response.score;
+        componentGroups[componentKey].count++;
+        
+        console.info(`Added score ${response.score} to category ${componentKey}, from question ${response.question_id}`);
       }
     });
-
-    // Log the final scores
-    console.log("RIASEC scores calculated:", riasecScores);
-    return riasecScores;
+    
+    // Calculate average scores for each component
+    const averageScores: Record<string, number> = {};
+    let totalAverageScore = 0;
+    
+    Object.entries(componentGroups).forEach(([component, { totalScore, count }]) => {
+      if (count > 0) {
+        const averageScore = Math.round(totalScore / count);
+        averageScores[component] = averageScore;
+        totalAverageScore += averageScore;
+      }
+    });
+    
+    // Ensure we have entries for all RIASEC components even if they're zero
+    const riasecProfile: Record<string, number> = {
+      R: averageScores.R || 0,
+      I: averageScores.I || 0,
+      A: averageScores.A || 0,
+      S: averageScores.S || 0,
+      E: averageScores.E || 0,
+      C: averageScores.C || 0
+    };
+    
+    console.log('RIASEC scores calculated:', riasecProfile);
+    return riasecProfile;
   } catch (error) {
-    console.error("Error calculating RIASEC profile:", error);
+    console.error('Error in calculateRiasecProfile:', error);
     return { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 };
   }
 };
 
-export const calculateWorkValuesProfile = async (userId: string): Promise<WorkValuesScores> => {
+// Calculate Work Values profile from user responses
+export const calculateWorkValuesProfile = async (userId: string) => {
   try {
-    console.log("Calculating Work Values profile for user:", userId);
+    console.log(`Calculating Work Values profile for user ${userId}`);
     
-    // Query different potential quiz types for work values
-    const quizTypes = ['work-values', 'work-value', 'values', 'work_values'];
-    let allResponses: any[] = [];
+    // Get all responses for Work Values quiz type
+    const { data: responses, error } = await supabase
+      .from('user_responses')
+      .select('question_id, response, score, component')
+      .eq('user_id', userId)
+      .eq('quiz_type', 'work-values')
+      .is('component', 'not.null');
     
-    // Fetch data for all relevant quiz types
-    for (const quizType of quizTypes) {
-      console.log(`Fetching responses for quiz type: ${quizType}`);
-      const { data, error } = await fromTable('user_responses')
-        .select('question_id, response, score')
-        .eq('user_id', userId)
-        .eq('quiz_type', quizType);
-
-      if (error) {
-        console.error(`Error fetching Work Values responses for ${quizType}:`, error);
-      } else if (data && data.length > 0) {
-        console.log(`Found ${data.length} responses for quiz type ${quizType}`);
-        allResponses = [...allResponses, ...data];
-      } else {
-        console.log(`No responses found for quiz type ${quizType}`);
-      }
-    }
-    
-    console.log(`Total Work Values responses found: ${allResponses.length}`);
-    
-    if (allResponses.length === 0) {
-      // If no work values found, check if any responses exist at all
-      if (!await sampleUserResponses(userId)) {
-        console.log("No quiz responses found for this user at all.");
-      }
+    if (error) {
+      console.error('Error fetching Work Values responses:', error);
+      throw error;
     }
 
-    const workValuesScores: WorkValuesScores = {
-      Achievement: 0,
-      Independence: 0,
-      Recognition: 0,
-      Relationships: 0,
-      Support: 0,
-      WorkingConditions: 0
-    };
+    if (!responses || responses.length === 0) {
+      console.log('No responses found for quiz type work_values');
+      return {
+        Achievement: 0,
+        Independence: 0,
+        Recognition: 0,
+        Relationships: 0,
+        Support: 0,
+        WorkingConditions: 0
+      };
+    }
 
-    // Process all responses
-    allResponses.forEach((response: any) => {
-      if (response && response.question_id) {
-        let category = null;
+    console.log(`Total Work Values responses found: ${responses.length}`);
+    
+    // Group responses by component
+    const componentGroups: Record<string, { totalScore: number, count: number }> = {};
+    
+    responses.forEach(response => {
+      if (response.component && response.score) {
+        const componentKey = response.component;
         
-        // Match various possible Work Values question_id formats
-        if (response.question_id.startsWith('WV_')) {
-          category = response.question_id.split('_')[1];
-        } else if (response.question_id.startsWith('WorkValues_')) {
-          category = response.question_id.split('_')[1];
-        } else if (response.question_id.startsWith('Achievement') || 
-                  response.question_id.startsWith('Independence') || 
-                  response.question_id.startsWith('Recognition') || 
-                  response.question_id.startsWith('Relationships') || 
-                  response.question_id.startsWith('Support') || 
-                  response.question_id.includes('WorkingConditions')) {
-          // Format starts with the category name
-          const valueTitles = Object.keys(workValuesScores);
-          for (const title of valueTitles) {
-            if (response.question_id.includes(title)) {
-              category = title;
-              break;
-            }
-          }
+        if (!componentGroups[componentKey]) {
+          componentGroups[componentKey] = { totalScore: 0, count: 0 };
         }
         
-        if (category && category in workValuesScores) {
-          const scoreValue = Number(response.score || (response.response ? parseInt(response.response) : 0));
-          workValuesScores[category as keyof WorkValuesScores] += scoreValue;
-          console.log(`Added score ${scoreValue} to category ${category}, from question ${response.question_id}`);
-        }
+        componentGroups[componentKey].totalScore += response.score;
+        componentGroups[componentKey].count++;
       }
     });
-
-    // Log the final scores
-    console.log("Work Values scores calculated:", workValuesScores);
-    return workValuesScores;
+    
+    // Calculate average scores for each component
+    const averageScores: Record<string, number> = {};
+    
+    Object.entries(componentGroups).forEach(([component, { totalScore, count }]) => {
+      if (count > 0) {
+        averageScores[component] = Math.round(totalScore / count);
+      }
+    });
+    
+    // Ensure we have entries for all work values components even if they're zero
+    const workValuesProfile = {
+      Achievement: averageScores.Achievement || 0,
+      Independence: averageScores.Independence || 0,
+      Recognition: averageScores.Recognition || 0,
+      Relationships: averageScores.Relationships || 0,
+      Support: averageScores.Support || 0,
+      WorkingConditions: averageScores['Working Conditions'] || averageScores.WorkingConditions || 0
+    };
+    
+    console.log('Work Values scores calculated:', workValuesProfile);
+    return workValuesProfile;
   } catch (error) {
-    console.error("Error calculating Work Values profile:", error);
+    console.error('Error in calculateWorkValuesProfile:', error);
     return {
       Achievement: 0,
       Independence: 0,
@@ -240,186 +164,115 @@ export const calculateWorkValuesProfile = async (userId: string): Promise<WorkVa
   }
 };
 
-// Helper function to check if any responses exist
-async function sampleUserResponses(userId: string) {
+// For debugging purposes - inspect user responses
+export const inspectResponses = async (userId: string, type?: string) => {
   try {
-    // Query any responses regardless of quiz type
-    const { data, error } = await fromTable('user_responses')
-      .select('question_id, response, score, quiz_type')
-      .eq('user_id', userId)
-      .limit(10);
-      
-    if (error) {
-      console.error("Error fetching sample responses:", error);
-      return null;
-    }
-    
-    console.log(`Found ${data?.length || 0} sample responses:`, data);
-    return data;
-  } catch (error) {
-    console.error("Error in sampleUserResponses:", error);
-    return null;
-  }
-}
-
-// Additional function to inspect a response with full details
-export const inspectResponses = async (userId: string, questionPattern?: string): Promise<any[]> => {
-  try {
-    console.log(`Inspecting responses for user ${userId}${questionPattern ? ` with pattern ${questionPattern}` : ''}`);
-    
-    let query = fromTable('user_responses')
+    let query = supabase
+      .from('user_responses')
       .select('*')
       .eq('user_id', userId);
-      
-    if (questionPattern) {
-      query = query.ilike('question_id', `%${questionPattern}%`);
+    
+    if (type) {
+      if (type.toLowerCase() === 'riasec') {
+        query = query.in('quiz_type', ['interest-part 1', 'interest-part 2', 'competence']);
+      } else if (type.toLowerCase() === 'work') {
+        query = query.eq('quiz_type', 'work-values');
+      } else {
+        query = query.eq('quiz_type', type);
+      }
     }
     
     const { data, error } = await query;
-      
+    
     if (error) {
-      console.error("Error inspecting responses:", error);
+      console.error('Error inspecting responses:', error);
       return [];
     }
     
-    console.log(`Found ${data?.length || 0} responses:`, data);
-    return data || [];
+    return data;
   } catch (error) {
-    console.error("Error in inspectResponses:", error);
+    console.error('Error in inspectResponses:', error);
     return [];
   }
 };
 
-export const validateUserResponsesTable = async (): Promise<ValidationResult> => {
+// Test database access and permissions
+export const validateUserResponsesTable = async () => {
   try {
-    // Check for RLS enabled
-    const { data: rlsData, error: rlsError } = await supabase
-      .rpc('check_rls_enabled', {
-        table_name: 'user_responses'
-      });
-
-    if (rlsError) {
-      console.error("Error checking RLS:", rlsError);
-      return {
-        success: false,
-        hasUniqueConstraint: false,
-        hasRlsEnabled: false,
-        hasCorrectPolicy: false,
-        details: `Error checking RLS: ${rlsError.message}`
-      };
-    }
-
-    const hasRlsEnabled = rlsData === true;
-
-    // Check for unique constraint
-    const { data: constraintData, error: constraintError } = await supabase
-      .rpc('check_unique_constraint', {
-        table_name: 'user_responses',
-        column_names: ['user_id', 'question_id']
-      });
-
-    if (constraintError) {
-      console.error("Error checking constraint:", constraintError);
-      return {
-        success: false,
-        hasUniqueConstraint: false,
-        hasRlsEnabled,
-        hasCorrectPolicy: false,
-        details: `Error checking constraint: ${constraintError.message}`
-      };
-    }
-
-    const hasUniqueConstraint = constraintData === true;
-
-    // Check for policy
-    const { data: policyData, error: policyError } = await supabase
-      .rpc('check_policy_exists', {
-        table_name: 'user_responses',
-        policy_name: 'Users can insert their own responses'
-      });
-
-    if (policyError) {
-      console.error("Error checking policy:", policyError);
-      return {
-        success: false,
-        hasUniqueConstraint,
-        hasRlsEnabled,
-        hasCorrectPolicy: false,
-        details: `Error checking policy: ${policyError.message}`
-      };
-    }
-
-    const hasCorrectPolicy = policyData === true;
-
+    const { data: tableInfo, error: tableError } = await supabase
+      .from('user_responses')
+      .select('id')
+      .limit(1);
+    
+    const hasRlsEnabled = await supabase.rpc('check_rls_enabled', { table_name: 'user_responses' });
+    const hasUniqueConstraint = await supabase.rpc('check_unique_constraint', { 
+      table_name: 'user_responses',
+      column_names: ['user_id', 'question_id']
+    });
+    const hasCorrectPolicy = await supabase.rpc('check_policy_exists', {
+      table_name: 'user_responses',
+      policy_name: 'Users can view own responses'
+    });
+    
     return {
-      success: true,
-      hasUniqueConstraint,
+      success: !tableError && hasRlsEnabled && hasUniqueConstraint,
       hasRlsEnabled,
+      hasUniqueConstraint,
       hasCorrectPolicy,
-      details: `Table validated: RLS=${hasRlsEnabled}, UniqueConstraint=${hasUniqueConstraint}, CorrectPolicy=${hasCorrectPolicy}`
+      details: tableError ? tableError.message : "Table is accessible"
     };
   } catch (error) {
-    console.error("Exception in validateUserResponsesTable:", error);
+    console.error('Error validating user_responses table:', error);
     return {
       success: false,
-      hasUniqueConstraint: false,
-      hasRlsEnabled: false,
-      hasCorrectPolicy: false,
-      details: `Exception: ${error instanceof Error ? error.message : String(error)}`
+      details: error instanceof Error ? error.message : "Unknown error"
     };
   }
 };
 
-// The missing testInsertResponse function used in QuizDebugger.tsx and useResponses.ts
+// Test insert response for debugging
 export const testInsertResponse = async () => {
   try {
     const userId = await getUserId();
-
+    
     if (!userId) {
       return {
         success: false,
-        message: "Authentication required. Please log in to test response insertion.",
-        details: null
+        message: "Not authenticated",
+        details: "User must be logged in to test"
       };
     }
-
-    // Create a test response object
-    const testResponse = {
-      user_id: userId,
-      question_id: `test_${Date.now()}`,
-      response: "Test response",
-      response_array: null,
-      quiz_type: "test",
-      score: 0
-    };
-
-    console.log("Attempting test insert with data:", testResponse);
-
-    // Attempt to insert the test response
-    const { data, error } = await fromTable('user_responses')
-      .insert(testResponse)
+    
+    // Try to insert a test response
+    const { data, error } = await supabase
+      .from('user_responses')
+      .insert({
+        user_id: userId,
+        question_id: 'TEST_' + Date.now(),
+        response: 'Test Response',
+        score: 3,
+        quiz_type: 'test',
+        component: 'Test'
+      })
       .select();
-
+    
     if (error) {
-      console.error("Test insert failed:", error);
       return {
         success: false,
         message: `Insert failed: ${error.message}`,
         details: error
       };
     }
-
-    console.log("Test insert successful:", data);
+    
     return {
       success: true,
       message: "Successfully inserted test response",
       details: data
     };
   } catch (error) {
-    console.error("Exception in testInsertResponse:", error);
     return {
       success: false,
-      message: `Exception occurred: ${error instanceof Error ? error.message : String(error)}`,
+      message: "Exception occurred during test",
       details: error
     };
   }

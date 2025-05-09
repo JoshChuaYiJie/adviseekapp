@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Bug } from 'lucide-react';
 
 export const WorkValuesChart = () => {
-  const [workValuesData, setWorkValuesData] = useState<Array<{name: string, value: number}>>([]);
+  const [workValuesData, setWorkValuesData] = useState<Array<{name: string, value: number, displayName: string}>>([]);
   const [loading, setLoading] = useState(true);
   const [showAnimation, setShowAnimation] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -35,12 +35,21 @@ export const WorkValuesChart = () => {
           const profile = await calculateWorkValuesProfile(userId);
           console.log('Raw Work Values Profile:', profile);
           
-          // Convert to array format for chart data
+          // Calculate total for percentages
+          const totalValue = Object.values(profile).reduce((sum, val) => sum + val, 0);
+          
+          // Convert to array format for chart data with display names
           const chartData = Object.entries(profile)
-            .map(([name, value]) => ({
-              name,
-              value: typeof value === 'number' ? value : 0
-            }))
+            .map(([name, value]) => {
+              // Special case for Recognition
+              let displayName = name === 'Recognition' ? 'Rc' : name.charAt(0);
+              
+              return {
+                name,
+                displayName,
+                value: typeof value === 'number' ? value : 0
+              };
+            })
             .filter(item => item.value > 0)
             .sort((a, b) => b.value - a.value); // Sort by value descending
 
@@ -102,11 +111,14 @@ export const WorkValuesChart = () => {
               <ul className="list-disc pl-6">
                 <li>Work Values</li>
               </ul>
-              <p className="mt-2">Your responses should have question_id values that follow patterns like:</p>
+              <p className="mt-2">Your responses should have component values like:</p>
               <ul className="list-disc pl-6">
-                <li>WV_Achievement</li>
-                <li>WorkValues_Independence</li>
-                <li>Achievement_1</li>
+                <li>Achievement</li>
+                <li>Independence</li>
+                <li>Recognition</li>
+                <li>Relationships</li>
+                <li>Support</li>
+                <li>Working Conditions</li>
               </ul>
             </div>
           )}
@@ -129,7 +141,7 @@ export const WorkValuesChart = () => {
                 cx="50%"
                 cy="50%"
                 labelLine={false}
-                label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                label={({ displayName, percent }) => `${displayName} (${(percent * 100).toFixed(0)}%)`}
                 outerRadius={80}
                 fill="#8884d8"
                 dataKey="value"
@@ -140,18 +152,21 @@ export const WorkValuesChart = () => {
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
-              <Tooltip formatter={(value) => [`Score: ${value}`, '']} />
-              <Legend />
+              <Tooltip formatter={(value, name, props) => [
+                `Score: ${value}`, 
+                props.payload.name
+              ]} />
+              <Legend formatter={(value, entry) => entry.payload.name} />
             </PieChart>
           </ResponsiveContainer>
         </div>
         <div className="mt-4 text-sm text-gray-500">
-          <p><strong>Achievement</strong>: Results-oriented, sense of accomplishment</p>
-          <p><strong>Independence</strong>: Autonomy, self-direction</p>
-          <p><strong>Recognition</strong>: Visibility, status, appreciation</p>
-          <p><strong>Relationships</strong>: Connection with colleagues</p>
-          <p><strong>Support</strong>: Assistance and encouragement</p>
-          <p><strong>Working Conditions</strong>: Environment, job security</p>
+          <p><strong>A</strong>: Achievement - Results-oriented, sense of accomplishment</p>
+          <p><strong>I</strong>: Independence - Autonomy, self-direction</p>
+          <p><strong>Rc</strong>: Recognition - Visibility, status, appreciation</p>
+          <p><strong>R</strong>: Relationships - Connection with colleagues</p>
+          <p><strong>S</strong>: Support - Assistance and encouragement</p>
+          <p><strong>W</strong>: Working Conditions - Environment, job security</p>
         </div>
       </CardContent>
     </Card>
