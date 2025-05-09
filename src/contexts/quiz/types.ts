@@ -15,6 +15,7 @@ export interface QuizContextType {
   modules: Module[];
   finalSelections: Module[];
   completedQuizzes: string[];
+  debugInfo?: any; // Added debugInfo as an optional property
   setCurrentStep: (step: number) => void;
   handleResponse: (questionId: string | number, answer: string | string[]) => void;
   submitResponses: (quizType?: string) => Promise<void>;

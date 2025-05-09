@@ -159,9 +159,11 @@ export const WorkValuesChart = () => {
                 ]} 
               />
               <Legend formatter={(value, entry) => {
-                // Use the name property from the original data item
-                const item = entry.payload;
-                return item ? item.name : '';
+                // Type safety check to access the payload property
+                if (entry && entry.payload && typeof entry.payload === 'object' && 'name' in entry.payload) {
+                  return entry.payload.name as string;
+                }
+                return '';
               }} />
             </PieChart>
           </ResponsiveContainer>

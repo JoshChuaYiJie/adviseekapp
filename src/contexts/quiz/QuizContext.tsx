@@ -20,6 +20,7 @@ const QuizContext = createContext<QuizContextType>({
   modules: [],
   finalSelections: [],
   completedQuizzes: [],
+  debugInfo: null,
   setCurrentStep: () => {},
   handleResponse: () => {},
   submitResponses: async () => {},
@@ -46,7 +47,8 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
   const [finalSelections, setFinalSelections] = useState<Module[]>([]);
   const [questions, setQuestions] = useState<McqQuestion[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-
+  const [debugInfo, setDebugInfo] = useState<any>(null);
+  
   // Custom hooks
   const { modules, error: modulesError } = useModules();
   const { 
@@ -199,6 +201,7 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
     modules,
     finalSelections,
     completedQuizzes,
+    debugInfo, // Added debugInfo to the context value
     setCurrentStep,
     handleResponse,
     submitResponses,
@@ -217,7 +220,8 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
     userFeedback,
     modules,
     finalSelections,
-    completedQuizzes
+    completedQuizzes,
+    debugInfo // Added to dependency array
   ]);
   
   return (
