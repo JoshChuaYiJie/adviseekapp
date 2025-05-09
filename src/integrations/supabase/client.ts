@@ -20,7 +20,7 @@ export type QuizQuestion = {
 export type UserResponse = {
   id: number;
   user_id: string;
-  question_id: string;
+  id: string;
   response: string | null;
   response_array: string[] | null;
   created_at: string;

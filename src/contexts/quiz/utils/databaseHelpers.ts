@@ -13,7 +13,7 @@ interface ValidationResult {
 // Define the type for user response
 interface UserResponse {
   user_id: string;
-  question_id: string;
+  id: string;
   response: string | null;
   response_array: string[] | null;
   quiz_type: string | null;
@@ -76,7 +76,7 @@ export const getUserId = async (): Promise<string | null> => {
 export const calculateRiasecProfile = async (userId: string): Promise<RiasecScores> => {
   try {
     const { data, error } = await fromTable('user_responses')
-      .select('question_id, response, score')
+      .select('id, response, score')
       .eq('user_id', userId)
       .eq('quiz_type', 'interest');
 
@@ -92,8 +92,8 @@ export const calculateRiasecProfile = async (userId: string): Promise<RiasecScor
     // Type guard to ensure data is an array of UserResponse
     if (Array.isArray(data)) {
       data.forEach((response: any) => {
-        if (response && response.question_id && response.question_id.startsWith('RIASEC_')) {
-          const category = response.question_id.split('_')[1][0] as keyof RiasecScores;
+        if (response && response.id && response.id.startsWith('RIASEC_')) {
+          const category = response.id.split('_')[1][0] as keyof RiasecScores;
           if (category in riasecScores) {
             riasecScores[category] += Number(response.score || (response.response ? parseInt(response.response) : 0));
           }
@@ -111,7 +111,7 @@ export const calculateRiasecProfile = async (userId: string): Promise<RiasecScor
 export const calculateWorkValuesProfile = async (userId: string): Promise<WorkValuesScores> => {
   try {
     const { data, error } = await fromTable('user_responses')
-      .select('question_id, response, score')
+      .select('id, response, score')
       .eq('user_id', userId)
       .eq('quiz_type', 'work-values');
 
@@ -139,16 +139,16 @@ export const calculateWorkValuesProfile = async (userId: string): Promise<WorkVa
     // Type guard to ensure data is an array of UserResponse
     if (Array.isArray(data)) {
       data.forEach((response: any) => {
-        // Check different possible question_id formats for work values
-        if (response && response.question_id) {
+        // Check different possible id formats for work values
+        if (response && response.id) {
           let category = null;
           
           // Handle different formats: WV_Achievement, WorkValues_Achievement, etc.
-          if (response.question_id.startsWith('WV_')) {
-            category = response.question_id.split('_')[1];
-          } else if (response.question_id.startsWith('WorkValues_')) {
-            category = response.question_id.split('_')[1];
-          } else if (response.question_id.includes('WorkingConditions')) {
+          if (response.id.startsWith('WV_')) {
+            category = response.id.split('_')[1];
+          } else if (response.id.startsWith('WorkValues_')) {
+            category = response.id.split('_')[1];
+          } else if (response.id.includes('WorkingConditions')) {
             category = 'WorkingConditions';
           }
           
@@ -198,7 +198,7 @@ export const validateUserResponsesTable = async (): Promise<ValidationResult> =>
     const { data: constraintData, error: constraintError } = await supabase
       .rpc('check_unique_constraint', {
         table_name: 'user_responses',
-        column_names: ['user_id', 'question_id']
+        column_names: ['user_id', 'id']
       } as CheckUniqueConstraintParams);
 
     if (constraintError) {
@@ -269,7 +269,7 @@ export const testInsertResponse = async () => {
     // Create a test response object
     const testResponse = {
       user_id: userId,
-      question_id: `test_${Date.now()}`,
+      id: `test_${Date.now()}`,
       response: "Test response",
       response_array: null,
       quiz_type: "test",

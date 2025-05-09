@@ -267,7 +267,7 @@ export const QuizDebugger: React.FC<QuizDebugData> = ({
                       <span className="w-6">
                         {validationResults.hasUniqueConstraint ? '✅' : '❌'}
                       </span>
-                      <span>Unique constraint on user_id + question_id</span>
+                      <span>Unique constraint on user_id + id</span>
                     </div>
                     <div className="flex items-center">
                       <span className="w-6">
@@ -305,7 +305,7 @@ export const QuizDebugger: React.FC<QuizDebugData> = ({
                         {lastResponses.map((response, index) => (
                           <div key={index} className="p-2 bg-gray-50 rounded-md text-sm">
                             <p><strong>ID:</strong> {response.id}</p>
-                            <p><strong>Question ID:</strong> {response.question_id}</p>
+                            <p><strong>Question ID:</strong> {response.id}</p>
                             <p><strong>Quiz Type:</strong> {response.quiz_type || 'N/A'}</p>
                             <p><strong>Response:</strong> {response.response || JSON.stringify(response.response_array)}</p>
                             <p><strong>Score:</strong> {response.score}</p>

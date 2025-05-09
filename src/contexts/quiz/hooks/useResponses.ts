@@ -46,7 +46,7 @@ export const useResponses = () => {
       
       const responseObj = {
         user_id: userId,
-        question_id: String(questionId), // Ensure question_id is a string
+        id: String(questionId), // Ensure id is a string
         response: isArray ? null : String(response), // Ensure response is a string when not array
         response_array: isArray ? response : null,
         quiz_type: quizType || null,
@@ -107,26 +107,26 @@ export const useResponses = () => {
       const debugDetails = [];
       
       for (const response of formattedResponses) {
-        console.log(`Upserting response for question ${response.question_id}:`, response);
+        console.log(`Upserting response for question ${response.id}:`, response);
         
         const { data, error } = await supabase
           .from('user_responses')
           .upsert({
             user_id: response.user_id,
-            question_id: String(response.question_id), // Convert to string to match database schema
+            id: String(response.id), // Convert to string to match database schema
             response: response.response,
             response_array: response.response_array,
             quiz_type: response.quiz_type,
             score: response.score
           }, { 
-            onConflict: 'user_id,question_id',
+            onConflict: 'user_id,id',
             ignoreDuplicates: false 
           });
         
         if (error) {
-          console.error(`Error saving response for question ${response.question_id}:`, error);
+          console.error(`Error saving response for question ${response.id}:`, error);
           debugDetails.push({ 
-            question_id: response.question_id, 
+            id: response.id, 
             error: { 
               code: error.code,
               message: error.message,
@@ -139,7 +139,7 @@ export const useResponses = () => {
         } else {
           successCount++;
           debugDetails.push({ 
-            question_id: response.question_id, 
+            id: response.id, 
             success: true,
             data: response
           });
@@ -270,9 +270,9 @@ export const useResponses = () => {
         data.forEach(item => {
           // Handle both string responses and array responses
           if (item.response_array) {
-            loadedResponses[item.question_id] = item.response_array as string[];
+            loadedResponses[item.id] = item.response_array as string[];
           } else if (item.response) {
-            loadedResponses[item.question_id] = item.response;
+            loadedResponses[item.id] = item.response;
           }
         });
 
@@ -283,7 +283,7 @@ export const useResponses = () => {
         if (sampleKeys.length > 0) {
           console.log("Sample of loaded responses:", 
             sampleKeys.map(key => ({
-              question_id: key,
+              id: key,
               response: loadedResponses[Number(key)]
             }))
           );
