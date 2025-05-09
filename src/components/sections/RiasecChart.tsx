@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
@@ -7,22 +6,35 @@ import { calculateRiasecProfile, getUserId } from '@/contexts/quiz/utils/databas
 export const RiasecChart = () => {
   const [riasecData, setRiasecData] = useState<Array<{name: string, value: number}>>([]);
   const [loading, setLoading] = useState(true);
+  const [showAnimation, setShowAnimation] = useState(false);
+  
+  // Distinct color palette for RIASEC
+  const COLORS = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'];
 
   useEffect(() => {
     const loadRiasecProfile = async () => {
       try {
         setLoading(true);
         const userId = await getUserId();
+        
         if (userId) {
           const profile = await calculateRiasecProfile(userId);
+          console.log('Raw RIASEC Profile:', profile);
           
-          // Convert to array format for chart
-          const chartData = Object.entries(profile).map(([name, value]) => ({
-            name,
-            value: value || 0
-          }));
-          
+          // Convert to array format for chart data
+          const chartData = Object.entries(profile)
+            .map(([name, value]) => ({
+              name,
+              value: typeof value === 'number' ? value : 0
+            }))
+            .filter(item => item.value > 0)
+            .sort((a, b) => b.value - a.value); // Sort by value descending
+
+          console.log('Processed RIASEC Chart Data:', chartData);
           setRiasecData(chartData);
+          
+          // Add slight delay for animation
+          setTimeout(() => setShowAnimation(true), 100);
         }
       } catch (error) {
         console.error("Error loading RIASEC profile:", error);
@@ -30,11 +42,9 @@ export const RiasecChart = () => {
         setLoading(false);
       }
     };
-    
+
     loadRiasecProfile();
   }, []);
-
-  const COLORS = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'];
 
   if (loading) {
     return (
@@ -44,7 +54,7 @@ export const RiasecChart = () => {
     );
   }
 
-  if (riasecData.length === 0) {
+  if (!riasecData.length) {
     return (
       <Card className="w-full h-[300px]">
         <CardHeader>
@@ -58,7 +68,7 @@ export const RiasecChart = () => {
   }
 
   return (
-    <Card className="w-full">
+    <Card className={`w-full transition-all duration-500 ${showAnimation ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
       <CardHeader>
         <CardTitle>RIASEC Profile</CardTitle>
       </CardHeader>
@@ -75,6 +85,8 @@ export const RiasecChart = () => {
                 outerRadius={80}
                 fill="#8884d8"
                 dataKey="value"
+                animationBegin={0}
+                animationDuration={1000}
               >
                 {riasecData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />

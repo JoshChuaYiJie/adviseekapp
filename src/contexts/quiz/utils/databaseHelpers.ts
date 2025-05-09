@@ -199,7 +199,6 @@ export const testInsertResponse = async (): Promise<{
 // Calculate RIASEC profile from user responses
 export const calculateRiasecProfile = async (userId: string): Promise<Record<string, number>> => {
   try {
-    // Get user responses and their associated questions for RIASEC-related quizzes
     const { data, error } = await supabase
       .from('user_responses')
       .select(`
@@ -212,19 +211,15 @@ export const calculateRiasecProfile = async (userId: string): Promise<Record<str
       .in('quiz_type', ['interest-part 1', 'interest-part 2', 'competence']);
 
     if (error) throw error;
-    if (!data || data.length === 0) return {};
 
     // Initialize RIASEC components with 0
-    const riasecComponents: Record<string, number> = {
-      'R': 0, // Realistic
-      'I': 0, // Investigative
-      'A': 0, // Artistic
-      'S': 0, // Social
-      'E': 0, // Enterprising
-      'C': 0  // Conventional
+    const riasecComponents = {
+      'R': 0, 'I': 0, 'A': 0, 'S': 0, 'E': 0, 'C': 0
     };
 
-    // Group responses by question to get latest response for each question
+    if (!data?.length) return riasecComponents;
+
+    // Group and process latest responses for each question
     const latestResponses = new Map();
     data.forEach(response => {
       const existing = latestResponses.get(response.question_id);
@@ -233,7 +228,7 @@ export const calculateRiasecProfile = async (userId: string): Promise<Record<str
       }
     });
 
-    // Calculate scores using the riasec_component from questions
+    // Calculate scores
     latestResponses.forEach(response => {
       const component = response.questions?.riasec_component;
       if (component && component in riasecComponents) {
@@ -242,18 +237,17 @@ export const calculateRiasecProfile = async (userId: string): Promise<Record<str
       }
     });
 
-    console.log('Calculated RIASEC Profile:', riasecComponents);
+    console.log('RIASEC Profile:', riasecComponents);
     return riasecComponents;
   } catch (error) {
     console.error("Error calculating RIASEC profile:", error);
-    return {};
+    return { 'R': 0, 'I': 0, 'A': 0, 'S': 0, 'E': 0, 'C': 0 };
   }
 };
 
 // Calculate Work Values profile from user responses
 export const calculateWorkValuesProfile = async (userId: string): Promise<Record<string, number>> => {
   try {
-    // Get user responses and their associated questions for work values quiz
     const { data, error } = await supabase
       .from('user_responses')
       .select(`
@@ -266,10 +260,9 @@ export const calculateWorkValuesProfile = async (userId: string): Promise<Record
       .eq('quiz_type', 'work-values');
 
     if (error) throw error;
-    if (!data || data.length === 0) return {};
 
     // Initialize Work Values components with 0
-    const workValueComponents: Record<string, number> = {
+    const workValueComponents = {
       'Achievement': 0,
       'Independence': 0,
       'Recognition': 0,
@@ -278,7 +271,9 @@ export const calculateWorkValuesProfile = async (userId: string): Promise<Record
       'Working Conditions': 0
     };
 
-    // Group responses by question to get latest response for each question
+    if (!data?.length) return workValueComponents;
+
+    // Group and process latest responses for each question
     const latestResponses = new Map();
     data.forEach(response => {
       const existing = latestResponses.get(response.question_id);
@@ -287,7 +282,7 @@ export const calculateWorkValuesProfile = async (userId: string): Promise<Record
       }
     });
 
-    // Calculate scores using the work_value_component from questions
+    // Calculate scores
     latestResponses.forEach(response => {
       const component = response.questions?.work_value_component;
       if (component && component in workValueComponents) {
@@ -296,10 +291,17 @@ export const calculateWorkValuesProfile = async (userId: string): Promise<Record
       }
     });
 
-    console.log('Calculated Work Values Profile:', workValueComponents);
+    console.log('Work Values Profile:', workValueComponents);
     return workValueComponents;
   } catch (error) {
     console.error("Error calculating work values profile:", error);
-    return {};
+    return {
+      'Achievement': 0,
+      'Independence': 0,
+      'Recognition': 0,
+      'Relationships': 0,
+      'Support': 0,
+      'Working Conditions': 0
+    };
   }
 };

@@ -7,27 +7,34 @@ export const WorkValuesChart = () => {
   const [workValuesData, setWorkValuesData] = useState<Array<{name: string, value: number}>>([]);
   const [loading, setLoading] = useState(true);
   const [showAnimation, setShowAnimation] = useState(false);
+  
+  // Distinct color palette for Work Values
+  const COLORS = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'];
 
   useEffect(() => {
     const loadWorkValuesProfile = async () => {
       try {
         setLoading(true);
         const userId = await getUserId();
+        
         if (userId) {
           const profile = await calculateWorkValuesProfile(userId);
-          // Convert to array format for chart, filter out zero values, ensure numbers
+          console.log('Raw Work Values Profile:', profile);
+          
+          // Convert to array format for chart data
           const chartData = Object.entries(profile)
-            .filter(([_, value]) => typeof value === 'number' && value > 0)
             .map(([name, value]) => ({
               name,
-              value: Number(value) || 0
-            }));
-          console.log('Work Values Chart Data:', chartData); // Debug log
+              value: typeof value === 'number' ? value : 0
+            }))
+            .filter(item => item.value > 0)
+            .sort((a, b) => b.value - a.value); // Sort by value descending
+
+          console.log('Processed Chart Data:', chartData);
           setWorkValuesData(chartData);
-          // Trigger animation after data loads
-          setTimeout(() => {
-            setShowAnimation(true);
-          }, 100);
+          
+          // Add slight delay for animation
+          setTimeout(() => setShowAnimation(true), 100);
         }
       } catch (error) {
         console.error("Error loading Work Values profile:", error);
@@ -35,12 +42,9 @@ export const WorkValuesChart = () => {
         setLoading(false);
       }
     };
-    
+
     loadWorkValuesProfile();
   }, []);
-
-  // Distinct color palette for Work Values (different from RIASEC)
-  const COLORS = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'];
 
   if (loading) {
     return (
@@ -50,14 +54,14 @@ export const WorkValuesChart = () => {
     );
   }
 
-  if (workValuesData.length === 0) {
+  if (!workValuesData.length) {
     return (
       <Card className="w-full h-[300px]">
         <CardHeader>
           <CardTitle>Work Values Profile</CardTitle>
         </CardHeader>
         <CardContent className="flex items-center justify-center h-[200px]">
-          <p className="text-gray-500">Complete work values quiz to see your profile.</p>
+          <p className="text-gray-500">Complete the work values quiz to see your profile.</p>
         </CardContent>
       </Card>
     );
