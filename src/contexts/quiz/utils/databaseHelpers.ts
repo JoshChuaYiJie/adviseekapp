@@ -78,7 +78,7 @@ export const calculateRiasecProfile = async (userId: string): Promise<RiasecScor
     console.log("Calculating RIASEC profile for user:", userId);
     
     // Query all quiz types that could contain RIASEC data
-    const quizTypes = ['interest-part 1', 'interest-part 2', 'interest', 'competence'];
+    const quizTypes = ['interest-part 1', 'interest-part 2', 'competence'];
     let allResponses: any[] = [];
     
     // Fetch data for all relevant quiz types
@@ -109,7 +109,7 @@ export const calculateRiasecProfile = async (userId: string): Promise<RiasecScor
       R: 0, I: 0, A: 0, S: 0, E: 0, C: 0
     };
 
-    // Process all responses
+    // Process all responses FLAG OUT
     allResponses.forEach((response: any) => {
       if (response && response.question_id) {
         let category = null;
