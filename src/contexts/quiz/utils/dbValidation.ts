@@ -1,8 +1,5 @@
 
-import { supabase } from '@/integrations/supabase/client';
-
-// Define types for our RPC functions
-type RpcParams = Record<string, unknown>;
+import { supabase, type RpcParams } from '@/integrations/supabase/client';
 
 // Check if a table exists in the database
 export const checkTableExists = async (tableName: string): Promise<boolean> => {

@@ -43,7 +43,7 @@ export const useResponses = () => {
       
       const responseObj = {
         user_id: userId,
-        question_id: parseInt(questionId),
+        question_id: questionId, // Make sure this is a string to match the database schema
         response: isArray ? null : response as string,
         response_array: isArray ? response : null,
         quiz_type: quizType || null, // Store which quiz this response is for
@@ -109,7 +109,14 @@ export const useResponses = () => {
         
         const { data, error } = await supabase
           .from('user_responses')
-          .upsert(response, { 
+          .upsert({
+            user_id: response.user_id,
+            question_id: String(response.question_id), // Convert to string to match database schema
+            response: response.response,
+            response_array: response.response_array,
+            quiz_type: response.quiz_type,
+            score: response.score
+          }, { 
             onConflict: 'user_id,question_id',
             ignoreDuplicates: false 
           });
