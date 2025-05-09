@@ -319,7 +319,18 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      check_policy_exists: {
+        Args: { table_name: string; policy_name: string }
+        Returns: boolean
+      }
+      check_rls_enabled: {
+        Args: { table_name: string }
+        Returns: boolean
+      }
+      check_unique_constraint: {
+        Args: { table_name: string; column_names: string[] }
+        Returns: boolean
+      }
     }
     Enums: {
       achievement_type:
