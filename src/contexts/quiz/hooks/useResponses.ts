@@ -1,8 +1,7 @@
-
 import { useState } from 'react';
-import { getUserId } from '../utils/databaseHelpers';
+import { getUserId, testInsertResponse } from '../utils/databaseHelpers';
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks/use-toast';
 
 export const useResponses = () => {
   const [responses, setResponses] = useState<Record<number, string | string[]>>({});
@@ -162,7 +161,7 @@ export const useResponses = () => {
           toast({
             title: "Partial success",
             description: `Saved ${successCount} of ${formattedResponses.length} responses. Some errors occurred.`,
-            variant: "warning"
+            variant: "destructive"
           });
         }
       }

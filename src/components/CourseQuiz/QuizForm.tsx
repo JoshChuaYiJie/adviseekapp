@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { useQuiz } from '@/contexts/QuizContext';
@@ -7,6 +6,7 @@ import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, CheckCircle2, XCircle } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface QuizFormProps {
   onSubmit: () => void;
@@ -98,7 +98,7 @@ export const QuizForm: React.FC<QuizFormProps> = ({ onSubmit, onCancel, quizType
         toast({
           title: "Authentication required",
           description: "You need to be logged in to save your responses permanently",
-          variant: "warning"
+          variant: "destructive"
         });
       }
       

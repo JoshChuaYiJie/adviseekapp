@@ -1,9 +1,8 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { CheckCircle2, XCircle, AlertTriangle, Bug } from "lucide-react";
+import { CheckCircle2, XCircle, AlertTriangle, Bug, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { validateUserResponsesTable, testInsertResponse } from "@/contexts/quiz/utils/databaseHelpers";
@@ -48,7 +47,7 @@ export const QuizDebugger: React.FC<QuizDebugData> = ({
       toast({
         title: results.success ? "Validation successful" : "Validation warnings",
         description: results.details,
-        variant: results.success ? "default" : "warning"
+        variant: results.success ? "default" : "destructive"
       });
     } catch (err) {
       console.error("Error validating database:", err);
