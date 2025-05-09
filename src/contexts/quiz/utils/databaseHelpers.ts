@@ -199,18 +199,23 @@ export const testInsertResponse = async (): Promise<{
 // Calculate RIASEC profile from user responses
 export const calculateRiasecProfile = async (userId: string): Promise<Record<string, number>> => {
   try {
-    // Get user responses for RIASEC-related quizzes
+    // Get user responses and their associated questions for RIASEC-related quizzes
     const { data, error } = await supabase
       .from('user_responses')
-      .select('*')
+      .select(`
+        *,
+        questions:question_id (
+          riasec_component
+        )
+      `)
       .eq('user_id', userId)
       .in('quiz_type', ['interest-part 1', 'interest-part 2', 'competence']);
-    
+
     if (error) throw error;
     if (!data || data.length === 0) return {};
-    
-    // Define RIASEC components
-    const riasecComponents = {
+
+    // Initialize RIASEC components with 0
+    const riasecComponents: Record<string, number> = {
       'R': 0, // Realistic
       'I': 0, // Investigative
       'A': 0, // Artistic
@@ -218,32 +223,26 @@ export const calculateRiasecProfile = async (userId: string): Promise<Record<str
       'E': 0, // Enterprising
       'C': 0  // Conventional
     };
-    
-    // Map question IDs to RIASEC categories (should use string keys)
-    const questionToRiasec: Record<string, keyof typeof riasecComponents> = {
-      // Map your questions to RIASEC components
-      // Example: '1': 'R', '2': 'I', etc.
-      '1': 'R', '2': 'I', '3': 'A', '4': 'S', '5': 'E', '6': 'C',
-      '7': 'R', '8': 'I', '9': 'A', '10': 'S', '11': 'E', '12': 'C',
-      // Add more mappings based on your actual questions
-    };
-    
-    // Calculate scores for each component
+
+    // Group responses by question to get latest response for each question
+    const latestResponses = new Map();
     data.forEach(response => {
-      const component = questionToRiasec[response.question_id];
-      if (component) {
-        let score = response.score || 0;
-        // If no score is available, try to derive from string response
-        if (score === 0 && response.response) {
-          const numericResponse = parseInt(response.response);
-          if (!isNaN(numericResponse)) {
-            score = numericResponse;
-          }
-        }
+      const existing = latestResponses.get(response.question_id);
+      if (!existing || new Date(response.created_at) > new Date(existing.created_at)) {
+        latestResponses.set(response.question_id, response);
+      }
+    });
+
+    // Calculate scores using the riasec_component from questions
+    latestResponses.forEach(response => {
+      const component = response.questions?.riasec_component;
+      if (component && component in riasecComponents) {
+        const score = Number(response.response) || response.score || 0;
         riasecComponents[component] += score;
       }
     });
-    
+
+    console.log('Calculated RIASEC Profile:', riasecComponents);
     return riasecComponents;
   } catch (error) {
     console.error("Error calculating RIASEC profile:", error);
@@ -254,18 +253,23 @@ export const calculateRiasecProfile = async (userId: string): Promise<Record<str
 // Calculate Work Values profile from user responses
 export const calculateWorkValuesProfile = async (userId: string): Promise<Record<string, number>> => {
   try {
-    // Get user responses for work values quiz
+    // Get user responses and their associated questions for work values quiz
     const { data, error } = await supabase
       .from('user_responses')
-      .select('*')
+      .select(`
+        *,
+        questions:question_id (
+          work_value_component
+        )
+      `)
       .eq('user_id', userId)
       .eq('quiz_type', 'work-values');
-    
+
     if (error) throw error;
     if (!data || data.length === 0) return {};
-    
-    // Define work value categories
-    const workValues = {
+
+    // Initialize Work Values components with 0
+    const workValueComponents: Record<string, number> = {
       'Achievement': 0,
       'Independence': 0,
       'Recognition': 0,
@@ -273,32 +277,27 @@ export const calculateWorkValuesProfile = async (userId: string): Promise<Record
       'Support': 0,
       'Working Conditions': 0
     };
-    
-    // Map question IDs to work value categories (should use string keys)
-    const questionToWorkValue: Record<string, keyof typeof workValues> = {
-      // Map your questions to work value categories
-      // Example: '100': 'Achievement', '101': 'Independence', etc.
-      '100': 'Achievement', '101': 'Independence', '102': 'Recognition',
-      '103': 'Relationships', '104': 'Support', '105': 'Working Conditions',
-      // Add more mappings based on your actual questions
-    };
-    
-    // Calculate scores for each category
+
+    // Group responses by question to get latest response for each question
+    const latestResponses = new Map();
     data.forEach(response => {
-      const category = questionToWorkValue[response.question_id];
-      if (category) {
-        let score = response.score || 0;
-        if (score === 0 && response.response) {
-          const numericResponse = parseInt(response.response);
-          if (!isNaN(numericResponse)) {
-            score = numericResponse;
-          }
-        }
-        workValues[category] += score;
+      const existing = latestResponses.get(response.question_id);
+      if (!existing || new Date(response.created_at) > new Date(existing.created_at)) {
+        latestResponses.set(response.question_id, response);
       }
     });
-    
-    return workValues;
+
+    // Calculate scores using the work_value_component from questions
+    latestResponses.forEach(response => {
+      const component = response.questions?.work_value_component;
+      if (component && component in workValueComponents) {
+        const score = Number(response.response) || response.score || 0;
+        workValueComponents[component] += score;
+      }
+    });
+
+    console.log('Calculated Work Values Profile:', workValueComponents);
+    return workValueComponents;
   } catch (error) {
     console.error("Error calculating work values profile:", error);
     return {};

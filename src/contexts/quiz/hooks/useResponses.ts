@@ -20,7 +20,6 @@ export const useResponses = () => {
 
   // Format responses for database
   const formatResponsesForDb = async (quizType?: string) => {
-    // Get current user ID with detailed logging
     console.log("Fetching current user ID for response formatting...");
     const userId = await getUserId();
     
@@ -35,25 +34,28 @@ export const useResponses = () => {
 
     const formattedResponses = Object.entries(responses).map(([questionId, response]) => {
       const isArray = Array.isArray(response);
+      
       // Calculate score based on response
       let score = 0;
-      if (!isArray && !isNaN(parseInt(response as string))) {
-        score = parseInt(response as string);
+      if (!isArray && !isNaN(Number(response))) {
+        score = Number(response);
+      } else if (isArray && response.length > 0 && !isNaN(Number(response[0]))) {
+        // For array responses, use the first numeric value if available
+        score = Number(response[0]);
       }
       
       const responseObj = {
         user_id: userId,
-        question_id: questionId, // Make sure this is a string to match the database schema
-        response: isArray ? null : response as string,
+        question_id: String(questionId), // Ensure question_id is a string
+        response: isArray ? null : String(response), // Ensure response is a string when not array
         response_array: isArray ? response : null,
-        quiz_type: quizType || null, // Store which quiz this response is for
-        score: score // Add score field for analysis
+        quiz_type: quizType || null,
+        score: score || 0 // Ensure we always have a numeric score
       };
       
       return responseObj;
     });
     
-    // Log the formatted responses for debugging
     console.log(`Formatted ${formattedResponses.length} responses:`, 
                 formattedResponses.length > 0 ? formattedResponses[0] : "No responses");
     
