@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
@@ -8,13 +7,11 @@ export const WorkValuesChart = () => {
   const [workValuesData, setWorkValuesData] = useState<Array<{name: string, value: number}>>([]);
   const [loading, setLoading] = useState(true);
   const [showAnimation, setShowAnimation] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const loadWorkValuesProfile = async () => {
       try {
         setLoading(true);
-        setError(null);
         const userId = await getUserId();
         if (userId) {
           const profile = await calculateWorkValuesProfile(userId);
@@ -25,21 +22,15 @@ export const WorkValuesChart = () => {
               name,
               value: Number(value) || 0
             }));
-          
           console.log('Work Values Chart Data:', chartData); // Debug log
           setWorkValuesData(chartData);
-          
           // Trigger animation after data loads
           setTimeout(() => {
             setShowAnimation(true);
           }, 100);
-        } else {
-          console.log('No user ID found - user may not be logged in');
-          setError('Please log in to view your work values profile');
         }
       } catch (error) {
         console.error("Error loading Work Values profile:", error);
-        setError("Could not load Work Values profile");
       } finally {
         setLoading(false);
       }
@@ -55,20 +46,6 @@ export const WorkValuesChart = () => {
     return (
       <Card className="w-full h-[300px] flex items-center justify-center">
         <div className="animate-spin w-8 h-8 border-t-2 border-purple-500 rounded-full"></div>
-      </Card>
-    );
-  }
-
-  if (error) {
-    return (
-      <Card className="w-full h-[300px]">
-        <CardHeader>
-          <CardTitle>Work Values Profile</CardTitle>
-        </CardHeader>
-        <CardContent className="flex items-center justify-center h-[200px] flex-col">
-          <p className="text-gray-500">{error}</p>
-          <p className="text-sm text-gray-400 mt-2">Try refreshing the page or completing the work values quiz</p>
-        </CardContent>
       </Card>
     );
   }
