@@ -1,3 +1,4 @@
+
 import { supabase, type Module, type RpcParams } from "@/integrations/supabase/client";
 import { type Json } from "@/integrations/supabase/types";
 
@@ -7,6 +8,17 @@ interface ValidationResult {
   hasRlsEnabled: boolean;
   hasCorrectPolicy: boolean;
   details: string;
+}
+
+// Define a type for user response data to use with type assertion
+interface UserResponse {
+  user_id: string;
+  question_id: string;
+  response: string | null;
+  response_array: string[] | null;
+  quiz_type: string | null;
+  score: number;
+  [key: string]: any; // Allow additional properties
 }
 
 // Helper function to make Supabase queries - use type assertion for dynamic table names
@@ -191,9 +203,9 @@ export const testInsertResponse = async (): Promise<{
 // Calculate RIASEC profile from user responses
 export const calculateRiasecProfile = async (userId: string): Promise<Record<string, number>> => {
   try {
-    // Using the fromTable helper function to avoid type issues
-    const { data, error } = await fromTable('user_responses')
-      .select('*, question_id')
+    // Using the fromTable helper function with type assertion for the response data
+    const { data: responseData, error } = await fromTable('user_responses')
+      .select('*')
       .eq('user_id', userId)
       .or('quiz_type.eq.interest-part 1,quiz_type.eq.interest-part 2,quiz_type.eq.competence');
 
@@ -207,13 +219,16 @@ export const calculateRiasecProfile = async (userId: string): Promise<Record<str
       'R': 0, 'I': 0, 'A': 0, 'S': 0, 'E': 0, 'C': 0
     };
 
-    if (!data?.length) {
+    if (!responseData?.length) {
       console.log("No RIASEC data found for user");
       return riasecComponents;
     }
 
-    console.log(`Found ${data.length} RIASEC responses for user ${userId}`);
+    console.log(`Found ${responseData.length} RIASEC responses for user ${userId}`);
 
+    // Process responses with proper type assertion
+    const data = responseData as unknown as UserResponse[];
+    
     // Process responses by manually assigning scores based on question_id
     data.forEach(response => {
       // Get the question ID and determine which RIASEC component it belongs to
@@ -254,8 +269,8 @@ export const calculateRiasecProfile = async (userId: string): Promise<Record<str
 export const calculateWorkValuesProfile = async (userId: string): Promise<Record<string, number>> => {
   try {
     // Using the fromTable helper function to avoid type issues
-    const { data, error } = await fromTable('user_responses')
-      .select('*, question_id')
+    const { data: responseData, error } = await fromTable('user_responses')
+      .select('*')
       .eq('user_id', userId)
       .eq('quiz_type', 'work-values');
 
@@ -274,12 +289,15 @@ export const calculateWorkValuesProfile = async (userId: string): Promise<Record
       'Working Conditions': 0
     };
 
-    if (!data?.length) {
+    if (!responseData?.length) {
       console.log("No work values data found for user");
       return workValueComponents;
     }
 
-    console.log(`Found ${data.length} work values responses for user ${userId}`);
+    console.log(`Found ${responseData.length} work values responses for user ${userId}`);
+
+    // Process responses with proper type assertion
+    const data = responseData as unknown as UserResponse[];
 
     // Process responses by manually assigning scores based on question_id
     data.forEach(response => {
