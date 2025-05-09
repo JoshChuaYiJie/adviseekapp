@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -217,7 +216,7 @@ const SegmentedQuiz = () => {
             toast({
               title: "Database Configuration Warning",
               description: "There might be issues with the database setup that could affect saving your responses.",
-              variant: "warning"
+              variant: "destructive"
             });
           }
         } catch (err) {
@@ -465,7 +464,7 @@ const SegmentedQuiz = () => {
           toast({
             title: "Warning",
             description: `Saved ${successCount} of ${formattedResponses.length} answers. Some errors occurred.`,
-            variant: "warning"
+            variant: "destructive"
           });
           
           if (successCount === 0) {

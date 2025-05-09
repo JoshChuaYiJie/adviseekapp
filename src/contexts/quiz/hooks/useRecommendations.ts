@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Module } from '@/integrations/supabase/client';
 import { getUserId } from '../utils/databaseHelpers';
@@ -10,7 +11,7 @@ import {
   rateModuleUtil,
   refineRecommendationsUtil,
   getFinalSelectionsUtil
-} from '../utils/recommendationUtils';
+} from '@/utils/recommendationUtils';
 
 // Fix: Changed 'export { Recommendation }' to 'export type { Recommendation }'
 export type { Recommendation } from '../types/recommendationTypes';
@@ -90,7 +91,7 @@ export const useRecommendations = (modules: Module[]) => {
   };
 
   // Refine recommendations based on user feedback
-  const refineRecommendations = async () => {
+  const refineRecommendations = async (selectedModuleIds: number[] = []) => {
     try {
       setIsLoading(true);
       
@@ -142,7 +143,13 @@ export const useRecommendations = (modules: Module[]) => {
         return [];
       }
       
-      setFinalSelections(selections);
+      // Convert selections to ModuleSelection format
+      const formattedSelections: ModuleSelection[] = selections.map(module => ({
+        module,
+        reason: "Selected based on your preferences"
+      }));
+      
+      setFinalSelections(formattedSelections);
       return selections;
     } catch (err) {
       console.error("Error getting final selections:", err);

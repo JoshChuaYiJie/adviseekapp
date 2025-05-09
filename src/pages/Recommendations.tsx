@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -55,7 +54,8 @@ const Recommendations = () => {
           description: "Thank you for rating all the modules.",
         });
         
-        await refineRecommendations();
+        // Pass an empty array as the argument to refineRecommendations
+        await refineRecommendations([]);
       }
 
       // Check if the user has rated a multiple of 30 modules
@@ -90,7 +90,8 @@ const Recommendations = () => {
   const handleRateMore = async () => {
     setShowSuggestion(false);
     setShowProgramme(false);
-    await refineRecommendations();
+    // Pass an empty array as the argument to refineRecommendations
+    await refineRecommendations([]);
   };
 
   if (isLoading) {
