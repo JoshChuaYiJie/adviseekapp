@@ -44,8 +44,8 @@ export const validateUserResponsesTable = async (): Promise<{
     console.log("Validating user_responses table configuration...");
     
     // Check for RLS enabled
-    const { data: rlsData, error: rlsError } = await fromTable('check_table_rls')
-      .rpc('check_table_rls', { table_name: 'user_responses' } as any);
+    const { data: rlsData, error: rlsError } = await supabase
+      .rpc('check_table_rls', { table_name: 'user_responses' });
       
     if (rlsError) {
       console.error("Error checking RLS:", rlsError);
@@ -62,11 +62,11 @@ export const validateUserResponsesTable = async (): Promise<{
     console.log("RLS enabled on user_responses:", hasRlsEnabled);
     
     // Check for unique constraint on user_id and question_id
-    const { data: constraintData, error: constraintError } = await fromTable('check_unique_constraint')
+    const { data: constraintData, error: constraintError } = await supabase
       .rpc('check_unique_constraint', { 
         table_name: 'user_responses', 
         column_names: ['user_id', 'question_id'] 
-      } as any);
+      });
       
     if (constraintError) {
       console.error("Error checking constraint:", constraintError);
@@ -83,11 +83,11 @@ export const validateUserResponsesTable = async (): Promise<{
     console.log("Unique constraint exists on (user_id, question_id):", hasUniqueConstraint);
     
     // Check for correct RLS policy
-    const { data: policyData, error: policyError } = await fromTable('check_policy_exists')
+    const { data: policyData, error: policyError } = await supabase
       .rpc('check_policy_exists', { 
         table_name: 'user_responses', 
         policy_name: 'Users can insert their own responses' 
-      } as any);
+      });
       
     if (policyError) {
       console.error("Error checking policy:", policyError);

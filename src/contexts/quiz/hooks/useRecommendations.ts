@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Module } from '@/integrations/supabase/client';
 import { getUserId } from '../utils/databaseHelpers';
@@ -27,7 +26,8 @@ export const useRecommendations = (modules: Module[]) => {
   const generateRecommendations = async (userId: string) => {
     try {
       const recs = await generateRecommendationsUtil(userId, modules);
-      setRecommendations(recs);
+      // Explicitly cast to ensure type compatibility with state
+      setRecommendations(recs as unknown as Recommendation[]);
       
       // Also load user feedback (ratings)
       await loadUserFeedback(userId);
@@ -52,7 +52,8 @@ export const useRecommendations = (modules: Module[]) => {
   const loadRecommendations = async (userId: string) => {
     try {
       const recs = await loadRecommendationsUtil(userId);
-      setRecommendations(recs);
+      // Explicitly cast to ensure type compatibility with state
+      setRecommendations(recs as unknown as Recommendation[]);
       
       // Also load user feedback (ratings)
       await loadUserFeedback(userId);
