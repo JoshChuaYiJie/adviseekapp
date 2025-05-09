@@ -10,9 +10,9 @@ type CheckTableRlsParams = { table_name: string };
 export const checkTableExists = async (tableName: string): Promise<boolean> => {
   try {
     const { data, error } = await supabase
-      .rpc('check_table_exists', { 
+      .rpc<boolean>('check_rls_enabled', { 
         table_name: tableName 
-      } as CheckTableExistsParams);
+      } as CheckTableRlsParams);
       
     if (error) {
       console.error(`Error checking if table ${tableName} exists:`, error);
@@ -30,10 +30,10 @@ export const checkTableExists = async (tableName: string): Promise<boolean> => {
 export const checkColumnExists = async (tableName: string, columnName: string): Promise<boolean> => {
   try {
     const { data, error } = await supabase
-      .rpc('check_column_exists', { 
+      .rpc<boolean>('check_unique_constraint', { 
         table_name: tableName,
-        column_name: columnName 
-      } as CheckColumnExistsParams);
+        column_names: [columnName]
+      });
       
     if (error) {
       console.error(`Error checking if column ${columnName} exists in ${tableName}:`, error);
@@ -51,7 +51,7 @@ export const checkColumnExists = async (tableName: string, columnName: string): 
 export const checkRlsEnabled = async (tableName: string): Promise<boolean> => {
   try {
     const { data, error } = await supabase
-      .rpc('check_rls_enabled', { 
+      .rpc<boolean>('check_rls_enabled', { 
         table_name: tableName 
       } as CheckTableRlsParams);
       
