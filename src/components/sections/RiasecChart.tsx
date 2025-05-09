@@ -2,12 +2,16 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
-import { calculateRiasecProfile, getUserId } from '@/contexts/quiz/utils/databaseHelpers';
+import { calculateRiasecProfile, getUserId, inspectResponses } from '@/contexts/quiz/utils/databaseHelpers';
+import { Button } from '@/components/ui/button';
+import { Bug } from 'lucide-react';
 
 export const RiasecChart = () => {
   const [riasecData, setRiasecData] = useState<Array<{name: string, value: number}>>([]);
   const [loading, setLoading] = useState(true);
   const [showAnimation, setShowAnimation] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [debugMode, setDebugMode] = useState(false);
   
   // Distinct color palette for RIASEC
   const COLORS = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'];
@@ -16,9 +20,18 @@ export const RiasecChart = () => {
     const loadRiasecProfile = async () => {
       try {
         setLoading(true);
+        setError(null);
         const userId = await getUserId();
         
         if (userId) {
+          console.log("Got user ID for RIASEC chart:", userId);
+          
+          // For debugging, inspect responses directly
+          if (process.env.NODE_ENV !== 'production') {
+            const responses = await inspectResponses(userId, 'RIASEC');
+            console.log("RIASEC-related responses:", responses);
+          }
+          
           const profile = await calculateRiasecProfile(userId);
           console.log('Raw RIASEC Profile:', profile);
           
@@ -34,11 +47,19 @@ export const RiasecChart = () => {
           console.log('Processed RIASEC Chart Data:', chartData);
           setRiasecData(chartData);
           
-          // Add slight delay for animation
-          setTimeout(() => setShowAnimation(true), 100);
+          if (chartData.length === 0) {
+            setError("No RIASEC data available. Please complete the interest and competence quizzes.");
+          } else {
+            // Add slight delay for animation
+            setTimeout(() => setShowAnimation(true), 100);
+          }
+        } else {
+          setError("Please log in to see your RIASEC profile.");
+          console.log("No user ID available for RIASEC chart");
         }
       } catch (error) {
         console.error("Error loading RIASEC profile:", error);
+        setError("Failed to load RIASEC profile. Please try again later.");
       } finally {
         setLoading(false);
       }
@@ -46,6 +67,10 @@ export const RiasecChart = () => {
 
     loadRiasecProfile();
   }, []);
+
+  const toggleDebugMode = () => {
+    setDebugMode(!debugMode);
+  };
 
   if (loading) {
     return (
@@ -55,14 +80,38 @@ export const RiasecChart = () => {
     );
   }
 
-  if (!riasecData.length) {
+  if (error || !riasecData.length) {
     return (
-      <Card className="w-full h-[300px]">
+      <Card className="w-full">
         <CardHeader>
           <CardTitle>RIASEC Profile</CardTitle>
         </CardHeader>
-        <CardContent className="flex items-center justify-center h-[200px]">
-          <p className="text-gray-500">Complete interest and competence quizzes to see your RIASEC profile.</p>
+        <CardContent className="flex flex-col items-center justify-center h-[200px]">
+          <p className="text-gray-500 text-center mb-4">
+            {error || "Complete interest and competence quizzes to see your RIASEC profile."}
+          </p>
+          {process.env.NODE_ENV !== 'production' && (
+            <Button variant="outline" size="sm" onClick={toggleDebugMode}>
+              <Bug className="h-3 w-3 mr-1" />
+              Debug Info
+            </Button>
+          )}
+          {debugMode && (
+            <div className="w-full mt-4 p-4 bg-gray-50 dark:bg-gray-800 rounded text-xs font-mono overflow-auto">
+              <p>Make sure you've completed these quizzes:</p>
+              <ul className="list-disc pl-6">
+                <li>Interest - Part 1</li>
+                <li>Interest - Part 2</li>
+                <li>Competence</li>
+              </ul>
+              <p className="mt-2">Your responses should have question_id values that follow patterns like:</p>
+              <ul className="list-disc pl-6">
+                <li>RIASEC_R_1</li>
+                <li>R1</li>
+                <li>interest_R_1</li>
+              </ul>
+            </div>
+          )}
         </CardContent>
       </Card>
     );

@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { type Json } from "@/integrations/supabase/types";
 
@@ -76,32 +75,70 @@ export const getUserId = async (): Promise<string | null> => {
 
 export const calculateRiasecProfile = async (userId: string): Promise<RiasecScores> => {
   try {
-    const { data, error } = await fromTable('user_responses')
-      .select('question_id, response, score')
-      .eq('user_id', userId)
-      .eq('quiz_type', 'interest');
+    console.log("Calculating RIASEC profile for user:", userId);
+    
+    // Query all quiz types that could contain RIASEC data
+    const quizTypes = ['interest-part 1', 'interest-part 2', 'interest', 'competence'];
+    let allResponses: any[] = [];
+    
+    // Fetch data for all relevant quiz types
+    for (const quizType of quizTypes) {
+      console.log(`Fetching responses for quiz type: ${quizType}`);
+      const { data, error } = await fromTable('user_responses')
+        .select('question_id, response, score')
+        .eq('user_id', userId)
+        .eq('quiz_type', quizType);
 
-    if (error) {
-      console.error("Error fetching RIASEC responses:", error);
-      return { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 };
+      if (error) {
+        console.error(`Error fetching RIASEC responses for ${quizType}:`, error);
+      } else if (data && data.length > 0) {
+        console.log(`Found ${data.length} responses for quiz type ${quizType}`);
+        allResponses = [...allResponses, ...data];
+      } else {
+        console.log(`No responses found for quiz type ${quizType}`);
+      }
+    }
+
+    console.log(`Total RIASEC responses found: ${allResponses.length}`);
+    
+    if (allResponses.length === 0) {
+      console.log("No RIASEC data found, sample quiz data to check:", await sampleUserResponses(userId));
     }
 
     const riasecScores: RiasecScores = {
       R: 0, I: 0, A: 0, S: 0, E: 0, C: 0
     };
 
-    // Type guard to ensure data is an array of UserResponse
-    if (Array.isArray(data)) {
-      data.forEach((response: any) => {
-        if (response && response.question_id && response.question_id.startsWith('RIASEC_')) {
-          const category = response.question_id.split('_')[1][0] as keyof RiasecScores;
-          if (category in riasecScores) {
-            riasecScores[category] += Number(response.score || (response.response ? parseInt(response.response) : 0));
+    // Process all responses
+    allResponses.forEach((response: any) => {
+      if (response && response.question_id) {
+        let category = null;
+        
+        // Match various possible RIASEC question_id formats
+        if (response.question_id.startsWith('RIASEC_')) {
+          category = response.question_id.split('_')[1][0];
+        } else if (response.question_id.match(/^[RIASEC]\d+$/)) {
+          category = response.question_id[0]; // Format like "R1", "I2", etc.
+        } else if (response.question_id.includes('_R_') || response.question_id.includes('_I_') ||
+                  response.question_id.includes('_A_') || response.question_id.includes('_S_') ||
+                  response.question_id.includes('_E_') || response.question_id.includes('_C_')) {
+          // Format like "quiz_R_1", "interest_I_2", etc.
+          const match = response.question_id.match(/_([RIASEC])_/);
+          if (match) {
+            category = match[1];
           }
         }
-      });
-    }
+        
+        if (category && category in riasecScores) {
+          const scoreValue = Number(response.score || (response.response ? parseInt(response.response) : 0));
+          riasecScores[category as keyof RiasecScores] += scoreValue;
+          console.log(`Added score ${scoreValue} to category ${category}, from question ${response.question_id}`);
+        }
+      }
+    });
 
+    // Log the final scores
+    console.log("RIASEC scores calculated:", riasecScores);
     return riasecScores;
   } catch (error) {
     console.error("Error calculating RIASEC profile:", error);
@@ -111,21 +148,37 @@ export const calculateRiasecProfile = async (userId: string): Promise<RiasecScor
 
 export const calculateWorkValuesProfile = async (userId: string): Promise<WorkValuesScores> => {
   try {
-    const { data, error } = await fromTable('user_responses')
-      .select('question_id, response, score')
-      .eq('user_id', userId)
-      .eq('quiz_type', 'work-values');
+    console.log("Calculating Work Values profile for user:", userId);
+    
+    // Query different potential quiz types for work values
+    const quizTypes = ['work-values', 'work-value', 'values', 'work_values'];
+    let allResponses: any[] = [];
+    
+    // Fetch data for all relevant quiz types
+    for (const quizType of quizTypes) {
+      console.log(`Fetching responses for quiz type: ${quizType}`);
+      const { data, error } = await fromTable('user_responses')
+        .select('question_id, response, score')
+        .eq('user_id', userId)
+        .eq('quiz_type', quizType);
 
-    if (error) {
-      console.error("Error fetching Work Values responses:", error);
-      return {
-        Achievement: 0,
-        Independence: 0,
-        Recognition: 0,
-        Relationships: 0,
-        Support: 0,
-        WorkingConditions: 0
-      };
+      if (error) {
+        console.error(`Error fetching Work Values responses for ${quizType}:`, error);
+      } else if (data && data.length > 0) {
+        console.log(`Found ${data.length} responses for quiz type ${quizType}`);
+        allResponses = [...allResponses, ...data];
+      } else {
+        console.log(`No responses found for quiz type ${quizType}`);
+      }
+    }
+    
+    console.log(`Total Work Values responses found: ${allResponses.length}`);
+    
+    if (allResponses.length === 0) {
+      // If no work values found, check if any responses exist at all
+      if (!await sampleUserResponses(userId)) {
+        console.log("No quiz responses found for this user at all.");
+      }
     }
 
     const workValuesScores: WorkValuesScores = {
@@ -137,29 +190,42 @@ export const calculateWorkValuesProfile = async (userId: string): Promise<WorkVa
       WorkingConditions: 0
     };
 
-    // Type guard to ensure data is an array of UserResponse
-    if (Array.isArray(data)) {
-      data.forEach((response: any) => {
-        // Check different possible question_id formats for work values
-        if (response && response.question_id) {
-          let category = null;
-          
-          // Handle different formats: WV_Achievement, WorkValues_Achievement, etc.
-          if (response.question_id.startsWith('WV_')) {
-            category = response.question_id.split('_')[1];
-          } else if (response.question_id.startsWith('WorkValues_')) {
-            category = response.question_id.split('_')[1];
-          } else if (response.question_id.includes('WorkingConditions')) {
-            category = 'WorkingConditions';
-          }
-          
-          if (category && category in workValuesScores) {
-            workValuesScores[category as keyof WorkValuesScores] += Number(response.score || (response.response ? parseInt(response.response) : 0));
+    // Process all responses
+    allResponses.forEach((response: any) => {
+      if (response && response.question_id) {
+        let category = null;
+        
+        // Match various possible Work Values question_id formats
+        if (response.question_id.startsWith('WV_')) {
+          category = response.question_id.split('_')[1];
+        } else if (response.question_id.startsWith('WorkValues_')) {
+          category = response.question_id.split('_')[1];
+        } else if (response.question_id.startsWith('Achievement') || 
+                  response.question_id.startsWith('Independence') || 
+                  response.question_id.startsWith('Recognition') || 
+                  response.question_id.startsWith('Relationships') || 
+                  response.question_id.startsWith('Support') || 
+                  response.question_id.includes('WorkingConditions')) {
+          // Format starts with the category name
+          const valueTitles = Object.keys(workValuesScores);
+          for (const title of valueTitles) {
+            if (response.question_id.includes(title)) {
+              category = title;
+              break;
+            }
           }
         }
-      });
-    }
+        
+        if (category && category in workValuesScores) {
+          const scoreValue = Number(response.score || (response.response ? parseInt(response.response) : 0));
+          workValuesScores[category as keyof WorkValuesScores] += scoreValue;
+          console.log(`Added score ${scoreValue} to category ${category}, from question ${response.question_id}`);
+        }
+      }
+    });
 
+    // Log the final scores
+    console.log("Work Values scores calculated:", workValuesScores);
     return workValuesScores;
   } catch (error) {
     console.error("Error calculating Work Values profile:", error);
@@ -171,6 +237,56 @@ export const calculateWorkValuesProfile = async (userId: string): Promise<WorkVa
       Support: 0,
       WorkingConditions: 0
     };
+  }
+};
+
+// Helper function to check if any responses exist
+async function sampleUserResponses(userId: string) {
+  try {
+    // Query any responses regardless of quiz type
+    const { data, error } = await fromTable('user_responses')
+      .select('question_id, response, score, quiz_type')
+      .eq('user_id', userId)
+      .limit(10);
+      
+    if (error) {
+      console.error("Error fetching sample responses:", error);
+      return null;
+    }
+    
+    console.log(`Found ${data?.length || 0} sample responses:`, data);
+    return data;
+  } catch (error) {
+    console.error("Error in sampleUserResponses:", error);
+    return null;
+  }
+}
+
+// Additional function to inspect a response with full details
+export const inspectResponses = async (userId: string, questionPattern?: string): Promise<any[]> => {
+  try {
+    console.log(`Inspecting responses for user ${userId}${questionPattern ? ` with pattern ${questionPattern}` : ''}`);
+    
+    let query = fromTable('user_responses')
+      .select('*')
+      .eq('user_id', userId);
+      
+    if (questionPattern) {
+      query = query.ilike('question_id', `%${questionPattern}%`);
+    }
+    
+    const { data, error } = await query;
+      
+    if (error) {
+      console.error("Error inspecting responses:", error);
+      return [];
+    }
+    
+    console.log(`Found ${data?.length || 0} responses:`, data);
+    return data || [];
+  } catch (error) {
+    console.error("Error in inspectResponses:", error);
+    return [];
   }
 };
 
