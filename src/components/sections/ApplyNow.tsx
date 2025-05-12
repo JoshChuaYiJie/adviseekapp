@@ -24,6 +24,7 @@ export const ApplyNow = () => {
   const [availableDegrees, setAvailableDegrees] = useState<string[]>([]);
   const [availableMajors, setAvailableMajors] = useState<Major[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { isCurrentlyDark } = useTheme();
   const { t } = useTranslation();
 
@@ -34,11 +35,14 @@ export const ApplyNow = () => {
     if (!selectedUniversity) {
       setUniversityData(null);
       setAvailableDegrees([]);
+      setError(null);
       return;
     }
 
     const loadData = async () => {
       setIsLoading(true);
+      setError(null);
+      
       try {
         console.log(`Loading university data for: ${selectedUniversity}`);
         const data = await loadUniversityData(selectedUniversity);
@@ -50,12 +54,13 @@ export const ApplyNow = () => {
           setAvailableDegrees(degrees);
           console.log(`${degrees.length} degrees found:`, degrees);
         } else {
-          console.error("No programs found in loaded data", data);
-          toast.error("Failed to load university data - No programs found");
+          setError("No programs found in the data");
+          toast.error("No programs found for this university");
         }
       } catch (error) {
         console.error("Error loading university data:", error);
-        toast.error("Failed to load university data");
+        setError("Failed to load university data");
+        toast.error("Failed to load university data. Please check if the data files exist.");
       } finally {
         setIsLoading(false);
       }
@@ -165,6 +170,12 @@ export const ApplyNow = () => {
               </SelectContent>
             </Select>
           </div>
+          
+          {error && (
+            <div className="text-red-500 text-sm p-2 rounded bg-red-100 dark:bg-red-900/20">
+              {error}. Please check if the data files are in the correct location.
+            </div>
+          )}
           
           {selectedUniversity && (
             <div>
