@@ -1,0 +1,48 @@
+
+[
+  {
+    "id": "DS-1",
+    "question": "Describe your experience with data analysis tools such as Python, R, or SQL. What projects have you completed using these tools?",
+    "criterion": "Technical Skills"
+  },
+  {
+    "id": "DS-2",
+    "question": "How have you applied statistical methods to solve a real problem?",
+    "criterion": "Technical Skills"
+  },
+  {
+    "id": "DS-3",
+    "question": "What experience do you have with data visualization tools and techniques?",
+    "criterion": "Technical Skills"
+  },
+  {
+    "id": "DS-4",
+    "question": "Describe a data-related challenge you encountered and how you approached solving it.",
+    "criterion": "Problem-Solving"
+  },
+  {
+    "id": "DS-5",
+    "question": "How would you explain a complex data analysis concept to someone with no technical background?",
+    "criterion": "Problem-Solving"
+  },
+  {
+    "id": "DS-6",
+    "question": "Describe how you would approach cleaning and preparing a messy dataset for analysis.",
+    "criterion": "Problem-Solving"
+  },
+  {
+    "id": "DS-7",
+    "question": "What area of data science interests you the most and why?",
+    "criterion": "Motivation"
+  },
+  {
+    "id": "DS-8",
+    "question": "How do you stay updated with the latest trends and developments in data science and analytics?",
+    "criterion": "Motivation"
+  },
+  {
+    "id": "DS-9",
+    "question": "Why do you want to pursue a degree in Data Science & Analytics specifically?",
+    "criterion": "Motivation"
+  }
+]

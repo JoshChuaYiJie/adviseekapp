@@ -164,7 +164,13 @@ export const QuizSegments = () => {
         variant: "default"
       });
     }
-    navigate(`/quiz/${segmentId}`);
+    
+    if (segmentId === "open-ended") {
+      // Navigate to major recommendations first to select a major
+      navigate('/profile');
+    } else {
+      navigate(`/quiz/${segmentId}`);
+    }
   };
 
   const isExploreTab = activeTab === "explore";

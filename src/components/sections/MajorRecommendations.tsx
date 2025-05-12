@@ -21,6 +21,12 @@ interface MajorRecommendationsProps {
   topWorkValues: Array<{ component: string; average: number; score: number }>;
 }
 
+interface OpenEndedQuestion {
+  id: string;
+  question: string;
+  criterion: string;
+}
+
 export const MajorRecommendations = ({ topRiasec, topWorkValues }: MajorRecommendationsProps) => {
   const { isCurrentlyDark } = useTheme();
   const [recommendations, setRecommendations] = useState<MajorRecommendationsType | null>(null);
@@ -28,6 +34,9 @@ export const MajorRecommendations = ({ topRiasec, topWorkValues }: MajorRecommen
   const [riasecCode, setRiasecCode] = useState('');
   const [workValueCode, setWorkValueCode] = useState('');
   const [activeTab, setActiveTab] = useState<string>('all');
+  const [selectedMajor, setSelectedMajor] = useState<string | null>(null);
+  const [openEndedQuestions, setOpenEndedQuestions] = useState<OpenEndedQuestion[]>([]);
+  const [loadingQuestions, setLoadingQuestions] = useState(false);
 
   useEffect(() => {
     const fetchRecommendations = async () => {
@@ -115,6 +124,65 @@ export const MajorRecommendations = ({ topRiasec, topWorkValues }: MajorRecommen
     };
   };
 
+  // Load questions from a specific major file
+  const loadQuestionsForMajor = async (majorFileName: string) => {
+    try {
+      setLoadingQuestions(true);
+      const filePath = `/quiz_refer/Open_ended_quiz_questions/${majorFileName}`;
+      const response = await fetch(filePath);
+      
+      if (!response.ok) {
+        console.error(`Failed to load questions for ${majorFileName}: ${response.status}`);
+        setOpenEndedQuestions([]);
+        setLoadingQuestions(false);
+        return;
+      }
+      
+      const questionsData = await response.json();
+      
+      // Group questions by criterion
+      const questionsByCriterion: Record<string, OpenEndedQuestion[]> = {};
+      
+      // Organize questions by criterion
+      questionsData.forEach((q: OpenEndedQuestion) => {
+        if (!questionsByCriterion[q.criterion]) {
+          questionsByCriterion[q.criterion] = [];
+        }
+        questionsByCriterion[q.criterion].push(q);
+      });
+      
+      // Select 3 questions from each criterion
+      const selectedQuestions: OpenEndedQuestion[] = [];
+      
+      Object.keys(questionsByCriterion).forEach(criterion => {
+        const criterionQuestions = questionsByCriterion[criterion];
+        // Take up to 3 questions from each criterion
+        const questionsToAdd = criterionQuestions.slice(0, 3);
+        selectedQuestions.push(...questionsToAdd);
+      });
+      
+      setOpenEndedQuestions(selectedQuestions);
+      console.log('Loaded questions for major:', majorFileName, selectedQuestions);
+    } catch (error) {
+      console.error('Error loading questions:', error);
+      setOpenEndedQuestions([]);
+    } finally {
+      setLoadingQuestions(false);
+    }
+  };
+
+  // Handle clicking on a major card
+  const handleMajorClick = (major: string, questionFile: string) => {
+    setSelectedMajor(major);
+    loadQuestionsForMajor(questionFile);
+  };
+
+  // Handle going back to the list of majors
+  const handleBackToList = () => {
+    setSelectedMajor(null);
+    setOpenEndedQuestions([]);
+  };
+
   const majorCounts = getMatchCounts();
   const majorsToDisplay = getMajorsToDisplay();
   const questionFiles = getQuestionFilesToDisplay();
@@ -166,7 +234,48 @@ export const MajorRecommendations = ({ topRiasec, topWorkValues }: MajorRecommen
         </div>
       </div>
 
-      {!hasNoMatches ? (
+      {selectedMajor ? (
+        // Display questions for selected major
+        <div>
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-medium">{selectedMajor} Questions</h3>
+            <Button 
+              onClick={handleBackToList} 
+              variant="outline" 
+              size="sm"
+            >
+              Back to Majors
+            </Button>
+          </div>
+          
+          {loadingQuestions ? (
+            <div className="space-y-4">
+              {[...Array(6)].map((_, i) => (
+                <Skeleton key={i} className="h-20 w-full" />
+              ))}
+            </div>
+          ) : openEndedQuestions.length > 0 ? (
+            <div className="space-y-6">
+              {openEndedQuestions.map((q, index) => (
+                <Card key={index} className={`p-4 ${isCurrentlyDark ? 'bg-gray-800' : 'bg-white'}`}>
+                  <div>
+                    <Badge className="mb-2">{q.criterion}</Badge>
+                    <p className="text-md">{q.question}</p>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <div className={`p-6 rounded-lg text-center ${isCurrentlyDark ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-600'}`}>
+              <InfoIcon className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+              <h4 className="text-lg font-medium mb-2">No Questions Available</h4>
+              <p>
+                We couldn't find any questions for this major. Please try another major.
+              </p>
+            </div>
+          )}
+        </div>
+      ) : (!hasNoMatches ? (
         <div>
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-medium">Recommended Majors</h3>
@@ -199,9 +308,16 @@ export const MajorRecommendations = ({ topRiasec, topWorkValues }: MajorRecommen
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {majorsToDisplay.map((major, index) => (
-              <Card key={index} className={`p-4 ${isCurrentlyDark ? 'bg-gray-700' : 'bg-white'} hover:shadow-md transition-shadow`}>
+              <Card 
+                key={index} 
+                className={`p-4 ${isCurrentlyDark ? 'bg-gray-700' : 'bg-white'} hover:shadow-md transition-shadow cursor-pointer`}
+                onClick={() => handleMajorClick(major, questionFiles[index])}
+              >
                 <p className="font-medium text-md">{major}</p>
                 <p className="text-xs text-gray-500 mt-1">File: {questionFiles[index]}</p>
+                <p className="text-xs text-blue-500 mt-2 hover:underline">
+                  View Questions →
+                </p>
               </Card>
             ))}
           </div>
@@ -217,7 +333,10 @@ export const MajorRecommendations = ({ topRiasec, topWorkValues }: MajorRecommen
             Try completing more quizzes or consider exploring majors based on your individual components instead.
           </p>
         </div>
-      )}
+      ))}
     </div>
   );
 };
+
+// Add missing Button component import
+import { Button } from '@/components/ui/button';
