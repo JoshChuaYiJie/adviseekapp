@@ -50,13 +50,14 @@ export const calculateRiasecProfile = async (userId: string) => {
       }
     });
     
-    // Calculate average scores for each component
+    // Calculate average scores for each component - no rounding
     const averageScores: Record<string, number> = {};
     let totalAverageScore = 0;
     
     Object.entries(componentGroups).forEach(([component, { totalScore, count }]) => {
       if (count > 0) {
-        const averageScore = Math.round(totalScore / count);
+        // Removed rounding - keeping raw average
+        const averageScore = totalScore / count;
         averageScores[component] = averageScore;
         totalAverageScore += averageScore;
       }
@@ -128,12 +129,13 @@ export const calculateWorkValuesProfile = async (userId: string) => {
       }
     });
     
-    // Calculate average scores for each component
+    // Calculate average scores for each component - no rounding
     const averageScores: Record<string, number> = {};
     
     Object.entries(componentGroups).forEach(([component, { totalScore, count }]) => {
       if (count > 0) {
-        averageScores[component] = Math.round(totalScore / count);
+        // Removed rounding - keeping raw average
+        averageScores[component] = totalScore / count;
       }
     });
     

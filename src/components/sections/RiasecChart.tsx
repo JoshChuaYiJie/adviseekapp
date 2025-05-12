@@ -123,6 +123,9 @@ export const RiasecChart = () => {
     );
   }
 
+  // Calculate total value for percentages
+  const totalValue = riasecData.reduce((sum, item) => sum + item.value, 0);
+
   return (
     <Card className={`w-full transition-all duration-500 ${showAnimation ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
       <CardHeader>
@@ -148,7 +151,13 @@ export const RiasecChart = () => {
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
-              <Tooltip formatter={(value) => [`Score: ${value}`, '']} />
+              <Tooltip 
+                formatter={(value, name) => {
+                  // Show raw value and percentage on hover
+                  const percent = ((value as number) / totalValue * 100).toFixed(1);
+                  return [`${percent}%`, name];
+                }} 
+              />
               <Legend />
             </PieChart>
           </ResponsiveContainer>

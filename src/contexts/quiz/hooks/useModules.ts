@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { Module } from '@/integrations/supabase/client';
@@ -13,20 +14,19 @@ export const useModules = (university?: string) => {
         setIsLoading(true);
         setError(null);
 
-        // Fetch modules from local JSON file for now
-        // This is a workaround for the 'modules' table not being in the schema
+        // Fetch modules from local JSON file
         let data: Module[] = [];
         
         try {
           const response = await fetch('/data/modules.json');
           if (response.ok) {
             data = await response.json();
+            console.log('Successfully loaded modules data:', data.length, 'modules');
           } else {
             throw new Error('Failed to load modules data');
           }
         } catch (fileError) {
-          // If the file doesn't exist, use empty array
-          console.log('Modules data file not found, using empty dataset');
+          console.error('Modules data file load error:', fileError);
           data = [];
         }
         

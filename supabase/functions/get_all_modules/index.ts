@@ -21,7 +21,7 @@ serve(async (req) => {
       }
     );
 
-    // Mock implementation since we don't have direct access to modules table
+    // Mock implementation matching the format in public/data/modules.json
     const modules = [
       {
         id: 1,
@@ -40,6 +40,42 @@ serve(async (req) => {
         aus_cus: 4,
         semester: "1,2",
         description: "This module continues the introduction to programming methodology."
+      },
+      {
+        id: 3,
+        university: "NTU",
+        course_code: "CZ1103",
+        title: "Introduction to Computational Thinking",
+        aus_cus: 3,
+        semester: "1",
+        description: "This course introduces computational thinking and problem solving using Python."
+      },
+      {
+        id: 4,
+        university: "NTU",
+        course_code: "CZ2002",
+        title: "Object-Oriented Design & Programming",
+        aus_cus: 3,
+        semester: "2",
+        description: "This course covers object-oriented programming concepts using Java."
+      },
+      {
+        id: 5,
+        university: "SMU",
+        course_code: "IS111",
+        title: "Introduction to Programming",
+        aus_cus: 1,
+        semester: "1",
+        description: "This course introduces programming concepts using Python."
+      },
+      {
+        id: 6,
+        university: "SMU",
+        course_code: "CS102",
+        title: "Object-Oriented Programming",
+        aus_cus: 1,
+        semester: "2",
+        description: "This course covers object-oriented programming using Java."
       }
     ];
 

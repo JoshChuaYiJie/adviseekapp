@@ -127,6 +127,9 @@ export const WorkValuesChart = () => {
     );
   }
 
+  // Calculate total value for percentages
+  const totalValue = workValuesData.reduce((sum, item) => sum + item.value, 0);
+
   return (
     <Card className={`w-full transition-all duration-500 ${showAnimation ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
       <CardHeader>
@@ -153,18 +156,28 @@ export const WorkValuesChart = () => {
                 ))}
               </Pie>
               <Tooltip 
-                formatter={(value, name, props) => [
-                  `Score: ${value}`, 
-                  props.payload.name
-                ]} 
+                formatter={(value, name, props) => {
+                  // Calculate and show percentage on hover
+                  const percent = ((value as number) / totalValue * 100).toFixed(1);
+                  
+                  // Extract full name from props when available
+                  let label = name;
+                  if (props && props.payload && typeof props.payload === 'object' && 'name' in props.payload) {
+                    label = props.payload.name as string;
+                  }
+                  
+                  return [`${percent}%`, label];
+                }} 
               />
-              <Legend formatter={(value, entry) => {
-                // Type safety check to access the payload property
-                if (entry && entry.payload && typeof entry.payload === 'object' && 'name' in entry.payload) {
-                  return entry.payload.name as string;
-                }
-                return '';
-              }} />
+              <Legend 
+                formatter={(value, entry) => {
+                  // Type safety check to access the payload property
+                  if (entry && entry.payload && typeof entry.payload === 'object' && 'name' in entry.payload) {
+                    return entry.payload.name as string;
+                  }
+                  return '';
+                }} 
+              />
             </PieChart>
           </ResponsiveContainer>
         </div>
