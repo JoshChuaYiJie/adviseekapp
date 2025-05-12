@@ -242,7 +242,7 @@
   {
     "occupation": "Aircraft Service Attendants",
     "RIASEC_code": "RC",
-    "work_value_code": null,
+    "work_value_code": "AWS",
     "majors": [
       "Aerospace Engineering at NTU",
       "Mechanical Engineering at NUS",
@@ -412,7 +412,7 @@
   {
     "occupation": "Appraisers of Personal and Business Property",
     "RIASEC_code": "CER",
-    "work_value_code": null,
+    "work_value_code": "IARc",
     "majors": [
       "Accountancy and Business at NTU",
       "Accounting at SMU",
@@ -902,7 +902,7 @@
   {
     "occupation": "Blockchain Engineers",
     "RIASEC_code": "CI",
-    "work_value_code": null,
+    "work_value_code": "IARc",
     "majors": [
       "Computer Science at NTU",
       "Computer Science (Artificial Intelligence & Cybersecurity) at SMU",
@@ -1002,7 +1002,7 @@
   {
     "occupation": "Bus Drivers, School",
     "RIASEC_code": "RCS",
-    "work_value_code": null,
+    "work_value_code": "WRA",
     "majors": [
       "Transportation-related majors are not explicitly listed",
       "but based on the skills and knowledge required for 'Bus Drivers",
@@ -1092,7 +1092,7 @@
   {
     "occupation": "Calibration Technologists and Technicians",
     "RIASEC_code": "RCI",
-    "work_value_code": null,
+    "work_value_code": "AIS",
     "majors": [
       "Engineering Science at NUS",
       "Mechanical Engineering at NTU",
@@ -1132,7 +1132,7 @@
   {
     "occupation": "Cardiologists",
     "RIASEC_code": "IRS",
-    "work_value_code": null,
+    "work_value_code": "ARcR",
     "majors": [
       "Medicine at NUS",
       "Medicine at NTU",
@@ -1452,7 +1452,7 @@
   {
     "occupation": "Clinical Neuropsychologists",
     "RIASEC_code": "IS",
-    "work_value_code": null,
+    "work_value_code": "AIR",
     "majors": [
       "Biological Sciences and Psychology at NTU",
       "Psychology at NTU",
@@ -2032,7 +2032,7 @@
   {
     "occupation": "Crematory Operators",
     "RIASEC_code": "RC",
-    "work_value_code": null,
+    "work_value_code": "AIW",
     "majors": [
       "Business and Computing at NTU",
       "Computer Science at NTU",
@@ -2192,7 +2192,7 @@
   {
     "occupation": "Data Scientists",
     "RIASEC_code": "IC",
-    "work_value_code": null,
+    "work_value_code": "AIRc",
     "majors": [
       "Data Science and Artificial Intelligence at NTU",
       "Data Science and Analytics at NUS",
@@ -2352,7 +2352,7 @@
   {
     "occupation": "Digital Forensics Analysts",
     "RIASEC_code": "IC",
-    "work_value_code": null,
+    "work_value_code": "AIRc",
     "majors": [
       "Computer Science (Cybersecurity) at SMU",
       "Computer Science (Artificial Intelligence & Cybersecurity) at SMU",
@@ -2382,7 +2382,7 @@
   {
     "occupation": "Disc Jockeys, Except Radio",
     "RIASEC_code": "AEC",
-    "work_value_code": null,
+    "work_value_code": "AIR",
     "majors": [
       "Communication Studies at NTU",
       "Arts and Culture Management at SMU",
@@ -2752,7 +2752,7 @@
   {
     "occupation": "Emergency Medical Technicians",
     "RIASEC_code": "SRI",
-    "work_value_code": null,
+    "work_value_code": "ARS",
     "majors": [
       "Biomedical Sciences and BioBusiness at NTU",
       "Biological Sciences at NTU",
@@ -2762,7 +2762,7 @@
   {
     "occupation": "Emergency Medicine Physicians",
     "RIASEC_code": "ISC",
-    "work_value_code": null,
+    "work_value_code": "ARRc",
     "majors": [
       "Medicine at NUS",
       "Medicine at NTU",
@@ -2832,7 +2832,7 @@
   {
     "occupation": "Entertainment and Recreation Managers, Except Gambling",
     "RIASEC_code": "ECR",
-    "work_value_code": null,
+    "work_value_code": "ARI",
     "majors": [
       "Arts and Culture Management at SMU",
       "Business Administration at NUS",
@@ -3042,7 +3042,7 @@
   {
     "occupation": "Facilities Managers",
     "RIASEC_code": "ECR",
-    "work_value_code": null,
+    "work_value_code": "AIS",
     "majors": [
       "Business Administration at NUS",
       "Business and Computing at NTU",
@@ -3232,7 +3232,7 @@
   {
     "occupation": "Financial Risk Specialists",
     "RIASEC_code": "CIE",
-    "work_value_code": null,
+    "work_value_code": "AIRc",
     "majors": [
       "Quantitative Finance at SMU",
       "Actuarial Science at SMU",
@@ -3242,7 +3242,7 @@
   {
     "occupation": "Financial and Investment Analysts",
     "RIASEC_code": "CEI",
-    "work_value_code": null,
+    "work_value_code": "AIRc",
     "majors": [
       "Finance at SMU",
       "Quantitative Finance at SMU",
@@ -3312,7 +3312,7 @@
   {
     "occupation": "First-Line Supervisors of Entertainment and Recreation Workers, Except Gambling Services",
     "RIASEC_code": "ECS",
-    "work_value_code": null,
+    "work_value_code": "ARS",
     "majors": [
       "Arts and Culture Management at SMU",
       "Art",
@@ -3432,7 +3432,7 @@
   {
     "occupation": "First-Line Supervisors of Passenger Attendants",
     "RIASEC_code": "ECS",
-    "work_value_code": null,
+    "work_value_code": "SRA",
     "majors": [
       "Business Administration at NUS",
       "Business Analytics at NUS",
@@ -3482,7 +3482,7 @@
   {
     "occupation": "First-Line Supervisors of Security Workers",
     "RIASEC_code": "ECR",
-    "work_value_code": null,
+    "work_value_code": "ASI",
     "majors": [
       "Business Administration at NUS",
       "Business Analytics at NUS",
@@ -3772,7 +3772,7 @@
   {
     "occupation": "Fundraising Managers",
     "RIASEC_code": "ECS",
-    "work_value_code": null,
+    "work_value_code": "RcAR",
     "majors": [
       "Arts and Culture Management at SMU",
       "Business Administration at NUS",
@@ -4142,7 +4142,7 @@
   {
     "occupation": "Health Information Technologists and Medical Registrars",
     "RIASEC_code": "CIS",
-    "work_value_code": null,
+    "work_value_code": "ASW",
     "majors": [
       "Health Information Technologists and Medical Registrars at SMU",
       "Health Economics & Management at SMU",
@@ -4322,7 +4322,7 @@
   {
     "occupation": "Histology Technicians",
     "RIASEC_code": "RIC",
-    "work_value_code": null,
+    "work_value_code": "AWS",
     "majors": [
       "Biomedical Sciences and BioBusiness at NTU",
       "Biological Sciences at NTU",
@@ -4352,7 +4352,7 @@
   {
     "occupation": "Histotechnologists",
     "RIASEC_code": "IRC",
-    "work_value_code": null,
+    "work_value_code": "AWS",
     "majors": [
       "Biomedical Sciences and BioBusiness at NTU",
       "Biological Sciences at NTU",
@@ -4482,7 +4482,7 @@
   {
     "occupation": "Hydrologic Technicians",
     "RIASEC_code": "RCI",
-    "work_value_code": null,
+    "work_value_code": "AIW",
     "majors": [
       "Environmental Earth Systems Science at NTU",
       "Civil Engineering at NTU",
@@ -4582,7 +4582,7 @@
   {
     "occupation": "Information Security Engineers",
     "RIASEC_code": "CIR",
-    "work_value_code": null,
+    "work_value_code": "AIS",
     "majors": [
       "Computer Science (Cybersecurity) at SMU",
       "Information Security at NUS",
@@ -4962,7 +4962,7 @@
   {
     "occupation": "Lighting Technicians",
     "RIASEC_code": "RC",
-    "work_value_code": null,
+    "work_value_code": "ARW",
     "majors": [
       "Theatre and Performance Studies at NUS",
       "Art",
@@ -5422,7 +5422,7 @@
   {
     "occupation": "Medical Dosimetrists",
     "RIASEC_code": "ICR",
-    "work_value_code": null,
+    "work_value_code": "ASW",
     "majors": [
       "Biomedical Engineering at NUS",
       "Bioengineering at NTU",
@@ -5452,7 +5452,7 @@
   {
     "occupation": "Medical Records Specialists",
     "RIASEC_code": "CI",
-    "work_value_code": null,
+    "work_value_code": "ASW",
     "majors": [
       "Health Economics & Management at SMU",
       "Data Science and Analytics at NUS",
@@ -5922,7 +5922,7 @@
   {
     "occupation": "Neuropsychologists",
     "RIASEC_code": "IS",
-    "work_value_code": null,
+    "work_value_code": "ARS",
     "majors": [
       "Biological Sciences and Psychology at NTU",
       "Psychology at NTU",
@@ -6272,7 +6272,7 @@
   {
     "occupation": "Orthopedic Surgeons, Except Pediatric",
     "RIASEC_code": "IRS",
-    "work_value_code": null,
+    "work_value_code": "ARcS",
     "majors": [
       "Medicine at NUS",
       "Medicine at NTU",
@@ -6382,7 +6382,7 @@
   {
     "occupation": "Paramedics",
     "RIASEC_code": "SRI",
-    "work_value_code": null,
+    "work_value_code": "SAR",
     "majors": [
       "Biomedical Sciences and BioBusiness at NTU",
       "Biological Sciences at NTU",
@@ -6492,7 +6492,7 @@
   {
     "occupation": "Pediatric Surgeons",
     "RIASEC_code": "ISR",
-    "work_value_code": null,
+    "work_value_code": "ARcS",
     "majors": [
       "Medicine at NUS",
       "Medicine at NTU",
@@ -6512,7 +6512,7 @@
   {
     "occupation": "Penetration Testers",
     "RIASEC_code": "ICR",
-    "work_value_code": null,
+    "work_value_code": "AIS",
     "majors": [
       "Computer Science (Cybersecurity) at SMU",
       "Computer Science (Artificial Intelligence & Cybersecurity) at SMU",
@@ -7062,7 +7062,7 @@
   {
     "occupation": "Project Management Specialists",
     "RIASEC_code": "EC",
-    "work_value_code": null,
+    "work_value_code": "ASR",
     "majors": [
       "Business Administration at NUS",
       "Business Analytics at NUS",
@@ -7142,7 +7142,7 @@
   {
     "occupation": "Public Relations Managers",
     "RIASEC_code": "ECS",
-    "work_value_code": null,
+    "work_value_code": "RcRS",
     "majors": [
       "Communication Studies at NTU",
       "Communication Management at SMU",
@@ -7682,7 +7682,7 @@
   {
     "occupation": "Sales Representatives of Services, Except Advertising, Insurance, Financial Services, and Travel",
     "RIASEC_code": "ECS",
-    "work_value_code": null,
+    "work_value_code": "RAS",
     "majors": [
       "Business Administration at NUS",
       "Marketing at SMU",
@@ -7722,7 +7722,7 @@
   {
     "occupation": "School Bus Monitors",
     "RIASEC_code": "SCR",
-    "work_value_code": null,
+    "work_value_code": "SRW",
     "majors": [
       "Art and Education at NTU",
       "Psychology at NTU",
@@ -7792,7 +7792,7 @@
   {
     "occupation": "Security Management Specialists",
     "RIASEC_code": "CIR",
-    "work_value_code": null,
+    "work_value_code": "ASI",
     "majors": [
       "Computer Science (Cybersecurity) at SMU",
       "Information Security at NUS",
@@ -7802,7 +7802,7 @@
   {
     "occupation": "Security Managers",
     "RIASEC_code": "EC",
-    "work_value_code": null,
+    "work_value_code": "ASI",
     "majors": [
       "Computer Science (Cybersecurity) at SMU",
       "Information Security at NUS",
@@ -7972,7 +7972,7 @@
   {
     "occupation": "Shuttle Drivers and Chauffeurs",
     "RIASEC_code": "RCS",
-    "work_value_code": null,
+    "work_value_code": "RWS",
     "majors": [
       "Business Administration at NUS",
       "Business and Computing at NTU",
@@ -8072,7 +8072,7 @@
   {
     "occupation": "Software Developers",
     "RIASEC_code": "ICR",
-    "work_value_code": null,
+    "work_value_code": "AIS",
     "majors": [
       "Computer Science at NTU",
       "Computer Science at NUS",
@@ -8172,7 +8172,7 @@
   {
     "occupation": "Special Education Teachers, Elementary School",
     "RIASEC_code": "SI",
-    "work_value_code": null,
+    "work_value_code": "SRA",
     "majors": [
       "Art and Education at NTU",
       "Biology and Education at NTU",
@@ -8182,7 +8182,7 @@
   {
     "occupation": "Special Education Teachers, Kindergarten",
     "RIASEC_code": "S",
-    "work_value_code": null,
+    "work_value_code": "SRA",
     "majors": [
       "Art and Education at NTU",
       "Biology and Education at NTU",
@@ -8352,7 +8352,7 @@
   {
     "occupation": "Substitute Teachers, Short-Term",
     "RIASEC_code": "SC",
-    "work_value_code": null,
+    "work_value_code": "SRW",
     "majors": [
       "Art and Education at NTU",
       "Biology and Education at NTU",
@@ -8512,7 +8512,7 @@
   {
     "occupation": "Taxi Drivers",
     "RIASEC_code": "RC",
-    "work_value_code": null,
+    "work_value_code": "RWS",
     "majors": [
       "Business Administration at NUS",
       "Business Analytics at NUS",
@@ -8532,7 +8532,7 @@
   {
     "occupation": "Teaching Assistants, Preschool, Elementary, Middle, and Secondary School, Except Special Education",
     "RIASEC_code": "SC",
-    "work_value_code": null,
+    "work_value_code": "SRA",
     "majors": [
       "Art and Education at NTU",
       "Biology and Education at NTU",
@@ -8542,7 +8542,7 @@
   {
     "occupation": "Teaching Assistants, Special Education",
     "RIASEC_code": "SC",
-    "work_value_code": null,
+    "work_value_code": "SRA",
     "majors": [
       "Art and Education at NTU",
       "Biology and Education at NTU",
@@ -9092,7 +9092,7 @@
   {
     "occupation": "Web and Digital Interface Designers",
     "RIASEC_code": "IAC",
-    "work_value_code": null,
+    "work_value_code": "AIR",
     "majors": [
       "Art",
       "Design and Media at NTU",
