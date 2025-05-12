@@ -11,12 +11,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { OpenEndedQuestion } from '@/components/sections/majors/types';
 import { Skeleton } from '@/components/ui/skeleton';
-
-interface ScoredMajorQuestion {
-  major: string;
-  questions: OpenEndedQuestion[];
-  score: number;
-}
+import { formatMajorForFile } from '@/components/sections/majors/MajorUtils';
 
 const OpenEndedQuestionsQuiz = () => {
   const { isCurrentlyDark } = useTheme();
@@ -72,7 +67,7 @@ const OpenEndedQuestionsQuiz = () => {
           .eq('user_id', userId)
           .eq('quiz_type', 'work_value');
         
-        if (!riasecData || !workValueData) {
+        if (!riasecData?.length || !workValueData?.length) {
           toast({
             title: "Missing profile data",
             description: "Please complete the RIASEC and Work Values quizzes first",
@@ -94,6 +89,8 @@ const OpenEndedQuestionsQuiz = () => {
           .slice(0, 3)
           .map(item => item.component.charAt(0))
           .join('');
+        
+        console.log("User profiles:", { topRiasec, topWorkValue });
         
         // Load the occupation-major mappings
         const mappingsResponse = await fetch('/quiz_refer/occupation_major_mappings.json');
@@ -132,73 +129,94 @@ const OpenEndedQuestionsQuiz = () => {
           .sort((a: any, b: any) => b.score - a.score)
           .slice(0, 5);
         
+        console.log("Top majors:", topMajors);
+        
         // Load questions for each top major
-        const criteriaTypes = ['Interests', 'Skills', 'Experiences'];
-        const allMajorQuestions: ScoredMajorQuestion[] = [];
-        
-        for (const majorItem of topMajors) {
+        const loadQuestionsForMajor = async (major: string) => {
           try {
-            // Format major name for file path
-            const majorStr = String(majorItem.major);
-            const majorFormatted = majorStr
-              .replace(/\s+/g, '_')
-              .replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '');
+            // Extract school from major if present (e.g., "Major at NUS")
+            let school = '';
+            let majorName = major;
             
-            let schoolSuffix = '';
-            
-            // Check if major contains school information
-            if (majorStr.includes(' at ')) {
-              const [majorName, school] = majorStr.split(' at ');
-              schoolSuffix = '_' + school.trim().replace(/\s+/g, '_');
+            if (major.includes(' at ')) {
+              const parts = major.split(' at ');
+              majorName = parts[0];
+              school = parts[1] || '';
             }
             
-            const fileName = `${majorFormatted}${schoolSuffix}.json`;
+            // Format file path
+            const formattedMajor = formatMajorForFile(majorName, school);
+            const filePath = `/quiz_refer/Open_ended_quiz_questions/${formattedMajor}.json`;
             
-            // Try to fetch questions for this major
-            const response = await fetch(`/quiz_refer/Open_ended_quiz_questions/${fileName}`);
+            console.log(`Attempting to load questions from: ${filePath}`);
             
-            if (response.ok) {
-              const majorQuestions = await response.json();
-              
-              // For each criteria type, select one random question
-              const selectedQuestions: OpenEndedQuestion[] = [];
-              
-              for (const criteria of criteriaTypes) {
-                const questionsOfType = majorQuestions.filter((q: OpenEndedQuestion) => 
-                  q.criterion === criteria
-                );
-                
-                if (questionsOfType.length > 0) {
-                  // Select random question from this criteria
-                  const randomQuestion = questionsOfType[Math.floor(Math.random() * questionsOfType.length)];
-                  
-                  // Add major information to the question
-                  selectedQuestions.push({
-                    ...randomQuestion,
-                    major: majorStr
-                  });
-                }
-              }
-              
-              if (selectedQuestions.length > 0) {
-                allMajorQuestions.push({
-                  major: majorStr,
-                  questions: selectedQuestions,
-                  score: majorItem.score
-                });
-              }
+            // Fetch the questions
+            const response = await fetch(filePath);
+            
+            if (!response.ok) {
+              console.error(`Failed to load questions for ${major} (${filePath})`);
+              return [];
             }
+            
+            const majorQuestions = await response.json();
+            
+            // Add major and school info to each question
+            return majorQuestions.map((q: OpenEndedQuestion) => ({
+              ...q,
+              major: majorName,
+              school: school
+            }));
           } catch (error) {
-            console.error(`Error loading questions for major ${majorItem.major}:`, error);
+            console.error(`Error loading questions for ${major}:`, error);
+            return [];
           }
-        }
+        };
         
-        // Flatten all questions into a single array
-        const flatQuestions = allMajorQuestions.flatMap(mq => mq.questions);
+        // Load questions for all top majors
+        const allQuestionsPromises = topMajors.map(majorItem => 
+          loadQuestionsForMajor(majorItem.major)
+        );
+        
+        const allMajorQuestions = await Promise.all(allQuestionsPromises);
+        
+        // Flatten and filter questions by criteria
+        const flatQuestions = allMajorQuestions.flat();
+        
+        // Group questions by criteria to ensure balanced selection
+        const questionsByMajorAndCriteria: Record<string, Record<string, OpenEndedQuestion[]>> = {};
+        
+        flatQuestions.forEach(question => {
+          const majorKey = `${question.major}${question.school ? ` at ${question.school}` : ''}`;
+          
+          if (!questionsByMajorAndCriteria[majorKey]) {
+            questionsByMajorAndCriteria[majorKey] = {};
+          }
+          
+          if (!questionsByMajorAndCriteria[majorKey][question.criterion]) {
+            questionsByMajorAndCriteria[majorKey][question.criterion] = [];
+          }
+          
+          questionsByMajorAndCriteria[majorKey][question.criterion].push(question);
+        });
+        
+        // Select a balanced set of questions (1 per criteria per major)
+        const selectedQuestions: OpenEndedQuestion[] = [];
+        
+        Object.entries(questionsByMajorAndCriteria).forEach(([majorKey, criteriaMap]) => {
+          Object.entries(criteriaMap).forEach(([criterion, criterionQuestions]) => {
+            // Randomly select one question per criteria
+            if (criterionQuestions.length > 0) {
+              const randomIndex = Math.floor(Math.random() * criterionQuestions.length);
+              selectedQuestions.push(criterionQuestions[randomIndex]);
+            }
+          });
+        });
+        
+        console.log(`Loaded ${selectedQuestions.length} questions from ${topMajors.length} majors`);
         
         // Add generic questions if we don't have enough
-        if (flatQuestions.length === 0) {
-          flatQuestions.push(
+        if (selectedQuestions.length === 0) {
+          selectedQuestions.push(
             {
               id: 'generic-interests',
               question: 'Describe your interests in your chosen field of study.',
@@ -220,7 +238,7 @@ const OpenEndedQuestionsQuiz = () => {
           );
         }
         
-        setQuestions(flatQuestions);
+        setQuestions(selectedQuestions);
         setProgress(0);
       } catch (error) {
         console.error('Error loading questions:', error);
@@ -389,6 +407,11 @@ const OpenEndedQuestionsQuiz = () => {
               <Badge>{currentQuestion.criterion}</Badge>
               {currentQuestion.major && currentQuestion.major !== 'General' && (
                 <Badge variant="outline">{currentQuestion.major}</Badge>
+              )}
+              {currentQuestion.school && (
+                <Badge variant="outline" className="bg-blue-50 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                  {currentQuestion.school}
+                </Badge>
               )}
             </div>
             <p className="text-md font-medium">{currentQuestion.question}</p>

@@ -3,13 +3,6 @@ import { useState, useEffect } from 'react';
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
-import { OpenEndedQuestion } from '@/components/sections/majors/types';
-
-interface ScoredMajorQuestion {
-  major: string;
-  questions: OpenEndedQuestion[];
-  score: number;
-}
 
 export const useOpenEndedQuiz = () => {
   const navigate = useNavigate();
