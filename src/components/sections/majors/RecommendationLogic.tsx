@@ -11,7 +11,7 @@ import {
 import { MajorRecommendationsType } from './types';
 import { processRiasecData } from '@/components/sections/RiasecChart';
 import { processWorkValuesData } from '@/components/sections/WorkValuesChart';
-import { InfoCircle } from 'lucide-react';
+import { Info } from 'lucide-react';
 
 interface RecommendationLogicProps {
   topRiasec: Array<{ component: string; average: number; score: number }>;
