@@ -13,10 +13,20 @@ export interface Degree {
 
 export interface UniversityData {
   programs: {
-    degree: string;
+    college: string;
     major: string;
-    weight: number;
-    college?: string;
+    degree: string;
+    criteria: {
+      eligibility: Array<{
+        qualificationType: string;
+        description: string;
+      }>;
+      suitability: Array<{
+        criterion: string;
+        description: string;
+        weight: number;
+      }>;
+    };
   }[];
 }
 
@@ -40,15 +50,15 @@ export const loadUniversityData = async (university: string): Promise<University
     switch (normalizedName) {
       case 'nationaluniversityofsingapore':
       case 'nus':
-        filePath = './school-data/Standardized weights/standardized_nus_majors.json';
+        filePath = '/school-data/Standardized weights/standardized_nus_majors.json';
         break;
       case 'nanyangtechnologicaluniversity':
       case 'ntu':
-        filePath = './school-data/Standardized weights/standardized_ntu_majors.json';
+        filePath = '/school-data/Standardized weights/standardized_ntu_majors.json';
         break;
       case 'singaporemanagementuniversity':
       case 'smu':
-        filePath = './school-data/Standardized weights/standardized_smu_majors.json';
+        filePath = '/school-data/Standardized weights/standardized_smu_majors.json';
         break;
       default:
         console.error('Unknown university:', university);
@@ -88,22 +98,26 @@ export const loadUniversityData = async (university: string): Promise<University
 
 // Extract all degrees from university data
 export const getDegrees = (data: UniversityData | null): string[] => {
-  if (!data || !Array.isArray(data.programs)) {
+  if (!data?.programs) {
     console.log('No valid programs array in data:', data);
     return [];
   }
-  
+
+  // Use Set to get unique degrees
   const degrees = new Set<string>();
-  data.programs.forEach((program) => {
+  
+  data.programs.forEach(program => {
     if (program.degree) {
+      console.log(`Found degree: ${program.degree}`);
       degrees.add(program.degree);
-      console.log(`Added degree: ${program.degree}`);
     }
   });
+
+  // Convert Set to sorted array
+  const uniqueDegrees = Array.from(degrees).sort();
+  console.log('Total unique degrees found:', uniqueDegrees.length);
   
-  const result = Array.from(degrees).sort();
-  console.log(`Found ${result.length} unique degrees:`, result);
-  return result;
+  return uniqueDegrees;
 };
 
 // Get all majors for a specific degree
