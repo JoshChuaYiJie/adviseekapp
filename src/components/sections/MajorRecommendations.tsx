@@ -49,7 +49,7 @@ export const MajorRecommendations: React.FC<MajorRecommendationsProps> = ({
       try {
         setLoading(true);
         console.log(`Getting recommendations for RIASEC: ${riasecCode}, Work Values: ${workValueCode}`);
-        // Fix: Pass both arguments to getMatchingMajors function
+        // Fix: Make sure we pass both arguments to the getMatchingMajors function
         const majorRecs = await getMatchingMajors(riasecCode, workValueCode);
         setRecommendations(majorRecs);
       } catch (error) {
