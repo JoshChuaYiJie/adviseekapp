@@ -16,10 +16,12 @@ export const useQuestionHandler = ({ userId }: QuestionHandlerProps) => {
   const [answeredQuestions, setAnsweredQuestions] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
   const [completed, setCompleted] = useState(false);
+  const [selectedMajor, setSelectedMajor] = useState<string | null>(null);
 
   const loadQuestions = async (majorName: string) => {
     try {
       setLoadingQuestions(true);
+      setSelectedMajor(majorName);
       const [major, school] = majorName.split(' at ');
       const formattedMajor = formatMajorForFile(major, school || '');
       
@@ -29,8 +31,56 @@ export const useQuestionHandler = ({ userId }: QuestionHandlerProps) => {
         throw new Error(`Failed to load questions for ${majorName}`);
       }
       
-      const data = await response.json() as OpenEndedQuestion[];
-      setQuestions(data);
+      const allQuestions = await response.json() as OpenEndedQuestion[];
+      console.log(`Loaded ${allQuestions.length} questions for ${majorName}`);
+      
+      // Categorize questions by criterion
+      const interestQuestions = allQuestions.filter(q => q.criterion.toLowerCase().includes('interest'));
+      const skillQuestions = allQuestions.filter(q => q.criterion.toLowerCase().includes('skill'));
+      const experienceQuestions = allQuestions.filter(q => 
+        q.criterion.toLowerCase().includes('experience') || 
+        q.criterion.toLowerCase().includes('background')
+      );
+      
+      console.log(`Found: ${interestQuestions.length} interest questions, ${skillQuestions.length} skill questions, ${experienceQuestions.length} experience questions`);
+      
+      // Select one random question from each category
+      const selectedQuestions: OpenEndedQuestion[] = [];
+      
+      // Helper function to get a random question from a category
+      const getRandomQuestion = (questions: OpenEndedQuestion[]) => {
+        if (questions.length === 0) return null;
+        return questions[Math.floor(Math.random() * questions.length)];
+      };
+      
+      // Get one question from each category
+      const interestQuestion = getRandomQuestion(interestQuestions);
+      const skillQuestion = getRandomQuestion(skillQuestions);
+      const experienceQuestion = getRandomQuestion(experienceQuestions);
+      
+      // Add available questions to the selected questions array
+      if (interestQuestion) selectedQuestions.push({...interestQuestion, category: 'interests'});
+      if (skillQuestion) selectedQuestions.push({...skillQuestion, category: 'skills'});
+      if (experienceQuestion) selectedQuestions.push({...experienceQuestion, category: 'experience'});
+      
+      // If we don't have 3 questions, fill from other categories or general questions
+      if (selectedQuestions.length < 3) {
+        const remainingQuestions = allQuestions.filter(q => 
+          !selectedQuestions.some(sq => sq.id === q.id)
+        );
+        
+        while (selectedQuestions.length < 3 && remainingQuestions.length > 0) {
+          const randomIndex = Math.floor(Math.random() * remainingQuestions.length);
+          const question = remainingQuestions.splice(randomIndex, 1)[0];
+          selectedQuestions.push({
+            ...question, 
+            category: 'general'
+          });
+        }
+      }
+      
+      console.log(`Selected ${selectedQuestions.length} questions for the quiz`);
+      setQuestions(selectedQuestions);
     } catch (error) {
       console.error('Error loading questions:', error);
       toast({
@@ -122,6 +172,7 @@ export const useQuestionHandler = ({ userId }: QuestionHandlerProps) => {
     submitting,
     completed,
     loadQuestions,
-    handleSubmitResponses
+    handleSubmitResponses,
+    selectedMajor
   };
 };

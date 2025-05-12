@@ -1,6 +1,8 @@
 
 import { useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 import { UserProfileDisplay } from './majors/UserProfileDisplay';
 import { MajorsList } from './majors/MajorsList';
 import { MajorQuestionDisplay } from './majors/MajorQuestionDisplay';
@@ -20,6 +22,7 @@ export const MajorRecommendations: React.FC<MajorRecommendationsProps> = ({
   topWorkValues,
   isQuizMode = false
 }) => {
+  const navigate = useNavigate();
   const [recommendations, setRecommendations] = useState<MajorRecommendationsType | null>(null);
   const [selectedMajor, setSelectedMajor] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('all');
@@ -56,6 +59,11 @@ export const MajorRecommendations: React.FC<MajorRecommendationsProps> = ({
     setActiveTab(tabId);
   };
 
+  const handleTakeQuiz = () => {
+    // Redirect to the open-ended quiz page
+    navigate('/open-ended');
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div>
@@ -68,6 +76,20 @@ export const MajorRecommendations: React.FC<MajorRecommendationsProps> = ({
               <Skeleton className="h-4 w-[250px]" />
               <Skeleton className="h-4 w-[220px]" />
               <Skeleton className="h-4 w-[240px]" />
+            </div>
+          ) : isQuizMode ? (
+            <div className="flex flex-col items-center p-6 bg-blue-50 dark:bg-blue-900 rounded-lg">
+              <h4 className="text-lg font-semibold mb-4">Open-ended Question Quiz</h4>
+              <p className="text-center mb-6">
+                Complete this quiz to explore specific questions about your chosen major.
+              </p>
+              <Button 
+                onClick={handleTakeQuiz} 
+                size="lg" 
+                className="px-8 py-2"
+              >
+                Take Quiz
+              </Button>
             </div>
           ) : recommendations && (
             <MajorsList 

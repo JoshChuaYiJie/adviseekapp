@@ -9,13 +9,19 @@ import { WorkValuesChart } from "./WorkValuesChart";
 import { useNavigate } from "react-router-dom";
 import { FileText } from "lucide-react";
 import { MyResume } from "./MyResume";
+import { useTheme } from "@/contexts/ThemeContext";
 
 export const AboutMe = () => {
   const [activeTab, setActiveTab] = useState<"quiz" | "profile" | "resume">("quiz");
   const navigate = useNavigate();
+  const { isCurrentlyDark } = useTheme();
 
   const handleResumeClick = () => {
     navigate("/resumebuilder");
+  };
+
+  const handleOpenEndedQuiz = () => {
+    navigate("/open-ended");
   };
 
   return (
@@ -93,6 +99,14 @@ export const AboutMe = () => {
                   <li>Psychology or Social Sciences</li>
                   <li>Design or Creative Arts</li>
                 </ul>
+              </div>
+              
+              <div className="mt-6 p-4 rounded-lg bg-blue-50 dark:bg-blue-900">
+                <h3 className="text-lg font-semibold mb-2">Open-ended Questions</h3>
+                <p className="mb-4">
+                  Take our specialized quiz to answer questions about specific majors based on your RIASEC and Work Values profile.
+                </p>
+                <Button onClick={handleOpenEndedQuiz}>Take Open-ended Quiz</Button>
               </div>
             </CardContent>
             <CardFooter className="flex justify-end">
