@@ -11,6 +11,7 @@ import { FileText } from "lucide-react";
 import { MyResume } from "./MyResume";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect } from "react";
+import { UserProfileDisplay } from "./majors/UserProfileDisplay";
 
 export const AboutMe = () => {
   const [activeTab, setActiveTab] = useState<"quiz" | "profile" | "resume">("quiz");
@@ -107,23 +108,10 @@ export const AboutMe = () => {
           <RiasecChart />
           <WorkValuesChart />
           
-          {/* New section displaying RIASEC and Work Value codes */}
+          {/* Display RIASEC and Work Value codes */}
           {(riasecCode || workValueCode) && (
             <div className="col-span-1 lg:col-span-2 mb-6">
-              <div className="flex flex-wrap gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                {riasecCode && (
-                  <div className="p-3 rounded-lg bg-white dark:bg-gray-700 shadow">
-                    <p className="text-sm font-medium">Your RIASEC Code:</p>
-                    <p className="text-lg font-bold">{riasecCode}</p>
-                  </div>
-                )}
-                {workValueCode && (
-                  <div className="p-3 rounded-lg bg-white dark:bg-gray-700 shadow">
-                    <p className="text-sm font-medium">Your Work Values Code:</p>
-                    <p className="text-lg font-bold">{workValueCode}</p>
-                  </div>
-                )}
-              </div>
+              <UserProfileDisplay riasecCode={riasecCode} workValueCode={workValueCode} />
             </div>
           )}
           

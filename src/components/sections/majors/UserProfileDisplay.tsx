@@ -5,16 +5,30 @@ import { MajorProfileDisplay } from './types';
 export const UserProfileDisplay = ({ riasecCode, workValueCode }: MajorProfileDisplay) => {
   const { isCurrentlyDark } = useTheme();
 
-  // Add debug logging
-  console.log("UserProfileDisplay - RIASEC code:", riasecCode);
-  console.log("UserProfileDisplay - Work Values code:", workValueCode);
-
   return (
-    <div className="mb-6">
-      <h3 className="text-xl font-medium mb-2">Based on Your Profile</h3>
-      <p className="text-gray-600 dark:text-gray-300">
-        We've used your RIASEC code ({riasecCode || 'N/A'}) and Work Values code ({workValueCode || 'N/A'}) 
-        to generate these major recommendations for you.
+    <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg mb-6 w-full">
+      <h3 className="text-xl font-medium mb-4">Your Profile Summary</h3>
+      
+      <div className="flex flex-wrap gap-4">
+        {riasecCode && (
+          <div className="p-4 rounded-lg bg-white dark:bg-gray-700 shadow">
+            <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Your RIASEC Code:</p>
+            <p className="text-2xl font-bold">{riasecCode || 'N/A'}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Based on your interests & competence</p>
+          </div>
+        )}
+        
+        {workValueCode && (
+          <div className="p-4 rounded-lg bg-white dark:bg-gray-700 shadow">
+            <p className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Your Work Values Code:</p>
+            <p className="text-2xl font-bold">{workValueCode || 'N/A'}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Based on your work preferences</p>
+          </div>
+        )}
+      </div>
+      
+      <p className="text-sm text-gray-600 dark:text-gray-300 mt-4">
+        We've used your assessment results to generate these codes, which help identify your best career matches.
       </p>
     </div>
   );

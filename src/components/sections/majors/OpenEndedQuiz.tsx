@@ -19,6 +19,7 @@ export const OpenEndedQuiz = () => {
   const [submitting, setSubmitting] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [completed, setCompleted] = useState(false);
+  const [showQuestions, setShowQuestions] = useState(false);
 
   // Fetch a random selection of questions across all majors
   useEffect(() => {
@@ -238,6 +239,10 @@ export const OpenEndedQuiz = () => {
     }
   };
 
+  const startQuiz = () => {
+    setShowQuestions(true);
+  };
+
   if (completed) {
     return (
       <div className="p-6 bg-green-50 dark:bg-green-900 rounded-lg text-center">
@@ -247,12 +252,33 @@ export const OpenEndedQuiz = () => {
           variant="outline" 
           onClick={() => {
             setCompleted(false);
+            setShowQuestions(false);
             // Reset responses for retaking
             setResponses({});
           }}
         >
           Retake Quiz
         </Button>
+      </div>
+    );
+  }
+
+  if (!showQuestions) {
+    return (
+      <div className={`p-6 ${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg shadow`}>
+        <div className="flex flex-col items-center justify-center py-12 space-y-6 text-center">
+          <h2 className="text-2xl font-medium">Open-ended Questions</h2>
+          <p className="text-gray-500 dark:text-gray-400 max-w-lg">
+            Answer questions specific to your interests, skills, and experiences related to potential fields of study.
+          </p>
+          <Button 
+            size="lg" 
+            onClick={startQuiz}
+            className="px-8"
+          >
+            Take Quiz
+          </Button>
+        </div>
       </div>
     );
   }
