@@ -6,9 +6,10 @@ import { Progress } from '@/components/ui/progress';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { CheckCircle, ChevronRight } from 'lucide-react';
+import { CheckCircle, ChevronRight, AlertTriangle } from 'lucide-react';
 
 interface Question {
   id: string;
@@ -27,11 +28,16 @@ export default function OpenEndedQuiz() {
   const [responses, setResponses] = useState<Record<string, string>>({});
   const [completed, setCompleted] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
+  const [riasecCompleted, setRiasecCompleted] = useState(false);
+  const [workValuesCompleted, setWorkValuesCompleted] = useState(false);
+  const [loadingError, setLoadingError] = useState<string | null>(null);
   
-  // Load questions from all majors - limited to 3 per major (one for each criterion)
+  // Check if user has completed prerequisites and load questions
   useEffect(() => {
     const loadQuestions = async () => {
       setLoading(true);
+      setLoadingError(null);
+      
       try {
         // Check user authentication
         const { data: { session } } = await supabase.auth.getSession();
@@ -42,9 +48,41 @@ export default function OpenEndedQuiz() {
           toast({
             title: "Not logged in",
             description: "Please log in to take the quiz and save your progress.",
-            variant: "destructive",
+            variant: "default",
           });
           navigate("/");
+          return;
+        }
+        
+        // Check which quiz segments are completed
+        const { data: completions } = await supabase
+          .from('quiz_completion')
+          .select('quiz_type')
+          .eq('user_id', currentUserId);
+        
+        const completedTypes = completions?.map(c => c.quiz_type) || [];
+        console.log("Completed quiz segments:", completedTypes);
+        
+        // Check if RIASEC-related quizzes are complete
+        const isRiasecComplete = 
+          completedTypes.includes('interest-part 1') && 
+          completedTypes.includes('interest-part 2') && 
+          completedTypes.includes('competence');
+        
+        // Check if Work Values quiz is complete
+        const isWorkValuesComplete = completedTypes.includes('work-values');
+        
+        setRiasecCompleted(isRiasecComplete);
+        setWorkValuesCompleted(isWorkValuesComplete);
+        
+        console.log("Quiz prerequisite status:", {
+          riasecCompleted: isRiasecComplete,
+          workValuesCompleted: isWorkValuesComplete
+        });
+        
+        if (!isRiasecComplete || !isWorkValuesComplete) {
+          setLoadingError("You need to complete all prerequisite quizzes first");
+          setLoading(false);
           return;
         }
         
@@ -53,37 +91,24 @@ export default function OpenEndedQuiz() {
           .from('user_responses')
           .select('component, score')
           .eq('user_id', currentUserId)
-          .eq('quiz_type', 'riasec');
+          .in('quiz_type', ['interest-part 1', 'interest-part 2', 'competence'])
+          .not('component', 'is', null);
           
         const { data: workValueData } = await supabase
           .from('user_responses')
           .select('component, score')
           .eq('user_id', currentUserId)
-          .eq('quiz_type', 'work_value');
+          .eq('quiz_type', 'work-values')
+          .not('component', 'is', null);
+        
+        console.log("RIASEC data:", riasecData);
+        console.log("Work Value data:", workValueData);
         
         if (!riasecData?.length || !workValueData?.length) {
-          toast({
-            title: "Missing profile data",
-            description: "Please complete the interest, competence, and work values quizzes first.",
-            variant: "destructive",
-          });
-          navigate("/");
+          setLoadingError("Missing profile data. Although you've completed the quizzes, we couldn't retrieve your profile data. Please try again later.");
+          setLoading(false);
           return;
         }
-        
-        // Get top RIASEC and Work Value components
-        const topRiasec = riasecData
-          .sort((a, b) => b.score - a.score)
-          .slice(0, 3)
-          .map(item => item.component);
-          
-        const topWorkValues = workValueData
-          .sort((a, b) => b.score - a.score)
-          .slice(0, 3)
-          .map(item => item.component);
-        
-        console.log("Top RIASEC:", topRiasec);
-        console.log("Top Work Values:", topWorkValues);
         
         // Load questions for top recommended majors based on RIASEC and Work Values
         // For simplicity, we'll just load 5 majors randomly for now
@@ -141,13 +166,17 @@ export default function OpenEndedQuiz() {
         
         console.log(`Loaded ${allQuestions.length} questions`, allQuestions);
         setQuestions(allQuestions);
+        
+        if (allQuestions.length === 0) {
+          setLoadingError("No questions available. Please try again later.");
+        }
+        
+        // Check if user has already completed this quiz
+        setCompleted(completedTypes.includes('open-ended'));
+        
       } catch (error) {
         console.error('Error loading questions:', error);
-        toast({
-          title: "Error",
-          description: "Failed to load questions. Please try again later.",
-          variant: "destructive",
-        });
+        setLoadingError("Failed to load questions. Please try again later.");
       } finally {
         setLoading(false);
       }
@@ -281,6 +310,48 @@ export default function OpenEndedQuiz() {
           <Skeleton className="h-10 w-28" />
           <Skeleton className="h-10 w-28" />
         </div>
+      </div>
+    );
+  }
+  
+  // Show error if any prerequisites are not completed
+  if (loadingError || !riasecCompleted || !workValuesCompleted) {
+    return (
+      <div className="container max-w-3xl mx-auto py-8 space-y-8">
+        <Card>
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl">Quiz Prerequisites</CardTitle>
+            <CardDescription>Before taking this quiz, you need to complete the following:</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Alert className="bg-amber-50 dark:bg-amber-900 border-amber-200 dark:border-amber-800 mb-4">
+              <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+              <AlertTitle className="text-amber-800 dark:text-amber-200">
+                {loadingError || "Complete Required Quizzes First"}
+              </AlertTitle>
+              <AlertDescription className="text-amber-700 dark:text-amber-300">
+                <div className="space-y-2 mt-2">
+                  {!riasecCompleted && (
+                    <p>• Complete the Interest (Part 1 & 2) and Competence quizzes</p>
+                  )}
+                  {!workValuesCompleted && (
+                    <p>• Complete the Work Values quiz</p>
+                  )}
+                  {riasecCompleted && workValuesCompleted && loadingError && (
+                    <p>• There was an error retrieving your profile data. Please try again later.</p>
+                  )}
+                </div>
+              </AlertDescription>
+            </Alert>
+            
+            <p className="text-center mt-6">
+              These quizzes help us create personalized questions that are relevant to your interests and values.
+            </p>
+          </CardContent>
+          <CardFooter className="flex justify-center">
+            <Button onClick={() => navigate("/")}>Return to Dashboard</Button>
+          </CardFooter>
+        </Card>
       </div>
     );
   }
