@@ -21,7 +21,7 @@ export const useQuestionHandler = ({ userId }: QuestionHandlerProps) => {
     try {
       setLoadingQuestions(true);
       const [major, school] = majorName.split(' at ');
-      const formattedMajor = formatMajorForFile(major, school);
+      const formattedMajor = formatMajorForFile(major, school || '');
       
       // Fetch questions from the JSON file
       const response = await fetch(`/quiz_refer/Open_ended_quiz_questions/${formattedMajor}.json`);

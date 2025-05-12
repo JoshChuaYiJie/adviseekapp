@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -260,23 +259,7 @@ export const QuizSegments = () => {
         return;
       }
       
-      // Provide fallback data if profiles aren't loaded
-      const profiles = {
-        riasec: riasecProfile.length > 0 ? riasecProfile : [
-          { component: 'Social', average: 4, score: 4 },
-          { component: 'Investigative', average: 3.5, score: 3.5 },
-          { component: 'Artistic', average: 3, score: 3 },
-        ],
-        workValues: workValueProfile.length > 0 ? workValueProfile : [
-          { component: 'Achievement', average: 4, score: 4 },
-          { component: 'Recognition', average: 3.5, score: 3.5 },
-          { component: 'Independence', average: 3, score: 3 },
-        ]
-      };
-
-      console.log("Using profiles for open-ended quiz:", profiles);
-      
-      // Show open-ended quiz interface even if profiles aren't fully loaded
+      // Show open-ended quiz interface with actual user data
       setShowOpenEndedQuiz(true);
       setActiveTab("open-ended");
     } else {
