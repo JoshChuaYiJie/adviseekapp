@@ -16,6 +16,26 @@ export const arePermutations = (code1: string | null, code2: string | null): boo
   return sortedCode1 === sortedCode2;
 };
 
+// New helper function to check if short codes match with the beginning of longer codes
+export const matchShortCode = (shortCode: string | null, longCode: string | null): boolean => {
+  // If either code is null or undefined, they don't match
+  if (!shortCode || !longCode) return false;
+  
+  // If short code is longer than long code, they can't match
+  if (shortCode.length > longCode.length) return false;
+  
+  // For 1 or 2 letter codes, check if each character in shortCode exists in the first N characters of longCode
+  // where N is the length of shortCode
+  for (let i = 0; i < shortCode.length; i++) {
+    // Check if the character exists in the first N characters of longCode
+    if (!longCode.substring(0, shortCode.length).includes(shortCode[i])) {
+      return false;
+    }
+  }
+  
+  return true;
+};
+
 // Function to get matching majors based on RIASEC and Work Value codes with flexible matching
 export const getMatchingMajors = async (
   riasecCode: string,
@@ -107,19 +127,29 @@ export const getMatchingMajors = async (
       result.questionFiles = result.permutationMatches.map(sanitizeToFilename);
     }
     
-    // 3. Find RIASEC-only matches (exact or permutation)
-    // Updated with null checks to handle null codes
-    const riasecMatches = mappings.filter(occupation => 
-      occupation.RIASEC_code !== null &&
-      (occupation.RIASEC_code === riasecCode || arePermutations(occupation.RIASEC_code, riasecCode)) &&
+    // 3. Find RIASEC-only matches with enhanced matching for short codes
+    const riasecMatches = mappings.filter(occupation => {
+      // Skip if RIASEC code is null
+      if (occupation.RIASEC_code === null) return false;
+      
+      // For short codes (1-2 letters), use the new matching function
+      const isShortCode = occupation.RIASEC_code.length <= 2;
+      
+      const riasecMatch = isShortCode 
+        ? matchShortCode(occupation.RIASEC_code, riasecCode)
+        : (occupation.RIASEC_code === riasecCode || arePermutations(occupation.RIASEC_code, riasecCode));
+      
       // Exclude matches we've already found
-      !(
+      const alreadyFound = (
         (occupation.RIASEC_code === riasecCode && occupation.work_value_code === workValueCode) ||
-        (arePermutations(occupation.RIASEC_code, riasecCode) && occupation.work_value_code !== null && arePermutations(occupation.work_value_code, workValueCode))
-      )
-    );
+        (occupation.work_value_code !== null && arePermutations(occupation.RIASEC_code, riasecCode) && 
+         arePermutations(occupation.work_value_code, workValueCode))
+      );
+      
+      return riasecMatch && !alreadyFound;
+    });
     
-    console.log(`Found ${riasecMatches.length} RIASEC-only matches`);
+    console.log(`Found ${riasecMatches.length} RIASEC-only matches (including short code matches)`);
     
     // Take up to 3 occupation objects for RIASEC matches
     const limitedRiasecMatches = riasecMatches.slice(0, 3);
@@ -141,15 +171,19 @@ export const getMatchingMajors = async (
     }
     
     // 4. Find Work Value-only matches (exact or permutation)
-    // Updated with null checks to handle null codes
+    // Updated with null checks to handle null codes and also handle short codes
     const workValueMatches = mappings.filter(occupation => 
       occupation.work_value_code !== null &&
       (occupation.work_value_code === workValueCode || arePermutations(occupation.work_value_code, workValueCode)) &&
       // Exclude matches we've already found
       !(
         (occupation.RIASEC_code === riasecCode && occupation.work_value_code === workValueCode) ||
-        (occupation.RIASEC_code !== null && arePermutations(occupation.RIASEC_code, riasecCode) && arePermutations(occupation.work_value_code, workValueCode)) ||
-        (occupation.RIASEC_code !== null && (occupation.RIASEC_code === riasecCode || arePermutations(occupation.RIASEC_code, riasecCode)))
+        (occupation.RIASEC_code !== null && arePermutations(occupation.RIASEC_code, riasecCode) && 
+         arePermutations(occupation.work_value_code, workValueCode)) ||
+        (occupation.RIASEC_code !== null && 
+         ((occupation.RIASEC_code.length <= 2 && matchShortCode(occupation.RIASEC_code, riasecCode)) ||
+          occupation.RIASEC_code === riasecCode || 
+          arePermutations(occupation.RIASEC_code, riasecCode)))
       )
     );
     
