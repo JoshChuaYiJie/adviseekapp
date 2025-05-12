@@ -40,15 +40,15 @@ export const loadUniversityData = async (university: string): Promise<University
     switch (normalizedName) {
       case 'nationaluniversityofsingapore':
       case 'nus':
-        filePath = '/school-data/Standardized weights/standardized_nus_majors.json';
+        filePath = './school-data/Standardized weights/standardized_nus_majors.json';
         break;
       case 'nanyangtechnologicaluniversity':
       case 'ntu':
-        filePath = '/school-data/Standardized weights/standardized_ntu_majors.json';
+        filePath = './school-data/Standardized weights/standardized_ntu_majors.json';
         break;
       case 'singaporemanagementuniversity':
       case 'smu':
-        filePath = '/school-data/Standardized weights/standardized_smu_majors.json';
+        filePath = './school-data/Standardized weights/standardized_smu_majors.json';
         break;
       default:
         console.error('Unknown university:', university);
