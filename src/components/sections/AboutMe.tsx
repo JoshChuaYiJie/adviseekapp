@@ -9,10 +9,60 @@ import { WorkValuesChart } from "./WorkValuesChart";
 import { useNavigate } from "react-router-dom";
 import { FileText } from "lucide-react";
 import { MyResume } from "./MyResume";
+import { supabase } from "@/integrations/supabase/client";
+import { useEffect } from "react";
 
 export const AboutMe = () => {
   const [activeTab, setActiveTab] = useState<"quiz" | "profile" | "resume">("quiz");
   const navigate = useNavigate();
+  const [riasecCode, setRiasecCode] = useState<string>("");
+  const [workValueCode, setWorkValueCode] = useState<string>("");
+
+  // Fetch user's RIASEC and Work Value codes
+  useEffect(() => {
+    const fetchUserProfiles = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) return;
+
+      // Fetch RIASEC profile from user_responses table
+      const { data: riasecData } = await supabase
+        .from('user_responses')
+        .select('component, score')
+        .eq('user_id', session.user.id)
+        .eq('quiz_type', 'riasec');
+      
+      // Fetch Work Value profile from user_responses table
+      const { data: workValueData } = await supabase
+        .from('user_responses')
+        .select('component, score')
+        .eq('user_id', session.user.id)
+        .eq('quiz_type', 'work_value');
+      
+      if (riasecData && riasecData.length > 0) {
+        // Get top 3 RIASEC components sorted by score
+        const topComponents = riasecData
+          .sort((a, b) => b.score - a.score)
+          .slice(0, 3)
+          .map(item => item.component.charAt(0))
+          .join('');
+        
+        setRiasecCode(topComponents);
+      }
+      
+      if (workValueData && workValueData.length > 0) {
+        // Get top 3 Work Value components sorted by score
+        const topComponents = workValueData
+          .sort((a, b) => b.score - a.score)
+          .slice(0, 3)
+          .map(item => item.component.charAt(0))
+          .join('');
+        
+        setWorkValueCode(topComponents);
+      }
+    };
+    
+    fetchUserProfiles();
+  }, []);
 
   const handleResumeClick = () => {
     navigate("/resumebuilder");
@@ -56,6 +106,26 @@ export const AboutMe = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <RiasecChart />
           <WorkValuesChart />
+          
+          {/* New section displaying RIASEC and Work Value codes */}
+          {(riasecCode || workValueCode) && (
+            <div className="col-span-1 lg:col-span-2 mb-6">
+              <div className="flex flex-wrap gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                {riasecCode && (
+                  <div className="p-3 rounded-lg bg-white dark:bg-gray-700 shadow">
+                    <p className="text-sm font-medium">Your RIASEC Code:</p>
+                    <p className="text-lg font-bold">{riasecCode}</p>
+                  </div>
+                )}
+                {workValueCode && (
+                  <div className="p-3 rounded-lg bg-white dark:bg-gray-700 shadow">
+                    <p className="text-sm font-medium">Your Work Values Code:</p>
+                    <p className="text-lg font-bold">{workValueCode}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
           
           <Card className="col-span-1 lg:col-span-2">
             <CardHeader>
