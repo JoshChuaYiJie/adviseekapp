@@ -6,6 +6,32 @@ import { calculateRiasecProfile, getUserId, inspectResponses } from '@/contexts/
 import { Button } from '@/components/ui/button';
 import { Bug } from 'lucide-react';
 
+// Expose this data for other components to use
+export const processRiasecData = async (userId: string) => {
+  try {
+    const profile = await calculateRiasecProfile(userId);
+    console.log('Raw RIASEC Profile:', profile);
+    
+    // Calculate total for percentages
+    const totalValue = Object.values(profile).reduce((sum, val) => sum + val, 0);
+    
+    // Convert to array format for chart data with percentages
+    const chartData = Object.entries(profile)
+      .map(([name, value]) => ({
+        name,
+        value: typeof value === 'number' ? value : 0
+      }))
+      .filter(item => item.value > 0)
+      .sort((a, b) => b.value - a.value); // Sort by value descending
+
+    console.log('Processed RIASEC Chart Data:', chartData);
+    return chartData;
+  } catch (error) {
+    console.error("Error processing RIASEC data:", error);
+    return [];
+  }
+};
+
 export const RiasecChart = () => {
   const [riasecData, setRiasecData] = useState<Array<{name: string, value: number}>>([]);
   const [loading, setLoading] = useState(true);
@@ -32,22 +58,7 @@ export const RiasecChart = () => {
             console.log("RIASEC-related responses:", responses);
           }
           
-          const profile = await calculateRiasecProfile(userId);
-          console.log('Raw RIASEC Profile:', profile);
-          
-          // Calculate total for percentages
-          const totalValue = Object.values(profile).reduce((sum, val) => sum + val, 0);
-          
-          // Convert to array format for chart data with percentages
-          const chartData = Object.entries(profile)
-            .map(([name, value]) => ({
-              name,
-              value: typeof value === 'number' ? value : 0
-            }))
-            .filter(item => item.value > 0)
-            .sort((a, b) => b.value - a.value); // Sort by value descending
-
-          console.log('Processed RIASEC Chart Data:', chartData);
+          const chartData = await processRiasecData(userId);
           setRiasecData(chartData);
           
           if (chartData.length === 0) {

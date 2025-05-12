@@ -6,6 +6,38 @@ import { calculateWorkValuesProfile, getUserId, inspectResponses } from '@/conte
 import { Button } from '@/components/ui/button';
 import { Bug } from 'lucide-react';
 
+// Expose this data for other components to use
+export const processWorkValuesData = async (userId: string) => {
+  try {
+    const profile = await calculateWorkValuesProfile(userId);
+    console.log('Raw Work Values Profile:', profile);
+    
+    // Calculate total for percentages
+    const totalValue = Object.values(profile).reduce((sum, val) => sum + val, 0);
+    
+    // Convert to array format for chart data with display names
+    const chartData = Object.entries(profile)
+      .map(([name, value]) => {
+        // Special case for Recognition
+        let displayName = name === 'Recognition' ? 'Rc' : name.charAt(0);
+        
+        return {
+          name,
+          displayName,
+          value: typeof value === 'number' ? value : 0
+        };
+      })
+      .filter(item => item.value > 0)
+      .sort((a, b) => b.value - a.value); // Sort by value descending
+
+    console.log('Processed Work Values Chart Data:', chartData);
+    return chartData;
+  } catch (error) {
+    console.error("Error processing Work Values data:", error);
+    return [];
+  }
+};
+
 export const WorkValuesChart = () => {
   const [workValuesData, setWorkValuesData] = useState<Array<{name: string, value: number, displayName: string}>>([]);
   const [loading, setLoading] = useState(true);
@@ -32,28 +64,7 @@ export const WorkValuesChart = () => {
             console.log("Work Values-related responses:", responses);
           }
           
-          const profile = await calculateWorkValuesProfile(userId);
-          console.log('Raw Work Values Profile:', profile);
-          
-          // Calculate total for percentages
-          const totalValue = Object.values(profile).reduce((sum, val) => sum + val, 0);
-          
-          // Convert to array format for chart data with display names
-          const chartData = Object.entries(profile)
-            .map(([name, value]) => {
-              // Special case for Recognition
-              let displayName = name === 'Recognition' ? 'Rc' : name.charAt(0);
-              
-              return {
-                name,
-                displayName,
-                value: typeof value === 'number' ? value : 0
-              };
-            })
-            .filter(item => item.value > 0)
-            .sort((a, b) => b.value - a.value); // Sort by value descending
-
-          console.log('Processed Work Values Chart Data:', chartData);
+          const chartData = await processWorkValuesData(userId);
           setWorkValuesData(chartData);
           
           if (chartData.length === 0) {

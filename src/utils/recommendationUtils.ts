@@ -1,3 +1,4 @@
+
 // Function to map RIASEC components to their codes
 import { Module, Recommendation } from "@/integrations/supabase/client";
 import { supabase } from "@/integrations/supabase/client";
@@ -24,6 +25,13 @@ export const mapRiasecToCode = (component: string): string => {
 // Function to map Work Value components to their codes
 export const mapWorkValueToCode = (component: string): string => {
   switch (component) {
+    case 'A': return 'A';
+    case 'R': return 'R';
+    case 'I': return 'I';
+    case 'Rc': return 'Rc';
+    case 'W': return 'W';
+    case 'S': return 'S';
+    case 'Al': return 'Al';
     case 'Achievement': return 'A';
     case 'Relationships': return 'R';
     case 'Independence': return 'I';
