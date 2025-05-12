@@ -10,6 +10,8 @@ export const useOpenEndedQuiz = () => {
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
   const [completed, setCompleted] = useState(false);
+  const [riasecCompleted, setRiasecCompleted] = useState(false);
+  const [workValuesCompleted, setWorkValuesCompleted] = useState(false);
 
   // Fetch user authentication status and quiz completion
   useEffect(() => {
@@ -21,20 +23,35 @@ export const useOpenEndedQuiz = () => {
         const { data: { session } } = await supabase.auth.getSession();
         if (session?.user) {
           setUserId(session.user.id);
-        }
-        
-        // Check if user has already completed this quiz
-        if (session?.user) {
-          const { data: completionData } = await supabase
+          console.log("User authenticated:", session.user.id);
+          
+          // Check quiz completions
+          const { data: completions } = await supabase
             .from('quiz_completion')
-            .select('*')
-            .eq('user_id', session.user.id)
-            .eq('quiz_type', 'open-ended')
-            .single();
+            .select('quiz_type')
+            .eq('user_id', session.user.id);
             
-          if (completionData) {
-            setCompleted(true);
-          }
+          console.log("Quiz completions:", completions);
+          
+          // Check if user has completed the open-ended quiz
+          const openEndedCompleted = completions?.some(c => c.quiz_type === 'open-ended');
+          setCompleted(openEndedCompleted || false);
+          
+          // Check if user has completed RIASEC and Work Values quizzes
+          const riasecSegments = ['interest-part 1', 'interest-part 2', 'competence'];
+          const hasRiasec = riasecSegments.every(segment => 
+            completions?.some(c => c.quiz_type === segment)
+          );
+          setRiasecCompleted(hasRiasec);
+          
+          const hasWorkValues = completions?.some(c => c.quiz_type === 'work-values');
+          setWorkValuesCompleted(hasWorkValues);
+          
+          console.log("Quiz status:", {
+            openEnded: openEndedCompleted,
+            riasec: hasRiasec,
+            workValues: hasWorkValues
+          });
         }
       } catch (error) {
         console.error('Error fetching user status:', error);
@@ -59,9 +76,33 @@ export const useOpenEndedQuiz = () => {
     return true;
   };
 
+  // Check if prerequisites are met
+  const checkPrerequisites = () => {
+    if (!riasecCompleted) {
+      toast({
+        title: "Missing RIASEC Profile",
+        description: "Please complete the Interest and Competence quizzes first.",
+        variant: "destructive"
+      });
+      return false;
+    }
+    
+    if (!workValuesCompleted) {
+      toast({
+        title: "Missing Work Values Profile",
+        description: "Please complete the Work Values quiz first.",
+        variant: "destructive"
+      });
+      return false;
+    }
+    
+    return true;
+  };
+
   // Handle quiz start
   const handleStartQuiz = () => {
     if (!checkAuth()) return;
+    if (!checkPrerequisites()) return;
     navigate('/quiz/open-ended-questions');
   };
 
@@ -70,6 +111,8 @@ export const useOpenEndedQuiz = () => {
     userId,
     completed,
     setCompleted,
+    riasecCompleted,
+    workValuesCompleted,
     handleStartQuiz
   };
 };

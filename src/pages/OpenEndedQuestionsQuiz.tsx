@@ -24,6 +24,7 @@ const OpenEndedQuestionsQuiz = () => {
   const [submitting, setSubmitting] = useState(false);
   const [progress, setProgress] = useState(0);
   const [userId, setUserId] = useState<string | null>(null);
+  const [debugInfo, setDebugInfo] = useState<any>(null);
   
   // Fetch user authentication status
   useEffect(() => {
@@ -40,6 +41,7 @@ const OpenEndedQuestionsQuiz = () => {
       }
       
       setUserId(session.user.id);
+      console.log("User authenticated:", session.user.id);
     };
     
     checkAuth();
@@ -52,25 +54,70 @@ const OpenEndedQuestionsQuiz = () => {
       
       try {
         setLoading(true);
+        console.log("Fetching user profiles for user ID:", userId);
+        
+        // Check if user has completed the required quizzes
+        const { data: completions } = await supabase
+          .from('quiz_completion')
+          .select('quiz_type')
+          .eq('user_id', userId);
+          
+        console.log("Quiz completions:", completions);
+        
+        // Check if required quiz segments are completed
+        const requiredSegments = ['interest-part 1', 'interest-part 2', 'competence', 'work-values'];
+        const completedSegments = completions?.map(c => c.quiz_type) || [];
+        const allCompleted = requiredSegments.every(segment => completedSegments.includes(segment));
+        
+        if (!allCompleted) {
+          console.log("Missing required quiz segments. Completed:", completedSegments);
+          const missing = requiredSegments.filter(segment => !completedSegments.includes(segment));
+          console.log("Missing segments:", missing);
+        }
         
         // Fetch RIASEC profile
-        const { data: riasecData } = await supabase
+        const { data: riasecData, error: riasecError } = await supabase
           .from('user_responses')
           .select('component, score')
           .eq('user_id', userId)
           .eq('quiz_type', 'riasec');
+          
+        if (riasecError) {
+          console.error("Error fetching RIASEC data:", riasecError);
+        }
+        console.log("RIASEC data count:", riasecData?.length || 0);
+        console.log("RIASEC data sample:", riasecData?.slice(0, 3));
         
         // Fetch Work Value profile
-        const { data: workValueData } = await supabase
+        const { data: workValueData, error: workValueError } = await supabase
           .from('user_responses')
           .select('component, score')
           .eq('user_id', userId)
           .eq('quiz_type', 'work_value');
         
-        if (!riasecData?.length || !workValueData?.length) {
+        if (workValueError) {
+          console.error("Error fetching Work Value data:", workValueError);
+        }
+        console.log("Work Value data count:", workValueData?.length || 0);
+        console.log("Work Value data sample:", workValueData?.slice(0, 3));
+        
+        // Check for valid profile data
+        if (!riasecData?.length) {
+          console.error("No RIASEC data found for user");
           toast({
             title: "Missing profile data",
-            description: "Please complete the RIASEC and Work Values quizzes first",
+            description: "Please complete the Interest and Competence quizzes first",
+            variant: "destructive"
+          });
+          navigate('/');
+          return;
+        }
+        
+        if (!workValueData?.length) {
+          console.error("No Work Value data found for user");
+          toast({
+            title: "Missing profile data",
+            description: "Please complete the Work Values quiz first",
             variant: "destructive"
           });
           navigate('/');
@@ -91,10 +138,23 @@ const OpenEndedQuestionsQuiz = () => {
           .join('');
         
         console.log("User profiles:", { topRiasec, topWorkValue });
+        setDebugInfo({ riasecCode: topRiasec, workValueCode: topWorkValue });
         
         // Load the occupation-major mappings
         const mappingsResponse = await fetch('/quiz_refer/occupation_major_mappings.json');
+        
+        if (!mappingsResponse.ok) {
+          console.error("Failed to load occupation-major mappings", mappingsResponse.status);
+          toast({
+            title: "Error",
+            description: "Failed to load major recommendations. Please try again later.",
+            variant: "destructive"
+          });
+          return;
+        }
+        
         const mappings = await mappingsResponse.json();
+        console.log(`Loaded ${mappings.length} occupation-major mappings`);
         
         // Score each major based on RIASEC and work value match
         const scoredMajors = mappings.map((mapping: any) => {
@@ -120,7 +180,9 @@ const OpenEndedQuestionsQuiz = () => {
           
           return {
             major: mapping.majors?.[0] || 'General',
-            score
+            score,
+            riasecCode: mapping.RIASEC_code,
+            workValueCode: mapping.work_value_code
           };
         });
         
@@ -129,7 +191,7 @@ const OpenEndedQuestionsQuiz = () => {
           .sort((a: any, b: any) => b.score - a.score)
           .slice(0, 5);
         
-        console.log("Top majors:", topMajors);
+        console.log("Top majors:", JSON.stringify(topMajors, null, 2));
         
         // Load questions for each top major
         const loadQuestionsForMajor = async (major: string) => {
@@ -154,11 +216,12 @@ const OpenEndedQuestionsQuiz = () => {
             const response = await fetch(filePath);
             
             if (!response.ok) {
-              console.error(`Failed to load questions for ${major} (${filePath})`);
+              console.error(`Failed to load questions for ${major} (${filePath}) - Status: ${response.status}`);
               return [];
             }
             
             const majorQuestions = await response.json();
+            console.log(`Loaded ${majorQuestions.length} questions for ${major}`);
             
             // Add major and school info to each question
             return majorQuestions.map((q: OpenEndedQuestion) => ({
@@ -181,11 +244,17 @@ const OpenEndedQuestionsQuiz = () => {
         
         // Flatten and filter questions by criteria
         const flatQuestions = allMajorQuestions.flat();
+        console.log(`Total questions loaded: ${flatQuestions.length}`);
         
         // Group questions by criteria to ensure balanced selection
         const questionsByMajorAndCriteria: Record<string, Record<string, OpenEndedQuestion[]>> = {};
         
         flatQuestions.forEach(question => {
+          if (!question.criterion) {
+            console.warn("Question missing criterion:", question);
+            return;
+          }
+          
           const majorKey = `${question.major}${question.school ? ` at ${question.school}` : ''}`;
           
           if (!questionsByMajorAndCriteria[majorKey]) {
@@ -199,23 +268,39 @@ const OpenEndedQuestionsQuiz = () => {
           questionsByMajorAndCriteria[majorKey][question.criterion].push(question);
         });
         
-        // Select a balanced set of questions (1 per criteria per major)
+        console.log("Questions by major and criteria:", Object.keys(questionsByMajorAndCriteria));
+        for (const major in questionsByMajorAndCriteria) {
+          console.log(`Major: ${major}, criteria:`, Object.keys(questionsByMajorAndCriteria[major]));
+        }
+        
+        // Select a balanced set of questions (up to 3 per criteria per major)
         const selectedQuestions: OpenEndedQuestion[] = [];
         
         Object.entries(questionsByMajorAndCriteria).forEach(([majorKey, criteriaMap]) => {
+          console.log(`Selecting questions for major: ${majorKey}`);
+          
           Object.entries(criteriaMap).forEach(([criterion, criterionQuestions]) => {
-            // Randomly select one question per criteria
-            if (criterionQuestions.length > 0) {
-              const randomIndex = Math.floor(Math.random() * criterionQuestions.length);
-              selectedQuestions.push(criterionQuestions[randomIndex]);
+            // For each criteria, take up to 3 questions
+            const questionsToSelect = Math.min(criterionQuestions.length, 3);
+            console.log(`Major: ${majorKey}, Criterion: ${criterion}, Available: ${criterionQuestions.length}, Taking: ${questionsToSelect}`);
+            
+            // Randomly select questions
+            for (let i = 0; i < questionsToSelect; i++) {
+              if (criterionQuestions.length > 0) {
+                const randomIndex = Math.floor(Math.random() * criterionQuestions.length);
+                selectedQuestions.push(criterionQuestions[randomIndex]);
+                // Remove the selected question to avoid duplicates
+                criterionQuestions.splice(randomIndex, 1);
+              }
             }
           });
         });
         
-        console.log(`Loaded ${selectedQuestions.length} questions from ${topMajors.length} majors`);
+        console.log(`Selected ${selectedQuestions.length} questions from ${Object.keys(questionsByMajorAndCriteria).length} majors`);
         
         // Add generic questions if we don't have enough
         if (selectedQuestions.length === 0) {
+          console.warn("No specific questions found, adding generic questions");
           selectedQuestions.push(
             {
               id: 'generic-interests',
@@ -390,6 +475,12 @@ const OpenEndedQuestionsQuiz = () => {
         <p className="text-gray-500 dark:text-gray-400">
           Answer questions about your interests, skills, and experiences related to potential majors.
         </p>
+        {debugInfo && (
+          <div className="mt-2 p-2 bg-gray-100 dark:bg-gray-800 rounded-md text-xs">
+            <p>RIASEC Code: {debugInfo.riasecCode || 'Not available'}</p>
+            <p>Work Value Code: {debugInfo.workValueCode || 'Not available'}</p>
+          </div>
+        )}
       </div>
       
       <div className="mb-6">
