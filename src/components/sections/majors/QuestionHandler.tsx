@@ -23,7 +23,7 @@ export const useQuestionHandler = ({ userId }: QuestionHandlerProps) => {
       const formattedMajor = formatMajorForFile(majorName);
       
       // Fetch questions from the JSON file
-      const response = await fetch(`/school-data/Application Questions/${formattedMajor}`);
+      const response = await fetch(`/school-data/Application Questions/${formattedMajor}.json`);
       if (!response.ok) {
         throw new Error(`Failed to load questions for ${majorName}`);
       }
