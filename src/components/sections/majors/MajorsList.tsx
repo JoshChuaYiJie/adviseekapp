@@ -4,7 +4,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { InfoIcon } from 'lucide-react';
-import { MajorRecommendationsType } from '@/utils/recommendationUtils';
+import { MajorRecommendationsType } from './types';
 
 interface MajorsListProps {
   recommendations: MajorRecommendationsType | null;
