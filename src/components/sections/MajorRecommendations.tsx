@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { 
   formCode, 
@@ -36,10 +37,10 @@ export const MajorRecommendations: React.FC<MajorRecommendationsProps> = ({
   const [submitting, setSubmitting] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [completed, setCompleted] = useState(false);
+  const [activeTab, setActiveTab] = useState('all');
   
   // Form RIASEC and Work Value codes based on highest scoring components
-  // Since topRiasec and topWorkValues are already sorted by score in QuizSegments.tsx,
-  // the formCode function will use this order to generate the codes
+  // The topRiasec and topWorkValues arrays are already sorted by score in descending order
   const riasecCode = formCode(topRiasec, mapRiasecToCode);
   const workValueCode = formCode(topWorkValues, mapWorkValueToCode);
 
@@ -107,21 +108,8 @@ export const MajorRecommendations: React.FC<MajorRecommendationsProps> = ({
     await loadQuestions(majorName);
   };
 
-  const getMatchesArray = () => {
-    if (!recommendations) return [];
-    
-    // Prioritize exact matches, then permutation matches, then others
-    if (recommendations.exactMatches.length > 0) {
-      return recommendations.exactMatches;
-    } else if (recommendations.permutationMatches.length > 0) {
-      return recommendations.permutationMatches;
-    } else if (recommendations.riasecMatches.length > 0) {
-      return recommendations.riasecMatches;
-    } else if (recommendations.workValueMatches.length > 0) {
-      return recommendations.workValueMatches;
-    } else {
-      return [];
-    }
+  const handleTabChange = (tabId: string) => {
+    setActiveTab(tabId);
   };
 
   const handleSubmitResponses = async () => {
@@ -145,19 +133,17 @@ export const MajorRecommendations: React.FC<MajorRecommendationsProps> = ({
     
     setSubmitting(true);
     try {
-      // Prepare responses for database
-      const responsesToSubmit: OpenEndedResponse[] = questions.map(question => ({
-        questionId: question.id || '',
-        question: question.question,
+      // Prepare responses for database - convert to the format expected by the user_responses table
+      const responsesToSubmit = questions.map(question => ({
+        user_id: userId,
+        question_id: question.id || '',
         response: answeredQuestions[question.id || ''] || '',
-        criterion: question.criterion,
-        major: selectedMajor,
-        school: question.school
+        quiz_type: 'open-ended'
       }));
       
-      // Upload responses to Supabase
+      // Upload responses to Supabase user_responses table (not open_ended_responses)
       const { error } = await supabase
-        .from('open_ended_responses')
+        .from('user_responses')
         .insert(responsesToSubmit);
         
       if (error) {
@@ -181,7 +167,7 @@ export const MajorRecommendations: React.FC<MajorRecommendationsProps> = ({
         toast({
           title: "Responses Submitted",
           description: "Your responses have been successfully submitted!",
-          variant: "success"
+          variant: "default"
         });
       }
     } catch (error) {
@@ -196,8 +182,6 @@ export const MajorRecommendations: React.FC<MajorRecommendationsProps> = ({
     }
   };
 
-  const matches = getMatchesArray();
-
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div>
@@ -211,10 +195,15 @@ export const MajorRecommendations: React.FC<MajorRecommendationsProps> = ({
               <Skeleton className="h-4 w-[220px]" />
               <Skeleton className="h-4 w-[240px]" />
             </div>
-          ) : matches.length > 0 ? (
-            <MajorsList majors={matches} onMajorSelect={handleMajorSelect} />
-          ) : (
-            <p>No direct matches found. Consider exploring related fields.</p>
+          ) : recommendations && (
+            <MajorsList 
+              recommendations={recommendations} 
+              activeTab={activeTab} 
+              onTabChange={handleTabChange} 
+              onMajorClick={handleMajorSelect}
+              riasecCode={riasecCode}
+              workValueCode={workValueCode}
+            />
           )}
         </div>
       </div>
@@ -242,9 +231,12 @@ export const MajorRecommendations: React.FC<MajorRecommendationsProps> = ({
             ) : questions.length > 0 ? (
               <>
                 <MajorQuestionDisplay
-                  questions={questions}
-                  answeredQuestions={answeredQuestions}
-                  setAnsweredQuestions={setAnsweredQuestions}
+                  selectedMajor={selectedMajor}
+                  openEndedQuestions={questions}
+                  loadingQuestions={false}
+                  onBackToList={() => setSelectedMajor(null)}
+                  isQuizMode={true}
+                  onSubmitResponses={handleSubmitResponses}
                 />
                 <button
                   onClick={handleSubmitResponses}
