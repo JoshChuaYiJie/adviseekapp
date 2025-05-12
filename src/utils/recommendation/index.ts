@@ -5,4 +5,5 @@ export type * from './types';
 export * from './fileUtils';
 export * from './codeMatchingUtils';
 export * from './majorMatching';
+export * from './matchingHelpers';
 export * from './recommendationHelpers';
