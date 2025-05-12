@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { Module } from '@/integrations/supabase/client';
@@ -21,11 +22,13 @@ export const useModules = (university?: string) => {
           const response = await fetch('/data/modules.json');
           if (response.ok) {
             data = await response.json();
+            console.log('Successfully loaded modules data:', data.length, 'entries');
           } else {
             throw new Error('Failed to load modules data');
           }
         } catch (fileError) {
           // If the file doesn't exist, use empty array
+          console.error('Error loading modules data:', fileError);
           console.log('Modules data file not found, using empty dataset');
           data = [];
         }
