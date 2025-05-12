@@ -129,6 +129,7 @@ export const MajorRecommendations = ({ topRiasec, topWorkValues }: MajorRecommen
     try {
       setLoadingQuestions(true);
       const filePath = `/quiz_refer/Open_ended_quiz_questions/${majorFileName}`;
+      console.log('Attempting to load questions from:', filePath);
       const response = await fetch(filePath);
       
       if (!response.ok) {

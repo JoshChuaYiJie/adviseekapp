@@ -1,4 +1,3 @@
-
 // Function to map RIASEC components to their codes
 export const mapRiasecToCode = (component: string): string => {
   switch (component) {
@@ -69,6 +68,17 @@ export interface MajorRecommendations {
   workValueCode: string;
   matchType: 'exact' | 'permutation' | 'riasec' | 'workValue' | 'none';
 }
+
+// Function to convert major names to filenames
+export const sanitizeToFilename = (majorName: string): string => {
+  return majorName
+    .replace(/ at /, '_')
+    .replace(/&/g, 'and')
+    .replace(/[^\w\-]/g, '_')
+    .replace(/_{2,}/g, '_')
+    .replace(/^_|_$/g, '')
+    + '.json';
+};
 
 // Function to get matching majors based on RIASEC and Work Value codes with flexible matching
 export const getMatchingMajors = async (
