@@ -14,6 +14,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { InfoIcon } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 
 // Define props interface
 interface MajorRecommendationsProps {
@@ -22,9 +23,11 @@ interface MajorRecommendationsProps {
 }
 
 interface OpenEndedQuestion {
-  id: string;
+  id?: string;
   question: string;
   criterion: string;
+  major?: string;
+  school?: string;
 }
 
 export const MajorRecommendations = ({ topRiasec, topWorkValues }: MajorRecommendationsProps) => {
@@ -105,90 +108,7 @@ export const MajorRecommendations = ({ topRiasec, topWorkValues }: MajorRecommen
     }
   };
 
-  // Get currently displayed question files
-  const getQuestionFilesToDisplay = () => {
-    if (!recommendations) return [];
-    
-    const displayedMajors = getMajorsToDisplay();
-    return displayedMajors.map(sanitizeToFilename);
-  };
-
-  // Get the count of available majors for each match type
-  const getMatchCounts = () => {
-    if (!recommendations) return { exact: 0, permutation: 0, riasec: 0, workValue: 0 };
-    return {
-      exact: recommendations.exactMatches.length,
-      permutation: recommendations.permutationMatches.length,
-      riasec: recommendations.riasecMatches.length,
-      workValue: recommendations.workValueMatches.length
-    };
-  };
-
-  // Load questions from a specific major file
-  const loadQuestionsForMajor = async (majorFileName: string) => {
-    try {
-      setLoadingQuestions(true);
-      const filePath = `/quiz_refer/Open_ended_quiz_questions/${majorFileName}`;
-      console.log('Attempting to load questions from:', filePath);
-      const response = await fetch(filePath);
-      
-      if (!response.ok) {
-        console.error(`Failed to load questions for ${majorFileName}: ${response.status}`);
-        setOpenEndedQuestions([]);
-        setLoadingQuestions(false);
-        return;
-      }
-      
-      const questionsData = await response.json();
-      
-      // Group questions by criterion
-      const questionsByCriterion: Record<string, OpenEndedQuestion[]> = {};
-      
-      // Organize questions by criterion
-      questionsData.forEach((q: OpenEndedQuestion) => {
-        if (!questionsByCriterion[q.criterion]) {
-          questionsByCriterion[q.criterion] = [];
-        }
-        questionsByCriterion[q.criterion].push(q);
-      });
-      
-      // Select 3 questions from each criterion
-      const selectedQuestions: OpenEndedQuestion[] = [];
-      
-      Object.keys(questionsByCriterion).forEach(criterion => {
-        const criterionQuestions = questionsByCriterion[criterion];
-        // Take up to 3 questions from each criterion
-        const questionsToAdd = criterionQuestions.slice(0, 3);
-        selectedQuestions.push(...questionsToAdd);
-      });
-      
-      setOpenEndedQuestions(selectedQuestions);
-      console.log('Loaded questions for major:', majorFileName, selectedQuestions);
-    } catch (error) {
-      console.error('Error loading questions:', error);
-      setOpenEndedQuestions([]);
-    } finally {
-      setLoadingQuestions(false);
-    }
-  };
-
-  // Handle clicking on a major card
-  const handleMajorClick = (major: string, questionFile: string) => {
-    setSelectedMajor(major);
-    loadQuestionsForMajor(questionFile);
-  };
-
-  // Handle going back to the list of majors
-  const handleBackToList = () => {
-    setSelectedMajor(null);
-    setOpenEndedQuestions([]);
-  };
-
-  const majorCounts = getMatchCounts();
-  const majorsToDisplay = getMajorsToDisplay();
-  const questionFiles = getQuestionFilesToDisplay();
-  const hasNoMatches = !majorsToDisplay.length;
-
+  // Get match description based on active tab
   const getMatchDescription = () => {
     if (!recommendations) return '';
     
@@ -205,6 +125,104 @@ export const MajorRecommendations = ({ topRiasec, topWorkValues }: MajorRecommen
         return 'All available recommendations.';
     }
   };
+
+  // Format major name for display (remove university suffix if present)
+  const formatMajorForDisplay = (major: string): string => {
+    // Remove university suffix if it exists
+    return major.replace(/ at (NUS|NTU|SMU)$/, '');
+  };
+
+  // Extract university name from major (if present)
+  const extractUniversityFromMajor = (major: string): string => {
+    const match = major.match(/ at (NUS|NTU|SMU)$/);
+    return match ? match[1] : '';
+  };
+
+  // Format major name for file search
+  const formatMajorForFile = (major: string, university: string): string => {
+    // Remove university suffix if it exists and replace spaces with underscores
+    const cleanMajor = major.replace(/ at (NUS|NTU|SMU)$/, '').replace(/\s+/g, '_');
+    return `${cleanMajor}_${university}`;
+  };
+
+  // Load questions from a specific major file
+  const loadQuestionsForMajor = async (major: string, university: string) => {
+    try {
+      setLoadingQuestions(true);
+      const formattedMajor = formatMajorForFile(major, university);
+      const filePath = `quiz_refer/Open_ended_quiz_questions/${formattedMajor}.json`;
+      console.log('Attempting to load questions from:', filePath);
+      const response = await fetch(filePath);
+      
+      if (!response.ok) {
+        console.error(`Failed to load questions for ${formattedMajor}: ${response.status}`);
+        setOpenEndedQuestions([]);
+        setLoadingQuestions(false);
+        return;
+      }
+      
+      const questionsData = await response.json();
+      
+      // Group questions by criterion
+      const criterionCategories = ['Interests', 'Skills', 'Experiences'];
+      const questionsByCriterion: Record<string, OpenEndedQuestion[]> = {};
+      
+      // Initialize categories
+      criterionCategories.forEach(criterion => {
+        questionsByCriterion[criterion] = [];
+      });
+      
+      // Organize questions by criterion
+      questionsData.forEach((q: OpenEndedQuestion) => {
+        if (criterionCategories.includes(q.criterion)) {
+          questionsByCriterion[q.criterion].push(q);
+        }
+      });
+      
+      // Select up to 3 questions from each criterion
+      const selectedQuestions: OpenEndedQuestion[] = [];
+      
+      Object.keys(questionsByCriterion).forEach(criterion => {
+        const criterionQuestions = questionsByCriterion[criterion];
+        // Take up to 3 questions from each criterion
+        const questionsToAdd = criterionQuestions.slice(0, 3);
+        selectedQuestions.push(...questionsToAdd);
+      });
+      
+      setOpenEndedQuestions(selectedQuestions);
+      console.log('Loaded questions for major:', formattedMajor, selectedQuestions);
+    } catch (error) {
+      console.error('Error loading questions:', error);
+      setOpenEndedQuestions([]);
+    } finally {
+      setLoadingQuestions(false);
+    }
+  };
+
+  // Handle clicking on a major card
+  const handleMajorClick = (major: string) => {
+    const university = extractUniversityFromMajor(major);
+    const displayMajor = formatMajorForDisplay(major);
+    
+    setSelectedMajor(displayMajor);
+    loadQuestionsForMajor(displayMajor, university || 'NUS'); // Default to NUS if university not found
+  };
+
+  // Handle going back to the list of majors
+  const handleBackToList = () => {
+    setSelectedMajor(null);
+    setOpenEndedQuestions([]);
+  };
+
+  const majorCounts = {
+    exact: recommendations?.exactMatches.length || 0,
+    permutation: recommendations?.permutationMatches.length || 0,
+    riasec: recommendations?.riasecMatches.length || 0,
+    workValue: recommendations?.workValueMatches.length || 0
+  };
+  
+  const majorsToDisplay = getMajorsToDisplay();
+  const hasNoMatches = !majorsToDisplay.length;
 
   if (loading) {
     return (
@@ -312,10 +330,12 @@ export const MajorRecommendations = ({ topRiasec, topWorkValues }: MajorRecommen
               <Card 
                 key={index} 
                 className={`p-4 ${isCurrentlyDark ? 'bg-gray-700' : 'bg-white'} hover:shadow-md transition-shadow cursor-pointer`}
-                onClick={() => handleMajorClick(major, questionFiles[index])}
+                onClick={() => handleMajorClick(major)}
               >
-                <p className="font-medium text-md">{major}</p>
-                <p className="text-xs text-gray-500 mt-1">File: {questionFiles[index]}</p>
+                <p className="font-medium text-md">{formatMajorForDisplay(major)}</p>
+                <p className="text-xs text-gray-500 mt-1">
+                  {extractUniversityFromMajor(major) || "University not specified"}
+                </p>
                 <p className="text-xs text-blue-500 mt-2 hover:underline">
                   View Questions →
                 </p>
@@ -338,6 +358,3 @@ export const MajorRecommendations = ({ topRiasec, topWorkValues }: MajorRecommen
     </div>
   );
 };
-
-// Add missing Button component import
-import { Button } from '@/components/ui/button';
