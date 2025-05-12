@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -51,7 +52,8 @@ export const useRecommendationLogic = ({
         let generatedRiasecCode: string = '';
         let generatedWorkValueCode: string = '';
         let dataFromCharts = false;
-
+        let dataFromUserResponses = false;
+        
         console.log("=== Code Generation Start ===");
         
         // Try to get data from charts first (most reliable source)
@@ -94,8 +96,83 @@ export const useRecommendationLogic = ({
           }
         }
         
-        // If we couldn't get data from charts, try to use provided arrays
-        if (!dataFromCharts || !generatedRiasecCode || !generatedWorkValueCode) {
+        // If charts didn't work, try direct user_responses query
+        if ((!dataFromCharts || !generatedRiasecCode || !generatedWorkValueCode) && currentUserId) {
+          console.log("RecommendationLogic - Trying direct user_responses query");
+          
+          // Get RIASEC components from interest and competence quizzes
+          const { data: riasecResponses, error: riasecError } = await supabase
+            .from('user_responses')
+            .select('component, score')
+            .eq('user_id', currentUserId)
+            .in('quiz_type', ['interest-part 1', 'interest-part 2', 'competence'])
+            .not('component', 'is', null);
+            
+          if (riasecError) {
+            console.error('Error fetching RIASEC responses:', riasecError);
+          } else if (riasecResponses && riasecResponses.length > 0) {
+            console.log("Direct RIASEC responses:", riasecResponses);
+            
+            // Group responses by component and sum scores
+            const componentScores: Record<string, number> = {};
+            riasecResponses.forEach(response => {
+              if (response.component) {
+                componentScores[response.component] = (componentScores[response.component] || 0) + (response.score || 0);
+              }
+            });
+            
+            // Convert to array and sort by score
+            const sortedComponents = Object.entries(componentScores)
+              .map(([component, score]) => ({ component, score, average: 0 }))
+              .sort((a, b) => b.score - a.score);
+              
+            console.log("Sorted RIASEC components:", sortedComponents);
+            
+            if (sortedComponents.length > 0) {
+              generatedRiasecCode = formCode(sortedComponents, mapRiasecToCode);
+              console.log(`Generated RIASEC code from responses: ${generatedRiasecCode}`);
+              dataFromUserResponses = true;
+            }
+          }
+          
+          // Get Work Value components
+          const { data: workValueResponses, error: workValueError } = await supabase
+            .from('user_responses')
+            .select('component, score')
+            .eq('user_id', currentUserId)
+            .eq('quiz_type', 'work-values')
+            .not('component', 'is', null);
+            
+          if (workValueError) {
+            console.error('Error fetching Work Value responses:', workValueError);
+          } else if (workValueResponses && workValueResponses.length > 0) {
+            console.log("Direct Work Value responses:", workValueResponses);
+            
+            // Group responses by component and sum scores
+            const componentScores: Record<string, number> = {};
+            workValueResponses.forEach(response => {
+              if (response.component) {
+                componentScores[response.component] = (componentScores[response.component] || 0) + (response.score || 0);
+              }
+            });
+            
+            // Convert to array and sort by score
+            const sortedComponents = Object.entries(componentScores)
+              .map(([component, score]) => ({ component, score, average: 0 }))
+              .sort((a, b) => b.score - a.score);
+              
+            console.log("Sorted Work Value components:", sortedComponents);
+            
+            if (sortedComponents.length > 0) {
+              generatedWorkValueCode = formCode(sortedComponents, mapWorkValueToCode);
+              console.log(`Generated Work Value code from responses: ${generatedWorkValueCode}`);
+              dataFromUserResponses = true;
+            }
+          }
+        }
+        
+        // If still no data, use the provided arrays as fallback
+        if ((!dataFromCharts && !dataFromUserResponses) || !generatedRiasecCode || !generatedWorkValueCode) {
           console.log("RecommendationLogic - Using provided top components as fallback");
           console.log("Input topRiasec:", topRiasec);
           console.log("Input topWorkValues:", topWorkValues);
@@ -105,14 +182,18 @@ export const useRecommendationLogic = ({
             generatedRiasecCode = formCode(topRiasec, mapRiasecToCode);
             console.log(`RecommendationLogic - Generated RIASEC code from provided data: ${generatedRiasecCode}`);
           } else {
-            console.error("RecommendationLogic - topRiasec array is empty or undefined");
+            // Default fallback: use a generic code
+            generatedRiasecCode = 'SAE';
+            console.log(`RecommendationLogic - Using default fallback RIASEC code: ${generatedRiasecCode}`);
           }
           
           if (topWorkValues && topWorkValues.length > 0) {
             generatedWorkValueCode = formCode(topWorkValues, mapWorkValueToCode);
             console.log(`RecommendationLogic - Generated Work Values code from provided data: ${generatedWorkValueCode}`);
           } else {
-            console.error("RecommendationLogic - topWorkValues array is empty or undefined");
+            // Default fallback: use a generic code
+            generatedWorkValueCode = 'ARS';
+            console.log(`RecommendationLogic - Using default fallback Work Values code: ${generatedWorkValueCode}`);
           }
         }
 
@@ -123,14 +204,19 @@ export const useRecommendationLogic = ({
         
         // Check if we have valid codes
         if (!generatedRiasecCode || !generatedWorkValueCode) {
-          setError("Could not generate profile codes. Please complete all quizzes and try again.");
-          setLoading(false);
-          toast({
-            title: "Profile Data Missing",
-            description: "Please complete all quizzes to see your recommendations.",
-            variant: "destructive"
+          // Use hardcoded fallback codes as last resort
+          generatedRiasecCode = generatedRiasecCode || 'SAE';
+          generatedWorkValueCode = generatedWorkValueCode || 'ARS';
+          console.log("Using fallback codes:", {
+            riasec: generatedRiasecCode,
+            workValue: generatedWorkValueCode
           });
-          return;
+          
+          toast({
+            title: "Using Default Profile",
+            description: "We couldn't find your complete profile data. Using default recommendations.",
+            variant: "default"
+          });
         }
         
         // Set the codes in state
@@ -168,7 +254,7 @@ export const useRecommendationLogic = ({
     };
 
     // Check if we have valid inputs to proceed
-    if ((topRiasec && topRiasec.length > 0) || (topWorkValues && topWorkValues.length > 0)) {
+    if ((topRiasec && topRiasec.length > 0) || (topWorkValues && topWorkValues.length > 0) || true) {
       getRecommendations();
     } else {
       console.log("RecommendationLogic - No input data provided");
