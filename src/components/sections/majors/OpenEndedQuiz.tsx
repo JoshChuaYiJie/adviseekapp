@@ -6,7 +6,7 @@ import { QuizCompleted } from './QuizCompleted';
 import { QuizWelcome } from './QuizWelcome';
 import { QuizInstructions } from './QuizInstructions';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { InfoCircledIcon } from '@radix-ui/react-icons';
+import { AlertTriangle } from 'lucide-react';
 
 export const OpenEndedQuiz = () => {
   const [showQuestions, setShowQuestions] = useState(false);
@@ -48,8 +48,8 @@ export const OpenEndedQuiz = () => {
       <div className="space-y-4">
         <QuizWelcome onStartQuiz={() => setShowQuestions(true)} />
         
-        <Alert variant="warning" className="mt-4 bg-amber-50 dark:bg-amber-950 border-amber-200 dark:border-amber-800">
-          <InfoCircledIcon className="h-4 w-4 mr-2" />
+        <Alert variant="default" className="mt-4 bg-amber-50 dark:bg-amber-950 border-amber-200 dark:border-amber-800">
+          <AlertTriangle className="h-4 w-4 mr-2 text-amber-800 dark:text-amber-200" />
           <AlertTitle className="text-amber-800 dark:text-amber-200">
             Required Quizzes Not Completed
           </AlertTitle>
