@@ -5,6 +5,10 @@ import { MajorProfileDisplay } from './types';
 export const UserProfileDisplay = ({ riasecCode, workValueCode }: MajorProfileDisplay) => {
   const { isCurrentlyDark } = useTheme();
 
+  // Add debug logging
+  console.log("UserProfileDisplay - Displaying RIASEC code:", riasecCode);
+  console.log("UserProfileDisplay - Displaying Work Values code:", workValueCode);
+
   return (
     <div className="mb-6">
       <h3 className="text-xl font-medium mb-2">Based on Your Profile</h3>

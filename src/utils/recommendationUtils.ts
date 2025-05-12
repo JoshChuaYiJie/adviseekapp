@@ -1,4 +1,3 @@
-
 // Function to map RIASEC components to their codes
 import { Module, Recommendation } from "@/integrations/supabase/client";
 import { supabase } from "@/integrations/supabase/client";
@@ -36,15 +35,25 @@ export const mapWorkValueToCode = (component: string): string => {
   }
 };
 
-// Function to form a code from component list - now respects the order provided
+// Function to form a code from component list - respects the order provided (already sorted by score)
 export const formCode = (components: Array<{ component: string; average: number; score: number }>, 
                           mapper: (component: string) => string): string => {
-  // The components array is already sorted by score in descending order from QuizSegments.tsx
-  // So we just need to take the first 3 and map them to their codes
-  return components
+  // We use the components array which is already sorted by score in descending order
+  // Important: Log the input components to debug the order
+  console.log("formCode input components:", components);
+  
+  // Take top 3 and map them to their codes
+  const code = components
     .slice(0, 3) // Take top 3 highest scoring components
-    .map(item => mapper(item.component))
+    .map(item => {
+      const mappedCode = mapper(item.component);
+      console.log(`Mapping component ${item.component} (score: ${item.score}) to code: ${mappedCode}`);
+      return mappedCode;
+    })
     .join('');
+    
+  console.log("Generated code:", code);
+  return code;
 };
 
 // Interface for occupation major mappings

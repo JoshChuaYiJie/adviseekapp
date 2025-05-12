@@ -25,6 +25,10 @@ export const useRecommendationLogic = ({
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
 
+  // Log the input arrays for debugging
+  console.log("RecommendationLogic - Input topRiasec:", topRiasec);
+  console.log("RecommendationLogic - Input topWorkValues:", topWorkValues);
+
   // Form RIASEC and Work Value codes based on highest scoring components
   // Ensure we're using the array values in the order they're provided (already sorted by score)
   const riasecCode = formCode(topRiasec, mapRiasecToCode);

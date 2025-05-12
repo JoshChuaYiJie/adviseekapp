@@ -64,7 +64,7 @@ export const QuizSegments = () => {
         }
       }
       
-      // Fetch Work Value profile from user_responses table
+      // Fetch Work Value profile from user_responses table with added detailed logging
       const { data: workValueData, error: workValueError } = await supabase
         .from('user_responses')
         .select('component, score')
@@ -91,6 +91,9 @@ export const QuizSegments = () => {
         }
       }
       
+      // For debugging: Log both profiles after loading
+      console.log("Final RIASEC profile state:", riasecProfile);
+      console.log("Final Work Value profile state:", workValueProfile);
     } catch (error) {
       console.error('Error loading user profiles:', error);
     }
