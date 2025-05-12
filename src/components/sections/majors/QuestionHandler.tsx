@@ -143,9 +143,9 @@ export const useQuestionHandler = ({ userId }: QuestionHandlerProps) => {
       const experienceQuestion = getRandomQuestion(experienceQuestions);
       
       // Add available questions to the selected questions array
-      if (interestQuestion) selectedQuestions.push({...interestQuestion, category: 'interests'});
-      if (skillQuestion) selectedQuestions.push({...skillQuestion, category: 'skills'});
-      if (experienceQuestion) selectedQuestions.push({...experienceQuestion, category: 'experience'});
+      if (interestQuestion) selectedQuestions.push({...interestQuestion, category: 'interests', majorName: majorName});
+      if (skillQuestion) selectedQuestions.push({...skillQuestion, category: 'skills', majorName: majorName});
+      if (experienceQuestion) selectedQuestions.push({...experienceQuestion, category: 'experience', majorName: majorName});
       
       // If we don't have 3 questions, fill from other categories or general questions
       if (selectedQuestions.length < 3) {
@@ -158,7 +158,8 @@ export const useQuestionHandler = ({ userId }: QuestionHandlerProps) => {
           const question = remainingQuestions.splice(randomIndex, 1)[0];
           selectedQuestions.push({
             ...question, 
-            category: 'general'
+            category: 'general',
+            majorName: majorName
           });
         }
       }

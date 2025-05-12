@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -11,6 +10,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { getMatchingMajors, mapRiasecToCode, mapWorkValueToCode, formCode } from '@/utils/recommendation';
+import { formatMajorForFile } from '@/components/sections/majors/MajorUtils';
 
 interface QuizQuestion {
   major: string;
@@ -350,6 +351,129 @@ const OpenEndedQuiz = () => {
         { component: "Independence", score: 3, average: 3 }
       ];
       
+      // Generate codes for recommendation
+      const generatedRiasecCode = formCode(useTopRiasec, mapRiasecToCode) || "RSI";
+      const generatedWorkValueCode = formCode(useTopWorkValues, mapWorkValueToCode) || "ARS";
+      
+      console.log("Generated codes for quiz:", {
+        riasec: generatedRiasecCode,
+        workValues: generatedWorkValueCode
+      });
+      
+      // Get recommended majors based on profile codes
+      const majorRecommendations = await getMatchingMajors(generatedRiasecCode, generatedWorkValueCode);
+      
+      // Combine all recommended majors in priority order
+      const recommendedMajors = [
+        ...majorRecommendations.exactMatches,
+        ...majorRecommendations.riasecMatches,
+        ...majorRecommendations.workValueMatches
+      ];
+      
+      // Remove duplicates
+      const uniqueRecommendedMajors = [...new Set(recommendedMajors)];
+      
+      console.log("Recommended majors for quiz questions:", uniqueRecommendedMajors);
+      
+      // If we have recommended majors, use them for questions
+      if (uniqueRecommendedMajors.length > 0) {
+        // Select up to 5 majors
+        const selectedMajors = uniqueRecommendedMajors.slice(0, 5);
+        
+        console.log("Selected majors for quiz:", selectedMajors);
+        
+        // For each selected major, load and select questions
+        const quizQuestions: QuizQuestion[] = [];
+        
+        for (const major of selectedMajors) {
+          try {
+            // Format major for file lookup
+            const [majorName, school] = major.split(' at ');
+            const formattedMajor = formatMajorForFile(majorName, school || '');
+            
+            // Fetch questions from the JSON file
+            const response = await fetch(`/quiz_refer/Open_ended_quiz_questions/${formattedMajor}.json`);
+            if (!response.ok) {
+              console.error(`Failed to load questions for ${major}`);
+              continue;
+            }
+            
+            const allQuestions = await response.json();
+            console.log(`Found ${allQuestions.length} questions for ${major}`);
+            
+            // Categorize questions by criterion
+            const interestQuestions = allQuestions.filter(q => 
+              q.criterion.toLowerCase().includes('interest')
+            );
+            const skillQuestions = allQuestions.filter(q => 
+              q.criterion.toLowerCase().includes('skill')
+            );
+            const experienceQuestions = allQuestions.filter(q => 
+              q.criterion.toLowerCase().includes('experience') || 
+              q.criterion.toLowerCase().includes('background')
+            );
+            
+            console.log(`Questions by category for ${major}:`, {
+              interests: interestQuestions.length,
+              skills: skillQuestions.length,
+              experience: experienceQuestions.length
+            });
+            
+            // Select one random question from each category if available
+            const categories = [
+              { name: 'interests', questions: interestQuestions },
+              { name: 'skills', questions: skillQuestions },
+              { name: 'experience', questions: experienceQuestions }
+            ];
+            
+            for (const category of categories) {
+              if (category.questions.length > 0) {
+                const randomIndex = Math.floor(Math.random() * category.questions.length);
+                const question = category.questions[randomIndex];
+                
+                quizQuestions.push({
+                  major,
+                  question: {
+                    ...question,
+                    category: category.name
+                  }
+                });
+              }
+            }
+          } catch (error) {
+            console.error(`Error loading questions for ${major}:`, error);
+            // Continue to next major
+          }
+        }
+        
+        // Shuffle the questions for variety
+        const shuffledQuestions = quizQuestions.sort(() => Math.random() - 0.5);
+        console.log(`Final quiz generated with ${shuffledQuestions.length} questions from recommended majors`);
+        setQuestions(shuffledQuestions);
+        
+        if (shuffledQuestions.length === 0) {
+          console.log("No questions found for recommended majors, falling back to random selection");
+          // Fall back to existing random major selection
+          loadRandomMajorQuestions();
+        }
+      } else {
+        console.log("No recommended majors found, falling back to random selection");
+        // Fall back to existing random major selection
+        loadRandomMajorQuestions();
+      }
+      
+    } catch (error) {
+      console.error('Error preparing quiz questions based on profile:', error);
+      // Fall back to existing random major selection
+      loadRandomMajorQuestions();
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  // Fallback function to load questions from random majors
+  const loadRandomMajorQuestions = async () => {
+    try {
       // Fetch all majors from the standardized weights files
       const [ntuMajors, nusMajors, smuMajors] = await Promise.all([
         fetch('/school-data/Standardized weights/standardized_ntu_majors.json').then(r => r.json()),
@@ -376,7 +500,7 @@ const OpenEndedQuiz = () => {
         allPrograms.splice(randomIndex, 1);
       }
       
-      console.log("Selected majors for quiz:", selectedMajors);
+      console.log("Selected random majors for quiz:", selectedMajors);
       
       // For each selected major, load and select questions
       const quizQuestions: QuizQuestion[] = [];
@@ -470,10 +594,8 @@ const OpenEndedQuiz = () => {
         navigate('/');
       }
       
-      setLoading(false);
-      
     } catch (error) {
-      console.error('Error preparing quiz questions:', error);
+      console.error('Error loading random major questions:', error);
       toast({
         title: "Error",
         description: "Failed to prepare quiz questions. Please try again later.",
