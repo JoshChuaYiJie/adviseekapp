@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { Module } from '@/integrations/supabase/client';
 import { QuizContextType } from './types';
@@ -57,16 +56,8 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
     isSubmitting, 
     handleResponse, 
     submitResponses: submitUserResponses,
-    loadResponses,
-    debugInfo: responsesDebugInfo
+    loadResponses
   } = useResponses();
-  
-  // Sync debugInfo from useResponses
-  useEffect(() => {
-    if (responsesDebugInfo) {
-      setDebugInfo(responsesDebugInfo);
-    }
-  }, [responsesDebugInfo]);
   
   // Combine errors
   useEffect(() => {
@@ -74,67 +65,59 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
     setError(combinedError);
   }, [modulesError]);
   
-  // Authentication and user data loading
+  // Check for authenticated user and load their data
   useEffect(() => {
-    const loadUserData = async () => {
+    const checkAuth = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         const currentUserId = session?.user?.id || null;
         setUserId(currentUserId);
         
         if (currentUserId) {
-          await loadUserCompletedQuizzes(currentUserId);
+          // Load user's responses
           await loadResponses();
+          
+          // Load completed quizzes
+          const { data: completions, error: completionsError } = await supabase
+            .from('quiz_completion')
+            .select('quiz_type')
+            .eq('user_id', currentUserId);
+            
+          if (completionsError) {
+            console.error('Error loading quiz completions:', completionsError);
+          } else if (completions) {
+            const completed = completions.map(c => c.quiz_type);
+            setCompletedQuizzes(completed);
+            
+            // Update localStorage for compatibility
+            localStorage.setItem('completed_quiz_segments', JSON.stringify(completed));
+          }
         }
       } catch (err) {
-        console.error('Error loading user data:', err);
+        console.error('Error checking authentication:', err);
       }
     };
     
-    loadUserData();
+    checkAuth();
     
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
-        const newUserId = session?.user?.id || null;
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      const newUserId = session?.user?.id || null;
+      
+      if (newUserId !== userId) {
+        setUserId(newUserId);
         
-        if (newUserId !== userId) {
-          setUserId(newUserId);
-          
-          if (newUserId) {
-            await loadUserCompletedQuizzes(newUserId);
-            await loadResponses();
-          }
+        if (newUserId) {
+          // If user just logged in, load their data
+          loadResponses();
         }
       }
-    );
+    });
     
     return () => {
       subscription.unsubscribe();
     };
   }, []);
-  
-  // Load completed quizzes for a user
-  const loadUserCompletedQuizzes = async (userId: string) => {
-    try {
-      const { data: completions, error: completionsError } = await supabase
-        .from('quiz_completion')
-        .select('quiz_type')
-        .eq('user_id', userId);
-        
-      if (completionsError) {
-        console.error('Error loading quiz completions:', completionsError);
-      } else if (completions) {
-        const completed = completions.map(c => c.quiz_type);
-        setCompletedQuizzes(completed);
-        
-        // Update localStorage for compatibility
-        localStorage.setItem('completed_quiz_segments', JSON.stringify(completed));
-      }
-    } catch (error) {
-      console.error('Error loading completed quizzes:', error);
-    }
-  };
   
   // Submit responses
   const submitResponses = async (quizType?: string) => {
@@ -209,7 +192,7 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
   const contextValue = useMemo<QuizContextType>(() => ({
     currentStep,
     responses,
-    questions,
+    questions, // This is now correctly typed as McqQuestion[]
     isLoading,
     isSubmitting,
     error: error || null,
@@ -218,7 +201,7 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
     modules,
     finalSelections,
     completedQuizzes,
-    debugInfo,
+    debugInfo, // Added debugInfo to the context value
     setCurrentStep,
     handleResponse,
     submitResponses,
@@ -238,7 +221,7 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
     modules,
     finalSelections,
     completedQuizzes,
-    debugInfo
+    debugInfo // Added to dependency array
   ]);
   
   return (

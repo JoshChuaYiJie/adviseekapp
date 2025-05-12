@@ -17,7 +17,7 @@ export const calculateRiasecProfile = async (userId: string) => {
       .select('question_id, response, score, component')
       .eq('user_id', userId)
       .in('quiz_type', ['interest-part 1', 'interest-part 2', 'competence'])
-      .not('component', 'is', 'null' as any);
+      .not('component', 'is', null); // Fixed syntax for checking non-null values
     
     if (error) {
       console.error('Error fetching RIASEC responses:', error);
@@ -32,16 +32,44 @@ export const calculateRiasecProfile = async (userId: string) => {
     console.log(`Found ${responses.length} RIASEC-related responses`);
     
     // Group responses by component
-    const componentScores = calculateComponentScores(responses);
+    const componentGroups: Record<string, { totalScore: number, count: number }> = {};
+    
+    responses.forEach(response => {
+      if (response.component && response.score) {
+        // Extract the first letter of the component and capitalize it
+        const componentKey = response.component.charAt(0).toUpperCase();
+        
+        if (!componentGroups[componentKey]) {
+          componentGroups[componentKey] = { totalScore: 0, count: 0 };
+        }
+        
+        componentGroups[componentKey].totalScore += response.score;
+        componentGroups[componentKey].count++;
+        
+        console.info(`Added score ${response.score} to category ${componentKey}, from question ${response.question_id}`);
+      }
+    });
+    
+    // Calculate average scores for each component
+    const averageScores: Record<string, number> = {};
+    let totalAverageScore = 0;
+    
+    Object.entries(componentGroups).forEach(([component, { totalScore, count }]) => {
+      if (count > 0) {
+        const averageScore = Math.round(totalScore / count);
+        averageScores[component] = averageScore;
+        totalAverageScore += averageScore;
+      }
+    });
     
     // Ensure we have entries for all RIASEC components even if they're zero
     const riasecProfile: Record<string, number> = {
-      R: componentScores.R || 0,
-      I: componentScores.I || 0,
-      A: componentScores.A || 0,
-      S: componentScores.S || 0,
-      E: componentScores.E || 0,
-      C: componentScores.C || 0
+      R: averageScores.R || 0,
+      I: averageScores.I || 0,
+      A: averageScores.A || 0,
+      S: averageScores.S || 0,
+      E: averageScores.E || 0,
+      C: averageScores.C || 0
     };
     
     console.log('RIASEC scores calculated:', riasecProfile);
@@ -63,7 +91,7 @@ export const calculateWorkValuesProfile = async (userId: string) => {
       .select('question_id, response, score, component')
       .eq('user_id', userId)
       .eq('quiz_type', 'work-values')
-      .not('component', 'is', 'null' as any);
+      .not('component', 'is', null); // Fixed syntax for checking non-null values
     
     if (error) {
       console.error('Error fetching Work Values responses:', error);
@@ -85,16 +113,38 @@ export const calculateWorkValuesProfile = async (userId: string) => {
     console.log(`Total Work Values responses found: ${responses.length}`);
     
     // Group responses by component
-    const componentScores = calculateComponentScores(responses);
+    const componentGroups: Record<string, { totalScore: number, count: number }> = {};
+    
+    responses.forEach(response => {
+      if (response.component && response.score) {
+        const componentKey = response.component;
+        
+        if (!componentGroups[componentKey]) {
+          componentGroups[componentKey] = { totalScore: 0, count: 0 };
+        }
+        
+        componentGroups[componentKey].totalScore += response.score;
+        componentGroups[componentKey].count++;
+      }
+    });
+    
+    // Calculate average scores for each component
+    const averageScores: Record<string, number> = {};
+    
+    Object.entries(componentGroups).forEach(([component, { totalScore, count }]) => {
+      if (count > 0) {
+        averageScores[component] = Math.round(totalScore / count);
+      }
+    });
     
     // Ensure we have entries for all work values components even if they're zero
     const workValuesProfile = {
-      Achievement: componentScores.Achievement || 0,
-      Independence: componentScores.Independence || 0,
-      Recognition: componentScores.Recognition || 0,
-      Relationships: componentScores.Relationships || 0,
-      Support: componentScores.Support || 0,
-      WorkingConditions: componentScores['Working Conditions'] || componentScores.WorkingConditions || 0
+      Achievement: averageScores.Achievement || 0,
+      Independence: averageScores.Independence || 0,
+      Recognition: averageScores.Recognition || 0,
+      Relationships: averageScores.Relationships || 0,
+      Support: averageScores.Support || 0,
+      WorkingConditions: averageScores['Working Conditions'] || averageScores.WorkingConditions || 0
     };
     
     console.log('Work Values scores calculated:', workValuesProfile);
@@ -110,43 +160,6 @@ export const calculateWorkValuesProfile = async (userId: string) => {
       WorkingConditions: 0
     };
   }
-};
-
-// Helper function to calculate component scores from responses
-const calculateComponentScores = (responses: any[]) => {
-  // Group responses by component
-  const componentGroups: Record<string, { totalScore: number, count: number }> = {};
-  
-  responses.forEach(response => {
-    if (response.component && response.score !== undefined && response.score !== null) {
-      // For RIASEC, use the first letter of the component capitalized
-      const componentKey = 
-        ['Realistic', 'Investigative', 'Artistic', 'Social', 'Enterprising', 'Conventional'].includes(response.component)
-          ? response.component.charAt(0).toUpperCase()
-          : response.component;
-      
-      if (!componentGroups[componentKey]) {
-        componentGroups[componentKey] = { totalScore: 0, count: 0 };
-      }
-      
-      componentGroups[componentKey].totalScore += response.score;
-      componentGroups[componentKey].count++;
-      
-      console.info(`Added score ${response.score} to category ${componentKey}, from question ${response.question_id}`);
-    }
-  });
-  
-  // Calculate average scores for each component
-  const averageScores: Record<string, number> = {};
-  
-  Object.entries(componentGroups).forEach(([component, { totalScore, count }]) => {
-    if (count > 0) {
-      // Keep raw average without rounding
-      averageScores[component] = totalScore / count;
-    }
-  });
-  
-  return averageScores;
 };
 
 // For debugging purposes - inspect user responses

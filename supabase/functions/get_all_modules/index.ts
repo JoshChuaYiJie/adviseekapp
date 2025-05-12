@@ -21,7 +21,7 @@ serve(async (req) => {
       }
     );
 
-    // Use the same data structure as our static JSON file
+    // Mock implementation since we don't have direct access to modules table
     const modules = [
       {
         id: 1,
@@ -40,33 +40,6 @@ serve(async (req) => {
         aus_cus: 4,
         semester: "1,2",
         description: "This module continues the introduction to programming methodology."
-      },
-      {
-        id: 3,
-        university: "NUS",
-        course_code: "CS2040S",
-        title: "Data Structures and Algorithms",
-        aus_cus: 4,
-        semester: "1,2",
-        description: "This module teaches students about fundamental data structures and algorithms for efficient computation."
-      },
-      {
-        id: 4,
-        university: "NTU",
-        course_code: "CZ1103",
-        title: "Introduction to Computational Thinking",
-        aus_cus: 3,
-        semester: "1",
-        description: "This module teaches problem-solving through computational thinking and programming basics."
-      },
-      {
-        id: 5,
-        university: "SMU",
-        course_code: "IS111",
-        title: "Introduction to Programming",
-        aus_cus: 1,
-        semester: "1",
-        description: "This module introduces fundamental programming concepts and problem-solving techniques."
       }
     ];
 

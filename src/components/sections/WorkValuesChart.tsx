@@ -127,9 +127,6 @@ export const WorkValuesChart = () => {
     );
   }
 
-  // Calculate the total values for percentage display
-  const totalValues = workValuesData.reduce((sum, item) => sum + item.value, 0);
-
   return (
     <Card className={`w-full transition-all duration-500 ${showAnimation ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
       <CardHeader>
@@ -156,11 +153,10 @@ export const WorkValuesChart = () => {
                 ))}
               </Pie>
               <Tooltip 
-                formatter={(value, name, props) => {
-                  // Calculate percentage
-                  const percent = ((value as number) / totalValues * 100).toFixed(1);
-                  return [`${percent}%`, props?.payload?.name || name];
-                }}
+                formatter={(value, name, props) => [
+                  `Score: ${value}`, 
+                  props.payload.name
+                ]} 
               />
               <Legend formatter={(value, entry) => {
                 // Type safety check to access the payload property
