@@ -6,7 +6,8 @@ import {
   getMatchingMajors, 
   mapRiasecToCode, 
   mapWorkValueToCode,
-  MajorRecommendations as MajorRecommendationsType
+  MajorRecommendations as MajorRecommendationsType,
+  sanitizeToFilename
 } from '@/utils/recommendationUtils';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -42,6 +43,8 @@ export const MajorRecommendations = ({ topRiasec, topWorkValues }: MajorRecommen
       // Get matching majors with the new flexible matching logic
       const majorsRecommendations = await getMatchingMajors(rCode, wvCode);
       setRecommendations(majorsRecommendations);
+      
+      console.log('Generated question files:', majorsRecommendations.questionFiles);
       
       // Set the active tab based on matching results
       if (majorsRecommendations.exactMatches.length > 0) {
@@ -93,6 +96,14 @@ export const MajorRecommendations = ({ topRiasec, topWorkValues }: MajorRecommen
     }
   };
 
+  // Get currently displayed question files
+  const getQuestionFilesToDisplay = () => {
+    if (!recommendations) return [];
+    
+    const displayedMajors = getMajorsToDisplay();
+    return displayedMajors.map(sanitizeToFilename);
+  };
+
   // Get the count of available majors for each match type
   const getMatchCounts = () => {
     if (!recommendations) return { exact: 0, permutation: 0, riasec: 0, workValue: 0 };
@@ -106,6 +117,7 @@ export const MajorRecommendations = ({ topRiasec, topWorkValues }: MajorRecommen
 
   const majorCounts = getMatchCounts();
   const majorsToDisplay = getMajorsToDisplay();
+  const questionFiles = getQuestionFilesToDisplay();
   const hasNoMatches = !majorsToDisplay.length;
 
   const getMatchDescription = () => {
@@ -189,6 +201,7 @@ export const MajorRecommendations = ({ topRiasec, topWorkValues }: MajorRecommen
             {majorsToDisplay.map((major, index) => (
               <Card key={index} className={`p-4 ${isCurrentlyDark ? 'bg-gray-700' : 'bg-white'} hover:shadow-md transition-shadow`}>
                 <p className="font-medium text-md">{major}</p>
+                <p className="text-xs text-gray-500 mt-1">File: {questionFiles[index]}</p>
               </Card>
             ))}
           </div>

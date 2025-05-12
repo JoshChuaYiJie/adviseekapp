@@ -69,10 +69,44 @@ export interface MajorRecommendations {
   permutationMatches: string[];
   riasecMatches: string[];
   workValueMatches: string[];
+  questionFiles: string[]; // New field for sanitized filenames
   riasecCode: string;
   workValueCode: string;
   matchType: 'exact' | 'permutation' | 'riasec' | 'workValue' | 'none';
 }
+
+// Function to sanitize major names to filenames following Python's conventions
+export const sanitizeToFilename = (majorName: string): string => {
+  // Extract university if it's in the format "Major at University"
+  let university = '';
+  const atUniversityMatch = majorName.match(/(.*?)\s+at\s+(\w+)$/i);
+  
+  if (atUniversityMatch) {
+    majorName = atUniversityMatch[1];
+    university = atUniversityMatch[2];
+  } else {
+    // Try to extract known university abbreviations from the end
+    const uniMatches = majorName.match(/(.*?)\s+(NUS|NTU|SMU)$/);
+    if (uniMatches) {
+      majorName = uniMatches[1];
+      university = uniMatches[2];
+    }
+  }
+  
+  // Replace special characters and standardize
+  let sanitized = majorName
+    .replace(/&/g, 'and')                    // Replace & with 'and'
+    .replace(/[^\w\s]/g, '')                // Remove special characters
+    .trim()                                 // Remove leading/trailing spaces
+    .replace(/\s+/g, '_');                  // Replace spaces with underscores
+  
+  // Add the university if we have one
+  if (university) {
+    sanitized += `_${university}`;
+  }
+  
+  return `${sanitized}.json`;
+};
 
 // Function to get matching majors based on RIASEC and Work Value codes with flexible matching
 export const getMatchingMajors = async (
@@ -94,6 +128,7 @@ export const getMatchingMajors = async (
       permutationMatches: [],
       riasecMatches: [],
       workValueMatches: [],
+      questionFiles: [], // Initialize empty array for question files
       riasecCode,
       workValueCode,
       matchType: 'none'
@@ -112,9 +147,10 @@ export const getMatchingMajors = async (
     // Remove duplicates
     result.exactMatches = [...new Set(result.exactMatches)];
     
-    // If we have exact matches, return them
+    // If we have exact matches, set match type and generate question files
     if (result.exactMatches.length > 0) {
       result.matchType = 'exact';
+      result.questionFiles = result.exactMatches.map(sanitizeToFilename);
       return result;
     }
     
@@ -131,9 +167,10 @@ export const getMatchingMajors = async (
     // Remove duplicates
     result.permutationMatches = [...new Set(result.permutationMatches)];
     
-    // If we have permutation matches, return them
+    // If we have permutation matches, set match type and generate question files
     if (result.permutationMatches.length > 0) {
       result.matchType = 'permutation';
+      result.questionFiles = result.permutationMatches.map(sanitizeToFilename);
       return result;
     }
     
@@ -150,9 +187,10 @@ export const getMatchingMajors = async (
     // Remove duplicates
     result.riasecMatches = [...new Set(result.riasecMatches)];
     
-    // If we have RIASEC matches, return them
+    // If we have RIASEC matches, set match type and generate question files
     if (result.riasecMatches.length > 0) {
       result.matchType = 'riasec';
+      result.questionFiles = result.riasecMatches.map(sanitizeToFilename);
       return result;
     }
     
@@ -169,9 +207,10 @@ export const getMatchingMajors = async (
     // Remove duplicates
     result.workValueMatches = [...new Set(result.workValueMatches)];
     
-    // If we have Work Value matches, set the match type
+    // If we have Work Value matches, set match type and generate question files
     if (result.workValueMatches.length > 0) {
       result.matchType = 'workValue';
+      result.questionFiles = result.workValueMatches.map(sanitizeToFilename);
     }
     
     return result;
@@ -182,6 +221,7 @@ export const getMatchingMajors = async (
       permutationMatches: [],
       riasecMatches: [],
       workValueMatches: [],
+      questionFiles: [],
       riasecCode,
       workValueCode,
       matchType: 'none'
