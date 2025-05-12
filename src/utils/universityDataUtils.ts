@@ -65,9 +65,8 @@ export const loadUniversityData = async (university: string): Promise<University
         return { programs: [] };
     }
     
-    // Fix the file path to properly reference files in public folder
-    // Remove the leading slash which causes the path to be resolved from the domain root
-    const filePath = `school-data/Standardized weights/standardized_${shortName}_majors.json`;
+    // Construct the file path
+    const filePath = `/school-data/Standardized weights/standardized_${shortName}_majors.json`;
     
     console.log(`Fetching university data from ${filePath} for ${university}`);
     
@@ -75,7 +74,20 @@ export const loadUniversityData = async (university: string): Promise<University
       const response = await fetch(filePath);
       
       if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+        console.error(`Failed to fetch data: HTTP ${response.status} for ${filePath}`);
+        
+        // Try with a different path format as fallback
+        const fallbackPath = `/public/school-data/Standardized weights/standardized_${shortName}_majors.json`;
+        console.log(`Trying fallback path: ${fallbackPath}`);
+        
+        const fallbackResponse = await fetch(fallbackPath);
+        if (!fallbackResponse.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}, fallback status: ${fallbackResponse.status}`);
+        }
+        
+        const fallbackData = await fallbackResponse.json();
+        dataCache[normalizedName] = fallbackData;
+        return fallbackData;
       }
       
       const data = await response.json();
@@ -89,11 +101,13 @@ export const loadUniversityData = async (university: string): Promise<University
       return data;
     } catch (error) {
       console.error(`Error loading university data for ${university} from ${filePath}:`, error);
-      throw error; // Re-throw the error so it can be handled by the caller
+      
+      // Return empty data structure instead of null to prevent further errors
+      return { programs: [] };
     }
   } catch (error) {
     console.error('Error in loadUniversityData:', error);
-    throw error; // Re-throw the error so it can be handled by the caller
+    return { programs: [] };
   }
 };
 
