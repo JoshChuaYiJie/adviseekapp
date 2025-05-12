@@ -6,7 +6,7 @@ export const UserProfileDisplay = ({ riasecCode, workValueCode }: MajorProfileDi
   const { isCurrentlyDark } = useTheme();
 
   return (
-    <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg mb-6 w-full">
+    <div className="p-6 bg-gray-50 dark:bg-gray-800 rounded-lg mb-6 w-full">
       <h3 className="text-xl font-medium mb-4">Your Profile Summary</h3>
       
       <div className="flex flex-wrap gap-4">

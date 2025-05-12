@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -21,6 +22,7 @@ import Community from "./pages/Community";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import Achievements from "./pages/Achievements";
 import QuizDebugPage from "./pages/QuizDebugPage";
+import OpenEndedQuestionsQuiz from "./pages/OpenEndedQuestionsQuiz";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +42,7 @@ const App = () => {
                 <Route path="/dashboard" element={<Index />} />
                 <Route path="/university-selection" element={<UniversitySelection />} />
                 <Route path="/quiz/:segmentId" element={<SegmentedQuiz />} />
+                <Route path="/quiz/open-ended-questions" element={<OpenEndedQuestionsQuiz />} />
                 <Route path="/recommendations" element={<Recommendations />} />
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="/terms-of-service" element={<TermsOfService />} />
