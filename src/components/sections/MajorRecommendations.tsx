@@ -19,243 +19,242 @@ import { supabase } from '@/integrations/supabase/client';
 interface MajorRecommendationsProps {
   topRiasec: Array<{ component: string; average: number; score: number }>;
   topWorkValues: Array<{ component: string; average: number; score: number }>;
-  isQuizMode?: boolean; // New prop to enable quiz mode
+  isQuizMode?: boolean;
 }
 
-export const MajorRecommendations = ({ 
+export const MajorRecommendations: React.FC<MajorRecommendationsProps> = ({ 
   topRiasec, 
   topWorkValues,
   isQuizMode = false
-}: MajorRecommendationsProps) => {
+}) => {
   const { toast } = useToast();
-  const [recommendations, setRecommendations] = useState<MajorRecommendationsType | null>(null);
   const [loading, setLoading] = useState(true);
-  const [riasecCode, setRiasecCode] = useState('');
-  const [workValueCode, setWorkValueCode] = useState('');
-  const [activeTab, setActiveTab] = useState<string>('all');
+  const [recommendations, setRecommendations] = useState<MajorRecommendationsType | null>(null);
   const [selectedMajor, setSelectedMajor] = useState<string | null>(null);
-  const [openEndedQuestions, setOpenEndedQuestions] = useState<OpenEndedQuestion[]>([]);
+  const [questions, setQuestions] = useState<OpenEndedQuestion[]>([]);
   const [loadingQuestions, setLoadingQuestions] = useState(false);
-  const [submittingResponses, setSubmittingResponses] = useState(false);
+  const [answeredQuestions, setAnsweredQuestions] = useState<Record<string, string>>({});
+  const [submitting, setSubmitting] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [completed, setCompleted] = useState(false);
+  const [activeTab, setActiveTab] = useState('all');
+  
+  // Form RIASEC and Work Value codes based on highest scoring components
+  // The topRiasec and topWorkValues arrays are already sorted by score in descending order
+  const riasecCode = formCode(topRiasec, mapRiasecToCode);
+  const workValueCode = formCode(topWorkValues, mapWorkValueToCode);
 
   useEffect(() => {
-    const fetchRecommendations = async () => {
-      setLoading(true);
-      
-      // Form the RIASEC and Work Value codes
-      const rCode = formCode(topRiasec, mapRiasecToCode);
-      const wvCode = formCode(topWorkValues, mapWorkValueToCode);
-      
-      setRiasecCode(rCode);
-      setWorkValueCode(wvCode);
-      
-      // Get matching majors with the new flexible matching logic
-      const majorsRecommendations = await getMatchingMajors(rCode, wvCode);
-      setRecommendations(majorsRecommendations);
-      
-      console.log('Generated question files:', majorsRecommendations.questionFiles);
-      
-      // Set the active tab based on matching results
-      if (majorsRecommendations.exactMatches.length > 0) {
-        setActiveTab('exact');
-      } else if (majorsRecommendations.permutationMatches.length > 0) {
-        setActiveTab('permutation');
-      } else if (majorsRecommendations.riasecMatches.length > 0) {
-        setActiveTab('riasec');
-      } else if (majorsRecommendations.workValueMatches.length > 0) {
-        setActiveTab('workValue');
-      } else {
-        setActiveTab('all');
+    const getRecommendations = async () => {
+      try {
+        setLoading(true);
+        console.log(`Getting recommendations for RIASEC: ${riasecCode}, Work Values: ${workValueCode}`);
+        // Fix: Pass both arguments to getMatchingMajors function
+        const majorRecs = await getMatchingMajors(riasecCode, workValueCode);
+        setRecommendations(majorRecs);
+      } catch (error) {
+        console.error('Error getting major recommendations:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load major recommendations",
+          variant: "destructive"
+        });
+      } finally {
+        setLoading(false);
       }
-      
-      setLoading(false);
     };
-    
-    if (topRiasec.length > 0 && topWorkValues.length > 0) {
-      fetchRecommendations();
-    }
-  }, [topRiasec, topWorkValues]);
 
-  // Load questions from a specific major file
-  const loadQuestionsForMajor = async (major: string, university: string) => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setUserId(session?.user?.id || null);
+    };
+
+    // If we have valid codes, get recommendations
+    if (riasecCode && workValueCode) {
+      getRecommendations();
+      checkAuth();
+    } else {
+      setLoading(false);
+    }
+  }, [riasecCode, workValueCode, toast]);
+
+  const loadQuestions = async (majorName: string) => {
     try {
       setLoadingQuestions(true);
-      const formattedMajor = formatMajorForFile(major, university);
-      const filePath = `quiz_refer/Open_ended_quiz_questions/${formattedMajor}.json`;
-      console.log('Attempting to load questions from:', filePath);
-      const response = await fetch(filePath);
+      const formattedMajor = formatMajorForFile(majorName);
       
+      // Fetch questions from the JSON file
+      const response = await fetch(`/school-data/Application Questions/${formattedMajor}`);
       if (!response.ok) {
-        console.error(`Failed to load questions for ${formattedMajor}: ${response.status}`);
-        setOpenEndedQuestions([]);
-        setLoadingQuestions(false);
-        return;
+        throw new Error(`Failed to load questions for ${majorName}`);
       }
       
-      const questionsData = await response.json();
-      
-      // Group questions by criterion
-      const criterionCategories = ['Interests', 'Skills', 'Experiences'];
-      const questionsByCriterion: Record<string, OpenEndedQuestion[]> = {};
-      
-      // Initialize categories
-      criterionCategories.forEach(criterion => {
-        questionsByCriterion[criterion] = [];
-      });
-      
-      // Organize questions by criterion
-      questionsData.forEach((q: OpenEndedQuestion) => {
-        if (criterionCategories.includes(q.criterion)) {
-          questionsByCriterion[q.criterion].push(q);
-        }
-      });
-      
-      // Select up to 3 questions from each criterion
-      const selectedQuestions: OpenEndedQuestion[] = [];
-      
-      Object.keys(questionsByCriterion).forEach(criterion => {
-        const criterionQuestions = questionsByCriterion[criterion];
-        // Take up to 3 questions from each criterion
-        const questionsToAdd = criterionQuestions.slice(0, 3);
-        selectedQuestions.push(...questionsToAdd);
-      });
-      
-      setOpenEndedQuestions(selectedQuestions);
-      console.log('Loaded questions for major:', formattedMajor, selectedQuestions);
+      const data = await response.json() as OpenEndedQuestion[];
+      setQuestions(data);
     } catch (error) {
       console.error('Error loading questions:', error);
-      setOpenEndedQuestions([]);
+      toast({
+        title: "Error",
+        description: "Failed to load questions for this major.",
+        variant: "destructive"
+      });
+      setQuestions([]);
     } finally {
       setLoadingQuestions(false);
     }
   };
 
-  // Handle clicking on a major card
-  const handleMajorClick = (major: string) => {
-    const university = extractUniversityFromMajor(major);
-    const displayMajor = formatMajorForDisplay(major);
-    
-    setSelectedMajor(displayMajor);
-    loadQuestionsForMajor(displayMajor, university || 'NUS'); // Default to NUS if university not found
+  const handleMajorSelect = async (majorName: string) => {
+    setSelectedMajor(majorName);
+    await loadQuestions(majorName);
   };
 
-  // Handle going back to the list of majors
-  const handleBackToList = () => {
-    setSelectedMajor(null);
-    setOpenEndedQuestions([]);
+  const handleTabChange = (tabId: string) => {
+    setActiveTab(tabId);
   };
 
-  // Handle submitting open-ended question responses
-  const handleSubmitResponses = async (responses: OpenEndedResponse[]) => {
-    if (!responses.length) return;
+  const handleSubmitResponses = async () => {
+    if (!selectedMajor) {
+      toast({
+        title: "No Major Selected",
+        description: "Please select a major before submitting your responses.",
+        variant: "destructive"
+      });
+      return;
+    }
     
-    setSubmittingResponses(true);
+    if (!userId) {
+      toast({
+        title: "Not Logged In",
+        description: "Please log in to save your responses.",
+        variant: "destructive"
+      });
+      return;
+    }
     
+    setSubmitting(true);
     try {
-      // Get the current user
-      const { data: { session } } = await supabase.auth.getSession();
-      const userId = session?.user?.id;
+      // Prepare responses for database - convert to the format expected by the user_responses table
+      const responsesToSubmit = questions.map(question => ({
+        user_id: userId,
+        question_id: question.id || '',
+        response: answeredQuestions[question.id || ''] || '',
+        quiz_type: 'open-ended'
+      }));
       
-      if (!userId) {
-        toast({
-          title: "Authentication required",
-          description: "Please sign in to save your responses",
-          variant: "destructive"
-        });
-        return;
-      }
-
-      // Store responses in the user_responses table instead of open_ended_responses
+      // Upload responses to Supabase user_responses table (not open_ended_responses)
       const { error } = await supabase
         .from('user_responses')
-        .insert(
-          responses.map(r => ({
-            user_id: userId,
-            question_id: r.questionId,
-            response: r.response,
-            quiz_type: 'open-ended',
-            component: r.criterion
-          }))
-        );
+        .insert(responsesToSubmit);
+        
+      if (error) {
+        throw new Error(error.message);
+      }
       
-      if (error) throw error;
-      
-      // Mark the open-ended quiz as completed
-      await supabase
+      // Update quiz completion status
+      const { error: completionError } = await supabase
         .from('quiz_completion')
         .upsert({
           user_id: userId,
-          quiz_type: 'open-ended',
-          completed_at: new Date().toISOString()
+          quiz_type: 'open-ended'
         }, {
-          onConflict: 'user_id,quiz_type'
+          onConflict: 'user_id, quiz_type'
         });
-      
-      // Update local storage for compatibility with existing code
-      const completedQuizzes = JSON.parse(localStorage.getItem('completed_quiz_segments') || '[]');
-      if (!completedQuizzes.includes('open-ended')) {
-        completedQuizzes.push('open-ended');
-        localStorage.setItem('completed_quiz_segments', JSON.stringify(completedQuizzes));
+        
+      if (completionError) {
+        console.error('Error updating quiz completion:', completionError);
+      } else {
+        setCompleted(true);
+        toast({
+          title: "Responses Submitted",
+          description: "Your responses have been successfully submitted!",
+          variant: "default"
+        });
       }
-      
-      toast({
-        title: "Responses saved",
-        description: "Your answers have been submitted successfully!",
-        variant: "default"
-      });
-      
-      // Reset selected major after submission
-      setSelectedMajor(null);
-      setOpenEndedQuestions([]);
-      
     } catch (error) {
       console.error('Error submitting responses:', error);
       toast({
-        title: "Submission error",
-        description: "There was a problem saving your responses",
+        title: "Submission Failed",
+        description: "There was an error submitting your responses. Please try again.",
         variant: "destructive"
       });
     } finally {
-      setSubmittingResponses(false);
+      setSubmitting(false);
     }
   };
 
-  if (loading) {
-    return (
-      <div className="space-y-4">
-        <Skeleton className="h-8 w-3/4" />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[...Array(6)].map((_, i) => (
-            <Skeleton key={i} className="h-24" />
-          ))}
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <UserProfileDisplay riasecCode={riasecCode} workValueCode={workValueCode} />
+        
+        <div className="mb-6">
+          <h3 className="text-xl font-medium mb-2">Recommended Majors</h3>
+          {loading ? (
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-[250px]" />
+              <Skeleton className="h-4 w-[220px]" />
+              <Skeleton className="h-4 w-[240px]" />
+            </div>
+          ) : recommendations && (
+            <MajorsList 
+              recommendations={recommendations} 
+              activeTab={activeTab} 
+              onTabChange={handleTabChange} 
+              onMajorClick={handleMajorSelect}
+              riasecCode={riasecCode}
+              workValueCode={workValueCode}
+            />
+          )}
         </div>
       </div>
-    );
-  }
 
-  return (
-    <div>
-      <UserProfileDisplay riasecCode={riasecCode} workValueCode={workValueCode} />
-
-      {selectedMajor ? (
-        <MajorQuestionDisplay
-          selectedMajor={selectedMajor}
-          openEndedQuestions={openEndedQuestions}
-          loadingQuestions={loadingQuestions}
-          onBackToList={handleBackToList}
-          isQuizMode={isQuizMode}
-          onSubmitResponses={isQuizMode ? handleSubmitResponses : undefined}
-        />
-      ) : (
-        <MajorsList
-          recommendations={recommendations}
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-          onMajorClick={handleMajorClick}
-          riasecCode={riasecCode}
-          workValueCode={workValueCode}
-        />
-      )}
+      <div>
+        {selectedMajor ? (
+          <>
+            <h3 className="text-xl font-medium mb-2">
+              {formatMajorForDisplay(selectedMajor)}
+              {isQuizMode && (
+                <button 
+                  onClick={() => setSelectedMajor(null)}
+                  className="ml-2 text-sm text-blue-500 hover:underline"
+                >
+                  Change Major
+                </button>
+              )}
+            </h3>
+            {loadingQuestions ? (
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-[280px]" />
+                <Skeleton className="h-4 w-[250px]" />
+                <Skeleton className="h-4 w-[260px]" />
+              </div>
+            ) : questions.length > 0 ? (
+              <>
+                <MajorQuestionDisplay
+                  selectedMajor={selectedMajor}
+                  openEndedQuestions={questions}
+                  loadingQuestions={false}
+                  onBackToList={() => setSelectedMajor(null)}
+                  isQuizMode={true}
+                  onSubmitResponses={handleSubmitResponses}
+                />
+                <button
+                  onClick={handleSubmitResponses}
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
+                  disabled={submitting || completed}
+                >
+                  {submitting ? 'Submitting...' : completed ? 'Submitted' : 'Submit Responses'}
+                </button>
+              </>
+            ) : (
+              <p>No specific questions found for this major.</p>
+            )}
+          </>
+        ) : (
+          <p>Select a major to view specific questions.</p>
+        )}
+      </div>
     </div>
   );
 };
