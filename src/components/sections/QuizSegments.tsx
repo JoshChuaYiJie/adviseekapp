@@ -43,8 +43,7 @@ export const QuizSegments = () => {
         .from('user_responses')
         .select('component, score')
         .eq('user_id', userId)
-        .eq('quiz_type', 'riasec')
-        .order('score', { ascending: false });
+        .eq('quiz_type', 'riasec');
       
       if (riasecError) {
         console.error('Error fetching RIASEC profile:', riasecError);
@@ -52,11 +51,15 @@ export const QuizSegments = () => {
         console.log("RIASEC data:", riasecData);
         if (riasecData && riasecData.length > 0) {
           // Transform data to match expected format with average property
-          const transformedData = riasecData.map(item => ({
-            component: item.component,
-            score: item.score,
-            average: item.score // Use score as average for compatibility
-          }));
+          // Then sort by score in descending order to get highest percentages first
+          const transformedData = riasecData
+            .map(item => ({
+              component: item.component,
+              score: item.score,
+              average: item.score // Use score as average for compatibility
+            }))
+            .sort((a, b) => b.score - a.score); // Sort by score descending
+            
           console.log("Transformed RIASEC data:", transformedData);
           setRiasecProfile(transformedData);
         }
@@ -67,8 +70,7 @@ export const QuizSegments = () => {
         .from('user_responses')
         .select('component, score')
         .eq('user_id', userId)
-        .eq('quiz_type', 'work_value')
-        .order('score', { ascending: false });
+        .eq('quiz_type', 'work_value');
       
       if (workValueError) {
         console.error('Error fetching Work Value profile:', workValueError);
@@ -76,11 +78,15 @@ export const QuizSegments = () => {
         console.log("Work Value data:", workValueData);
         if (workValueData && workValueData.length > 0) {
           // Transform data to match expected format with average property
-          const transformedData = workValueData.map(item => ({
-            component: item.component,
-            score: item.score,
-            average: item.score // Use score as average for compatibility
-          }));
+          // Then sort by score in descending order to get highest percentages first
+          const transformedData = workValueData
+            .map(item => ({
+              component: item.component,
+              score: item.score,
+              average: item.score // Use score as average for compatibility
+            }))
+            .sort((a, b) => b.score - a.score); // Sort by score descending
+            
           console.log("Transformed Work Value data:", transformedData);
           setWorkValueProfile(transformedData);
         }
@@ -245,7 +251,6 @@ export const QuizSegments = () => {
       });
       
       // Allow access to open-ended quiz as long as all segments are completed
-      // We no longer check for profile data as it might come from different sources
       if (!allSegmentsCompleted) {
         toast({
           title: "Profile Not Complete",
@@ -254,6 +259,22 @@ export const QuizSegments = () => {
         });
         return;
       }
+      
+      // Provide fallback data if profiles aren't loaded
+      const profiles = {
+        riasec: riasecProfile.length > 0 ? riasecProfile : [
+          { component: 'Social', average: 4, score: 4 },
+          { component: 'Investigative', average: 3.5, score: 3.5 },
+          { component: 'Artistic', average: 3, score: 3 },
+        ],
+        workValues: workValueProfile.length > 0 ? workValueProfile : [
+          { component: 'Achievement', average: 4, score: 4 },
+          { component: 'Recognition', average: 3.5, score: 3.5 },
+          { component: 'Independence', average: 3, score: 3 },
+        ]
+      };
+
+      console.log("Using profiles for open-ended quiz:", profiles);
       
       // Show open-ended quiz interface even if profiles aren't fully loaded
       setShowOpenEndedQuiz(true);

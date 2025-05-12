@@ -36,11 +36,13 @@ export const mapWorkValueToCode = (component: string): string => {
   }
 };
 
-// Function to form a code from component list
+// Function to form a code from component list - now respects the order provided
 export const formCode = (components: Array<{ component: string; average: number; score: number }>, 
                           mapper: (component: string) => string): string => {
+  // The components array is already sorted by score in descending order from QuizSegments.tsx
+  // So we just need to take the first 3 and map them to their codes
   return components
-    .slice(0, 3) // Take top 3
+    .slice(0, 3) // Take top 3 highest scoring components
     .map(item => mapper(item.component))
     .join('');
 };
