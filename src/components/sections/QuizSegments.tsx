@@ -7,6 +7,7 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { LockIcon } from "lucide-react";
 import { McqQuestionsDisplay } from "@/components/McqQuestionsDisplay";
+import { MajorRecommendations } from "./MajorRecommendations";
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -26,6 +27,47 @@ export const QuizSegments = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const [completedSegments, setCompletedSegments] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  // New state for open-ended questions mode
+  const [showOpenEndedQuiz, setShowOpenEndedQuiz] = useState(false);
+  // State for user's RIASEC and Work Value profiles
+  const [riasecProfile, setRiasecProfile] = useState<Array<{ component: string; average: number; score: number }>>([]);
+  const [workValueProfile, setWorkValueProfile] = useState<Array<{ component: string; average: number; score: number }>>([]);
+  
+  // Function to load user profiles
+  const loadUserProfiles = async (userId: string) => {
+    try {
+      // Fetch RIASEC profile
+      const { data: riasecData, error: riasecError } = await supabase
+        .from('user_profiles')
+        .select('component, average, score')
+        .eq('user_id', userId)
+        .eq('profile_type', 'riasec')
+        .order('average', { ascending: false });
+      
+      if (riasecError) {
+        console.error('Error fetching RIASEC profile:', riasecError);
+      } else if (riasecData) {
+        setRiasecProfile(riasecData);
+      }
+      
+      // Fetch Work Value profile
+      const { data: workValueData, error: workValueError } = await supabase
+        .from('user_profiles')
+        .select('component, average, score')
+        .eq('user_id', userId)
+        .eq('profile_type', 'work_value')
+        .order('average', { ascending: false });
+      
+      if (workValueError) {
+        console.error('Error fetching Work Value profile:', workValueError);
+      } else if (workValueData) {
+        setWorkValueProfile(workValueData);
+      }
+      
+    } catch (error) {
+      console.error('Error loading user profiles:', error);
+    }
+  };
   
   useEffect(() => {
     // Check for authenticated user
@@ -39,6 +81,9 @@ export const QuizSegments = () => {
       let completed: string[] = [];
       
       if (currentUserId) {
+        // Load user profiles for RIASEC and Work Values
+        await loadUserProfiles(currentUserId);
+        
         // Try to get from Supabase first
         try {
           // Direct supabase client call since this table isn't in the types yet
@@ -74,11 +119,13 @@ export const QuizSegments = () => {
     
     // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setUserId(session?.user?.id || null);
+      const newUserId = session?.user?.id || null;
+      setUserId(newUserId);
       
-      // If user just logged in, fetch their completed quizzes
+      // If user just logged in, fetch their completed quizzes and profiles
       if (event === 'SIGNED_IN' && session?.user?.id) {
         fetchCompletedQuizzes(session.user.id);
+        loadUserProfiles(session.user.id);
       }
     });
     
@@ -166,8 +213,17 @@ export const QuizSegments = () => {
     }
     
     if (segmentId === "open-ended") {
-      // Navigate to major recommendations first to select a major
-      navigate('/profile');
+      if (riasecProfile.length === 0 || workValueProfile.length === 0) {
+        toast({
+          title: "Profile Not Complete",
+          description: "Please complete the other quiz segments first to generate your profile.",
+          variant: "warning"
+        });
+        return;
+      }
+      // Show open-ended quiz interface
+      setShowOpenEndedQuiz(true);
+      setActiveTab("open-ended");
     } else {
       navigate(`/quiz/${segmentId}`);
     }
@@ -187,7 +243,13 @@ export const QuizSegments = () => {
     <div className="space-y-6">
       <Tabs 
         defaultValue={activeTab} 
-        onValueChange={setActiveTab}
+        onValueChange={(newTab) => {
+          setActiveTab(newTab);
+          // Reset open-ended quiz mode if changing tabs
+          if (newTab !== "open-ended") {
+            setShowOpenEndedQuiz(false);
+          }
+        }}
         className="w-full"
       >
         <TabsList className="mb-4 flex flex-wrap">
@@ -208,53 +270,79 @@ export const QuizSegments = () => {
         
         {quizSegments.map(segment => (
           <TabsContent key={segment.id} value={segment.id} className="space-y-6">
-            <div className={`p-6 ${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg shadow`}>
-              <div className="flex flex-col items-center justify-center py-12 space-y-6 text-center">
-                <h2 className="text-2xl font-medium">{segment.title}</h2>
-                <p className="text-gray-500 dark:text-gray-400 max-w-lg">
-                  {segment.description}
-                </p>
+            {segment.id === "open-ended" && showOpenEndedQuiz ? (
+              // Show the MajorRecommendations component in quiz mode when open-ended tab is active
+              <div>
+                <Button 
+                  onClick={() => setShowOpenEndedQuiz(false)}
+                  variant="outline"
+                  className="mb-4"
+                >
+                  Back to Quiz Overview
+                </Button>
                 
-                {segment.locked ? (
-                  <div className="flex flex-col items-center space-y-4">
-                    <div className="w-16 h-16 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                      <LockIcon size={24} className="text-gray-500 dark:text-gray-400" />
-                    </div>
-                    <Alert className={`${isCurrentlyDark ? 'bg-gray-700' : 'bg-gray-100'} max-w-md`}>
-                      <AlertTitle>This section is locked</AlertTitle>
-                      <AlertDescription>
-                        Complete all previous quiz segments to unlock open-ended questions.
-                      </AlertDescription>
-                    </Alert>
-                  </div>
-                ) : (
-                  <>
-                    {segment.completed ? (
-                      <div className="flex flex-col items-center space-y-4">
-                        <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center">
-                          <span className="text-green-600 dark:text-green-400 text-3xl">✓</span>
-                        </div>
-                        <p className="text-green-600 dark:text-green-400">You've completed this section!</p>
-                        <Button 
-                          variant="outline" 
-                          onClick={() => handleStartQuiz(segment.id)}
-                        >
-                          Retake Quiz
-                        </Button>
-                      </div>
-                    ) : (
-                      <Button 
-                        size="lg" 
-                        onClick={() => handleStartQuiz(segment.id)}
-                        className="px-8"
-                      >
-                        Start Quiz
-                      </Button>
-                    )}
-                  </>
-                )}
+                <div className="p-4 bg-blue-50 dark:bg-blue-900 rounded-lg mb-6">
+                  <h3 className="font-medium text-lg">Open-ended Questions Quiz</h3>
+                  <p className="text-gray-600 dark:text-gray-300">
+                    Select a major from the recommendations below to answer questions specific to that field of study.
+                  </p>
+                </div>
+                
+                <MajorRecommendations 
+                  topRiasec={riasecProfile} 
+                  topWorkValues={workValueProfile}
+                  isQuizMode={true}
+                />
               </div>
-            </div>
+            ) : (
+              <div className={`p-6 ${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg shadow`}>
+                <div className="flex flex-col items-center justify-center py-12 space-y-6 text-center">
+                  <h2 className="text-2xl font-medium">{segment.title}</h2>
+                  <p className="text-gray-500 dark:text-gray-400 max-w-lg">
+                    {segment.description}
+                  </p>
+                  
+                  {segment.locked ? (
+                    <div className="flex flex-col items-center space-y-4">
+                      <div className="w-16 h-16 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                        <LockIcon size={24} className="text-gray-500 dark:text-gray-400" />
+                      </div>
+                      <Alert className={`${isCurrentlyDark ? 'bg-gray-700' : 'bg-gray-100'} max-w-md`}>
+                        <AlertTitle>This section is locked</AlertTitle>
+                        <AlertDescription>
+                          Complete all previous quiz segments to unlock open-ended questions.
+                        </AlertDescription>
+                      </Alert>
+                    </div>
+                  ) : (
+                    <>
+                      {segment.completed ? (
+                        <div className="flex flex-col items-center space-y-4">
+                          <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center">
+                            <span className="text-green-600 dark:text-green-400 text-3xl">✓</span>
+                          </div>
+                          <p className="text-green-600 dark:text-green-400">You've completed this section!</p>
+                          <Button 
+                            variant="outline" 
+                            onClick={() => handleStartQuiz(segment.id)}
+                          >
+                            Retake Quiz
+                          </Button>
+                        </div>
+                      ) : (
+                        <Button 
+                          size="lg" 
+                          onClick={() => handleStartQuiz(segment.id)}
+                          className="px-8"
+                        >
+                          Start Quiz
+                        </Button>
+                      )}
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
           </TabsContent>
         ))}
 

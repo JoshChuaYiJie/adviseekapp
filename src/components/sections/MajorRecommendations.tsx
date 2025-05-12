@@ -4,23 +4,30 @@ import {
   formCode, 
   getMatchingMajors, 
   mapRiasecToCode, 
-  mapWorkValueToCode,
-  MajorRecommendations as MajorRecommendationsType
+  mapWorkValueToCode
 } from '@/utils/recommendationUtils';
 import { Skeleton } from '@/components/ui/skeleton';
 import { UserProfileDisplay } from './majors/UserProfileDisplay';
 import { MajorsList } from './majors/MajorsList';
 import { MajorQuestionDisplay } from './majors/MajorQuestionDisplay';
-import { OpenEndedQuestion } from './majors/types';
+import { OpenEndedQuestion, OpenEndedResponse, MajorRecommendationsType } from './majors/types';
 import { formatMajorForFile, formatMajorForDisplay, extractUniversityFromMajor } from './majors/MajorUtils';
+import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 // Define props interface
 interface MajorRecommendationsProps {
   topRiasec: Array<{ component: string; average: number; score: number }>;
   topWorkValues: Array<{ component: string; average: number; score: number }>;
+  isQuizMode?: boolean; // New prop to enable quiz mode
 }
 
-export const MajorRecommendations = ({ topRiasec, topWorkValues }: MajorRecommendationsProps) => {
+export const MajorRecommendations = ({ 
+  topRiasec, 
+  topWorkValues,
+  isQuizMode = false
+}: MajorRecommendationsProps) => {
+  const { toast } = useToast();
   const [recommendations, setRecommendations] = useState<MajorRecommendationsType | null>(null);
   const [loading, setLoading] = useState(true);
   const [riasecCode, setRiasecCode] = useState('');
@@ -29,6 +36,7 @@ export const MajorRecommendations = ({ topRiasec, topWorkValues }: MajorRecommen
   const [selectedMajor, setSelectedMajor] = useState<string | null>(null);
   const [openEndedQuestions, setOpenEndedQuestions] = useState<OpenEndedQuestion[]>([]);
   const [loadingQuestions, setLoadingQuestions] = useState(false);
+  const [submittingResponses, setSubmittingResponses] = useState(false);
 
   useEffect(() => {
     const fetchRecommendations = async () => {
@@ -137,6 +145,83 @@ export const MajorRecommendations = ({ topRiasec, topWorkValues }: MajorRecommen
     setOpenEndedQuestions([]);
   };
 
+  // Handle submitting open-ended question responses
+  const handleSubmitResponses = async (responses: OpenEndedResponse[]) => {
+    if (!responses.length) return;
+    
+    setSubmittingResponses(true);
+    
+    try {
+      // Get the current user
+      const { data: { session } } = await supabase.auth.getSession();
+      const userId = session?.user?.id;
+      
+      if (!userId) {
+        toast({
+          title: "Authentication required",
+          description: "Please sign in to save your responses",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Store responses in the database
+      const { error } = await supabase
+        .from('open_ended_responses')
+        .insert(
+          responses.map(r => ({
+            user_id: userId,
+            question_id: r.questionId,
+            question: r.question,
+            response: r.response,
+            criterion: r.criterion,
+            major: r.major,
+            school: r.school
+          }))
+        );
+      
+      if (error) throw error;
+      
+      // Mark the open-ended quiz as completed
+      await supabase
+        .from('quiz_completion')
+        .upsert({
+          user_id: userId,
+          quiz_type: 'open-ended',
+          completed_at: new Date().toISOString()
+        }, {
+          onConflict: 'user_id,quiz_type'
+        });
+      
+      // Update local storage for compatibility with existing code
+      const completedQuizzes = JSON.parse(localStorage.getItem('completed_quiz_segments') || '[]');
+      if (!completedQuizzes.includes('open-ended')) {
+        completedQuizzes.push('open-ended');
+        localStorage.setItem('completed_quiz_segments', JSON.stringify(completedQuizzes));
+      }
+      
+      toast({
+        title: "Responses saved",
+        description: "Your answers have been submitted successfully!",
+        variant: "default"
+      });
+      
+      // Reset selected major after submission
+      setSelectedMajor(null);
+      setOpenEndedQuestions([]);
+      
+    } catch (error) {
+      console.error('Error submitting responses:', error);
+      toast({
+        title: "Submission error",
+        description: "There was a problem saving your responses",
+        variant: "destructive"
+      });
+    } finally {
+      setSubmittingResponses(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="space-y-4">
@@ -160,6 +245,8 @@ export const MajorRecommendations = ({ topRiasec, topWorkValues }: MajorRecommen
           openEndedQuestions={openEndedQuestions}
           loadingQuestions={loadingQuestions}
           onBackToList={handleBackToList}
+          isQuizMode={isQuizMode}
+          onSubmitResponses={isQuizMode ? handleSubmitResponses : undefined}
         />
       ) : (
         <MajorsList

@@ -1,3 +1,4 @@
+
 export interface OpenEndedQuestion {
   id?: string;
   question: string;
@@ -21,4 +22,14 @@ export interface MajorRecommendationsType {
   riasecCode: string;
   workValueCode: string;
   matchType: 'exact' | 'permutation' | 'riasec' | 'workValue' | 'none';
+}
+
+// Interface for open-ended question responses
+export interface OpenEndedResponse {
+  questionId: string;
+  question: string;
+  response: string;
+  criterion: string;
+  major?: string;
+  school?: string;
 }
