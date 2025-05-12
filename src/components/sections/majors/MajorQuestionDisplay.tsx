@@ -5,9 +5,9 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { InfoIcon, CheckCircle } from 'lucide-react';
+import { InfoIcon } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { OpenEndedQuestion, OpenEndedResponse } from './types';
+import { OpenEndedQuestion } from './types';
 import { useToast } from '@/hooks/use-toast';
 
 interface MajorQuestionDisplayProps {
@@ -15,8 +15,8 @@ interface MajorQuestionDisplayProps {
   openEndedQuestions: OpenEndedQuestion[];
   loadingQuestions: boolean;
   onBackToList: () => void;
-  isQuizMode?: boolean; // New prop to determine display mode
-  onSubmitResponses?: (responses: OpenEndedResponse[]) => void; // Callback for submitting responses
+  isQuizMode?: boolean; 
+  onSubmitResponses?: () => void;
 }
 
 export const MajorQuestionDisplay = ({ 
@@ -64,20 +64,10 @@ export const MajorQuestionDisplay = ({
     }
 
     setSubmitting(true);
-
+    
     try {
-      // Format responses for submission
-      const formattedResponses: OpenEndedResponse[] = openEndedQuestions.map(q => ({
-        questionId: q.id || '',
-        question: q.question,
-        response: responses[q.id || ''] || '',
-        criterion: q.criterion,
-        major: q.major || selectedMajor,
-        school: q.school
-      }));
-
-      // Submit responses
-      onSubmitResponses(formattedResponses);
+      // Call the parent's submission handler
+      onSubmitResponses();
       
       toast({
         title: "Responses submitted",
