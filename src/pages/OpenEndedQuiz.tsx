@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -9,7 +10,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { ArrowLeft, ArrowRight, SkipForward } from 'lucide-react';
 import { getMatchingMajors, mapRiasecToCode, mapWorkValueToCode, formCode } from '@/utils/recommendation';
 import { formatMajorForFile } from '@/components/sections/majors/MajorUtils';
 
@@ -32,7 +33,7 @@ const OpenEndedQuiz = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [responses, setResponses] = useState<Record<string, string>>({});
+  const [responses, setResponses] = useState<Record<string, { response: string; skipped: boolean }>>({});
   
   // Profile data
   const [riasecProfile, setRiasecProfile] = useState<Array<{ component: string; average: number; score: number }>>([]);
@@ -613,7 +614,10 @@ const OpenEndedQuiz = () => {
     const questionId = questions[currentQuestionIndex].question.id;
     setResponses(prev => ({
       ...prev,
-      [questionId]: value
+      [questionId]: { 
+        response: value,
+        skipped: false 
+      }
     }));
   };
   
@@ -630,6 +634,29 @@ const OpenEndedQuiz = () => {
       setCurrentQuestionIndex(currentQuestionIndex - 1);
     }
   };
+
+  // Skip current question
+  const handleSkip = () => {
+    if (currentQuestionIndex >= questions.length) return;
+
+    const questionId = questions[currentQuestionIndex].question.id;
+    
+    // Mark question as skipped
+    setResponses(prev => ({
+      ...prev,
+      [questionId]: { 
+        response: '',
+        skipped: true 
+      }
+    }));
+
+    // Move to next question or submit if this is the last one
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+    } else {
+      handleSubmit();
+    }
+  };
   
   // Submit all responses
   const handleSubmit = async () => {
@@ -642,36 +669,34 @@ const OpenEndedQuiz = () => {
       return;
     }
     
-    // Check if all questions have been answered
-    const unansweredQuestions = questions.filter(q => 
-      !responses[q.question.id] || responses[q.question.id].trim() === ''
-    );
-    
-    if (unansweredQuestions.length > 0) {
-      toast({
-        title: "Incomplete",
-        description: `Please answer all questions before submitting. You have ${unansweredQuestions.length} unanswered questions.`,
-        variant: "destructive"
-      });
-      return;
-    }
-    
     setSubmitting(true);
     try {
-      // Prepare responses for database
-      const responsesToSubmit = Object.entries(responses).map(([questionId, response]) => ({
-        user_id: userId,
-        question_id: questionId,
-        response: response,
-        quiz_type: 'open-ended'
-      }));
+      // Prepare responses for database - now using the new open_ended_responses table
+      const responsesToSubmit = Object.entries(responses).map(([questionId, responseData]) => {
+        const questionInfo = questions.find(q => q.question.id === questionId);
+        
+        return {
+          user_id: userId,
+          question_id: questionId,
+          response: responseData.response,
+          skipped: responseData.skipped,
+          major: questionInfo?.major || '',
+          question: questionInfo?.question?.question || ''
+        };
+      });
       
-      // Upload responses to Supabase
+      // Filter out any undefined responses (shouldn't happen but just in case)
+      const validResponses = responsesToSubmit.filter(r => r !== undefined);
+      
+      console.log("Submitting responses to open_ended_responses table:", validResponses);
+      
+      // Upload responses to Supabase open_ended_responses table
       const { error } = await supabase
-        .from('user_responses')
-        .insert(responsesToSubmit);
+        .from('open_ended_responses')
+        .insert(validResponses);
         
       if (error) {
+        console.error("Error inserting into open_ended_responses:", error);
         throw new Error(error.message);
       }
       
@@ -777,6 +802,8 @@ const OpenEndedQuiz = () => {
   }
   
   const currentQuestion = questions[currentQuestionIndex];
+  const questionId = currentQuestion?.question?.id;
+  const currentResponse = responses[questionId] || { response: '', skipped: false };
   
   return (
     <div className="max-w-4xl mx-auto p-6">
@@ -802,19 +829,29 @@ const OpenEndedQuiz = () => {
           <Textarea
             className="min-h-[150px]"
             placeholder="Type your answer here..."
-            value={responses[currentQuestion.question.id] || ''}
+            value={currentResponse.response}
             onChange={(e) => handleResponseChange(e.target.value)}
           />
         </div>
         
         <div className="flex justify-between mt-6">
-          <Button 
-            variant="outline" 
-            onClick={handlePrevious}
-            disabled={currentQuestionIndex === 0}
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" /> Previous
-          </Button>
+          <div className="flex space-x-2">
+            <Button 
+              variant="outline" 
+              onClick={handlePrevious}
+              disabled={currentQuestionIndex === 0}
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" /> Previous
+            </Button>
+            
+            <Button
+              variant="outline"
+              onClick={handleSkip}
+              className="text-amber-500 border-amber-500 hover:bg-amber-500/10"
+            >
+              <SkipForward className="mr-2 h-4 w-4" /> Skip
+            </Button>
+          </div>
           
           {currentQuestionIndex < questions.length - 1 ? (
             <Button onClick={handleNext}>
@@ -831,6 +868,41 @@ const OpenEndedQuiz = () => {
           )}
         </div>
       </Card>
+      
+      {/* Skipped questions summary */}
+      <div className="mt-6">
+        <h3 className="font-medium mb-2">Question Status:</h3>
+        <div className="grid grid-cols-5 gap-2">
+          {questions.map((q, idx) => {
+            const qResponse = responses[q.question.id];
+            let status = "not-answered";
+            
+            if (qResponse) {
+              if (qResponse.skipped) {
+                status = "skipped";
+              } else if (qResponse.response.trim()) {
+                status = "answered";
+              }
+            }
+            
+            return (
+              <div 
+                key={q.question.id} 
+                className={`w-full p-2 flex items-center justify-center rounded-md text-xs cursor-pointer ${
+                  idx === currentQuestionIndex ? 'ring-2 ring-blue-500' : ''
+                } ${
+                  status === 'answered' ? 'bg-green-500 text-white' :
+                  status === 'skipped' ? 'bg-amber-500 text-white' :
+                  'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
+                }`}
+                onClick={() => setCurrentQuestionIndex(idx)}
+              >
+                {idx + 1}
+              </div>
+            );
+          })}
+        </div>
+      </div>
       
       {/* Debug information panel (only visible in development) */}
       {import.meta.env.DEV && (

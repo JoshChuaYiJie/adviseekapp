@@ -21,7 +21,7 @@ export const useQuestionHandler = ({ userId }: QuestionHandlerProps) => {
   const { toast } = useToast();
   const [questions, setQuestions] = useState<OpenEndedQuestion[]>([]);
   const [loadingQuestions, setLoadingQuestions] = useState(false);
-  const [answeredQuestions, setAnsweredQuestions] = useState<Record<string, string>>({});
+  const [answeredQuestions, setAnsweredQuestions] = useState<Record<string, { response: string; skipped: boolean }>>({});
   const [submitting, setSubmitting] = useState(false);
   const [completed, setCompleted] = useState(false);
   const [selectedMajor, setSelectedMajor] = useState<string | null>(null);
@@ -294,17 +294,23 @@ export const useQuestionHandler = ({ userId }: QuestionHandlerProps) => {
     
     setSubmitting(true);
     try {
-      // Prepare responses for database - convert to the format expected by the user_responses table
-      const responsesToSubmit = questions.map(question => ({
-        user_id: userId,
-        question_id: question.id || '',
-        response: answeredQuestions[question.id || ''] || '',
-        quiz_type: 'open-ended'
-      }));
+      // Prepare responses for database - use the new open_ended_responses table
+      const responsesToSubmit = Object.entries(answeredQuestions).map(([questionId, responseData]) => {
+        const questionInfo = questions.find(q => q.id === questionId);
+        
+        return {
+          user_id: userId,
+          question_id: questionId,
+          response: responseData.response,
+          skipped: responseData.skipped,
+          major: questionInfo?.majorName || selectedMajor || '',
+          question: questionInfo?.question || ''
+        };
+      });
       
-      // Upload responses to Supabase user_responses table
+      // Upload responses to Supabase open_ended_responses table
       const { error } = await supabase
-        .from('user_responses')
+        .from('open_ended_responses')
         .insert(responsesToSubmit);
         
       if (error) {

@@ -1,25 +1,18 @@
 
-export interface MajorProfileDisplay {
-  riasecCode: string;
-  workValueCode: string;
-}
-
 export interface OpenEndedQuestion {
-  id?: string;
-  category?: 'interests' | 'skills' | 'experience' | 'general';
-  criterion: string;
+  id: string;
   question: string;
-  majorName?: string; // Add this property to fix the type errors
+  criterion: string;
+  category?: string;
+  majorName?: string;
 }
 
 export interface OpenEndedResponse {
-  question_id: string;
   response: string;
+  skipped: boolean;
 }
 
-export interface MajorRecommendationsType {
-  exactMatches?: string[];
-  permutationMatches?: string[];
-  riasecMatches?: string[];
-  workValueMatches?: string[];
+export interface MajorResponse {
+  major: string;
+  responses: Record<string, OpenEndedResponse>;
 }

@@ -101,6 +101,33 @@ export type Database = {
         }
         Relationships: []
       }
+      open_ended_responses: {
+        Row: {
+          created_at: string
+          id: number
+          major: string | null
+          question: string | null
+          response: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          major?: string | null
+          question?: string | null
+          response?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          major?: string | null
+          question?: string | null
+          response?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
