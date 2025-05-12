@@ -25,7 +25,7 @@ export const MajorsList = ({
 }: MajorsListProps) => {
   const { isCurrentlyDark } = useTheme();
 
-  // Determine which majors to display based on what matches we found
+  // Determine which majors to display based on active tab
   const getMajorsToDisplay = () => {
     if (!recommendations) return [];
     
@@ -39,7 +39,7 @@ export const MajorsList = ({
       case 'workValue':
         return recommendations.workValueMatches;
       case 'all':
-        // Return the best available matches in order of priority
+        // For 'all' tab, show the best available matches based on priority
         if (recommendations.exactMatches.length > 0)
           return recommendations.exactMatches;
         if (recommendations.permutationMatches.length > 0)
@@ -84,6 +84,7 @@ export const MajorsList = ({
     return match ? match[1] : '';
   };
 
+  // Count majors in each category
   const majorCounts = {
     exact: recommendations?.exactMatches.length || 0,
     permutation: recommendations?.permutationMatches.length || 0,
@@ -91,8 +92,16 @@ export const MajorsList = ({
     workValue: recommendations?.workValueMatches.length || 0
   };
   
+  // Get the majors to display based on the active tab
   const majorsToDisplay = getMajorsToDisplay();
+  
+  // Check if we have any matches
   const hasNoMatches = !majorsToDisplay.length;
+  
+  // Log the state of recommendations for debugging
+  console.log("MajorsList - Recommendations state:", recommendations);
+  console.log("MajorsList - Active tab:", activeTab);
+  console.log("MajorsList - Majors to display:", majorsToDisplay);
 
   if (hasNoMatches) {
     return (
