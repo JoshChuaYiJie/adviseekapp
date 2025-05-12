@@ -15,16 +15,32 @@ import { UserProfileDisplay } from "./majors/UserProfileDisplay";
 import { 
   mapRiasecToCode, 
   mapWorkValueToCode, 
-  formCode 
+  formCode,
+  getMatchingMajors 
 } from '@/utils/recommendation';
 import { processRiasecData } from '@/components/sections/RiasecChart';
 import { processWorkValuesData } from '@/components/sections/WorkValuesChart';
+import { Badge } from "@/components/ui/badge";
 
 export const AboutMe = () => {
   const [activeTab, setActiveTab] = useState<"quiz" | "profile" | "resume">("quiz");
   const [riasecCode, setRiasecCode] = useState<string>("");
   const [workValueCode, setWorkValueCode] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [recommendedMajors, setRecommendedMajors] = useState<{
+    exactMatches: string[];
+    permutationMatches: string[];
+    riasecMatches: string[];
+    workValueMatches: string[];
+    matchType: string;
+  }>({
+    exactMatches: [],
+    permutationMatches: [],
+    riasecMatches: [],
+    workValueMatches: [],
+    matchType: 'none'
+  });
+  
   const navigate = useNavigate();
   const { isCurrentlyDark } = useTheme();
 
@@ -54,6 +70,9 @@ export const AboutMe = () => {
         console.log("RIASEC data:", riasecChartData);
         console.log("Work Value data:", workValuesChartData);
         
+        let generatedRiasecCode = "";
+        let generatedWorkValueCode = "";
+        
         // Generate RIASEC code if data exists
         if (riasecChartData && riasecChartData.length > 0) {
           // Format data for code generation
@@ -63,10 +82,11 @@ export const AboutMe = () => {
             score: item.value
           }));
           
-          const generatedRiasecCode = formCode(formattedRiasecData, mapRiasecToCode);
+          generatedRiasecCode = formCode(formattedRiasecData, mapRiasecToCode);
           setRiasecCode(generatedRiasecCode || "RSI");
         } else {
           // Fallback if no data
+          generatedRiasecCode = "RSI";
           setRiasecCode("RSI");
         }
         
@@ -79,10 +99,11 @@ export const AboutMe = () => {
             score: item.value
           }));
           
-          const generatedWorkValueCode = formCode(formattedWorkValuesData, mapWorkValueToCode);
+          generatedWorkValueCode = formCode(formattedWorkValuesData, mapWorkValueToCode);
           setWorkValueCode(generatedWorkValueCode || "ARS");
         } else {
           // Fallback if no data
+          generatedWorkValueCode = "ARS";
           setWorkValueCode("ARS");
         }
         
@@ -99,6 +120,14 @@ export const AboutMe = () => {
           const completedSegments = completions.map(c => c.quiz_type);
           console.log("Completed quiz segments from database:", completedSegments);
         }
+        
+        // Fetch recommended majors based on the profile codes
+        if (generatedRiasecCode && generatedWorkValueCode) {
+          const majorRecommendations = await getMatchingMajors(generatedRiasecCode, generatedWorkValueCode);
+          console.log("Recommended majors:", majorRecommendations);
+          setRecommendedMajors(majorRecommendations);
+        }
+        
       } catch (error) {
         console.error("Error loading user profiles:", error);
       } finally {
@@ -115,6 +144,17 @@ export const AboutMe = () => {
 
   const handleOpenEndedQuiz = () => {
     navigate("/open-ended");
+  };
+  
+  // Helper function to format major name (removes university suffix if present)
+  const formatMajorName = (major: string): string => {
+    return major.replace(/ at (NUS|NTU|SMU)$/, '');
+  };
+
+  // Get university from major string
+  const getUniversityFromMajor = (major: string): string => {
+    const match = major.match(/ at (NUS|NTU|SMU)$/);
+    return match ? match[1] : '';
   };
 
   return (
@@ -192,15 +232,105 @@ export const AboutMe = () => {
                     </div>
                   </div>
                   <Separator className="my-6" />
-                  <div>
-                    <h3 className="text-lg font-semibold mb-2">Recommended Study Areas</h3>
-                    <p>Based on your profile, you might be well-suited for:</p>
-                    <ul className="list-disc pl-5 space-y-1 mt-2">
-                      <li>Computer Science or Information Technology</li>
-                      <li>Business Administration or Management</li>
-                      <li>Psychology or Social Sciences</li>
-                      <li>Design or Creative Arts</li>
-                    </ul>
+                  
+                  {/* Recommended Majors Section */}
+                  <div className="mb-6">
+                    <h3 className="text-lg font-semibold mb-3">Recommended Majors</h3>
+                    <p className="mb-4">Based on your RIASEC code ({riasecCode}) and Work Values code ({workValueCode}):</p>
+                    
+                    {/* Exact Matches */}
+                    {recommendedMajors.exactMatches.length > 0 && (
+                      <div className="mb-4">
+                        <h4 className="font-medium text-md mb-2 flex items-center">
+                          <Badge className="mr-2 bg-green-600">Exact Match</Badge>
+                          Best match for your profile
+                        </h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                          {recommendedMajors.exactMatches.map((major, index) => (
+                            <div 
+                              key={`exact-${index}`} 
+                              className={`p-3 rounded-md ${isCurrentlyDark ? 'bg-gray-700' : 'bg-gray-100'}`}
+                            >
+                              <p className="font-medium">{formatMajorName(major)}</p>
+                              <p className="text-xs opacity-70">{getUniversityFromMajor(major) || 'University not specified'}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Permutation Matches */}
+                    {recommendedMajors.permutationMatches.length > 0 && (
+                      <div className="mb-4">
+                        <h4 className="font-medium text-md mb-2 flex items-center">
+                          <Badge className="mr-2 bg-blue-600">Similar Match</Badge>
+                          Similar codes with different priority
+                        </h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                          {recommendedMajors.permutationMatches.map((major, index) => (
+                            <div 
+                              key={`perm-${index}`} 
+                              className={`p-3 rounded-md ${isCurrentlyDark ? 'bg-gray-700' : 'bg-gray-100'}`}
+                            >
+                              <p className="font-medium">{formatMajorName(major)}</p>
+                              <p className="text-xs opacity-70">{getUniversityFromMajor(major) || 'University not specified'}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* RIASEC Matches */}
+                    {recommendedMajors.riasecMatches.length > 0 && (
+                      <div className="mb-4">
+                        <h4 className="font-medium text-md mb-2 flex items-center">
+                          <Badge className="mr-2 bg-purple-600">RIASEC Match</Badge>
+                          Matches based on your personality type
+                        </h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                          {recommendedMajors.riasecMatches.map((major, index) => (
+                            <div 
+                              key={`riasec-${index}`} 
+                              className={`p-3 rounded-md ${isCurrentlyDark ? 'bg-gray-700' : 'bg-gray-100'}`}
+                            >
+                              <p className="font-medium">{formatMajorName(major)}</p>
+                              <p className="text-xs opacity-70">{getUniversityFromMajor(major) || 'University not specified'}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Work Value Matches */}
+                    {recommendedMajors.workValueMatches.length > 0 && (
+                      <div className="mb-4">
+                        <h4 className="font-medium text-md mb-2 flex items-center">
+                          <Badge className="mr-2 bg-amber-600">Work Values Match</Badge>
+                          Matches based on your work preferences
+                        </h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                          {recommendedMajors.workValueMatches.map((major, index) => (
+                            <div 
+                              key={`wv-${index}`} 
+                              className={`p-3 rounded-md ${isCurrentlyDark ? 'bg-gray-700' : 'bg-gray-100'}`}
+                            >
+                              <p className="font-medium">{formatMajorName(major)}</p>
+                              <p className="text-xs opacity-70">{getUniversityFromMajor(major) || 'University not specified'}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* No matches found */}
+                    {recommendedMajors.exactMatches.length === 0 && 
+                     recommendedMajors.permutationMatches.length === 0 &&
+                     recommendedMajors.riasecMatches.length === 0 &&
+                     recommendedMajors.workValueMatches.length === 0 && (
+                      <div className="p-4 rounded-lg bg-gray-100 dark:bg-gray-700 text-center">
+                        <p>No major recommendations found for your profile. Please complete all quizzes or contact support.</p>
+                      </div>
+                    )}
                   </div>
                   
                   <div className="mt-6 p-4 rounded-lg bg-blue-50 dark:bg-blue-900">
