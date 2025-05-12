@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -6,7 +5,7 @@ import {
   getMatchingMajors, 
   mapRiasecToCode, 
   mapWorkValueToCode 
-} from '@/utils/recommendationUtils';
+} from '@/utils/recommendation';
 import { MajorRecommendationsType } from './types';
 import { processRiasecData } from '@/components/sections/RiasecChart';
 import { processWorkValuesData } from '@/components/sections/WorkValuesChart';
