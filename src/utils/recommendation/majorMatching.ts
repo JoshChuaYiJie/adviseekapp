@@ -1,6 +1,7 @@
 
 import { OccupationMajorMapping, MajorRecommendations } from './types';
 import { arePermutations, matchShortCode } from './codeMatchingUtils';
+import { sanitizeToFilename } from './fileUtils';
 
 // Function to get matching majors based on RIASEC and Work Value codes with flexible matching
 export const getMatchingMajors = async (
@@ -238,17 +239,4 @@ function findWorkValueMatches(
   return [...new Set(majors)];
 }
 
-// Import the sanitize function directly to avoid a circular dependency
-export const sanitizeToFilename = (text: string): string => {
-  // Replace special characters with underscores
-  return text
-    .replace(/[\/\\:*?"<>|.]/g, '_')  // Replace filesystem-unsafe characters
-    .replace(/\s+/g, '_')            // Replace spaces with underscores
-    .replace(/__+/g, '_')            // Replace multiple underscores with a single one
-    .replace(/[()]/g, '')            // Remove parentheses
-    .replace(/[&]/g, 'and')          // Replace ampersand with 'and'
-    .replace(/[+]/g, 'plus')         // Replace plus with 'plus'
-    .replace(/[-]/g, '_')            // Replace hyphens with underscore
-    .replace(/[,;]/g, '')            // Remove commas and semicolons
-    .replace(/^_+|_+$/g, '');        // Remove leading and trailing underscores
-};
+// Remove the sanitizeToFilename export from here since we're importing it from fileUtils

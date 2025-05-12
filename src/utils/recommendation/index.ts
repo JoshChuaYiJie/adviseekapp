@@ -6,4 +6,3 @@ export * from './fileUtils';
 export * from './codeMatchingUtils';
 export * from './majorMatching';
 export * from './recommendationHelpers';
-
