@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { UserProfileDisplay } from './majors/UserProfileDisplay';
 import { MajorsList } from './majors/MajorsList';
 import { MajorQuestionDisplay } from './majors/MajorQuestionDisplay';
-import { MajorRecommendationsType } from './majors/types';
+import { MajorRecommendationsType, OpenEndedResponse } from './majors/types';
 import { useRecommendationLogic } from './majors/RecommendationLogic';
 import { useQuestionHandler } from './majors/QuestionHandler';
 
@@ -177,10 +177,13 @@ export const MajorRecommendations: React.FC<MajorRecommendationsProps> = ({
                       </div>
                       <p className="font-medium mb-3">{question.question}</p>
                       <textarea
-                        value={answeredQuestions[question.id || ''] || ''}
+                        value={answeredQuestions[question.id || '']?.response || ''}
                         onChange={(e) => setAnsweredQuestions(prev => ({
                           ...prev,
-                          [question.id || '']: e.target.value
+                          [question.id || '']: {
+                            response: e.target.value,
+                            skipped: prev[question.id || '']?.skipped || false
+                          }
                         }))}
                         className="w-full border border-gray-300 rounded-md p-2 min-h-[100px]"
                         placeholder="Type your answer here..."
