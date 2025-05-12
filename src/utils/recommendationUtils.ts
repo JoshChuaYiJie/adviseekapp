@@ -1,3 +1,4 @@
+
 // This file now serves as a re-export point for backward compatibility
 // Existing components can continue importing from this file without changes
 
@@ -8,8 +9,8 @@ import {
   formCode,
   
   // Types
-  OccupationMajorMapping,
-  MajorRecommendations,
+  type OccupationMajorMapping,
+  type MajorRecommendations,
   
   // File Utils
   sanitizeToFilename,
@@ -35,9 +36,9 @@ export {
   mapWorkValueToCode,
   formCode,
   
-  // Types
-  OccupationMajorMapping,
-  MajorRecommendations,
+  // Types - using export type for type re-exports
+  type OccupationMajorMapping,
+  type MajorRecommendations,
   
   // File Utils
   sanitizeToFilename,
