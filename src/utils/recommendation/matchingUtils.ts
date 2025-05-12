@@ -3,7 +3,11 @@ import { OccupationMajorMapping, MajorRecommendations } from './types';
 import { sanitizeToFilename } from './fileUtils';
 
 // Helper function to check if two codes are permutations of each other
-export const arePermutations = (code1: string, code2: string): boolean => {
+// Added null checks to prevent errors when dealing with null codes
+export const arePermutations = (code1: string | null, code2: string | null): boolean => {
+  // If either code is null or undefined, they are not permutations
+  if (!code1 || !code2) return false;
+  
   if (code1.length !== code2.length) return false;
   
   const sortedCode1 = [...code1].sort().join('');
@@ -42,9 +46,12 @@ export const getMatchingMajors = async (
     };
     
     // 1. Find exact matches (both codes match exactly)
+    // Added null checks to handle records with null codes
     const exactMatches = mappings.filter(occupation => 
       occupation.RIASEC_code === riasecCode && 
-      occupation.work_value_code === workValueCode
+      occupation.work_value_code === workValueCode &&
+      occupation.RIASEC_code !== null &&
+      occupation.work_value_code !== null
     );
     
     console.log(`Found ${exactMatches.length} exact matches`);
@@ -54,7 +61,9 @@ export const getMatchingMajors = async (
     
     // Extract majors from these occupation objects
     limitedExactMatches.forEach(occupation => {
-      result.exactMatches.push(...occupation.majors);
+      if (occupation.majors && Array.isArray(occupation.majors)) {
+        result.exactMatches.push(...occupation.majors);
+      }
     });
     
     // Remove duplicates
@@ -67,7 +76,10 @@ export const getMatchingMajors = async (
     }
     
     // 2. Find permutation matches (both codes are permutations)
+    // Updated with null checks to handle null codes
     const permutationMatches = mappings.filter(occupation => 
+      occupation.RIASEC_code !== null &&
+      occupation.work_value_code !== null &&
       arePermutations(occupation.RIASEC_code, riasecCode) && 
       arePermutations(occupation.work_value_code, workValueCode) &&
       // Exclude exact matches we've already found
@@ -81,7 +93,9 @@ export const getMatchingMajors = async (
     
     // Extract majors from these occupation objects
     limitedPermutationMatches.forEach(occupation => {
-      result.permutationMatches.push(...occupation.majors);
+      if (occupation.majors && Array.isArray(occupation.majors)) {
+        result.permutationMatches.push(...occupation.majors);
+      }
     });
     
     // Remove duplicates
@@ -94,12 +108,14 @@ export const getMatchingMajors = async (
     }
     
     // 3. Find RIASEC-only matches (exact or permutation)
+    // Updated with null checks to handle null codes
     const riasecMatches = mappings.filter(occupation => 
+      occupation.RIASEC_code !== null &&
       (occupation.RIASEC_code === riasecCode || arePermutations(occupation.RIASEC_code, riasecCode)) &&
       // Exclude matches we've already found
       !(
         (occupation.RIASEC_code === riasecCode && occupation.work_value_code === workValueCode) ||
-        (arePermutations(occupation.RIASEC_code, riasecCode) && arePermutations(occupation.work_value_code, workValueCode))
+        (arePermutations(occupation.RIASEC_code, riasecCode) && occupation.work_value_code !== null && arePermutations(occupation.work_value_code, workValueCode))
       )
     );
     
@@ -110,7 +126,9 @@ export const getMatchingMajors = async (
     
     // Extract majors from these occupation objects
     limitedRiasecMatches.forEach(occupation => {
-      result.riasecMatches.push(...occupation.majors);
+      if (occupation.majors && Array.isArray(occupation.majors)) {
+        result.riasecMatches.push(...occupation.majors);
+      }
     });
     
     // Remove duplicates
@@ -123,13 +141,15 @@ export const getMatchingMajors = async (
     }
     
     // 4. Find Work Value-only matches (exact or permutation)
+    // Updated with null checks to handle null codes
     const workValueMatches = mappings.filter(occupation => 
+      occupation.work_value_code !== null &&
       (occupation.work_value_code === workValueCode || arePermutations(occupation.work_value_code, workValueCode)) &&
       // Exclude matches we've already found
       !(
         (occupation.RIASEC_code === riasecCode && occupation.work_value_code === workValueCode) ||
-        (arePermutations(occupation.RIASEC_code, riasecCode) && arePermutations(occupation.work_value_code, workValueCode)) ||
-        (occupation.RIASEC_code === riasecCode || arePermutations(occupation.RIASEC_code, riasecCode))
+        (occupation.RIASEC_code !== null && arePermutations(occupation.RIASEC_code, riasecCode) && arePermutations(occupation.work_value_code, workValueCode)) ||
+        (occupation.RIASEC_code !== null && (occupation.RIASEC_code === riasecCode || arePermutations(occupation.RIASEC_code, riasecCode)))
       )
     );
     
@@ -140,7 +160,9 @@ export const getMatchingMajors = async (
     
     // Extract majors from these occupation objects
     limitedWorkValueMatches.forEach(occupation => {
-      result.workValueMatches.push(...occupation.majors);
+      if (occupation.majors && Array.isArray(occupation.majors)) {
+        result.workValueMatches.push(...occupation.majors);
+      }
     });
     
     // Remove duplicates

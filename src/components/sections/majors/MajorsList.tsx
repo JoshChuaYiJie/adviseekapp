@@ -27,29 +27,35 @@ export const MajorsList = ({
 
   // Determine which majors to display based on active tab
   const getMajorsToDisplay = () => {
-    if (!recommendations) return [];
+    if (!recommendations) {
+      console.log("No recommendations provided to MajorsList");
+      return [];
+    }
+    
+    console.log(`Getting majors to display for tab: ${activeTab}`);
     
     switch (activeTab) {
       case 'exact':
-        return recommendations.exactMatches;
+        return recommendations.exactMatches || [];
       case 'permutation':
-        return recommendations.permutationMatches;
+        return recommendations.permutationMatches || [];
       case 'riasec':
-        return recommendations.riasecMatches;
+        return recommendations.riasecMatches || [];
       case 'workValue':
-        return recommendations.workValueMatches;
+        return recommendations.workValueMatches || [];
       case 'all':
         // For 'all' tab, show the best available matches based on priority
-        if (recommendations.exactMatches.length > 0)
+        if (recommendations.exactMatches && recommendations.exactMatches.length > 0)
           return recommendations.exactMatches;
-        if (recommendations.permutationMatches.length > 0)
+        if (recommendations.permutationMatches && recommendations.permutationMatches.length > 0)
           return recommendations.permutationMatches;
-        if (recommendations.riasecMatches.length > 0)
+        if (recommendations.riasecMatches && recommendations.riasecMatches.length > 0)
           return recommendations.riasecMatches;
-        if (recommendations.workValueMatches.length > 0)
+        if (recommendations.workValueMatches && recommendations.workValueMatches.length > 0)
           return recommendations.workValueMatches;
         return [];
       default:
+        console.log(`Unknown tab: ${activeTab}`);
         return [];
     }
   };
@@ -84,12 +90,12 @@ export const MajorsList = ({
     return match ? match[1] : '';
   };
 
-  // Count majors in each category
+  // Count majors in each category with null safety
   const majorCounts = {
-    exact: recommendations?.exactMatches.length || 0,
-    permutation: recommendations?.permutationMatches.length || 0,
-    riasec: recommendations?.riasecMatches.length || 0,
-    workValue: recommendations?.workValueMatches.length || 0
+    exact: recommendations?.exactMatches?.length || 0,
+    permutation: recommendations?.permutationMatches?.length || 0,
+    riasec: recommendations?.riasecMatches?.length || 0,
+    workValue: recommendations?.workValueMatches?.length || 0
   };
   
   // Get the majors to display based on the active tab
