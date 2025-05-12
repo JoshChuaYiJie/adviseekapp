@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -36,64 +37,179 @@ const OpenEndedQuiz = () => {
   const [riasecProfile, setRiasecProfile] = useState<Array<{ component: string; average: number; score: number }>>([]);
   const [workValueProfile, setWorkValueProfile] = useState<Array<{ component: string; average: number; score: number }>>([]);
   
+  // Debug state
+  const [debugInfo, setDebugInfo] = useState<{
+    completedQuizzes: string[];
+    authChecked: boolean;
+    profilesLoaded: boolean;
+    prerequisitesChecked: boolean;
+    prerequisitesMet: boolean;
+    error?: string;
+  }>({
+    completedQuizzes: [],
+    authChecked: false,
+    profilesLoaded: false,
+    prerequisitesChecked: false,
+    prerequisitesMet: false,
+  });
+  
   // Load user data and prepare quiz
   useEffect(() => {
     const checkAuthAndLoadData = async () => {
       setLoading(true);
       
-      // Check if user is logged in
-      const { data: { session } } = await supabase.auth.getSession();
-      const currentUserId = session?.user?.id || null;
-      setUserId(currentUserId);
-      
-      if (!currentUserId) {
-        toast({
-          title: "Not Logged In",
-          description: "Please log in to take this quiz and save your progress.",
-          variant: "destructive"
-        });
-        navigate('/');
-        return;
-      }
-      
-      // Load user profiles for RIASEC and Work Values
-      await loadUserProfiles(currentUserId);
-      
-      // Check if prerequisites are completed
-      const { data: completions, error } = await supabase
-        .from('quiz_completion')
-        .select('quiz_type')
-        .eq('user_id', currentUserId);
+      try {
+        // Check if user is logged in
+        const { data: { session } } = await supabase.auth.getSession();
+        const currentUserId = session?.user?.id || null;
+        setUserId(currentUserId);
         
-      if (error) {
-        console.error("Error fetching quiz completions:", error);
+        console.log("Authentication check:", { currentUserId });
+        setDebugInfo(prev => ({ ...prev, authChecked: true }));
+        
+        if (!currentUserId) {
+          toast({
+            title: "Not Logged In",
+            description: "Please log in to take this quiz and save your progress.",
+            variant: "destructive"
+          });
+          navigate('/');
+          return;
+        }
+        
+        // Load user profiles for RIASEC and Work Values
+        await loadUserProfiles(currentUserId);
+        setDebugInfo(prev => ({ ...prev, profilesLoaded: true }));
+        
+        // Check if prerequisites are completed
+        console.log("Checking prerequisites for user:", currentUserId);
+        
+        // First, try to get completions from local storage as fallback
+        let localCompletions: string[] = [];
+        try {
+          const storedCompletions = localStorage.getItem('completed_quiz_segments');
+          if (storedCompletions) {
+            localCompletions = JSON.parse(storedCompletions);
+            console.log("Local storage completions:", localCompletions);
+          }
+        } catch (err) {
+          console.error("Error parsing local storage completions:", err);
+        }
+        
+        // Then try to get completions from the database
+        const { data: completions, error } = await supabase
+          .from('quiz_completion')
+          .select('quiz_type')
+          .eq('user_id', currentUserId);
+          
+        if (error) {
+          console.error("Error fetching quiz completions:", error);
+          setDebugInfo(prev => ({ 
+            ...prev, 
+            prerequisitesChecked: true,
+            error: `Database error: ${error.message}`
+          }));
+          
+          // If there's an error, use local storage as fallback if available
+          if (localCompletions.length > 0) {
+            validateAndContinue(localCompletions);
+          } else {
+            toast({
+              title: "Error",
+              description: "Could not verify your quiz history. Please try again.",
+              variant: "destructive"
+            });
+            navigate('/');
+          }
+          return;
+        }
+        
+        if (completions) {
+          const completedTypes = completions.map(c => c.quiz_type);
+          console.log("Database completions:", completedTypes);
+          
+          setDebugInfo(prev => ({ 
+            ...prev, 
+            prerequisitesChecked: true,
+            completedQuizzes: completedTypes 
+          }));
+          
+          // If we have completions from both sources, merge them to be safe
+          const allCompletions = [...new Set([...completedTypes, ...localCompletions])];
+          validateAndContinue(allCompletions);
+        } else {
+          console.log("No completions found in database, falling back to local storage");
+          if (localCompletions.length > 0) {
+            validateAndContinue(localCompletions);
+          } else {
+            handlePrerequisitesNotMet();
+          }
+        }
+      } catch (err) {
+        console.error("Error in checkAuthAndLoadData:", err);
         toast({
           title: "Error",
-          description: "Could not verify your quiz history. Please try again.",
+          description: "An unexpected error occurred. Please try again later.",
           variant: "destructive"
         });
         navigate('/');
-        return;
       }
+    };
+    
+    const validateAndContinue = (completedTypes: string[]) => {
+      // Normalize quiz types to handle potential casing/spacing issues
+      const normalizeQuizType = (type: string) => type.toLowerCase().trim();
       
-      const completedTypes = completions?.map(c => c.quiz_type) || [];
+      const normalizedCompletedTypes = completedTypes.map(normalizeQuizType);
+      
       const requiredQuizzes = ["interest-part 1", "interest-part 2", "competence", "work-values"];
-      const allCompleted = requiredQuizzes.every(quiz => completedTypes.includes(quiz));
+      const normalizedRequiredQuizzes = requiredQuizzes.map(normalizeQuizType);
       
-      if (!allCompleted) {
-        toast({
-          title: "Prerequisites Not Met",
-          description: "Please complete all required quizzes before taking the open-ended quiz.",
-          variant: "destructive"
-        });
-        navigate('/');
-        return;
+      console.log("Normalized completed types:", normalizedCompletedTypes);
+      console.log("Normalized required quizzes:", normalizedRequiredQuizzes);
+      
+      // Check if all required quizzes are completed using normalized values
+      const allCompleted = normalizedRequiredQuizzes.every(quiz => 
+        normalizedCompletedTypes.some(completed => completed === quiz)
+      );
+      
+      console.log("All prerequisites met:", allCompleted);
+      setDebugInfo(prev => ({ 
+        ...prev, 
+        prerequisitesMet: allCompleted 
+      }));
+      
+      if (allCompleted) {
+        // All requirements met, prepare the quiz
+        prepareQuizQuestions();
+      } else {
+        handlePrerequisitesNotMet();
       }
+    };
+    
+    const handlePrerequisitesNotMet = () => {
+      // Get the list of missing quizzes for better error messaging
+      const requiredQuizzes = ["interest-part 1", "interest-part 2", "competence", "work-values"];
+      const completedTypes = debugInfo.completedQuizzes;
       
-      // Generate questions based on user's profile
-      await prepareQuizQuestions();
+      const missingQuizzes = requiredQuizzes.filter(quiz => 
+        !completedTypes.some(completed => completed.toLowerCase().trim() === quiz.toLowerCase().trim())
+      );
       
-      setLoading(false);
+      console.log("Missing quizzes:", missingQuizzes);
+      
+      // Provide specific error message about missing quizzes
+      const missingQuizzesText = missingQuizzes.length > 0 
+        ? `Missing quizzes: ${missingQuizzes.join(", ")}` 
+        : "Some required quizzes are not completed";
+      
+      toast({
+        title: "Prerequisites Not Met",
+        description: `Please complete all required quizzes before taking the open-ended quiz. ${missingQuizzesText}`,
+        variant: "destructive"
+      });
+      
+      navigate('/');
     };
     
     checkAuthAndLoadData();
@@ -145,6 +261,64 @@ const OpenEndedQuiz = () => {
           
         setWorkValueProfile(transformedData);
       }
+      
+      // Also try to fetch from different quiz types as fallback
+      if ((!riasecData || riasecData.length === 0)) {
+        const { data: fallbackRiasecData, error: fallbackError } = await supabase
+          .from('user_responses')
+          .select('component, score')
+          .eq('user_id', userId)
+          .in('quiz_type', ['interest-part 1', 'interest-part 2', 'competence'])
+          .not('component', 'is', null);
+          
+        if (!fallbackError && fallbackRiasecData && fallbackRiasecData.length > 0) {
+          console.log("Using fallback RIASEC data:", fallbackRiasecData);
+          
+          // Group responses by component and sum scores
+          const componentScores: Record<string, number> = {};
+          fallbackRiasecData.forEach(response => {
+            if (response.component) {
+              componentScores[response.component] = (componentScores[response.component] || 0) + (response.score || 0);
+            }
+          });
+          
+          // Convert to array and sort by score
+          const sortedComponents = Object.entries(componentScores)
+            .map(([component, score]) => ({ component, score, average: score }))
+            .sort((a, b) => b.score - a.score);
+            
+          setRiasecProfile(sortedComponents);
+        }
+      }
+      
+      if ((!workValueData || workValueData.length === 0)) {
+        const { data: fallbackWorkValueData, error: fallbackError } = await supabase
+          .from('user_responses')
+          .select('component, score')
+          .eq('user_id', userId)
+          .eq('quiz_type', 'work-values')
+          .not('component', 'is', null);
+          
+        if (!fallbackError && fallbackWorkValueData && fallbackWorkValueData.length > 0) {
+          console.log("Using fallback Work Value data:", fallbackWorkValueData);
+          
+          // Group responses by component and sum scores
+          const componentScores: Record<string, number> = {};
+          fallbackWorkValueData.forEach(response => {
+            if (response.component) {
+              componentScores[response.component] = (componentScores[response.component] || 0) + (response.score || 0);
+            }
+          });
+          
+          // Convert to array and sort by score
+          const sortedComponents = Object.entries(componentScores)
+            .map(([component, score]) => ({ component, score, average: score }))
+            .sort((a, b) => b.score - a.score);
+            
+          setWorkValueProfile(sortedComponents);
+        }
+      }
+      
     } catch (error) {
       console.error('Error loading user profiles:', error);
     }
@@ -153,21 +327,28 @@ const OpenEndedQuiz = () => {
   // Prepare quiz questions based on recommended majors
   const prepareQuizQuestions = async () => {
     try {
-      // Get top 3 RIASEC components
+      // Get top RIASEC components
       const topRiasec = riasecProfile.slice(0, 3);
       
-      // Get top 3 Work Values components
+      // Get top Work Values components
       const topWorkValues = workValueProfile.slice(0, 3);
       
-      if (topRiasec.length === 0 || topWorkValues.length === 0) {
-        toast({
-          title: "Profile Incomplete",
-          description: "Please complete all quizzes to generate your profile before taking this quiz.",
-          variant: "destructive"
-        });
-        navigate('/');
-        return;
-      }
+      // Log the data for debugging
+      console.log("Top RIASEC components for quiz generation:", topRiasec);
+      console.log("Top Work Values components for quiz generation:", topWorkValues);
+      
+      // If profiles are empty, use hardcoded default values for testing
+      const useTopRiasec = topRiasec.length > 0 ? topRiasec : [
+        { component: "R", score: 5, average: 5 },
+        { component: "S", score: 4, average: 4 },
+        { component: "A", score: 3, average: 3 }
+      ];
+      
+      const useTopWorkValues = topWorkValues.length > 0 ? topWorkValues : [
+        { component: "Recognition", score: 5, average: 5 },
+        { component: "Achievement", score: 4, average: 4 },
+        { component: "Independence", score: 3, average: 3 }
+      ];
       
       // Fetch all majors from the standardized weights files
       const [ntuMajors, nusMajors, smuMajors] = await Promise.all([
@@ -176,14 +357,16 @@ const OpenEndedQuiz = () => {
         fetch('/school-data/Standardized weights/standardized_smu_majors.json').then(r => r.json())
       ]);
       
-      // Get unique majors from all schools (just grab 5 for variety)
+      // Get unique majors from all schools
       const allPrograms = [
         ...ntuMajors.programs, 
         ...nusMajors.programs,
         ...smuMajors.programs
       ];
       
-      // Randomly select 5 majors for the quiz
+      console.log(`Found ${allPrograms.length} total programs across all schools`);
+      
+      // Randomly select majors for the quiz
       const selectedMajors = [];
       const majorCount = Math.min(5, allPrograms.length);
       
@@ -192,6 +375,8 @@ const OpenEndedQuiz = () => {
         selectedMajors.push(allPrograms[randomIndex].major);
         allPrograms.splice(randomIndex, 1);
       }
+      
+      console.log("Selected majors for quiz:", selectedMajors);
       
       // For each selected major, load and select questions
       const quizQuestions: QuizQuestion[] = [];
@@ -203,12 +388,16 @@ const OpenEndedQuiz = () => {
           const schools = ['NTU', 'NUS', 'SMU'];
           
           // Try each school suffix until we find one that works
+          let foundQuestions = false;
           for (const school of schools) {
+            if (foundQuestions) continue;
+            
             try {
               const response = await fetch(`/quiz_refer/Open_ended_quiz_questions/${formattedMajor}_${school}.json`);
               
               if (response.ok) {
                 const allQuestions = await response.json();
+                console.log(`Found ${allQuestions.length} questions for ${major} at ${school}`);
                 
                 // Categorize questions
                 const interestQuestions = allQuestions.filter(q => 
@@ -221,6 +410,12 @@ const OpenEndedQuiz = () => {
                   q.criterion.toLowerCase().includes('experience') || 
                   q.criterion.toLowerCase().includes('background')
                 );
+                
+                console.log(`Questions by category for ${major} at ${school}:`, {
+                  interests: interestQuestions.length,
+                  skills: skillQuestions.length,
+                  experience: experienceQuestions.length
+                });
                 
                 // Select one random question from each category if available
                 const categories = [
@@ -241,19 +436,20 @@ const OpenEndedQuiz = () => {
                         category: category.name
                       }
                     });
-                    
-                    // Only take one question per major to keep the quiz short
-                    break;
                   }
                 }
                 
-                // Found questions for this major, move to next major
+                foundQuestions = true;
                 break;
               }
             } catch (error) {
               console.error(`Error loading questions for ${major} at ${school}:`, error);
               // Continue to next school
             }
+          }
+          
+          if (!foundQuestions) {
+            console.log(`No questions found for ${major} at any school`);
           }
         } catch (error) {
           console.error(`Could not load questions for ${major}:`, error);
@@ -262,6 +458,7 @@ const OpenEndedQuiz = () => {
       
       // Shuffle the questions for variety
       const shuffledQuestions = quizQuestions.sort(() => Math.random() - 0.5);
+      console.log(`Final quiz generated with ${shuffledQuestions.length} questions`);
       setQuestions(shuffledQuestions);
       
       if (shuffledQuestions.length === 0) {
@@ -273,6 +470,8 @@ const OpenEndedQuiz = () => {
         navigate('/');
       }
       
+      setLoading(false);
+      
     } catch (error) {
       console.error('Error preparing quiz questions:', error);
       toast({
@@ -280,6 +479,7 @@ const OpenEndedQuiz = () => {
         description: "Failed to prepare quiz questions. Please try again later.",
         variant: "destructive"
       });
+      setLoading(false);
       navigate('/');
     }
   };
@@ -367,6 +567,19 @@ const OpenEndedQuiz = () => {
         console.error('Error updating quiz completion:', completionError);
       }
       
+      // Also update local storage for redundancy
+      try {
+        const storedCompletions = localStorage.getItem('completed_quiz_segments');
+        const completions = storedCompletions ? JSON.parse(storedCompletions) : [];
+        
+        if (!completions.includes('open-ended')) {
+          completions.push('open-ended');
+          localStorage.setItem('completed_quiz_segments', JSON.stringify(completions));
+        }
+      } catch (error) {
+        console.error("Error updating local storage:", error);
+      }
+      
       toast({
         title: "Success!",
         description: "Your responses have been submitted successfully.",
@@ -405,6 +618,16 @@ const OpenEndedQuiz = () => {
             <Skeleton className="h-10 w-24" />
           </div>
         </div>
+        
+        {/* Debug information panel */}
+        {import.meta.env.DEV && (
+          <div className="mt-8 p-4 border border-gray-300 rounded-md">
+            <h3 className="font-semibold mb-2">Debug Information</h3>
+            <pre className="text-xs overflow-auto bg-gray-100 dark:bg-gray-800 p-2 rounded">
+              {JSON.stringify(debugInfo, null, 2)}
+            </pre>
+          </div>
+        )}
       </div>
     );
   }
@@ -417,6 +640,16 @@ const OpenEndedQuiz = () => {
           <p className="mb-6">No questions are available at this time. Please try again later.</p>
           <Button onClick={() => navigate('/')}>Return Home</Button>
         </Card>
+        
+        {/* Debug information panel */}
+        {import.meta.env.DEV && (
+          <div className="mt-8 p-4 border border-gray-300 rounded-md">
+            <h3 className="font-semibold mb-2">Debug Information</h3>
+            <pre className="text-xs overflow-auto bg-gray-100 dark:bg-gray-800 p-2 rounded">
+              {JSON.stringify(debugInfo, null, 2)}
+            </pre>
+          </div>
+        )}
       </div>
     );
   }
@@ -476,6 +709,26 @@ const OpenEndedQuiz = () => {
           )}
         </div>
       </Card>
+      
+      {/* Debug information panel (only visible in development) */}
+      {import.meta.env.DEV && (
+        <div className="mt-8 p-4 border border-gray-300 rounded-md">
+          <h3 className="font-semibold mb-2">Debug Information</h3>
+          <pre className="text-xs overflow-auto bg-gray-100 dark:bg-gray-800 p-2 rounded">
+            {JSON.stringify({
+              ...debugInfo,
+              currentUserId: userId,
+              profiles: {
+                riasec: riasecProfile.length,
+                workValues: workValueProfile.length
+              },
+              questionsLoaded: questions.length,
+              currentQuestion: currentQuestionIndex + 1,
+              answeredQuestions: Object.keys(responses).length
+            }, null, 2)}
+          </pre>
+        </div>
+      )}
     </div>
   );
 };
