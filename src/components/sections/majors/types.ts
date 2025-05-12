@@ -9,6 +9,7 @@ export interface OpenEndedQuestion {
   category?: 'interests' | 'skills' | 'experience' | 'general';
   criterion: string;
   question: string;
+  majorName?: string; // Add this property to fix the type errors
 }
 
 export interface OpenEndedResponse {
