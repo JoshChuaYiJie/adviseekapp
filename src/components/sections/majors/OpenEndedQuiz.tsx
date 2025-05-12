@@ -70,12 +70,14 @@ export const OpenEndedQuiz = () => {
         for (const major of selectedMajors) {
           try {
             // Format major name for file path
-            const majorFormatted = major.replace(/\s+/g, '_').replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '');
+            // Ensure major is a string before using string methods
+            const majorStr = String(major);
+            const majorFormatted = majorStr.replace(/\s+/g, '_').replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '');
             let schoolSuffix = '';
             
             // Check if major contains school information
-            if (major.includes(' at ')) {
-              const [majorName, school] = major.split(' at ');
+            if (majorStr.includes(' at ')) {
+              const [majorName, school] = majorStr.split(' at ');
               schoolSuffix = '_' + school.trim().replace(/\s+/g, '_');
             }
             
@@ -100,7 +102,7 @@ export const OpenEndedQuiz = () => {
                   // Add major information to the question
                   allQuestions.push({
                     ...randomQuestion,
-                    major: major
+                    major: majorStr
                   });
                 }
               }
