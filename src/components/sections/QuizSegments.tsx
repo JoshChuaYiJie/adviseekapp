@@ -36,32 +36,44 @@ export const QuizSegments = () => {
   // Function to load user profiles
   const loadUserProfiles = async (userId: string) => {
     try {
-      // Fetch RIASEC profile
+      // Fetch RIASEC profile from user_responses table instead of user_profiles
       const { data: riasecData, error: riasecError } = await supabase
-        .from('user_profiles')
-        .select('component, average, score')
+        .from('user_responses')
+        .select('component, score')
         .eq('user_id', userId)
-        .eq('profile_type', 'riasec')
-        .order('average', { ascending: false });
+        .eq('quiz_type', 'riasec')
+        .order('score', { ascending: false });
       
       if (riasecError) {
         console.error('Error fetching RIASEC profile:', riasecError);
-      } else if (riasecData) {
-        setRiasecProfile(riasecData);
+      } else if (riasecData && riasecData.length > 0) {
+        // Transform data to match expected format with average property
+        const transformedData = riasecData.map(item => ({
+          component: item.component,
+          score: item.score,
+          average: item.score // Use score as average for compatibility
+        }));
+        setRiasecProfile(transformedData);
       }
       
-      // Fetch Work Value profile
+      // Fetch Work Value profile from user_responses table
       const { data: workValueData, error: workValueError } = await supabase
-        .from('user_profiles')
-        .select('component, average, score')
+        .from('user_responses')
+        .select('component, score')
         .eq('user_id', userId)
-        .eq('profile_type', 'work_value')
-        .order('average', { ascending: false });
+        .eq('quiz_type', 'work_value')
+        .order('score', { ascending: false });
       
       if (workValueError) {
         console.error('Error fetching Work Value profile:', workValueError);
-      } else if (workValueData) {
-        setWorkValueProfile(workValueData);
+      } else if (workValueData && workValueData.length > 0) {
+        // Transform data to match expected format with average property
+        const transformedData = workValueData.map(item => ({
+          component: item.component,
+          score: item.score,
+          average: item.score // Use score as average for compatibility
+        }));
+        setWorkValueProfile(transformedData);
       }
       
     } catch (error) {
@@ -217,7 +229,7 @@ export const QuizSegments = () => {
         toast({
           title: "Profile Not Complete",
           description: "Please complete the other quiz segments first to generate your profile.",
-          variant: "warning"
+          variant: "default" // Changed from "warning" to "default"
         });
         return;
       }

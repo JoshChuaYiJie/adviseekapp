@@ -165,18 +165,16 @@ export const MajorRecommendations = ({
         return;
       }
 
-      // Store responses in the database
+      // Store responses in the user_responses table instead of open_ended_responses
       const { error } = await supabase
-        .from('open_ended_responses')
+        .from('user_responses')
         .insert(
           responses.map(r => ({
             user_id: userId,
             question_id: r.questionId,
-            question: r.question,
             response: r.response,
-            criterion: r.criterion,
-            major: r.major,
-            school: r.school
+            quiz_type: 'open-ended',
+            component: r.criterion
           }))
         );
       
