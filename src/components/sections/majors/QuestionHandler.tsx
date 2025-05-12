@@ -20,10 +20,11 @@ export const useQuestionHandler = ({ userId }: QuestionHandlerProps) => {
   const loadQuestions = async (majorName: string) => {
     try {
       setLoadingQuestions(true);
-      const formattedMajor = formatMajorForFile(majorName);
+      const [major, school] = majorName.split(' at ');
+      const formattedMajor = formatMajorForFile(major, school);
       
       // Fetch questions from the JSON file
-      const response = await fetch(`/school-data/Application Questions/${formattedMajor}.json`);
+      const response = await fetch(`/quiz_refer/Open_ended_quiz_questions/${formattedMajor}.json`);
       if (!response.ok) {
         throw new Error(`Failed to load questions for ${majorName}`);
       }
