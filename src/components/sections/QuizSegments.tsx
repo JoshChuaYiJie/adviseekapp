@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -6,7 +7,6 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { LockIcon } from "lucide-react";
 import { McqQuestionsDisplay } from "@/components/McqQuestionsDisplay";
-import { MajorRecommendations } from "./MajorRecommendations";
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -26,78 +26,6 @@ export const QuizSegments = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const [completedSegments, setCompletedSegments] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
-  // New state for open-ended questions mode
-  const [showOpenEndedQuiz, setShowOpenEndedQuiz] = useState(false);
-  // State for user's RIASEC and Work Value profiles
-  const [riasecProfile, setRiasecProfile] = useState<Array<{ component: string; average: number; score: number }>>([]);
-  const [workValueProfile, setWorkValueProfile] = useState<Array<{ component: string; average: number; score: number }>>([]);
-  
-  // Function to load user profiles
-  const loadUserProfiles = async (userId: string) => {
-    try {
-      console.log("Loading user profiles for", userId);
-      
-      // Fetch RIASEC profile from user_responses table
-      const { data: riasecData, error: riasecError } = await supabase
-        .from('user_responses')
-        .select('component, score')
-        .eq('user_id', userId)
-        .eq('quiz_type', 'riasec');
-      
-      if (riasecError) {
-        console.error('Error fetching RIASEC profile:', riasecError);
-      } else {
-        console.log("RIASEC data:", riasecData);
-        if (riasecData && riasecData.length > 0) {
-          // Transform data to match expected format with average property
-          // Then sort by score in descending order to get highest percentages first
-          const transformedData = riasecData
-            .map(item => ({
-              component: item.component,
-              score: item.score,
-              average: item.score // Use score as average for compatibility
-            }))
-            .sort((a, b) => b.score - a.score); // Sort by score descending
-            
-          console.log("Transformed RIASEC data:", transformedData);
-          setRiasecProfile(transformedData);
-        }
-      }
-      
-      // Fetch Work Value profile from user_responses table with added detailed logging
-      const { data: workValueData, error: workValueError } = await supabase
-        .from('user_responses')
-        .select('component, score')
-        .eq('user_id', userId)
-        .eq('quiz_type', 'work_value');
-      
-      if (workValueError) {
-        console.error('Error fetching Work Value profile:', workValueError);
-      } else {
-        console.log("Work Value data:", workValueData);
-        if (workValueData && workValueData.length > 0) {
-          // Transform data to match expected format with average property
-          // Then sort by score in descending order to get highest percentages first
-          const transformedData = workValueData
-            .map(item => ({
-              component: item.component,
-              score: item.score,
-              average: item.score // Use score as average for compatibility
-            }))
-            .sort((a, b) => b.score - a.score); // Sort by score descending
-            
-          console.log("Transformed Work Value data:", transformedData);
-          setWorkValueProfile(transformedData);
-        }
-      }
-      
-      // For debugging: Log both profiles after loading
-      console.log("Final RIASEC profile state:", riasecProfile);
-      console.log("Final Work Value profile state:", workValueProfile);
-    } catch (error) {
-      console.error('Error loading user profiles:', error);
-    }
-  };
   
   useEffect(() => {
     // Check for authenticated user
@@ -111,9 +39,6 @@ export const QuizSegments = () => {
       let completed: string[] = [];
       
       if (currentUserId) {
-        // Load user profiles for RIASEC and Work Values
-        await loadUserProfiles(currentUserId);
-        
         // Try to get from Supabase first
         try {
           // Direct supabase client call since this table isn't in the types yet
@@ -153,10 +78,9 @@ export const QuizSegments = () => {
       const newUserId = session?.user?.id || null;
       setUserId(newUserId);
       
-      // If user just logged in, fetch their completed quizzes and profiles
+      // If user just logged in, fetch their completed quizzes
       if (event === 'SIGNED_IN' && session?.user?.id) {
         fetchCompletedQuizzes(session.user.id);
-        loadUserProfiles(session.user.id);
       }
     });
     
@@ -246,11 +170,7 @@ export const QuizSegments = () => {
     }
     
     if (segmentId === "open-ended") {
-      console.log("Open-ended quiz requested. Profiles:", {
-        riasecProfile: riasecProfile,
-        workValueProfile: workValueProfile,
-        allSegmentsCompleted
-      });
+      console.log("Open-ended quiz requested");
       
       // Allow access to open-ended quiz as long as all segments are completed
       if (!allSegmentsCompleted) {
@@ -262,9 +182,8 @@ export const QuizSegments = () => {
         return;
       }
       
-      // Show open-ended quiz interface with actual user data
-      setShowOpenEndedQuiz(true);
-      setActiveTab("open-ended");
+      // Navigate to the open-ended quiz page
+      navigate('/quiz/open-ended');
     } else {
       navigate(`/quiz/${segmentId}`);
     }
@@ -284,13 +203,7 @@ export const QuizSegments = () => {
     <div className="space-y-6">
       <Tabs 
         defaultValue={activeTab} 
-        onValueChange={(newTab) => {
-          setActiveTab(newTab);
-          // Reset open-ended quiz mode if changing tabs
-          if (newTab !== "open-ended") {
-            setShowOpenEndedQuiz(false);
-          }
-        }}
+        onValueChange={setActiveTab}
         className="w-full"
       >
         <TabsList className="mb-4 flex flex-wrap">
@@ -311,87 +224,53 @@ export const QuizSegments = () => {
         
         {quizSegments.map(segment => (
           <TabsContent key={segment.id} value={segment.id} className="space-y-6">
-            {segment.id === "open-ended" && showOpenEndedQuiz ? (
-              // Show the MajorRecommendations component in quiz mode when open-ended tab is active
-              <div>
-                <Button 
-                  onClick={() => setShowOpenEndedQuiz(false)}
-                  variant="outline"
-                  className="mb-4"
-                >
-                  Back to Quiz Overview
-                </Button>
+            <div className={`p-6 ${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg shadow`}>
+              <div className="flex flex-col items-center justify-center py-12 space-y-6 text-center">
+                <h2 className="text-2xl font-medium">{segment.title}</h2>
+                <p className="text-gray-500 dark:text-gray-400 max-w-lg">
+                  {segment.description}
+                </p>
                 
-                <div className="p-4 bg-blue-50 dark:bg-blue-900 rounded-lg mb-6">
-                  <h3 className="font-medium text-lg">Open-ended Questions Quiz</h3>
-                  <p className="text-gray-600 dark:text-gray-300">
-                    Select a major from the recommendations below to answer questions specific to that field of study.
-                  </p>
-                </div>
-                
-                <MajorRecommendations 
-                  topRiasec={riasecProfile.length > 0 ? riasecProfile : [
-                    { component: 'Realistic', average: 4, score: 4 },
-                    { component: 'Social', average: 3.5, score: 3.5 },
-                    { component: 'Artistic', average: 3, score: 3 },
-                  ]}
-                  topWorkValues={workValueProfile.length > 0 ? workValueProfile : [
-                    { component: 'Achievement', average: 4, score: 4 },
-                    { component: 'Recognition', average: 3.5, score: 3.5 },
-                    { component: 'Independence', average: 3, score: 3 },
-                  ]}
-                  isQuizMode={true}
-                />
-              </div>
-            ) : (
-              <div className={`p-6 ${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg shadow`}>
-                <div className="flex flex-col items-center justify-center py-12 space-y-6 text-center">
-                  <h2 className="text-2xl font-medium">{segment.title}</h2>
-                  <p className="text-gray-500 dark:text-gray-400 max-w-lg">
-                    {segment.description}
-                  </p>
-                  
-                  {segment.locked ? (
-                    <div className="flex flex-col items-center space-y-4">
-                      <div className="w-16 h-16 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                        <LockIcon size={24} className="text-gray-500 dark:text-gray-400" />
-                      </div>
-                      <Alert className={`${isCurrentlyDark ? 'bg-gray-700' : 'bg-gray-100'} max-w-md`}>
-                        <AlertTitle>This section is locked</AlertTitle>
-                        <AlertDescription>
-                          Complete all previous quiz segments to unlock open-ended questions.
-                        </AlertDescription>
-                      </Alert>
+                {segment.locked ? (
+                  <div className="flex flex-col items-center space-y-4">
+                    <div className="w-16 h-16 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                      <LockIcon size={24} className="text-gray-500 dark:text-gray-400" />
                     </div>
-                  ) : (
-                    <>
-                      {segment.completed ? (
-                        <div className="flex flex-col items-center space-y-4">
-                          <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center">
-                            <span className="text-green-600 dark:text-green-400 text-3xl">✓</span>
-                          </div>
-                          <p className="text-green-600 dark:text-green-400">You've completed this section!</p>
-                          <Button 
-                            variant="outline" 
-                            onClick={() => handleStartQuiz(segment.id)}
-                          >
-                            Retake Quiz
-                          </Button>
+                    <Alert className={`${isCurrentlyDark ? 'bg-gray-700' : 'bg-gray-100'} max-w-md`}>
+                      <AlertTitle>This section is locked</AlertTitle>
+                      <AlertDescription>
+                        Complete all previous quiz segments to unlock open-ended questions.
+                      </AlertDescription>
+                    </Alert>
+                  </div>
+                ) : (
+                  <>
+                    {segment.completed ? (
+                      <div className="flex flex-col items-center space-y-4">
+                        <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center">
+                          <span className="text-green-600 dark:text-green-400 text-3xl">✓</span>
                         </div>
-                      ) : (
+                        <p className="text-green-600 dark:text-green-400">You've completed this section!</p>
                         <Button 
-                          size="lg" 
+                          variant="outline" 
                           onClick={() => handleStartQuiz(segment.id)}
-                          className="px-8"
                         >
-                          Start Quiz
+                          Retake Quiz
                         </Button>
-                      )}
-                    </>
-                  )}
-                </div>
+                      </div>
+                    ) : (
+                      <Button 
+                        size="lg" 
+                        onClick={() => handleStartQuiz(segment.id)}
+                        className="px-8"
+                      >
+                        Start Quiz
+                      </Button>
+                    )}
+                  </>
+                )}
               </div>
-            )}
+            </div>
           </TabsContent>
         ))}
 
