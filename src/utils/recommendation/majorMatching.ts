@@ -3,7 +3,6 @@ import { OccupationMajorMapping, MajorRecommendations } from './types';
 import { sanitizeToFilename } from './fileUtils';
 import { 
   findExactMatches,
-  findPermutationMatches,
   findRiasecMatches,
   findWorkValueMatches
 } from './matchingHelpers';
@@ -28,7 +27,7 @@ export const getMatchingMajors = async (
     // Initialize result object
     const result: MajorRecommendations = {
       exactMatches: [],
-      permutationMatches: [],
+      permutationMatches: [], // Keep this for backward compatibility but don't use it
       riasecMatches: [],
       workValueMatches: [],
       questionFiles: [], // Initialize empty array for question files
@@ -46,25 +45,16 @@ export const getMatchingMajors = async (
       result.questionFiles = result.exactMatches.map(sanitizeToFilename);
     }
     
-    // Find permutation matches
-    result.permutationMatches = findPermutationMatches(mappings, riasecCode, workValueCode);
-    
-    // If we have permutation matches and no exact matches, set match type and generate question files
-    if (result.permutationMatches.length > 0 && result.matchType === 'none') {
-      result.matchType = 'permutation';
-      result.questionFiles = result.permutationMatches.map(sanitizeToFilename);
-    }
-    
-    // Find RIASEC-only matches
+    // Find RIASEC-only matches (now the second priority)
     result.riasecMatches = findRiasecMatches(mappings, riasecCode, workValueCode);
     
-    // If we have RIASEC matches and no previous matches, set match type and generate question files
+    // If we have RIASEC matches and no exact matches, set match type and generate question files
     if (result.riasecMatches.length > 0 && result.matchType === 'none') {
       result.matchType = 'riasec';
       result.questionFiles = result.riasecMatches.map(sanitizeToFilename);
     }
     
-    // Find Work Value-only matches
+    // Find Work Value-only matches (third priority)
     result.workValueMatches = findWorkValueMatches(mappings, riasecCode, workValueCode);
     
     // If we have Work Value matches and no previous matches, set match type and generate question files
@@ -76,7 +66,6 @@ export const getMatchingMajors = async (
     // Final logging to check results
     console.log('Final recommendation results:', {
       exactMatches: result.exactMatches.length,
-      permutationMatches: result.permutationMatches.length,
       riasecMatches: result.riasecMatches.length,
       workValueMatches: result.workValueMatches.length,
       matchType: result.matchType
@@ -87,7 +76,7 @@ export const getMatchingMajors = async (
     console.error('Error fetching major recommendations:', error);
     return {
       exactMatches: [],
-      permutationMatches: [],
+      permutationMatches: [], // Keep empty array for backward compatibility
       riasecMatches: [],
       workValueMatches: [],
       questionFiles: [],

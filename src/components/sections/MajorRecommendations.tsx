@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
@@ -47,8 +47,17 @@ export const MajorRecommendations: React.FC<MajorRecommendationsProps> = ({
     submitting,
     completed,
     loadQuestions,
-    handleSubmitResponses
+    handleSubmitResponses,
+    recommendedMajors,
+    prepareQuestionsForRecommendedMajors
   } = useQuestionHandler({ userId });
+
+  // When recommendations are loaded in quiz mode, automatically prepare questions
+  useEffect(() => {
+    if (isQuizMode && recommendations && recommendedMajors.length > 0) {
+      prepareQuestionsForRecommendedMajors();
+    }
+  }, [isQuizMode, recommendations, recommendedMajors, prepareQuestionsForRecommendedMajors]);
 
   const handleMajorSelect = async (majorName: string) => {
     setSelectedMajor(majorName);
@@ -84,11 +93,12 @@ export const MajorRecommendations: React.FC<MajorRecommendationsProps> = ({
                 Complete this quiz to explore specific questions about your chosen major.
               </p>
               <Button 
-                onClick={handleTakeQuiz} 
+                onClick={prepareQuestionsForRecommendedMajors} 
                 size="lg" 
                 className="px-8 py-2"
+                disabled={loadingQuestions}
               >
-                Take Quiz
+                {loadingQuestions ? "Loading Questions..." : "Load Questions"}
               </Button>
             </div>
           ) : recommendations && (
@@ -146,8 +156,56 @@ export const MajorRecommendations: React.FC<MajorRecommendationsProps> = ({
               <p>No specific questions found for this major.</p>
             )}
           </>
+        ) : questions.length > 0 ? (
+          <>
+            <h3 className="text-xl font-medium mb-2">Questions Based on Your Profile</h3>
+            {loadingQuestions ? (
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-[280px]" />
+                <Skeleton className="h-4 w-[250px]" />
+                <Skeleton className="h-4 w-[260px]" />
+              </div>
+            ) : (
+              <>
+                <div className="space-y-6 mb-6">
+                  {questions.map((question, index) => (
+                    <div key={question.id || index} className="border border-gray-200 rounded-lg p-4">
+                      <div className="flex justify-between mb-2">
+                        <span className="text-sm font-medium text-gray-500">
+                          {question.majorName || "General"} - {question.category || "General"}
+                        </span>
+                      </div>
+                      <p className="font-medium mb-3">{question.question}</p>
+                      <textarea
+                        value={answeredQuestions[question.id || ''] || ''}
+                        onChange={(e) => setAnsweredQuestions(prev => ({
+                          ...prev,
+                          [question.id || '']: e.target.value
+                        }))}
+                        className="w-full border border-gray-300 rounded-md p-2 min-h-[100px]"
+                        placeholder="Type your answer here..."
+                      />
+                    </div>
+                  ))}
+                </div>
+                <button
+                  onClick={() => handleSubmitResponses(null)}
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
+                  disabled={submitting || completed}
+                >
+                  {submitting ? 'Submitting...' : completed ? 'Submitted' : 'Submit Responses'}
+                </button>
+              </>
+            )}
+          </>
         ) : (
-          <p>Select a major to view specific questions.</p>
+          <div className="p-4 border border-gray-200 rounded-md">
+            <p className="text-center text-gray-600">
+              {isQuizMode ? 
+                "Click 'Load Questions' to see questions based on your recommended majors." : 
+                "Select a major to view specific questions."}
+            </p>
+          </div>
         )}
       </div>
     </div>

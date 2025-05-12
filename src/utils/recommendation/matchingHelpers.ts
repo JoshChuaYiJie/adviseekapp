@@ -33,38 +33,6 @@ export function findExactMatches(
   return [...new Set(majors)];
 }
 
-export function findPermutationMatches(
-  mappings: OccupationMajorMapping[], 
-  riasecCode: string, 
-  workValueCode: string
-): string[] {
-  // Find permutation matches (both codes are permutations)
-  const permutationMatches = mappings.filter(occupation => 
-    occupation.RIASEC_code !== null &&
-    occupation.work_value_code !== null &&
-    arePermutations(occupation.RIASEC_code, riasecCode) && 
-    arePermutations(occupation.work_value_code, workValueCode) &&
-    // Exclude exact matches we've already found
-    !(occupation.RIASEC_code === riasecCode && occupation.work_value_code === workValueCode)
-  );
-  
-  console.log(`Found ${permutationMatches.length} permutation matches`);
-  
-  // Take up to 3 occupation objects for permutation matches
-  const limitedPermutationMatches = permutationMatches.slice(0, 3);
-  
-  // Extract unique majors from these occupation objects
-  const majors: string[] = [];
-  limitedPermutationMatches.forEach(occupation => {
-    if (occupation.majors && Array.isArray(occupation.majors)) {
-      majors.push(...occupation.majors);
-    }
-  });
-  
-  // Remove duplicates
-  return [...new Set(majors)];
-}
-
 export function findRiasecMatches(
   mappings: OccupationMajorMapping[], 
   riasecCode: string, 
@@ -80,13 +48,11 @@ export function findRiasecMatches(
     
     const riasecMatch = isShortCode 
       ? matchShortCode(occupation.RIASEC_code, riasecCode)
-      : (occupation.RIASEC_code === riasecCode || arePermutations(occupation.RIASEC_code, riasecCode));
+      : (occupation.RIASEC_code === riasecCode);
     
-    // Exclude matches we've already found
+    // Exclude exact matches we've already found
     const alreadyFound = (
-      (occupation.RIASEC_code === riasecCode && occupation.work_value_code === workValueCode) ||
-      (occupation.work_value_code !== null && arePermutations(occupation.RIASEC_code, riasecCode) && 
-       arePermutations(occupation.work_value_code, workValueCode))
+      (occupation.RIASEC_code === riasecCode && occupation.work_value_code === workValueCode)
     );
     
     return riasecMatch && !alreadyFound;
@@ -114,19 +80,16 @@ export function findWorkValueMatches(
   riasecCode: string, 
   workValueCode: string
 ): string[] {
-  // Find Work Value-only matches (exact or permutation)
+  // Find Work Value-only matches (exact match only, no permutations)
   const workValueMatches = mappings.filter(occupation => 
     occupation.work_value_code !== null &&
-    (occupation.work_value_code === workValueCode || arePermutations(occupation.work_value_code, workValueCode)) &&
+    occupation.work_value_code === workValueCode &&
     // Exclude matches we've already found
     !(
       (occupation.RIASEC_code === riasecCode && occupation.work_value_code === workValueCode) ||
-      (occupation.RIASEC_code !== null && arePermutations(occupation.RIASEC_code, riasecCode) && 
-       arePermutations(occupation.work_value_code, workValueCode)) ||
       (occupation.RIASEC_code !== null && 
        ((occupation.RIASEC_code.length <= 2 && matchShortCode(occupation.RIASEC_code, riasecCode)) ||
-        occupation.RIASEC_code === riasecCode || 
-        arePermutations(occupation.RIASEC_code, riasecCode)))
+        occupation.RIASEC_code === riasecCode))
     )
   );
   

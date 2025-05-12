@@ -259,27 +259,6 @@ export const AboutMe = () => {
                       </div>
                     )}
                     
-                    {/* Permutation Matches */}
-                    {recommendedMajors.permutationMatches.length > 0 && (
-                      <div className="mb-4">
-                        <h4 className="font-medium text-md mb-2 flex items-center">
-                          <Badge className="mr-2 bg-blue-600">Similar Match</Badge>
-                          Similar codes with different priority
-                        </h4>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-                          {recommendedMajors.permutationMatches.map((major, index) => (
-                            <div 
-                              key={`perm-${index}`} 
-                              className={`p-3 rounded-md ${isCurrentlyDark ? 'bg-gray-700' : 'bg-gray-100'}`}
-                            >
-                              <p className="font-medium">{formatMajorName(major)}</p>
-                              <p className="text-xs opacity-70">{getUniversityFromMajor(major) || 'University not specified'}</p>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    
                     {/* RIASEC Matches */}
                     {recommendedMajors.riasecMatches.length > 0 && (
                       <div className="mb-4">
@@ -324,7 +303,6 @@ export const AboutMe = () => {
                     
                     {/* No matches found */}
                     {recommendedMajors.exactMatches.length === 0 && 
-                     recommendedMajors.permutationMatches.length === 0 &&
                      recommendedMajors.riasecMatches.length === 0 &&
                      recommendedMajors.workValueMatches.length === 0 && (
                       <div className="p-4 rounded-lg bg-gray-100 dark:bg-gray-700 text-center">
