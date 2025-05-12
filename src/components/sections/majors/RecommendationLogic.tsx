@@ -26,6 +26,7 @@ export const useRecommendationLogic = ({
   const [userId, setUserId] = useState<string | null>(null);
 
   // Form RIASEC and Work Value codes based on highest scoring components
+  // Ensure we're using the array values in the order they're provided (already sorted by score)
   const riasecCode = formCode(topRiasec, mapRiasecToCode);
   const workValueCode = formCode(topWorkValues, mapWorkValueToCode);
 

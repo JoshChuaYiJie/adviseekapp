@@ -328,10 +328,10 @@ export const QuizSegments = () => {
                 
                 <MajorRecommendations 
                   topRiasec={riasecProfile.length > 0 ? riasecProfile : [
-                    { component: 'Social', average: 4, score: 4 },
-                    { component: 'Investigative', average: 3.5, score: 3.5 },
+                    { component: 'Realistic', average: 4, score: 4 },
+                    { component: 'Social', average: 3.5, score: 3.5 },
                     { component: 'Artistic', average: 3, score: 3 },
-                  ]} 
+                  ]}
                   topWorkValues={workValueProfile.length > 0 ? workValueProfile : [
                     { component: 'Achievement', average: 4, score: 4 },
                     { component: 'Recognition', average: 3.5, score: 3.5 },

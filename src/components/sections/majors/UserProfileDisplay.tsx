@@ -1,7 +1,6 @@
 
 import { useTheme } from "@/contexts/ThemeContext";
 import { MajorProfileDisplay } from './types';
-import { mapRiasecToCode, mapWorkValueToCode } from '@/utils/recommendationUtils';
 
 export const UserProfileDisplay = ({ riasecCode, workValueCode }: MajorProfileDisplay) => {
   const { isCurrentlyDark } = useTheme();
