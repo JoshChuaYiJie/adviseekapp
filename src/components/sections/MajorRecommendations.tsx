@@ -7,8 +7,6 @@ import { MajorQuestionDisplay } from './majors/MajorQuestionDisplay';
 import { MajorRecommendationsType } from './majors/types';
 import { useRecommendationLogic } from './majors/RecommendationLogic';
 import { useQuestionHandler } from './majors/QuestionHandler';
-import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
-import { AlertTriangle } from 'lucide-react';
 
 // Define props interface
 interface MajorRecommendationsProps {
@@ -31,7 +29,7 @@ export const MajorRecommendations: React.FC<MajorRecommendationsProps> = ({
   console.log("MajorRecommendations - Received topWorkValues:", topWorkValues);
   
   // Use recommendation logic
-  const { loading, riasecCode, workValueCode, userId, error } = useRecommendationLogic({
+  const { loading, riasecCode, workValueCode, userId } = useRecommendationLogic({
     topRiasec,
     topWorkValues,
     onRecommendationsLoaded: setRecommendations
@@ -58,22 +56,9 @@ export const MajorRecommendations: React.FC<MajorRecommendationsProps> = ({
     setActiveTab(tabId);
   };
 
-  // Check if we have RIASEC and Work Values data
-  const hasIncompleteProfile = (!topRiasec || topRiasec.length === 0) || (!topWorkValues || topWorkValues.length === 0);
-
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div>
-        {hasIncompleteProfile && (
-          <Alert className="mb-4 bg-amber-50 dark:bg-amber-900 border-amber-200 dark:border-amber-800">
-            <AlertTriangle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
-            <AlertTitle className="text-amber-800 dark:text-amber-200">Incomplete Profile</AlertTitle>
-            <AlertDescription className="text-amber-700 dark:text-amber-300">
-              Please complete all quiz segments to view your profile and recommendations.
-            </AlertDescription>
-          </Alert>
-        )}
-
         <UserProfileDisplay riasecCode={riasecCode} workValueCode={workValueCode} />
         
         <div className="mb-6">
@@ -92,7 +77,6 @@ export const MajorRecommendations: React.FC<MajorRecommendationsProps> = ({
               onMajorClick={handleMajorSelect}
               riasecCode={riasecCode}
               workValueCode={workValueCode}
-              error={error}
             />
           )}
         </div>
@@ -137,13 +121,11 @@ export const MajorRecommendations: React.FC<MajorRecommendationsProps> = ({
                 </button>
               </>
             ) : (
-              <p className="italic text-gray-500">No specific questions found for this major.</p>
+              <p>No specific questions found for this major.</p>
             )}
           </>
         ) : (
-          <p className="text-center p-8 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-            Select a major from the list to view specific questions.
-          </p>
+          <p>Select a major to view specific questions.</p>
         )}
       </div>
     </div>

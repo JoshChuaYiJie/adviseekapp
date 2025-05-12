@@ -3,9 +3,8 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { InfoIcon, AlertCircle } from 'lucide-react';
+import { InfoIcon } from 'lucide-react';
 import { MajorRecommendationsType } from './types';
-import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 
 interface MajorsListProps {
   recommendations: MajorRecommendationsType | null;
@@ -14,7 +13,6 @@ interface MajorsListProps {
   onMajorClick: (major: string) => void;
   riasecCode: string;
   workValueCode: string;
-  error?: string | null;
 }
 
 export const MajorsList = ({
@@ -23,8 +21,7 @@ export const MajorsList = ({
   onTabChange,
   onMajorClick,
   riasecCode,
-  workValueCode,
-  error
+  workValueCode
 }: MajorsListProps) => {
   const { isCurrentlyDark } = useTheme();
 
@@ -107,26 +104,6 @@ export const MajorsList = ({
   // Check if we have any matches
   const hasNoMatches = !majorsToDisplay.length;
   
-  // If there's an error, show an error message
-  if (error) {
-    return (
-      <Alert className="bg-red-50 dark:bg-red-900 border-red-200 dark:border-red-800 text-red-800 dark:text-red-200">
-        <AlertCircle className="h-4 w-4" />
-        <AlertTitle>Profile Data Issue</AlertTitle>
-        <AlertDescription>{error}</AlertDescription>
-        <AlertDescription className="mt-2">
-          Try refreshing the page or completing all quiz segments again:
-          <ul className="list-disc pl-5 mt-1">
-            <li>Interest (Part 1)</li>
-            <li>Interest (Part 2)</li>
-            <li>Competence</li>
-            <li>Work Values</li>
-          </ul>
-        </AlertDescription>
-      </Alert>
-    );
-  }
-  
   // Log the state of recommendations for debugging
   console.log("MajorsList - Recommendations state:", recommendations);
   console.log("MajorsList - Active tab:", activeTab);
@@ -138,7 +115,7 @@ export const MajorsList = ({
         <InfoIcon className="mx-auto h-12 w-12 text-gray-400 mb-4" />
         <h4 className="text-lg font-medium mb-2">No Matches Found</h4>
         <p className="mb-4">
-          We couldn't find majors that match your RIASEC code ({riasecCode || 'missing'}) and work values code ({workValueCode || 'missing'}).
+          We couldn't find majors that match your RIASEC code ({riasecCode}) and work values code ({workValueCode}).
         </p>
         <p>
           Try completing more quizzes or consider exploring majors based on your individual components instead.
