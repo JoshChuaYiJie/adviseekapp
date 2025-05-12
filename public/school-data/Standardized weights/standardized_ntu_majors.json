@@ -1,62 +1,4758 @@
-
 {
   "programs": [
     {
-      "college": "Engineering",
-      "major": "Computer Engineering",
-      "degree": "Bachelor of Engineering",
+      "college": "College of Computing and Data Science",
+      "major": "Artificial Intelligence and Society",
+      "degree": "Bachelor of Computing",
       "criteria": {
         "eligibility": [
           {
-            "qualificationType": "A Levels",
-            "description": "Strong background in mathematics and physics"
+            "qualificationType": "GCE A-Level",
+            "description": "H2 Mathematics, H2 Physics or Computing, H1 General Paper or Knowledge & Inquiry"
+          },
+          {
+            "qualificationType": "International Baccalaureate",
+            "description": "Mathematics HL, Physics or Computer Science HL, English A HL or Theory of Knowledge"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Computing-related diploma"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
           }
         ],
         "suitability": [
           {
-            "criterion": "Technical aptitude",
-            "description": "Ability to understand complex technical concepts",
-            "weight": 5
+            "criterion": "Module Preferences",
+            "weight": 0.4,
+            "description": "High interest in AI and society-related modules like CZ2001, rated 7-10 on a 1-10 scale"
           },
           {
-            "criterion": "Problem-solving",
-            "description": "Strong analytical and problem-solving skills",
-            "weight": 5
+            "criterion": "Interests",
+            "weight": 0.18,
+            "description": "Passion for artificial intelligence, societal impact, and technology"
           },
           {
-            "criterion": "Innovation",
-            "description": "Creative thinking in technical contexts",
-            "weight": 4
+            "criterion": "Skills",
+            "weight": 0.24,
+            "description": "Analytical thinking, programming, problem-solving"
+          },
+          {
+            "criterion": "Experiences",
+            "weight": 0.18,
+            "description": "Projects in AI, data analysis, or societal studies"
           }
         ]
       }
     },
     {
-      "college": "Business",
-      "major": "Accountancy and Business",
-      "degree": "Bachelor of Accountancy",
+      "college": "College of Computing and Data Science",
+      "major": "Business and Computer Engineering",
+      "degree": "Double Degree: Bachelor of Business + Bachelor of Engineering",
       "criteria": {
         "eligibility": [
           {
-            "qualificationType": "A Levels",
-            "description": "Good overall academic performance"
+            "qualificationType": "GCE A-Level",
+            "description": "H2 Mathematics, H2 Physics or Chemistry or Biology or Computing, H1 General Paper or Knowledge & Inquiry"
+          },
+          {
+            "qualificationType": "International Baccalaureate",
+            "description": "Mathematics HL, Physics or Chemistry or Biology or Computer Science HL, English A HL or Theory of Knowledge"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Business or Engineering-related diploma"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
           }
         ],
         "suitability": [
           {
-            "criterion": "Numerical aptitude",
-            "description": "Strong capability with numbers and financial concepts",
-            "weight": 5
+            "criterion": "Module Preferences",
+            "weight": 0.4,
+            "description": "High interest in business and computer engineering modules like BU8101 and CE2001, rated 7-10 on a 1-10 scale"
           },
           {
-            "criterion": "Attention to detail",
-            "description": "Precision and thoroughness in work",
-            "weight": 5
+            "criterion": "Interests",
+            "weight": 0.18,
+            "description": "Passion for business management, technology, and engineering"
           },
           {
-            "criterion": "Analytical thinking",
-            "description": "Ability to analyze complex information",
-            "weight": 4
+            "criterion": "Skills",
+            "weight": 0.24,
+            "description": "Leadership, programming, analytical thinking"
+          },
+          {
+            "criterion": "Experiences",
+            "weight": 0.18,
+            "description": "Business projects, engineering coursework, or tech internships"
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Computing and Data Science",
+      "major": "Business and Computing",
+      "degree": "Double Degree: Bachelor of Business + Bachelor of Computing",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "H2 Mathematics, H2 Physics or Computing, H1 General Paper or Knowledge & Inquiry"
+          },
+          {
+            "qualificationType": "International Baccalaureate",
+            "description": "Mathematics HL, Physics or Computer Science HL, English A HL or Theory of Knowledge"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Business or Computing-related diploma"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "weight": 0.4,
+            "description": "High interest in business and computing modules like BU8101 and CS1010, rated 7-10 on a 1-10 scale"
+          },
+          {
+            "criterion": "Interests",
+            "weight": 0.18,
+            "description": "Passion for business analytics, software development, and technology"
+          },
+          {
+            "criterion": "Skills",
+            "weight": 0.24,
+            "description": "Programming, data analysis, strategic thinking"
+          },
+          {
+            "criterion": "Experiences",
+            "weight": 0.18,
+            "description": "Business case studies, coding projects, or tech internships"
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Computing and Data Science",
+      "major": "Computer Engineering",
+      "degree": "Bachelor of Engineering",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "H2 Mathematics, H2 Physics or Chemistry or Biology or Computing"
+          },
+          {
+            "qualificationType": "International Baccalaureate",
+            "description": "Mathematics HL, Physics or Chemistry or Biology or Computer Science HL"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Engineering or Computing-related diploma"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "weight": 0.4,
+            "description": "High interest in computer engineering modules like CE2001, rated 7-10 on a 1-10 scale"
+          },
+          {
+            "criterion": "Interests",
+            "weight": 0.18,
+            "description": "Passion for hardware, software, and systems design"
+          },
+          {
+            "criterion": "Skills",
+            "weight": 0.24,
+            "description": "Programming, circuit design, problem-solving"
+          },
+          {
+            "criterion": "Experiences",
+            "weight": 0.18,
+            "description": "Electronics projects, coding competitions, or engineering internships"
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Computing and Data Science",
+      "major": "Computer Science",
+      "degree": "Bachelor of Computing",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "H2 Mathematics, H2 Physics or Computing, H1 General Paper or Knowledge & Inquiry"
+          },
+          {
+            "qualificationType": "International Baccalaureate",
+            "description": "Mathematics HL, Physics or Computer Science HL, English A HL or Theory of Knowledge"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Computing-related diploma"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "weight": 0.4,
+            "description": "High interest in computer science modules like CS1010, rated 7-10 on a 1-10 scale"
+          },
+          {
+            "criterion": "Interests",
+            "weight": 0.18,
+            "description": "Passion for algorithms, software development, and technology"
+          },
+          {
+            "criterion": "Skills",
+            "weight": 0.24,
+            "description": "Programming, logical reasoning, problem-solving"
+          },
+          {
+            "criterion": "Experiences",
+            "weight": 0.18,
+            "description": "Coding projects, hackathons, or tech internships"
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Computing and Data Science",
+      "major": "Data Science and Artificial Intelligence",
+      "degree": "Bachelor of Computing",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "H2 Mathematics, H1 General Paper or Knowledge & Inquiry"
+          },
+          {
+            "qualificationType": "International Baccalaureate",
+            "description": "Mathematics HL, English A HL or Theory of Knowledge"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Data Science or Computing-related diploma"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "weight": 0.4,
+            "description": "High interest in data science and AI modules like DS1001, rated 7-10 on a 1-10 scale"
+          },
+          {
+            "criterion": "Interests",
+            "weight": 0.18,
+            "description": "Passion for data analysis, machine learning, and AI applications"
+          },
+          {
+            "criterion": "Skills",
+            "weight": 0.24,
+            "description": "Programming, statistical analysis, data modeling"
+          },
+          {
+            "criterion": "Experiences",
+            "weight": 0.18,
+            "description": "Data analysis projects, AI research, or tech internships"
+          }
+        ]
+      }
+    },
+    {
+      "college": "Renaissance Engineering Programme",
+      "major": "Renaissance Engineering",
+      "degree": "Bachelor of Engineering Science + Master of Science in Technology Management",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "H2 Mathematics, H2 Physics or Chemistry or Biology or Computing, H1 Physics or O-Level Physics, H1 General Paper or Knowledge & Inquiry, Selection test and interview"
+          },
+          {
+            "qualificationType": "International Baccalaureate",
+            "description": "Mathematics HL, Physics or Chemistry or Biology or Computer Science HL, Physics SL or Standard Level equivalent, English A HL or Theory of Knowledge, Selection test and interview"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Engineering-related diploma, Selection test and interview"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required (MMI, individual, teambuilding, March-April); no portfolio; competitive process"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "weight": 0.4,
+            "description": "High interest in engineering and technology management modules like RE1001, rated 7-10 on a 1-10 scale"
+          },
+          {
+            "criterion": "Interests",
+            "weight": 0.18,
+            "description": "Passion for interdisciplinary engineering, innovation, and leadership"
+          },
+          {
+            "criterion": "Skills",
+            "weight": 0.24,
+            "description": "Problem-solving, leadership, interdisciplinary thinking"
+          },
+          {
+            "criterion": "Experiences",
+            "weight": 0.18,
+            "description": "Engineering projects, leadership roles, or innovation challenges"
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Engineering",
+      "major": "Aerospace Engineering",
+      "degree": "Bachelor of Engineering",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "H2 Mathematics, H2 Physics or Chemistry or Biology or Computing"
+          },
+          {
+            "qualificationType": "International Baccalaureate",
+            "description": "Mathematics HL, Physics or Chemistry or Biology or Computer Science HL"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Aerospace or Engineering-related diploma"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "weight": 0.4,
+            "description": "High interest in aerospace engineering modules like MA1001, rated 7-10 on a 1-10 scale"
+          },
+          {
+            "criterion": "Interests",
+            "weight": 0.18,
+            "description": "Passion for aerodynamics, aircraft design, and space technology"
+          },
+          {
+            "criterion": "Skills",
+            "weight": 0.24,
+            "description": "Problem-solving, mechanical design, analytical thinking"
+          },
+          {
+            "criterion": "Experiences",
+            "weight": 0.18,
+            "description": "Engineering projects, aviation-related activities, or internships"
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Engineering",
+      "major": "Bioengineering",
+      "degree": "Bachelor of Engineering",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "H2 Mathematics, H2 Physics or Chemistry or Biology or Computing"
+          },
+          {
+            "qualificationType": "International Baccalaureate",
+            "description": "Mathematics HL, Physics or Chemistry or Biology or Computer Science HL"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Bioengineering or Biomedical-related diploma"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "weight": 0.4,
+            "description": "High interest in bioengineering modules like BG1101, rated 7-10 on a 1-10 scale"
+          },
+          {
+            "criterion": "Interests",
+            "weight": 0.18,
+            "description": "Passion for biomedical technology, tissue engineering, and health sciences"
+          },
+          {
+            "criterion": "Skills",
+            "weight": 0.24,
+            "description": "Problem-solving, biological analysis, engineering design"
+          },
+          {
+            "criterion": "Experiences",
+            "weight": 0.18,
+            "description": "Biomedical projects, health science coursework, or internships"
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Engineering",
+      "major": "Chemical and Biomolecular Engineering",
+      "degree": "Bachelor of Engineering",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "H2 Mathematics, H2 Physics or Chemistry or Biology or Computing"
+          },
+          {
+            "qualificationType": "International Baccalaureate",
+            "description": "Mathematics HL, Physics or Chemistry or Biology or Computer Science HL"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Chemical or Biomolecular Engineering-related diploma"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "weight": 0.4,
+            "description": "High interest in chemical and biomolecular engineering modules like CM1001, rated 7-10 on a 1-10 scale"
+          },
+          {
+            "criterion": "Interests",
+            "weight": 0.18,
+            "description": "Passion for chemical processes, biotechnology, and materials science"
+          },
+          {
+            "criterion": "Skills",
+            "weight": 0.24,
+            "description": "Problem-solving, chemical analysis, process design"
+          },
+          {
+            "criterion": "Experiences",
+            "weight": 0.18,
+            "description": "Chemical engineering projects, lab work, or internships"
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Engineering",
+      "major": "Civil Engineering",
+      "degree": "Bachelor of Engineering",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "H2 Mathematics, H2 Physics or Chemistry or Biology or Computing"
+          },
+          {
+            "qualificationType": "International Baccalaureate",
+            "description": "Mathematics HL, Physics or Chemistry or Biology or Computer Science HL"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Civil Engineering-related diploma"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "weight": 0.4,
+            "description": "High interest in civil engineering modules like CV1011, rated 7-10 on a 1-10 scale"
+          },
+          {
+            "criterion": "Interests",
+            "weight": 0.18,
+            "description": "Passion for infrastructure, urban planning, and structural design"
+          },
+          {
+            "criterion": "Skills",
+            "weight": 0.24,
+            "description": "Problem-solving, structural analysis, project management"
+          },
+          {
+            "criterion": "Experiences",
+            "weight": 0.18,
+            "description": "Construction projects, urban planning activities, or internships"
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Engineering",
+      "major": "Electrical and Electronic Engineering",
+      "degree": "Bachelor of Engineering",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "H2 Mathematics, H2 Physics or Chemistry or Biology or Computing"
+          },
+          {
+            "qualificationType": "International Baccalaureate",
+            "description": "Mathematics HL, Physics or Chemistry or Biology or Computer Science HL"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Electrical or Electronic Engineering-related diploma"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "weight": 0.4,
+            "description": "High interest in electrical and electronic engineering modules like EE1001, rated 7-10 on a 1-10 scale"
+          },
+          {
+            "criterion": "Interests",
+            "weight": 0.18,
+            "description": "Passion for electronics, circuit design, and power systems"
+          },
+          {
+            "criterion": "Skills",
+            "weight": 0.24,
+            "description": "Problem-solving, circuit analysis, programming"
+          },
+          {
+            "criterion": "Experiences",
+            "weight": 0.18,
+            "description": "Electronics projects, coding, or engineering internships"
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Engineering",
+      "major": "Environmental Engineering",
+      "degree": "Bachelor of Engineering",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "H2 Mathematics, H2 Physics or Chemistry or Biology or Computing"
+          },
+          {
+            "qualificationType": "International Baccalaureate",
+            "description": "Mathematics HL, Physics or Chemistry or Biology or Computer Science HL"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Environmental or Engineering-related diploma"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "weight": 0.4,
+            "description": "High interest in environmental engineering modules like EN1001, rated 7-10 on a 1-10 scale"
+          },
+          {
+            "criterion": "Interests",
+            "weight": 0.18,
+            "description": "Passion for sustainability, environmental protection, and water management"
+          },
+          {
+            "criterion": "Skills",
+            "weight": 0.24,
+            "description": "Problem-solving, environmental analysis, project management"
+          },
+          {
+            "criterion": "Experiences",
+            "weight": 0.18,
+            "description": "Environmental projects, sustainability initiatives, or internships"
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Engineering",
+      "major": "Information Engineering and Media",
+      "degree": "Bachelor of Engineering",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "H2 Mathematics, H2 Physics or Chemistry or Biology or Computing"
+          },
+          {
+            "qualificationType": "International Baccalaureate",
+            "description": "Mathematics HL, Physics or Chemistry or Biology or Computer Science HL"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Media or Computing-related diploma"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "weight": 0.4,
+            "description": "High interest in information engineering and media modules like CZ1002, rated 7-10 on a 1-10 scale"
+          },
+          {
+            "criterion": "Interests",
+            "weight": 0.18,
+            "description": "Passion for media technology, information systems, and digital communication"
+          },
+          {
+            "criterion": "Skills",
+            "weight": 0.24,
+            "description": "Programming, media production, analytical thinking"
+          },
+          {
+            "criterion": "Experiences",
+            "weight": 0.18,
+            "description": "Media projects, coding, or tech internships"
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Engineering",
+      "major": "Maritime Studies",
+      "degree": "Bachelor of Science",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "H2 Mathematics, H1 General Paper or Knowledge & Inquiry"
+          },
+          {
+            "qualificationType": "International Baccalaureate",
+            "description": "Mathematics HL, English A HL or Theory of Knowledge"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Maritime or Logistics-related diploma"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "weight": 0.4,
+            "description": "High interest in maritime studies modules like MT1001, rated 7-10 on a 1-10 scale"
+          },
+          {
+            "criterion": "Interests",
+            "weight": 0.18,
+            "description": "Passion for maritime logistics, shipping, and global trade"
+          },
+          {
+            "criterion": "Skills",
+            "weight": 0.24,
+            "description": "Analytical thinking, logistics planning, problem-solving"
+          },
+          {
+            "criterion": "Experiences",
+            "weight": 0.18,
+            "description": "Logistics projects, trade-related activities, or internships"
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Engineering",
+      "major": "Materials Engineering",
+      "degree": "Bachelor of Engineering",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "H2 Mathematics, H2 Physics or Chemistry or Biology"
+          },
+          {
+            "qualificationType": "International Baccalaureate",
+            "description": "Mathematics HL, Physics or Chemistry or Biology HL"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Materials or Engineering-related diploma"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "weight": 0.4,
+            "description": "High interest in materials engineering modules like MS1001, rated 7-10 on a 1-10 scale"
+          },
+          {
+            "criterion": "Interests",
+            "weight": 0.18,
+            "description": "Passion for materials science, nanotechnology, and manufacturing"
+          },
+          {
+            "criterion": "Skills",
+            "weight": 0.24,
+            "description": "Problem-solving, materials analysis, experimental design"
+          },
+          {
+            "criterion": "Experiences",
+            "weight": 0.18,
+            "description": "Materials science projects, lab work, or internships"
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Engineering",
+      "major": "Mechanical Engineering",
+      "degree": "Bachelor of Engineering",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "H2 Mathematics, H2 Physics or Chemistry or Biology or Computing"
+          },
+          {
+            "qualificationType": "International Baccalaureate",
+            "description": "Mathematics HL, Physics or Chemistry or Biology or Computer Science HL"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Mechanical Engineering-related diploma"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "weight": 0.4,
+            "description": "High interest in mechanical engineering modules like MA1002, rated 7-10 on a 1-10 scale"
+          },
+          {
+            "criterion": "Interests",
+            "weight": 0.18,
+            "description": "Passion for mechanics, robotics, and manufacturing"
+          },
+          {
+            "criterion": "Skills",
+            "weight": 0.24,
+            "description": "Problem-solving, mechanical design, analytical thinking"
+          },
+          {
+            "criterion": "Experiences",
+            "weight": 0.18,
+            "description": "Engineering projects, robotics competitions, or internships"
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Engineering",
+      "major": "Process Engineering and Synthetic Chemistry",
+      "degree": "Bachelor of Engineering Science",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "H2 Mathematics, H2 Chemistry, H1 General Paper or Knowledge & Inquiry, Selection test and interview"
+          },
+          {
+            "qualificationType": "International Baccalaureate",
+            "description": "Mathematics HL, Chemistry HL, English A HL or Theory of Knowledge, Selection test and interview"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Chemical Engineering-related diploma, Selection test and interview"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "weight": 0.4,
+            "description": "High interest in process engineering and synthetic chemistry modules like CM1002, rated 7-10 on a 1-10 scale"
+          },
+          {
+            "criterion": "Interests",
+            "weight": 0.18,
+            "description": "Passion for chemical processes, synthetic chemistry, and industrial applications"
+          },
+          {
+            "criterion": "Skills",
+            "weight": 0.24,
+            "description": "Problem-solving, chemical analysis, process optimization"
+          },
+          {
+            "criterion": "Experiences",
+            "weight": 0.18,
+            "description": "Chemistry projects, lab work, or industrial internships"
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Engineering",
+      "major": "Robotics",
+      "degree": "Bachelor of Engineering",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "H2 Mathematics, H2 Physics or Chemistry or Biology or Computing"
+          },
+          {
+            "qualificationType": "International Baccalaureate",
+            "description": "Mathematics HL, Physics or Chemistry or Biology or Computer Science HL"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Robotics or Engineering-related diploma"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "weight": 0.4,
+            "description": "High interest in robotics modules like MH2801, rated 7-10 on a 1-10 scale"
+          },
+          {
+            "criterion": "Interests",
+            "weight": 0.18,
+            "description": "Passion for robotics, automation, and artificial intelligence"
+          },
+          {
+            "criterion": "Skills",
+            "weight": 0.24,
+            "description": "Programming, mechanical design, problem-solving"
+          },
+          {
+            "criterion": "Experiences",
+            "weight": 0.18,
+            "description": "Robotics projects, coding competitions, or internships"
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Humanities, Arts and Social Sciences",
+      "major": "Art, Design and Media",
+      "degree": "Bachelor of Fine Arts",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "O-Level Mathematics, H1 General Paper or Knowledge & Inquiry, Portfolio and creative assignments"
+          },
+          {
+            "qualificationType": "International Baccalaureate",
+            "description": "Mathematics SL, English A HL or Theory of Knowledge, Portfolio and creative assignments"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Art, Design, or Media-related diploma, Portfolio and creative assignments"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Portfolio required (15-20 page PDF, videos, assignments); no interview; focus on creative submissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "weight": 0.4,
+            "description": "High interest in art, design, and media modules like DD1001, rated 7-10 on a 1-10 scale"
+          },
+          {
+            "criterion": "Interests",
+            "weight": 0.18,
+            "description": "Passion for visual arts, media production, and creative design"
+          },
+          {
+            "criterion": "Skills",
+            "weight": 0.24,
+            "description": "Creativity, design thinking, media production"
+          },
+          {
+            "criterion": "Experiences",
+            "weight": 0.18,
+            "description": "Art projects, media production, or design portfolios"
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Humanities, Arts and Social Sciences",
+      "major": "Chinese",
+      "degree": "Bachelor of Arts",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "H2 Chinese or H1 Chinese or O-Level Chinese, H1 General Paper or Knowledge & Inquiry"
+          },
+          {
+            "qualificationType": "International Baccalaureate",
+            "description": "Chinese A HL or Chinese B HL, English A HL or Theory of Knowledge"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Any diploma with Chinese proficiency"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "weight": 0.4,
+            "description": "High interest in Chinese language and culture modules like HC1001, rated 7-10 on a 1-10 scale"
+          },
+          {
+            "criterion": "Interests",
+            "weight": 0.18,
+            "description": "Passion for Chinese literature, culture, and history"
+          },
+          {
+            "criterion": "Skills",
+            "weight": 0.24,
+            "description": "Language analysis, cultural research, communication"
+          },
+          {
+            "criterion": "Experiences",
+            "weight": 0.18,
+            "description": "Chinese language projects, cultural studies, or community engagement"
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Humanities, Arts and Social Sciences",
+      "major": "Communication Studies",
+      "degree": "Bachelor of Communication Studies",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "H1 General Paper or Knowledge & Inquiry"
+          },
+          {
+            "qualificationType": "International Baccalaureate",
+            "description": "English A HL or Theory of Knowledge"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Communication or Media-related diploma"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "weight": 0.4,
+            "description": "High interest in communication studies modules like CS2001, rated 7-10 on a 1-10 scale"
+          },
+          {
+            "criterion": "Interests",
+            "weight": 0.18,
+            "description": "Passion for media, journalism, and public relations"
+          },
+          {
+            "criterion": "Skills",
+            "weight": 0.24,
+            "description": "Communication, media analysis, creative writing"
+          },
+          {
+            "criterion": "Experiences",
+            "weight": 0.18,
+            "description": "Media projects, journalism, or public speaking"
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Humanities, Arts and Social Sciences",
+      "major": "Economics",
+      "degree": "Bachelor of Social Sciences",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry"
+          },
+          {
+            "qualificationType": null,
+            "description": "No specific subject requirements"
+          },
+          {
+            "qualificationType": null,
+            "description": "English proficiency as demonstrated by General Paper or equivalent"
+          },
+          {
+            "qualificationType": null,
+            "description": "None"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in economics modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for economic theory, policy analysis, and data analysis",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Analytical thinking, statistical analysis, problem-solving",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Economics projects, data analysis, or policy research",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Humanities, Arts and Social Sciences",
+      "major": "English",
+      "degree": "Bachelor of Arts",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry or H1/H2 Level Humanities subject"
+          },
+          {
+            "qualificationType": null,
+            "description": "No specific subject requirements beyond humanities"
+          },
+          {
+            "qualificationType": null,
+            "description": "English proficiency as demonstrated by General Paper or equivalent"
+          },
+          {
+            "qualificationType": null,
+            "description": "Selection test or interview may be required"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in English literature modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for literature, creative writing, and literary analysis",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Critical thinking, writing, textual analysis",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Literary projects, writing workshops, or book clubs",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Humanities, Arts and Social Sciences",
+      "major": "English Literature and Art History",
+      "degree": "Bachelor of Arts",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry or H1/H2 Level Humanities subject"
+          },
+          {
+            "qualificationType": null,
+            "description": "No specific subject requirements beyond humanities"
+          },
+          {
+            "qualificationType": null,
+            "description": "English proficiency as demonstrated by General Paper or equivalent"
+          },
+          {
+            "qualificationType": null,
+            "description": "Selection test or interview required"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in English literature and art history modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for literature, art history, and cultural studies",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Critical thinking, visual analysis, cultural research",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Art history projects, literary analysis, or museum visits",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Humanities, Arts and Social Sciences",
+      "major": "English and History",
+      "degree": "Bachelor of Arts",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry or H1/H2 Level Humanities subject"
+          },
+          {
+            "qualificationType": null,
+            "description": "No specific subject requirements beyond humanities"
+          },
+          {
+            "qualificationType": null,
+            "description": "English proficiency as demonstrated by General Paper or equivalent"
+          },
+          {
+            "qualificationType": null,
+            "description": "None"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in English and history modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for literature, historical analysis, and cultural studies",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Critical thinking, historical research, writing",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "History projects, literary analysis, or cultural studies",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Humanities, Arts and Social Sciences",
+      "major": "English and Philosophy",
+      "degree": "Bachelor of Arts",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry or H1/H2 Level Humanities subject"
+          },
+          {
+            "qualificationType": null,
+            "description": "No specific subject requirements beyond humanities"
+          },
+          {
+            "qualificationType": null,
+            "description": "English proficiency as demonstrated by General Paper or equivalent"
+          },
+          {
+            "qualificationType": null,
+            "description": "None"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in English and philosophy modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for literature, philosophical inquiry, and critical thinking",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Critical thinking, argumentation, textual analysis",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Philosophy debates, literary analysis, or writing projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Humanities, Arts and Social Sciences",
+      "major": "History",
+      "degree": "Bachelor of Arts",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry or H1/H2 Level Humanities subject"
+          },
+          {
+            "qualificationType": null,
+            "description": "No specific subject requirements beyond humanities"
+          },
+          {
+            "qualificationType": null,
+            "description": "English proficiency as demonstrated by General Paper or equivalent"
+          },
+          {
+            "qualificationType": null,
+            "description": "None"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in history modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for historical analysis, cultural studies, and global events",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Historical research, critical thinking, writing",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "History projects, archival research, or cultural studies",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Humanities, Arts and Social Sciences",
+      "major": "History and Chinese",
+      "degree": "Bachelor of Arts",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry or H1/H2 Level Humanities subject"
+          },
+          {
+            "qualificationType": null,
+            "description": "Pass in H2 Level Chinese subjects or good pass in H1/O-Level Chinese"
+          },
+          {
+            "qualificationType": null,
+            "description": "Proficiency in Chinese and English"
+          },
+          {
+            "qualificationType": null,
+            "description": "None"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in history and Chinese modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for Chinese history, culture, and historical analysis",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Historical research, language analysis, cultural studies",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Chinese cultural projects, history research, or community engagement",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Humanities, Arts and Social Sciences",
+      "major": "History and Linguistics & Multilingual Studies",
+      "degree": "Bachelor of Arts",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry or H1/H2 Level Humanities subject"
+          },
+          {
+            "qualificationType": null,
+            "description": "No specific subject requirements beyond humanities"
+          },
+          {
+            "qualificationType": null,
+            "description": "English proficiency as demonstrated by General Paper or equivalent"
+          },
+          {
+            "qualificationType": null,
+            "description": "None"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in history and linguistics modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for historical linguistics, cultural studies, and language diversity",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Linguistic analysis, historical research, critical thinking",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Linguistics projects, history research, or cultural studies",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Humanities, Arts and Social Sciences",
+      "major": "Linguistics and Multilingual Studies",
+      "degree": "Bachelor of Arts",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry or H1/H2 Level Humanities subject"
+          },
+          {
+            "qualificationType": null,
+            "description": "No specific subject requirements beyond humanities"
+          },
+          {
+            "qualificationType": null,
+            "description": "English proficiency as demonstrated by General Paper or equivalent"
+          },
+          {
+            "qualificationType": null,
+            "description": "None"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in linguistics and multilingual studies modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for language diversity, linguistic analysis, and cultural studies",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Linguistic analysis, critical thinking, communication",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Language projects, cultural studies, or multilingual activities",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Humanities, Arts and Social Sciences",
+      "major": "Linguistics & Multilingual Studies and English",
+      "degree": "Bachelor of Arts",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry or H1/H2 Level Humanities subject"
+          },
+          {
+            "qualificationType": null,
+            "description": "No specific subject requirements beyond humanities"
+          },
+          {
+            "qualificationType": null,
+            "description": "English proficiency as demonstrated by General Paper or equivalent"
+          },
+          {
+            "qualificationType": null,
+            "description": "Selection test or interview required"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in linguistics and English modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for language diversity, literature, and linguistic analysis",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Linguistic analysis, critical thinking, textual analysis",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Linguistics projects, literary analysis, or multilingual activities",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Humanities, Arts and Social Sciences",
+      "major": "Linguistics & Multilingual Studies and Philosophy",
+      "degree": "Bachelor of Arts",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry or H1/H2 Level Humanities subject"
+          },
+          {
+            "qualificationType": null,
+            "description": "No specific subject requirements beyond humanities"
+          },
+          {
+            "qualificationType": null,
+            "description": "English proficiency as demonstrated by General Paper or equivalent"
+          },
+          {
+            "qualificationType": null,
+            "description": "None"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in linguistics and philosophy modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for linguistic theory, philosophical inquiry, and critical thinking",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Linguistic analysis, argumentation, critical thinking",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Linguistics projects, philosophy debates, or cultural studies",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Humanities, Arts and Social Sciences",
+      "major": "Philosophy",
+      "degree": "Bachelor of Arts",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry or H1/H2 Level Humanities subject"
+          },
+          {
+            "qualificationType": null,
+            "description": "No specific subject requirements beyond humanities"
+          },
+          {
+            "qualificationType": null,
+            "description": "English proficiency as demonstrated by General Paper or equivalent"
+          },
+          {
+            "qualificationType": null,
+            "description": "None"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in philosophy modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for philosophical inquiry, ethics, and logic",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Critical thinking, argumentation, analytical reasoning",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Philosophy debates, ethics projects, or critical writing",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Humanities, Arts and Social Sciences",
+      "major": "Philosophy and Chinese",
+      "degree": "Bachelor of Arts",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry or H1/H2 Level Humanities subject"
+          },
+          {
+            "qualificationType": null,
+            "description": "Pass in H2 Level Chinese subjects or good pass in H1/O-Level Chinese"
+          },
+          {
+            "qualificationType": null,
+            "description": "Proficiency in Chinese and English"
+          },
+          {
+            "qualificationType": null,
+            "description": "None"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in philosophy and Chinese modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for Chinese philosophy, ethics, and cultural studies",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Critical thinking, language analysis, cultural research",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Philosophy debates, Chinese cultural projects, or ethics research",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Humanities, Arts and Social Sciences",
+      "major": "Philosophy and History",
+      "degree": "Bachelor of Arts",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry or H1/H2 Level Humanities subject"
+          },
+          {
+            "qualificationType": null,
+            "description": "No specific subject requirements beyond humanities"
+          },
+          {
+            "qualificationType": null,
+            "description": "English proficiency as demonstrated by General Paper or equivalent"
+          },
+          {
+            "qualificationType": null,
+            "description": "None"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in philosophy and history modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for philosophical inquiry, historical analysis, and cultural studies",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Critical thinking, historical research, argumentation",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Philosophy debates, history projects, or cultural studies",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Humanities, Arts and Social Sciences",
+      "major": "Philosophy, Politics and Economics",
+      "degree": "Bachelor of Social Sciences",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "Good grade in H2 Level Mathematics and General Paper or Knowledge & Inquiry or H1/H2 Level Humanities subject"
+          },
+          {
+            "qualificationType": null,
+            "description": "No additional subject requirements beyond Mathematics and humanities"
+          },
+          {
+            "qualificationType": null,
+            "description": "English proficiency as demonstrated by General Paper or equivalent"
+          },
+          {
+            "qualificationType": null,
+            "description": "None"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in philosophy, politics, and economics modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for political theory, economic policy, and philosophical inquiry",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Critical thinking, policy analysis, argumentation",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Policy research, debate clubs, or economics projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Humanities, Arts and Social Sciences",
+      "major": "Psychology",
+      "degree": "Bachelor of Social Sciences",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "Good grade in H1 Level Mathematics and General Paper or Knowledge & Inquiry"
+          },
+          {
+            "qualificationType": null,
+            "description": "No additional subject requirements beyond Mathematics and General Paper"
+          },
+          {
+            "qualificationType": null,
+            "description": "English proficiency as demonstrated by General Paper or equivalent"
+          },
+          {
+            "qualificationType": null,
+            "description": "Interview on a selective basis"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in psychology modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for human behavior, mental health, and psychological research",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Analytical thinking, research design, empathy",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Psychology experiments, mental health volunteering, or research projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Humanities, Arts and Social Sciences",
+      "major": "Psychology and Biological Sciences",
+      "degree": "Bachelor of Science",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "Good grade in H1 Level Mathematics, H1 Level pass in Physics/Chemistry/Biology, and General Paper or Knowledge & Inquiry"
+          },
+          {
+            "qualificationType": null,
+            "description": "No additional subject requirements beyond core subjects"
+          },
+          {
+            "qualificationType": null,
+            "description": "English proficiency as demonstrated by General Paper or equivalent"
+          },
+          {
+            "qualificationType": null,
+            "description": "None"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in psychology and biological sciences modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for neuroscience, human behavior, and biological research",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Analytical thinking, biological research, psychological analysis",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Neuroscience projects, psychology experiments, or lab work",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Humanities, Arts and Social Sciences",
+      "major": "Psychology and Linguistics & Multilingual Studies",
+      "degree": "Bachelor of Arts",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "Good grade in H1 Level Mathematics and General Paper or Knowledge & Inquiry or H1/H2 Level Humanities subject"
+          },
+          {
+            "qualificationType": null,
+            "description": "No additional subject requirements beyond core subjects"
+          },
+          {
+            "qualificationType": null,
+            "description": "English proficiency as demonstrated by General Paper or equivalent"
+          },
+          {
+            "qualificationType": null,
+            "description": "Selection test or interview required"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in psychology and linguistics modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for psycholinguistics, language diversity, and human behavior",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Linguistic analysis, psychological research, critical thinking",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Linguistics projects, psychology experiments, or multilingual activities",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Humanities, Arts and Social Sciences",
+      "major": "Psychology and Media Analytics",
+      "degree": "Bachelor of Social Sciences",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "Good grade in H1 Level Mathematics and at least a B grade in General Paper or Knowledge & Inquiry"
+          },
+          {
+            "qualificationType": null,
+            "description": "No additional subject requirements beyond core subjects"
+          },
+          {
+            "qualificationType": null,
+            "description": "English proficiency as demonstrated by General Paper or equivalent"
+          },
+          {
+            "qualificationType": null,
+            "description": "None"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in psychology and media analytics modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for media studies, human behavior, and data analytics",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Data analysis, psychological research, media analysis",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Media projects, psychology experiments, or data analytics",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Humanities, Arts and Social Sciences",
+      "major": "Public Policy and Global Affairs",
+      "degree": "Bachelor of Social Sciences",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry or H1 Level History/English Literature/Geography"
+          },
+          {
+            "qualificationType": null,
+            "description": "No specific subject requirements beyond humanities"
+          },
+          {
+            "qualificationType": null,
+            "description": "English proficiency as demonstrated by General Paper or equivalent"
+          },
+          {
+            "qualificationType": null,
+            "description": "Interview on a selective basis"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in public policy and global affairs modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for governance, international relations, and policy analysis",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Policy analysis, critical thinking, communication",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Policy research, debate clubs, or community service",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Humanities, Arts and Social Sciences",
+      "major": "Sociology",
+      "degree": "Bachelor of Social Sciences",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry"
+          },
+          {
+            "qualificationType": null,
+            "description": "No specific subject requirements"
+          },
+          {
+            "qualificationType": null,
+            "description": "English proficiency as demonstrated by General Paper or equivalent"
+          },
+          {
+            "qualificationType": null,
+            "description": "None"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in sociology modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for social structures, cultural studies, and human behavior",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Sociological research, critical thinking, communication",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Social research, community projects, or cultural studies",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Science",
+      "major": "Biological Sciences",
+      "degree": "Bachelor of Science",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "H1 Level pass in Mathematics and H2 Level pass in Physics/Chemistry/Biology"
+          },
+          {
+            "qualificationType": null,
+            "description": "No additional subject requirements beyond core subjects"
+          },
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry"
+          },
+          {
+            "qualificationType": null,
+            "description": "Interview on a selective basis"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in biological sciences modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for biology, biotechnology, and health sciences",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Biological research, analytical thinking, lab skills",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Biology experiments, lab work, or health science projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Science",
+      "major": "Biomedical Sciences and BioBusiness",
+      "degree": "Bachelor of Science",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "H1 Level pass in Mathematics and H2 Level pass in Physics/Chemistry/Biology"
+          },
+          {
+            "qualificationType": null,
+            "description": "No additional subject requirements beyond core subjects"
+          },
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry"
+          },
+          {
+            "qualificationType": null,
+            "description": "Selection test or interview required"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview likely (online, 6 questions, 31 minutes); no portfolio; program-specific questions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in biomedical sciences and biobusiness modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for biomedical research, biotechnology, and business applications",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Biological research, business analysis, problem-solving",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Biomedical projects, business case studies, or internships",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Science",
+      "major": "Biological Sciences and Psychology",
+      "degree": "Bachelor of Science",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "Good grade in H1 Level Mathematics, H2 Level pass in Physics/Chemistry/Biology, and General Paper or Knowledge & Inquiry"
+          },
+          {
+            "qualificationType": null,
+            "description": "No additional subject requirements beyond core subjects"
+          },
+          {
+            "qualificationType": null,
+            "description": "English proficiency as demonstrated by General Paper or equivalent"
+          },
+          {
+            "qualificationType": null,
+            "description": "Interview on a selective basis"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in biological sciences and psychology modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for neuroscience, human behavior, and biological research",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Biological research, psychological analysis, critical thinking",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Neuroscience projects, psychology experiments, or lab work",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Science",
+      "major": "Chemistry and Biological Chemistry",
+      "degree": "Bachelor of Science",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "H2 Level pass in Chemistry and Mathematics/Physics"
+          },
+          {
+            "qualificationType": null,
+            "description": "No additional subject requirements beyond core subjects"
+          },
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry"
+          },
+          {
+            "qualificationType": null,
+            "description": "None"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in chemistry and biological chemistry modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for chemical reactions, biochemistry, and materials science",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Chemical analysis, lab skills, problem-solving",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Chemistry experiments, lab work, or research projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Science",
+      "major": "Chinese Medicine",
+      "degree": "Bachelor of Chinese Medicine",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "H1 Level pass in Mathematics and H2 Level pass in Physics/Chemistry/Biology, O-Level pass in Chinese"
+          },
+          {
+            "qualificationType": null,
+            "description": "No additional subject requirements beyond core subjects and Chinese"
+          },
+          {
+            "qualificationType": null,
+            "description": "Proficiency in Chinese and English"
+          },
+          {
+            "qualificationType": null,
+            "description": "Selection test or interview required"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in Chinese medicine modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for traditional Chinese medicine, health sciences, and holistic care",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Biological analysis, patient care, cultural understanding",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Health science projects, TCM studies, or clinical volunteering",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Science",
+      "major": "Environmental Earth Systems Science",
+      "degree": "Bachelor of Science",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "H1 Level pass in Mathematics and H2 Level pass in Physics/Chemistry/Biology/Computing/Economics"
+          },
+          {
+            "qualificationType": null,
+            "description": "No additional subject requirements beyond core subjects"
+          },
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry"
+          },
+          {
+            "qualificationType": null,
+            "description": "Interview on a selective basis"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in environmental earth systems science modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for environmental science, geology, and sustainability",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Environmental analysis, data analysis, problem-solving",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Environmental projects, sustainability initiatives, or fieldwork",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Science",
+      "major": "Environmental Earth Systems Science and Public Policy & Global Affairs",
+      "degree": "Bachelor of Science",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "H1 Level pass in Mathematics, H2 Level pass in Physics/Chemistry/Biology/Computing/Economics, and good grade in General Paper or Knowledge & Inquiry or H1 Level History/English Literature/Geography"
+          },
+          {
+            "qualificationType": null,
+            "description": "No additional subject requirements beyond core subjects"
+          },
+          {
+            "qualificationType": null,
+            "description": "English proficiency as demonstrated by General Paper or equivalent"
+          },
+          {
+            "qualificationType": null,
+            "description": "None"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in environmental science and public policy modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for environmental policy, global affairs, and sustainability",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Policy analysis, environmental research, critical thinking",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Environmental projects, policy research, or community service",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Science",
+      "major": "Mathematical Sciences",
+      "degree": "Bachelor of Science",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "H2 Level pass in Mathematics"
+          },
+          {
+            "qualificationType": null,
+            "description": "No additional subject requirements beyond Mathematics"
+          },
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry"
+          },
+          {
+            "qualificationType": null,
+            "description": "None"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in mathematical sciences modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for mathematics, statistics, and theoretical analysis",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Analytical thinking, problem-solving, mathematical modeling",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Mathematics competitions, research projects, or data analysis",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "Lee Kong Chian School of Medicine",
+      "major": "Medicine",
+      "degree": "Bachelor of Medicine and Bachelor of Surgery",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "H2 Level pass in Chemistry and Biology/Physics"
+          },
+          {
+            "qualificationType": null,
+            "description": "No additional subject requirements beyond Chemistry and Biology/Physics"
+          },
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry"
+          },
+          {
+            "qualificationType": null,
+            "description": "University Clinical Aptitude Test (UCAT), personal statement, two referee reports, and interview required"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required (Multiple Mini Interviews, April); no portfolio; highly competitive"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in medical sciences and clinical practice modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for healthcare, medical research, and patient care",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Empathy, scientific analysis, communication",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Clinical volunteering, medical research, or healthcare internships",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Science",
+      "major": "Physics and Applied Physics",
+      "degree": "Bachelor of Science",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "H2 Level pass in Physics and Mathematics"
+          },
+          {
+            "qualificationType": null,
+            "description": "No additional subject requirements beyond Physics and Mathematics"
+          },
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry"
+          },
+          {
+            "qualificationType": null,
+            "description": "Interview on a selective basis"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in physics and applied physics modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for theoretical physics, quantum mechanics, and applied technologies",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Analytical thinking, experimental design, problem-solving",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Physics experiments, research projects, or technology development",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "National Institute of Education",
+      "major": "Sport Science and Management",
+      "degree": "Bachelor of Science",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "H1 Level pass in Mathematics or O-Level pass in Additional Mathematics"
+          },
+          {
+            "qualificationType": null,
+            "description": "No additional subject requirements beyond Mathematics"
+          },
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry"
+          },
+          {
+            "qualificationType": null,
+            "description": "Interview required"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview selective (for Maths-deficient or ABA applicants); no portfolio; case-by-case"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in sport science and management modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for sports, fitness, and sports management",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Leadership, sports analysis, organizational skills",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Sports coaching, event management, or fitness programs",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Science",
+      "major": "Mathematical and Computer Sciences",
+      "degree": "Bachelor of Science",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "H2 Level pass in Mathematics and Physics/Chemistry/Biology/Computing"
+          },
+          {
+            "qualificationType": null,
+            "description": "No additional subject requirements beyond core subjects"
+          },
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry"
+          },
+          {
+            "qualificationType": null,
+            "description": "None"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in mathematical and computer sciences modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for algorithms, data analysis, and mathematical modeling",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Programming, mathematical analysis, problem-solving",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Coding projects, mathematics competitions, or data analysis",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Science",
+      "major": "Mathematical Sciences and Economics",
+      "degree": "Bachelor of Science",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "H2 Level pass in Mathematics and good grade in General Paper or Knowledge & Inquiry"
+          },
+          {
+            "qualificationType": null,
+            "description": "No additional subject requirements beyond Mathematics and General Paper"
+          },
+          {
+            "qualificationType": null,
+            "description": "English proficiency as demonstrated by General Paper or equivalent"
+          },
+          {
+            "qualificationType": null,
+            "description": "None"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in mathematical sciences and economics modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for economic theory, quantitative analysis, and data modeling",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Mathematical modeling, statistical analysis, critical thinking",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Economics projects, data analysis, or mathematical research",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Science",
+      "major": "Physics and Mathematical Sciences",
+      "degree": "Bachelor of Science",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "H2 Level pass in Physics and Mathematics"
+          },
+          {
+            "qualificationType": null,
+            "description": "No additional subject requirements beyond Physics and Mathematics"
+          },
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry"
+          },
+          {
+            "qualificationType": null,
+            "description": "None"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in physics and mathematical sciences modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for theoretical physics, mathematical modeling, and scientific research",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Analytical thinking, mathematical analysis, experimental design",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Physics experiments, mathematical research, or scientific projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Humanities, Arts and Social Sciences",
+      "major": "Chinese and English",
+      "degree": "Bachelor of Arts",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry or H1/H2 Level Humanities subject, and pass in H2 Level Chinese subjects or good pass in H1/O-Level Chinese"
+          },
+          {
+            "qualificationType": null,
+            "description": "No additional subject requirements beyond humanities and Chinese"
+          },
+          {
+            "qualificationType": null,
+            "description": "Proficiency in Chinese and English"
+          },
+          {
+            "qualificationType": null,
+            "description": "None"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in Chinese and English modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for Chinese literature, English literature, and cultural studies",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Language analysis, critical thinking, textual analysis",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Literary projects, cultural studies, or language workshops",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Humanities, Arts and Social Sciences",
+      "major": "Chinese and Linguistics and Multilingual Studies",
+      "degree": "Bachelor of Arts",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry or H1/H2 Level Humanities subject, and pass in H2 Level Chinese subjects or good pass in H1/O-Level Chinese"
+          },
+          {
+            "qualificationType": null,
+            "description": "No additional subject requirements beyond humanities and Chinese"
+          },
+          {
+            "qualificationType": null,
+            "description": "Proficiency in Chinese and English"
+          },
+          {
+            "qualificationType": null,
+            "description": "None"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in Chinese and linguistics modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for Chinese language, linguistic diversity, and cultural studies",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Linguistic analysis, cultural research, communication",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Linguistics projects, Chinese cultural studies, or multilingual activities",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Humanities, Arts and Social Sciences",
+      "major": "Economics and Media Analytics",
+      "degree": "Bachelor of Social Sciences",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "Good grade in H1 Level Mathematics and at least a B grade in General Paper or Knowledge & Inquiry"
+          },
+          {
+            "qualificationType": null,
+            "description": "No additional subject requirements beyond Mathematics and General Paper"
+          },
+          {
+            "qualificationType": null,
+            "description": "English proficiency as demonstrated by General Paper or equivalent"
+          },
+          {
+            "qualificationType": null,
+            "description": "None"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in economics and media analytics modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for economic analysis, media studies, and data analytics",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Data analysis, economic modeling, media analysis",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Economics projects, media projects, or data analytics",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Humanities, Arts and Social Sciences",
+      "major": "Economics and Psychology",
+      "degree": "Bachelor of Social Sciences",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "Good grade in H1 Level Mathematics and General Paper or Knowledge & Inquiry"
+          },
+          {
+            "qualificationType": null,
+            "description": "No additional subject requirements beyond Mathematics and General Paper"
+          },
+          {
+            "qualificationType": null,
+            "description": "English proficiency as demonstrated by General Paper or equivalent"
+          },
+          {
+            "qualificationType": null,
+            "description": "Interview on a selective basis"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in economics and psychology modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for behavioral economics, human behavior, and data analysis",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Economic analysis, psychological research, critical thinking",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Economics projects, psychology experiments, or behavioral research",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Humanities, Arts and Social Sciences",
+      "major": "Economics and Public Policy and Global Affairs",
+      "degree": "Bachelor of Social Sciences",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry or H1 Level History/English Literature/Geography"
+          },
+          {
+            "qualificationType": null,
+            "description": "No specific subject requirements beyond humanities"
+          },
+          {
+            "qualificationType": null,
+            "description": "English proficiency as demonstrated by General Paper or equivalent"
+          },
+          {
+            "qualificationType": null,
+            "description": "Interview on a selective basis"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in economics and public policy modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for economic policy, governance, and international relations",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Policy analysis, economic modeling, critical thinking",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Policy research, economics projects, or community service",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Engineering",
+      "major": "Process Engineering and Synthetic Chemistry",
+      "degree": "Bachelor of Engineering Science",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "H2 Level pass in Mathematics and Chemistry"
+          },
+          {
+            "qualificationType": null,
+            "description": "No additional subject requirements beyond Mathematics and Chemistry"
+          },
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry"
+          },
+          {
+            "qualificationType": null,
+            "description": "Selection test and interview required"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in process engineering and synthetic chemistry modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for chemical processes, synthetic chemistry, and industrial applications",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Chemical analysis, process optimization, problem-solving",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Chemistry projects, lab work, or industrial internships",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "Nanyang Business School",
+      "major": "Accountancy and Business",
+      "degree": "Bachelor of Accountancy + Bachelor of Business",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "Good grade in H1 Level Mathematics and General Paper or Knowledge & Inquiry"
+          },
+          {
+            "qualificationType": null,
+            "description": "No additional subject requirements beyond Mathematics and General Paper"
+          },
+          {
+            "qualificationType": null,
+            "description": "English proficiency as demonstrated by General Paper or equivalent"
+          },
+          {
+            "qualificationType": null,
+            "description": "None"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in accountancy and business modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for financial management, business strategy, and accounting",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Analytical thinking, financial analysis, leadership",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Business projects, accounting internships, or leadership roles",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "Nanyang Business School",
+      "major": "Accountancy and Data Science and Artificial Intelligence",
+      "degree": "Bachelor of Accountancy + Bachelor of Computing",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "H2 Level pass in Mathematics and good grade in General Paper or Knowledge & Inquiry"
+          },
+          {
+            "qualificationType": null,
+            "description": "No additional subject requirements beyond Mathematics and General Paper"
+          },
+          {
+            "qualificationType": null,
+            "description": "English proficiency as demonstrated by General Paper or equivalent"
+          },
+          {
+            "qualificationType": null,
+            "description": "None"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in accountancy and data science/AI modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for financial analytics, data science, and artificial intelligence",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Programming, financial analysis, data modeling",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Data analysis projects, accounting internships, or AI research",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "Nanyang Business School",
+      "major": "Business and Computing",
+      "degree": "Bachelor of Business + Bachelor of Computing",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "H2 Level pass in Mathematics or Physics/Computing"
+          },
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry"
+          },
+          {
+            "qualificationType": null,
+            "description": "English proficiency as demonstrated by General Paper or equivalent"
+          },
+          {
+            "qualificationType": null,
+            "description": "None"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in business and computing modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for business analytics, software development, and technology",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Programming, strategic thinking, data analysis",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Business case studies, coding projects, or tech internships",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Computing and Data Science",
+      "major": "Computer Science and Economics",
+      "degree": "Bachelor of Computing + Bachelor of Social Sciences",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "H2 Level pass in Mathematics and good grade in General Paper or Knowledge & Inquiry"
+          },
+          {
+            "qualificationType": null,
+            "description": "No additional subject requirements beyond Mathematics and General Paper"
+          },
+          {
+            "qualificationType": null,
+            "description": "English proficiency as demonstrated by General Paper or equivalent"
+          },
+          {
+            "qualificationType": null,
+            "description": "Selection test and interview required"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in computer science and economics modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for software development, economic analysis, and data science",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Programming, economic modeling, data analysis",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Coding projects, economics research, or data analytics",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Engineering",
+      "major": "Engineering and Economics",
+      "degree": "Bachelor of Engineering + Bachelor of Social Sciences",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "H2 Level pass in Mathematics and Physics/Chemistry/Biology/Computing"
+          },
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry"
+          },
+          {
+            "qualificationType": null,
+            "description": "English proficiency as demonstrated by General Paper or equivalent"
+          },
+          {
+            "qualificationType": null,
+            "description": "Selection test and interview required"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in engineering and economics modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for engineering solutions, economic policy, and quantitative analysis",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Problem-solving, economic analysis, technical design",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Engineering projects, economics research, or internships",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "National Institute of Education",
+      "major": "Art and Education",
+      "degree": "Bachelor of Arts",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "O-Level or equivalent pass in Mathematics and good grade in General Paper or Knowledge & Inquiry"
+          },
+          {
+            "qualificationType": null,
+            "description": "No additional subject requirements beyond Mathematics and General Paper"
+          },
+          {
+            "qualificationType": null,
+            "description": "English proficiency as demonstrated by General Paper or equivalent"
+          },
+          {
+            "qualificationType": null,
+            "description": "Portfolio and interview required"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in art and education modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for visual arts, teaching, and curriculum development",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Creativity, teaching, communication",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Art projects, teaching internships, or educational workshops",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "National Institute of Education",
+      "major": "Chinese Studies and Education",
+      "degree": "Bachelor of Arts",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry and pass in H2 Level Chinese subjects or good pass in H1/O-Level Chinese"
+          },
+          {
+            "qualificationType": null,
+            "description": "No additional subject requirements beyond Chinese and General Paper"
+          },
+          {
+            "qualificationType": null,
+            "description": "Proficiency in Chinese and English"
+          },
+          {
+            "qualificationType": null,
+            "description": "Interview required"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in Chinese studies and education modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for Chinese culture, literature, and teaching",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Language analysis, teaching, cultural research",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Chinese cultural projects, teaching internships, or educational workshops",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "National Institute of Education",
+      "major": "Drama and Education",
+      "degree": "Bachelor of Arts",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry"
+          },
+          {
+            "qualificationType": null,
+            "description": "No specific subject requirements"
+          },
+          {
+            "qualificationType": null,
+            "description": "English proficiency as demonstrated by General Paper or equivalent"
+          },
+          {
+            "qualificationType": null,
+            "description": "Audition and interview required"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in drama and education modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for theater, performance arts, and teaching",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Performance, teaching, communication",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Theater productions, teaching internships, or drama workshops",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "National Institute of Education",
+      "major": "English Language & Linguistics and Education",
+      "degree": "Bachelor of Arts",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry or H1/H2 Level Humanities subject"
+          },
+          {
+            "qualificationType": null,
+            "description": "No specific subject requirements beyond humanities"
+          },
+          {
+            "qualificationType": null,
+            "description": "English proficiency as demonstrated by General Paper or equivalent"
+          },
+          {
+            "qualificationType": null,
+            "description": "Interview required"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in English language, linguistics, and education modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for linguistics, language teaching, and curriculum development",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Linguistic analysis, teaching, communication",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Linguistics projects, teaching internships, or educational workshops",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "National Institute of Education",
+      "major": "English Literature and Education",
+      "degree": "Bachelor of Arts",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry or H1/H2 Level Humanities subject"
+          },
+          {
+            "qualificationType": null,
+            "description": "No specific subject requirements beyond humanities"
+          },
+          {
+            "qualificationType": null,
+            "description": "English proficiency as demonstrated by General Paper or equivalent"
+          },
+          {
+            "qualificationType": null,
+            "description": "Interview required"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in English literature and education modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for literature, literary analysis, and teaching",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Textual analysis, teaching, critical thinking",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Literary projects, teaching internships, or educational workshops",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "National Institute of Education",
+      "major": "Geography and Education",
+      "degree": "Bachelor of Arts",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry or H1/H2 Level Geography"
+          },
+          {
+            "qualificationType": null,
+            "description": "No specific subject requirements beyond humanities"
+          },
+          {
+            "qualificationType": null,
+            "description": "English proficiency as demonstrated by General Paper or equivalent"
+          },
+          {
+            "qualificationType": null,
+            "description": "Interview required"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in geography and education modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for environmental studies, human geography, and teaching",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Geographical analysis, teaching, critical thinking",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Geography projects, teaching internships, or environmental studies",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "National Institute of Education",
+      "major": "History and Education",
+      "degree": "Bachelor of Arts",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry or H1/H2 Level History"
+          },
+          {
+            "qualificationType": null,
+            "description": "No specific subject requirements beyond humanities"
+          },
+          {
+            "qualificationType": null,
+            "description": "English proficiency as demonstrated by General Paper or equivalent"
+          },
+          {
+            "qualificationType": null,
+            "description": "Interview required"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in history and education modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for historical analysis, cultural studies, and teaching",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Historical research, teaching, critical thinking",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "History projects, teaching internships, or educational workshops",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "National Institute of Education",
+      "major": "Malay Studies and Education",
+      "degree": "Bachelor of Arts",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry and pass in H2 Level Malay subjects or good pass in H1/O-Level Malay"
+          },
+          {
+            "qualificationType": null,
+            "description": "No additional subject requirements beyond Malay and General Paper"
+          },
+          {
+            "qualificationType": null,
+            "description": "Proficiency in Malay and English"
+          },
+          {
+            "qualificationType": null,
+            "description": "Interview required"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in Malay studies and education modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for Malay culture, literature, and teaching",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Language analysis, teaching, cultural research",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Malay cultural projects, teaching internships, or educational workshops",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "National Institute of Education",
+      "major": "Music and Education",
+      "degree": "Bachelor of Arts",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry"
+          },
+          {
+            "qualificationType": null,
+            "description": "No specific subject requirements"
+          },
+          {
+            "qualificationType": null,
+            "description": "English proficiency as demonstrated by General Paper or equivalent"
+          },
+          {
+            "qualificationType": null,
+            "description": "Audition and interview required"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in music and education modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for music performance, music theory, and teaching",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Musical performance, teaching, communication",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Music performances, teaching internships, or music workshops",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "National Institute of Education",
+      "major": "Tamil Studies and Education",
+      "degree": "Bachelor of Arts",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry and pass in H2 Level Tamil subjects or good pass in H1/O-Level Tamil"
+          },
+          {
+            "qualificationType": null,
+            "description": "No additional subject requirements beyond Tamil and General Paper"
+          },
+          {
+            "qualificationType": null,
+            "description": "Proficiency in Tamil and English"
+          },
+          {
+            "qualificationType": null,
+            "description": "Interview required"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in Tamil studies and education modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for Tamil culture, literature, and teaching",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Language analysis, teaching, cultural research",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Tamil cultural projects, teaching internships, or educational workshops",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "National Institute of Education",
+      "major": "Biology and Education",
+      "degree": "Bachelor of Science",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "H1 Level pass in Mathematics and H2 Level pass in Physics/Chemistry/Biology"
+          },
+          {
+            "qualificationType": null,
+            "description": "No additional subject requirements beyond core subjects"
+          },
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry"
+          },
+          {
+            "qualificationType": null,
+            "description": "Interview required"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in biology and education modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for biological sciences, biotechnology, and teaching",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Biological research, teaching, communication",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Biology experiments, teaching internships, or educational workshops",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "National Institute of Education",
+      "major": "Chemistry and Education",
+      "degree": "Bachelor of Science",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "H2 Level pass in Chemistry and Mathematics/Physics"
+          },
+          {
+            "qualificationType": null,
+            "description": "No additional subject requirements beyond core subjects"
+          },
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry"
+          },
+          {
+            "qualificationType": null,
+            "description": "Interview required"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in chemistry and education modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for chemical sciences, laboratory work, and teaching",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Chemical analysis, teaching, communication",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Chemistry experiments, teaching internships, or educational workshops",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "National Institute of Education",
+      "major": "Food & Consumer Sciences and Education",
+      "degree": "Bachelor of Science",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "H1 Level pass in Mathematics and H2 Level pass in Physics/Chemistry/Biology"
+          },
+          {
+            "qualificationType": null,
+            "description": "No additional subject requirements beyond core subjects"
+          },
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry"
+          },
+          {
+            "qualificationType": null,
+            "description": "Interview required"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in food & consumer sciences and education modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for nutrition, consumer behavior, and teaching",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Scientific analysis, teaching, communication",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Nutrition projects, teaching internships, or consumer science studies",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "National Institute of Education",
+      "major": "Mathematics & Computational Thinking and Education",
+      "degree": "Bachelor of Science",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "H2 Level pass in Mathematics"
+          },
+          {
+            "qualificationType": null,
+            "description": "No additional subject requirements beyond Mathematics"
+          },
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry"
+          },
+          {
+            "qualificationType": null,
+            "description": "Interview required"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in mathematics, computational thinking, and education modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for mathematics, computational methods, and teaching",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Mathematical analysis, teaching, problem-solving",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Mathematics projects, teaching internships, or computational workshops",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "National Institute of Education",
+      "major": "Sport Science and Education",
+      "degree": "Bachelor of Science",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "H1 Level pass in Mathematics or O-Level pass in Additional Mathematics"
+          },
+          {
+            "qualificationType": null,
+            "description": "No additional subject requirements beyond Mathematics"
+          },
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry"
+          },
+          {
+            "qualificationType": null,
+            "description": "Interview required"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in sport science and education modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for sports, fitness, and teaching",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Sports analysis, teaching, leadership",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Sports coaching, teaching internships, or fitness programs",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "National Institute of Education",
+      "major": "Physics & Energy Studies and Education",
+      "degree": "Bachelor of Science",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "H2 Level pass in Physics and Mathematics"
+          },
+          {
+            "qualificationType": null,
+            "description": "No additional subject requirements beyond Physics and Mathematics"
+          },
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry"
+          },
+          {
+            "qualificationType": null,
+            "description": "Interview required"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in physics, energy studies, and education modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for physics, energy technologies, and teaching",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Experimental design, teaching, analytical thinking",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Physics experiments, teaching internships, or energy studies",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "Renaissance Engineering Programme",
+      "major": "Renaissance Engineering",
+      "degree": "Bachelor of Engineering Science + Master of Science in Technology Management",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "H2 Level pass in Mathematics and Physics/Chemistry/Biology/Computing"
+          },
+          {
+            "qualificationType": null,
+            "description": "H1 Level or O-Level pass in Physics or equivalent"
+          },
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry"
+          },
+          {
+            "qualificationType": null,
+            "description": "Selection test and interview required"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required (MMI, individual, teambuilding, March-April); no portfolio; competitive process"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in engineering and technology management modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for interdisciplinary engineering, innovation, and leadership",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Problem-solving, leadership, interdisciplinary thinking",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Engineering projects, leadership roles, or innovation challenges",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "Various Colleges",
+      "major": "Premier Scholars Programmes",
+      "degree": "Varies",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "Outstanding academic results in relevant subjects"
+          },
+          {
+            "qualificationType": null,
+            "description": "Varies by chosen degree program"
+          },
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry"
+          },
+          {
+            "qualificationType": null,
+            "description": "Interview and assessment of co-curricular records required"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview likely; no portfolio; competitive selection"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in advanced interdisciplinary modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for leadership, societal contribution, and interdisciplinary studies",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Leadership, critical thinking, problem-solving",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Leadership roles, community service, or interdisciplinary projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "Various Colleges",
+      "major": "Work-Study Degree Programmes",
+      "degree": "Varies",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "Good academic results in relevant subjects"
+          },
+          {
+            "qualificationType": null,
+            "description": "Varies by chosen degree program"
+          },
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry"
+          },
+          {
+            "qualificationType": null,
+            "description": "Interview and assessment of work readiness required"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in industry-relevant modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for practical applications, industry work, and professional development",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Problem-solving, teamwork, industry-specific skills",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Internships, industry projects, or professional training",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Humanities, Arts and Social Sciences",
+      "major": "Art History",
+      "degree": "Second Major",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry or H1/H2 Level Humanities subject"
+          },
+          {
+            "qualificationType": null,
+            "description": "No specific subject requirements beyond humanities"
+          },
+          {
+            "qualificationType": null,
+            "description": "English proficiency as demonstrated by General Paper or equivalent"
+          },
+          {
+            "qualificationType": null,
+            "description": "Selection test and interview required"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in art history modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for art, cultural studies, and visual analysis",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Visual analysis, critical thinking, cultural research",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Art history projects, museum visits, or cultural studies",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Humanities, Arts and Social Sciences",
+      "major": "Chinese",
+      "degree": "Second Major",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry and pass in H2 Level Chinese subjects or good pass in H1/O-Level Chinese"
+          },
+          {
+            "qualificationType": null,
+            "description": "No additional subject requirements beyond Chinese"
+          },
+          {
+            "qualificationType": null,
+            "description": "Proficiency in Chinese and English"
+          },
+          {
+            "qualificationType": null,
+            "description": "Selection test and interview required"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in Chinese language and culture modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for Chinese literature, culture, and history",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Language analysis, cultural research, communication",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Chinese language projects, cultural studies, or community engagement",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Humanities, Arts and Social Sciences",
+      "major": "Communication Studies",
+      "degree": "Second Major",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry"
+          },
+          {
+            "qualificationType": null,
+            "description": "No specific subject requirements"
+          },
+          {
+            "qualificationType": null,
+            "description": "English proficiency as demonstrated by General Paper or equivalent"
+          },
+          {
+            "qualificationType": null,
+            "description": "Selection test and interview required"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in communication studies modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for media, journalism, and public relations",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Communication, media analysis, creative writing",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Media projects, journalism, or public speaking",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Humanities, Arts and Social Sciences",
+      "major": "Economics",
+      "degree": "Second Major",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry"
+          },
+          {
+            "qualificationType": null,
+            "description": "No specific subject requirements"
+          },
+          {
+            "qualificationType": null,
+            "description": "English proficiency as demonstrated by General Paper or equivalent"
+          },
+          {
+            "qualificationType": null,
+            "description": "Selection test and interview required"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in economics modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for economic theory, policy analysis, and data analysis",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Analytical thinking, statistical analysis, problem-solving",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Economics projects, data analysis, or policy research",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Humanities, Arts and Social Sciences",
+      "major": "English",
+      "degree": "Second Major",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry or H1/H2 Level Humanities subject"
+          },
+          {
+            "qualificationType": null,
+            "description": "No specific subject requirements beyond humanities"
+          },
+          {
+            "qualificationType": null,
+            "description": "English proficiency as demonstrated by General Paper or equivalent"
+          },
+          {
+            "qualificationType": null,
+            "description": "Selection test and interview required"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in English literature modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for literature, creative writing, and literary analysis",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Textual analysis, critical thinking, writing",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Literary projects, writing workshops, or book clubs",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Humanities, Arts and Social Sciences",
+      "major": "History",
+      "degree": "Second Major",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry or H1/H2 Level Humanities subject"
+          },
+          {
+            "qualificationType": null,
+            "description": "No specific subject requirements beyond humanities"
+          },
+          {
+            "qualificationType": null,
+            "description": "English proficiency as demonstrated by General Paper or equivalent"
+          },
+          {
+            "qualificationType": null,
+            "description": "Selection test and interview required"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in history modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for historical analysis, cultural studies, and global events",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Historical research, critical thinking, writing",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "History projects, archival research, or cultural studies",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Humanities, Arts and Social Sciences",
+      "major": "Linguistics and Multilingual Studies",
+      "degree": "Second Major",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry or H1/H2 Level Humanities subject"
+          },
+          {
+            "qualificationType": null,
+            "description": "No specific subject requirements beyond humanities"
+          },
+          {
+            "qualificationType": null,
+            "description": "English proficiency as demonstrated by General Paper or equivalent"
+          },
+          {
+            "qualificationType": null,
+            "description": "Selection test and interview required"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in linguistics and multilingual studies modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for language diversity, linguistic analysis, and cultural studies",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Linguistic analysis, critical thinking, communication",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Linguistics projects, cultural studies, or multilingual activities",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Humanities, Arts and Social Sciences",
+      "major": "Modern Languages",
+      "degree": "Second Major",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": null,
+            "description": "Good grade in General Paper or Knowledge & Inquiry or H1/H2 Level Humanities subject"
+          },
+          {
+            "qualificationType": null,
+            "description": "No specific subject requirements beyond humanities"
+          },
+          {
+            "qualificationType": null,
+            "description": "English proficiency as demonstrated by General Paper or equivalent"
+          },
+          {
+            "qualificationType": null,
+            "description": "Selection test and interview required"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "No interview; no portfolio; academic-based admissions"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "High interest in modern languages modules, rated 7-10 on a 1-10 scale",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for language learning, cultural studies, and global communication",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Language acquisition, cultural research, communication",
+            "weight": 0.244
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Language immersion, cultural studies, or multilingual activities",
+            "weight": 0.18
           }
         ]
       }

@@ -1,92 +1,3012 @@
-
 {
   "programs": [
     {
-      "college": "School of Computing and Information Systems",
-      "major": "Computer Science",
-      "degree": "Bachelor of Science",
+      "college": "School of Accountancy",
+      "major": "Accounting",
+      "degree": "Bachelor of Accountancy",
       "criteria": {
         "eligibility": [
           {
-            "qualificationType": "A Levels/Diploma",
-            "description": "Strong foundation in mathematics"
+            "qualificationType": "GCE A-Level",
+            "description": "Minimum 3 H2 passes with good grades"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Relevant diploma with good academic standing"
+          },
+          {
+            "qualificationType": "International Baccalaureate",
+            "description": "IB Diploma with minimum score of 36"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
           }
         ],
         "suitability": [
           {
-            "criterion": "Computational thinking",
-            "description": "Ability to think algorithmically",
-            "weight": 5
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Financial Accounting (AD1101), Accounting Information Systems (AC2401)",
+            "weight": 0.4
           },
           {
-            "criterion": "Problem-solving",
-            "description": "Analytical approach to solving complex problems",
-            "weight": 5
+            "criterion": "Interests",
+            "description": "Passion for financial reporting, auditing, and compliance",
+            "weight": 0.18
           },
           {
-            "criterion": "Innovation",
-            "description": "Creative application of technical knowledge",
-            "weight": 4
+            "criterion": "Skills",
+            "description": "Analytical skills, attention to detail",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Prior coursework or internships in accounting",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "School of Accountancy",
+      "major": "Accounting Data and Analytics",
+      "degree": "Bachelor of Accountancy (Second Major)",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "Enrolled SMU Student",
+            "description": "Must be pursuing a primary major at SMU"
+          },
+          {
+            "qualificationType": "Academic Performance",
+            "description": "Minimum GPA of 3.0 in first year"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Intermediate Excel (AB1403), Data Science (BS0004)",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Enthusiasm for data analytics and technology in accounting",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Proficiency in data analysis tools and programming",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience with data projects or analytics coursework",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "School of Accountancy",
+      "major": "Financial Forensics",
+      "degree": "Bachelor of Accountancy (Second Major)",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "Enrolled SMU Student",
+            "description": "Must be pursuing a primary major at SMU"
+          },
+          {
+            "qualificationType": "Academic Performance",
+            "description": "Minimum GPA of 3.0 in first year"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Introduction to Compliance (BF2213)",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Interest in fraud detection and forensic accounting",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Investigative and critical thinking skills",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in legal or compliance-related projects",
+            "weight": 0.18
           }
         ]
       }
     },
     {
       "college": "Lee Kong Chian School of Business",
-      "major": "Business Management",
+      "major": "Communication Management",
       "degree": "Bachelor of Business Management",
       "criteria": {
         "eligibility": [
           {
-            "qualificationType": "A Levels/Diploma",
-            "description": "Good overall academic standing"
+            "qualificationType": "GCE A-Level",
+            "description": "Minimum 3 H2 passes with good grades"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Relevant diploma with good academic standing"
+          },
+          {
+            "qualificationType": "International Baccalaureate",
+            "description": "IB Diploma with minimum score of 36"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
           }
         ],
         "suitability": [
           {
-            "criterion": "Leadership",
-            "description": "Demonstrated leadership capabilities",
-            "weight": 4
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Law of Intellectual Property & New Media (BL5302)",
+            "weight": 0.4
           },
           {
-            "criterion": "Communication",
-            "description": "Excellent verbal and written communication",
-            "weight": 5
+            "criterion": "Interests",
+            "description": "Passion for media, public relations, and communication strategies",
+            "weight": 0.18
           },
           {
-            "criterion": "Critical thinking",
-            "description": "Ability to analyze business situations critically",
-            "weight": 4
+            "criterion": "Skills",
+            "description": "Strong verbal and written communication skills",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in media projects or communication roles",
+            "weight": 0.18
           }
         ]
       }
     },
     {
-      "college": "School of Law",
+      "college": "Lee Kong Chian School of Business",
+      "major": "Communication Management (Data, Design & Communication)",
+      "degree": "Bachelor of Business Management",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "Minimum 3 H2 passes with good grades"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Relevant diploma with good academic standing"
+          },
+          {
+            "qualificationType": "International Baccalaureate",
+            "description": "IB Diploma with minimum score of 36"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Information Visualization (DD0003)",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Enthusiasm for data-driven design and communication",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Skills in data visualization and design tools",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in design or data communication projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "Lee Kong Chian School of Business",
+      "major": "Finance",
+      "degree": "Bachelor of Business Management",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "Minimum 3 H2 passes with good grades"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Relevant diploma with good academic standing"
+          },
+          {
+            "qualificationType": "International Baccalaureate",
+            "description": "IB Diploma with minimum score of 36"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Introduction to Compliance (BF2213)",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for financial markets and investment",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Quantitative and analytical skills",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in finance-related internships or projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "Lee Kong Chian School of Business",
+      "major": "Finance (Private Banking Work-Study)",
+      "degree": "Bachelor of Business Management",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "Minimum 3 H2 passes with good grades"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Relevant diploma with good academic standing"
+          },
+          {
+            "qualificationType": "Work Commitment",
+            "description": "Commitment to work-study program with partner banks"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Introduction to Compliance (BF2213)",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Interest in private banking and wealth management",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Client-facing and financial advisory skills",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in banking or client services",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "Lee Kong Chian School of Business",
+      "major": "Finance (Finance Analytics)",
+      "degree": "Bachelor of Business Management",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "Minimum 3 H2 passes with good grades"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Relevant diploma with good academic standing"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Data Science (BS0004)",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Enthusiasm for data analytics in finance",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Proficiency in data analysis and programming",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in financial data projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "Lee Kong Chian School of Business",
+      "major": "Finance (Real Estate)",
+      "degree": "Bachelor of Business Management",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "Minimum 3 H2 passes with good grades"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Relevant diploma with good academic standing"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Real Estate (RE)",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Interest in real estate markets and investments",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Analytical skills for property valuation",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in real estate or property management",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "Lee Kong Chian School of Business",
+      "major": "Finance (Wealth Management)",
+      "degree": "Bachelor of Business Management",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "Minimum 3 H2 passes with good grades"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Relevant diploma with good academic standing"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Introduction to Compliance (BF2213)",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for wealth planning and client advisory",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Client relationship and financial advisory skills",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in wealth management or client services",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "Lee Kong Chian School of Business",
+      "major": "Finance (International Trading)",
+      "degree": "Bachelor of Business Management",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "Minimum 3 H2 passes with good grades"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Relevant diploma with good academic standing"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Enterprise & Innovation (ET0001)",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Interest in global trade and commodity markets",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Analytical skills for market analysis",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in trading or international business",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "Lee Kong Chian School of Business",
+      "major": "Finance (Banking)",
+      "degree": "Bachelor of Business Management",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "Minimum 3 H2 passes with good grades"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Relevant diploma with good academic standing"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Introduction to Compliance (BF2213)",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Interest in banking operations and financial services",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Financial analysis and client management skills",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in banking or financial services",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "Lee Kong Chian School of Business",
+      "major": "Innovation & Entrepreneurship",
+      "degree": "Bachelor of Business Management",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "Minimum 3 H2 passes with good grades"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Relevant diploma with good academic standing"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Enterprise & Innovation (ET0001)",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for startups and innovation",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Creativity and entrepreneurial thinking",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in startup projects or competitions",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "Lee Kong Chian School of Business",
+      "major": "Marketing",
+      "degree": "Bachelor of Business Management",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "Minimum 3 H2 passes with good grades"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Relevant diploma with good academic standing"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Market Behaviour (BM2501)",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for branding and consumer behavior",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Creative and strategic communication skills",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in marketing campaigns or projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "Lee Kong Chian School of Business",
+      "major": "Marketing (Marketing Analytics)",
+      "degree": "Bachelor of Business Management",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "Minimum 3 H2 passes with good grades"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Relevant diploma with good academic standing"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Data Science (BS0004)",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Enthusiasm for data-driven marketing strategies",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Proficiency in data analytics and marketing tools",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in marketing analytics projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "Lee Kong Chian School of Business",
+      "major": "Operations Management",
+      "degree": "Bachelor of Business Management",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "Minimum 3 H2 passes with good grades"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Relevant diploma with good academic standing"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Business Operations & Process (BE1401)",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Interest in supply chain and process optimization",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Problem-solving and organizational skills",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in operations or logistics projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "Lee Kong Chian School of Business",
+      "major": "Operations Management (Operations Analytics)",
+      "degree": "Bachelor of Business Management",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "Minimum 3 H2 passes with good grades"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Relevant diploma with good academic standing"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Data Science (BS0004)",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Enthusiasm for data-driven operations",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Proficiency in analytics and process modeling",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in operations analytics projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "Lee Kong Chian School of Business",
+      "major": "Operations Management (Maritime Business & Operations)",
+      "degree": "Bachelor of Business Management",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "Minimum 3 H2 passes with good grades"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Relevant diploma with good academic standing"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Professionals & Society (MT0003)",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Interest in maritime logistics and trade",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Skills in logistics and supply chain management",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in maritime or logistics sectors",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "Lee Kong Chian School of Business",
+      "major": "Organisational Behaviour & Human Resources",
+      "degree": "Bachelor of Business Management",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "Minimum 3 H2 passes with good grades"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Relevant diploma with good academic standing"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Strategic HR Management & Consulting (BH2601)",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for HR and organizational development",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Interpersonal and leadership skills",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in HR or team management roles",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "Lee Kong Chian School of Business",
+      "major": "Quantitative Finance",
+      "degree": "Bachelor of Business Management",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "Minimum 3 H2 passes with strong Mathematics"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Relevant diploma with strong quantitative focus"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Actuarial Computing (BA3205)",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Enthusiasm for financial modeling and risk analysis",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Advanced quantitative and programming skills",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in quantitative finance projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "Lee Kong Chian School of Business",
+      "major": "Strategic Management",
+      "degree": "Bachelor of Business Management",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "Minimum 3 H2 passes with good grades"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Relevant diploma with good academic standing"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Management Decision Tools (BU5401)",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Interest in corporate strategy and leadership",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Strategic thinking and decision-making skills",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in business strategy projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "Lee Kong Chian School of Business",
+      "major": "Digital Business",
+      "degree": "Bachelor of Business Management (Second Major)",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "Enrolled SMU Student",
+            "description": "Must be pursuing a primary major at SMU"
+          },
+          {
+            "qualificationType": "Academic Performance",
+            "description": "Minimum GPA of 3.0 in first year"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Data Science (BS0004)",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for digital transformation and technology",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Skills in digital tools and business innovation",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in digital business projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "Lee Kong Chian School of Business",
+      "major": "Sustainability Management",
+      "degree": "Bachelor of Business Management (Second Major)",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "Enrolled SMU Student",
+            "description": "Must be pursuing a primary major at SMU"
+          },
+          {
+            "qualificationType": "Academic Performance",
+            "description": "Minimum GPA of 3.0 in first year"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Sustainability: Seeing Through the Haze (GC0001)",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for environmental and social sustainability",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Skills in sustainability analysis and strategy",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in sustainability initiatives",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "School of Economics",
+      "major": "Economics",
+      "degree": "Bachelor of Science (Economics)",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "Minimum 3 H2 passes with strong Mathematics"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Relevant diploma with good academic standing"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Microeconomics I (HE1001)",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Interest in economic theory and policy analysis",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Quantitative and analytical skills",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in economics-related projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "School of Economics",
+      "major": "Economics (Quantitative Economics)",
+      "degree": "Bachelor of Science (Economics)",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "Minimum 3 H2 passes with strong Mathematics"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Relevant diploma with good academic standing"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Actuarial Computing (BA3205)",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Enthusiasm for econometric modeling",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Advanced quantitative and statistical skills",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in quantitative economics projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "School of Economics",
+      "major": "Economics (Real Estate)",
+      "degree": "Bachelor of Science (Economics)",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "Minimum 3 H2 passes with strong Mathematics"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Relevant diploma with good academic standing"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Real Estate (RE)",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Interest in real estate economics and markets",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Analytical skills for property markets",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in real estate economics",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "School of Economics",
+      "major": "Actuarial Science",
+      "degree": "Bachelor of Science (Economics) (Second Major)",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "Enrolled SMU Student",
+            "description": "Must be pursuing a primary major at SMU"
+          },
+          {
+            "qualificationType": "Academic Performance",
+            "description": "Minimum GPA of 3.0 in first year"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Actuarial Computing (BA3205)",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for risk assessment and insurance",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Strong mathematical and statistical skills",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in actuarial or statistical projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "School of Economics",
+      "major": "Actuarial Science (Industry Integration)",
+      "degree": "Bachelor of Science (Economics) (Second Major)",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "Enrolled SMU Student",
+            "description": "Must be pursuing a primary major at SMU"
+          },
+          {
+            "qualificationType": "Academic Performance",
+            "description": "Minimum GPA of 3.0 in first year"
+          },
+          {
+            "qualificationType": "Industry Commitment",
+            "description": "Commitment to industry internships"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Actuarial Computing (BA3205)",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Interest in actuarial practice and industry applications",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Practical actuarial and analytical skills",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in actuarial internships",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "School of Economics",
+      "major": "Health Economics & Management",
+      "degree": "Bachelor of Science (Economics) (Second Major)",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "Enrolled SMU Student",
+            "description": "Must be pursuing a primary major at SMU"
+          },
+          {
+            "qualificationType": "Academic Performance",
+            "description": "Minimum GPA of 3.0 in first year"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Introduction to Health & Society (HJ5001)",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for healthcare policy and economics",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Analytical skills for health economics",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in health-related projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "School of Economics",
+      "major": "Data Science and Analytics",
+      "degree": "Bachelor of Science (Economics) (Second Major)",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "Enrolled SMU Student",
+            "description": "Must be pursuing a primary major at SMU"
+          },
+          {
+            "qualificationType": "Academic Performance",
+            "description": "Minimum GPA of 3.0 in first year"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Introduction to Data Science (BS0004)",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Enthusiasm for data analysis and modeling",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Proficiency in programming and statistics",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in data science projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "School of Computing and Information Systems",
+      "major": "Information Systems",
+      "degree": "Bachelor of Science (Information Systems)",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "Minimum 3 H2 passes with strong Mathematics"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Relevant diploma with good academic standing"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Designing & Developing Databases (BC2402), starting salary $5,030-$6,245",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for IT systems and business applications",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Programming and systems analysis skills",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in IT projects or internships",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "School of Computing and Information Systems",
+      "major": "Information Systems (Business Analytics)",
+      "degree": "Bachelor of Science (Information Systems)",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "Minimum 3 H2 passes with strong Mathematics"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Relevant diploma with good academic standing"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Introduction to Data Science (BS0004), starting salary $5,030-$6,245",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Enthusiasm for business data analytics",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Proficiency in data analytics and programming",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in business analytics projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "School of Computing and Information Systems",
+      "major": "Information Systems (Financial Technology)",
+      "degree": "Bachelor of Science (Information Systems)",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "Minimum 3 H2 passes with strong Mathematics"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Relevant diploma with good academic standing"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Data Science (BS0004), starting salary $5,030-$6,245",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for fintech and blockchain",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Skills in programming and financial systems",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in fintech projects or internships",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "School of Computing and Information Systems",
+      "major": "Information Systems (Smart-City Management and Technology)",
+      "degree": "Bachelor of Science (Information Systems)",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "Minimum 3 H2 passes with strong Mathematics"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Relevant diploma with good academic standing"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Designing & Developing Databases (BC2402), starting salary $5,030-$6,245",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Interest in smart city technologies and urban solutions",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Skills in IoT and systems integration",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in smart city or urban tech projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "School of Computing and Information Systems",
+      "major": "Information Systems (Product Development)",
+      "degree": "Bachelor of Science (Information Systems)",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "Minimum 3 H2 passes with strong Mathematics"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Relevant diploma with good academic standing"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Introduction to Computational Thinking (PS0001), starting salary $5,030-$6,245",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for product design and IT development",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Skills in software development and product management",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in product development projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "School of Computing and Information Systems",
+      "major": "Information Systems (Business Analytics & Financial Technology)",
+      "degree": "Bachelor of Science (Information Systems)",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "Minimum 3 H2 passes with strong Mathematics"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Relevant diploma with good academic standing"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Data Science (BS0004), starting salary $5,030-$6,245",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Enthusiasm for fintech and business analytics",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Skills in analytics and financial systems",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in fintech or analytics projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "School of Computing and Information Systems",
+      "major": "Information Systems (Smart-City Management and Technology & Business Analytics)",
+      "degree": "Bachelor of Science (Information Systems)",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "Minimum 3 H2 passes with strong Mathematics"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Relevant diploma with good academic standing"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Data Science (BS0004), starting salary $5,030-$6,245",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Interest in smart cities and data analytics",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Skills in IoT and data analytics",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in smart city or analytics projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "School of Computing and Information Systems",
+      "major": "Information Systems (Smart-City Management and Technology & Financial Technology)",
+      "degree": "Bachelor of Science (Information Systems)",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "Minimum 3 H2 passes with strong Mathematics"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Relevant diploma with good academic standing"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Designing & Developing Databases (BC2402), starting salary $5,030-$6,245",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for smart cities and fintech",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Skills in IoT and financial systems",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in smart city or fintech projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "School of Computing and Information Systems",
+      "major": "Information Systems (Product Development and Financial Technology)",
+      "degree": "Bachelor of Science (Information Systems)",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "Minimum 3 H2 passes with strong Mathematics"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Relevant diploma with good academic standing"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Introduction to Computational Thinking (PS0001), starting salary $5,030-$6,245",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for product development and fintech",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Skills in software development and financial systems",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in product development or fintech projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "School of Computing and Information Systems",
+      "major": "Information Systems (Product Development and Smart-City Management & Technology)",
+      "degree": "Bachelor of Science (Information Systems)",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "Minimum 3 H2 passes with strong Mathematics"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Relevant diploma with good academic standing"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Introduction to Computational Thinking (PS0001), starting salary $5,030-$6,245",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for product development and smart city solutions",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Skills in software development and IoT",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in product development or smart city projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "School of Computing and Information Systems",
+      "major": "Computer Science",
+      "degree": "Bachelor of Science (Computer Science)",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "Minimum 3 H2 passes with strong Mathematics"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Relevant diploma with good academic standing"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Data Structures & Algorithms in Python (IE2108), starting salary $5,030-$6,245",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for software development and algorithms",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Strong programming and problem-solving skills",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in coding projects or hackathons",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "School of Computing and Information Systems",
+      "major": "Computer Science (Artificial Intelligence)",
+      "degree": "Bachelor of Science (Computer Science)",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "Minimum 3 H2 passes with strong Mathematics"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Relevant diploma with good academic standing"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Introduction to Data Science & Artificial Intelligence (MA0218), starting salary $5,030-$6,245",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Enthusiasm for AI and machine learning",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Skills in AI algorithms and programming",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in AI or machine learning projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "School of Computing and Information Systems",
+      "major": "Computer Science (Cybersecurity)",
+      "degree": "Bachelor of Science (Computer Science)",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "Minimum 3 H2 passes with strong Mathematics"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Relevant diploma with good academic standing"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Introduction to Computational Thinking (PS0001), starting salary $5,030-$6,245",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for cybersecurity and network security",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Skills in cybersecurity tools and programming",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in cybersecurity projects or certifications",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "School of Computing and Information Systems",
+      "major": "Computer Science (Cyber-Physical Systems)",
+      "degree": "Bachelor of Science (Computer Science)",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "Minimum 3 H2 passes with strong Mathematics"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Relevant diploma with good academic standing"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Digital Systems Design (CE2003), starting salary $5,030-$6,245",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Interest in IoT and embedded systems",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Skills in hardware-software integration",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in IoT or embedded systems projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "School of Computing and Information Systems",
+      "major": "Computer Science (Artificial Intelligence & Cybersecurity)",
+      "degree": "Bachelor of Science (Computer Science)",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "Minimum 3 H2 passes with strong Mathematics"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Relevant diploma with good academic standing"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Introduction to Data Science & Artificial Intelligence (MA0218), starting salary $5,030-$6,245",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for AI and cybersecurity",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Skills in AI and cybersecurity tools",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in AI or cybersecurity projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "School of Computing and Information Systems",
+      "major": "Computer Science (Artificial Intelligence and Cyber-Physical Systems)",
+      "degree": "Bachelor of Science (Computer Science)",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "Minimum 3 H2 passes with strong Mathematics"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Relevant diploma with good academic standing"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Digital Systems Design (CE2003), starting salary $5,030-$6,245",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Interest in AI and IoT systems",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Skills in AI and embedded systems",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in AI or IoT projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "School of Computing and Information Systems",
+      "major": "Computer Science (Cybersecurity & Cyber-Physical Systems)",
+      "degree": "Bachelor of Science (Computer Science)",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "Minimum 3 H2 passes with strong Mathematics"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Relevant diploma with good academic standing"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Digital Systems Design (CE2003), starting salary $5,030-$6,245",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for cybersecurity and IoT",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Skills in cybersecurity and embedded systems",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in cybersecurity or IoT projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "School of Computing and Information Systems",
+      "major": "Computing & Law",
+      "degree": "Bachelor of Science (Computing & Law)",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "Minimum 3 H2 passes with strong Mathematics"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Relevant diploma with good academic standing"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Law of Intellectual Property & New Media (BL5302), starting salary $5,030-$6,245",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Interest in legal tech and computing",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Skills in programming and legal analysis",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in legal tech or computing projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "School of Computing and Information Systems",
+      "major": "Software Engineering",
+      "degree": "Bachelor of Science (Software Engineering)",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "Minimum 3 H2 passes with strong Mathematics"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Relevant diploma with good academic standing"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Introduction to Computational Thinking (PS0001), starting salary $5,030-$6,245",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for software development and engineering",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Strong software engineering and programming skills",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in software development projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "School of Computing and Information Systems",
+      "major": "Computing Studies (Artificial Intelligence)",
+      "degree": "Bachelor of Science (Computing & Law) (Second Major)",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "Enrolled SMU Student",
+            "description": "Must be pursuing a primary major at SMU"
+          },
+          {
+            "qualificationType": "Academic Performance",
+            "description": "Minimum GPA of 3.0 in first year"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Introduction to Data Science & Artificial Intelligence (MA0218), starting salary $5,030-$6,245",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Enthusiasm for AI applications",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Skills in AI programming",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in AI projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "School of Computing and Information Systems",
+      "major": "Computing Studies (Cybersecurity)",
+      "degree": "Bachelor of Science (Computing & Law) (Second Major)",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "Enrolled SMU Student",
+            "description": "Must be pursuing a primary major at SMU"
+          },
+          {
+            "qualificationType": "Academic Performance",
+            "description": "Minimum GPA of 3.0 in first year"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Introduction to Computational Thinking (PS0001), starting salary $5,030-$6,245",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for cybersecurity",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Skills in cybersecurity tools",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in cybersecurity projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "School of Computing and Information Systems",
+      "major": "Computing Studies (Cyber-Physical Systems)",
+      "degree": "Bachelor of Science (Computing & Law) (Second Major)",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "Enrolled SMU Student",
+            "description": "Must be pursuing a primary major at SMU"
+          },
+          {
+            "qualificationType": "Academic Performance",
+            "description": "Minimum GPA of 3.0 in first year"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Digital Systems Design (CE2003), starting salary $5,030-$6,245",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Interest in IoT and embedded systems",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Skills in hardware-software integration",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in IoT projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "School of Computing and Information Systems",
+      "major": "Technology for Business Solutions (Business Analytics)",
+      "degree": "Bachelor of Science (Computing & Law) (Second Major)",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "Enrolled SMU Student",
+            "description": "Must be pursuing a primary major at SMU"
+          },
+          {
+            "qualificationType": "Academic Performance",
+            "description": "Minimum GPA of 3.0 in first year"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Introduction to Data Science (BS0004), starting salary $5,030-$6,245",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Enthusiasm for business analytics",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Skills in data analytics",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in analytics projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "School of Computing and Information Systems",
+      "major": "Technology for Business Solutions (Financial Technology)",
+      "degree": "Bachelor of Science (Computing & Law) (Second Major)",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "Enrolled SMU Student",
+            "description": "Must be pursuing a primary major at SMU"
+          },
+          {
+            "qualificationType": "Academic Performance",
+            "description": "Minimum GPA of 3.0 in first year"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Data Science (BS0004), starting salary $5,030-$6,245",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for fintech",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Skills in financial systems",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in fintech projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "School of Computing and Information Systems",
+      "major": "IT Solution Management",
+      "degree": "Bachelor of Science (Computing & Law) (Second Major)",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "Enrolled SMU Student",
+            "description": "Must be pursuing a primary major at SMU"
+          },
+          {
+            "qualificationType": "Academic Performance",
+            "description": "Minimum GPA of 3.0 in first year"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Designing & Developing Databases (BC2402), starting salary $5,030-$6,245",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Interest in IT management and solutions",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Skills in IT project management",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in IT management projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "Yong Pung How School of Law",
       "major": "Law",
       "degree": "Bachelor of Laws",
       "criteria": {
         "eligibility": [
           {
-            "qualificationType": "A Levels",
-            "description": "Excellent academic record"
+            "qualificationType": "GCE A-Level",
+            "description": "Minimum 3 H2 passes with excellent grades"
+          },
+          {
+            "qualificationType": "Writing Test",
+            "description": "Must pass SMU Law writing test"
+          },
+          {
+            "qualificationType": "Interview",
+            "description": "Must attend and pass SMU Law interview"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview and writing test required"
           }
         ],
         "suitability": [
           {
-            "criterion": "Critical reasoning",
-            "description": "Strong logical and analytical reasoning",
-            "weight": 5
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Law of Intellectual Property & New Media (BL5302)",
+            "weight": 0.4
           },
           {
-            "criterion": "Communication",
-            "description": "Excellent verbal and written communication",
-            "weight": 5
+            "criterion": "Interests",
+            "description": "Passion for legal practice and justice",
+            "weight": 0.18
           },
           {
-            "criterion": "Research skills",
-            "description": "Thorough and methodical research capabilities",
-            "weight": 4
+            "criterion": "Skills",
+            "description": "Strong analytical and communication skills",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in legal internships or debates",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "Yong Pung How School of Law",
+      "major": "Legal Studies",
+      "degree": "Bachelor of Laws (Second Major)",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "Enrolled SMU Student",
+            "description": "Must be pursuing a primary major at SMU"
+          },
+          {
+            "qualificationType": "Academic Performance",
+            "description": "Minimum GPA of 3.0 in first year"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview and writing test required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Law of Intellectual Property & New Media (BL5302)",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Interest in legal theory and policy",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Analytical and research skills",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in legal research or projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "School of Social Sciences",
+      "major": "Politics, Law and Economics",
+      "degree": "Bachelor of Social Science",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "Minimum 3 H2 passes with good grades"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Relevant diploma with good academic standing"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Microeconomics I (HE1001), Political Science (PS)",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for politics, law, and economics",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Analytical and interdisciplinary skills",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in policy or political projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "School of Social Sciences",
+      "major": "Political Science",
+      "degree": "Bachelor of Social Science",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "Minimum 3 H2 passes with good grades"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Relevant diploma with good academic standing"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Political Science (PS)",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for political theory and governance",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Analytical and critical thinking skills",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in political or policy projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "School of Social Sciences",
+      "major": "Psychology",
+      "degree": "Bachelor of Social Science",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "Minimum 3 H2 passes with good grades"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Relevant diploma with good academic standing"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Abnormal Psychology (HP2700)",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for human behavior and mental health",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Empathy and research skills",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in psychology-related projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "School of Social Sciences",
+      "major": "Sociology",
+      "degree": "Bachelor of Social Science",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "Minimum 3 H2 passes with good grades"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Relevant diploma with good academic standing"
+          },
+          {
+            "qualificationType": "International Baccalaureate",
+            "description": "IB Diploma with minimum score of 36"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Sociology (SC)",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for studying social structures and cultural dynamics",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Analytical and qualitative research skills",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in sociological research or community projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "School of Social Sciences",
+      "major": "Global Asia",
+      "degree": "Bachelor of Social Science (Second Major)",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "Enrolled SMU Student",
+            "description": "Must be pursuing a primary major at SMU"
+          },
+          {
+            "qualificationType": "Academic Performance",
+            "description": "Minimum GPA of 3.0 in first year"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Global Asia Studies (SSA)",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Interest in Asian cultures, politics, and economies",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Cross-cultural communication and research skills",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in Asian studies or international projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "School of Social Sciences",
+      "major": "Public Policy and Public Management",
+      "degree": "Bachelor of Social Science (Second Major)",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "Enrolled SMU Student",
+            "description": "Must be pursuing a primary major at SMU"
+          },
+          {
+            "qualificationType": "Academic Performance",
+            "description": "Minimum GPA of 3.0 in first year"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Political Science (PS)",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for public administration and policy-making",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Policy analysis and management skills",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in public policy or government projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "School of Social Sciences",
+      "major": "Sustainable Societies",
+      "degree": "Bachelor of Social Science (Second Major)",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "Enrolled SMU Student",
+            "description": "Must be pursuing a primary major at SMU"
+          },
+          {
+            "qualificationType": "Academic Performance",
+            "description": "Minimum GPA of 3.0 in first year"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Sustainability: Seeing Through the Haze (GC0001)",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for environmental and social sustainability",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Skills in sustainability analysis and community engagement",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in sustainability initiatives or projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "School of Social Sciences",
+      "major": "Arts and Culture Management",
+      "degree": "Bachelor of Social Science (Second Major)",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "Enrolled SMU Student",
+            "description": "Must be pursuing a primary major at SMU"
+          },
+          {
+            "qualificationType": "Academic Performance",
+            "description": "Minimum GPA of 3.0 in first year"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Arts and Culture Management (AC)",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for arts, culture, and heritage management",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Creative and organizational skills for arts management",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in arts events or cultural projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Integrative Studies",
+      "major": "Deferred Declaration of Degree",
+      "degree": "Bachelor of Integrative Studies",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "Minimum 3 H2 passes with good grades"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Relevant diploma with good academic standing"
+          },
+          {
+            "qualificationType": "International Baccalaureate",
+            "description": "IB Diploma with minimum score of 36"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in interdisciplinary modules across SMU schools",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Interest in exploring diverse academic fields before specialization",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Adaptability and interdisciplinary thinking",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in varied academic or professional projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Integrative Studies",
+      "major": "Individualised Major",
+      "degree": "Bachelor of Integrative Studies",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "Minimum 3 H2 passes with good grades"
+          },
+          {
+            "qualificationType": "Polytechnic Diploma",
+            "description": "Relevant diploma with good academic standing"
+          },
+          {
+            "qualificationType": "International Baccalaureate",
+            "description": "IB Diploma with minimum score of 36"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in designing a customized curriculum across SMU schools",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for creating a unique academic pathway",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Self-directed learning and interdisciplinary skills",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in independent or interdisciplinary projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "College of Integrative Studies",
+      "major": "Individualised Second Major",
+      "degree": "Bachelor of Integrative Studies (Second Major)",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "Enrolled SMU Student",
+            "description": "Must be pursuing a primary major at SMU"
+          },
+          {
+            "qualificationType": "Academic Performance",
+            "description": "Minimum GPA of 3.0 in first year"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in customizing a second major with interdisciplinary modules",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Interest in tailoring a complementary academic focus",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Skills in curriculum design and interdisciplinary integration",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in interdisciplinary coursework or projects",
+            "weight": 0.18
+          }
+        ]
+      }
+    },
+    {
+      "college": "Special Programs",
+      "major": "SMU-Duke-NUS Medicine Pathway",
+      "degree": "Special Program",
+      "criteria": {
+        "eligibility": [
+          {
+            "qualificationType": "GCE A-Level",
+            "description": "Excellent grades in H2 Biology and Chemistry"
+          },
+          {
+            "qualificationType": "Interview",
+            "description": "Must pass SMU and Duke-NUS interview"
+          },
+          {
+            "qualificationType": "Entrance Exam",
+            "description": "Must take MCAT or equivalent medical entrance exam"
+          },
+          {
+            "qualificationType": "Additional Assessments",
+            "description": "Interview required"
+          }
+        ],
+        "suitability": [
+          {
+            "criterion": "Module Preferences",
+            "description": "Interest in modules like Health & Society (HJ5001), high earning potential in medical field",
+            "weight": 0.4
+          },
+          {
+            "criterion": "Interests",
+            "description": "Passion for medicine and healthcare innovation",
+            "weight": 0.18
+          },
+          {
+            "criterion": "Skills",
+            "description": "Scientific aptitude and interpersonal skills",
+            "weight": 0.24
+          },
+          {
+            "criterion": "Experiences",
+            "description": "Experience in medical volunteering or research",
+            "weight": 0.18
           }
         ]
       }

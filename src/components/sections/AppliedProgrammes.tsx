@@ -64,14 +64,13 @@ export const AppliedProgrammes = () => {
           setAvailableDegrees(degrees);
           console.log(`${degrees.length} degrees found:`, degrees);
         } else {
-          console.error("No programs found or empty data returned");
           setError("No programs found in the data");
-          toast.error("No programs found for this university. Please check if data files are present.");
+          toast.error("No programs found for this university");
         }
       } catch (error) {
         console.error("Error loading university data:", error);
         setError("Failed to load university data");
-        toast.error("Failed to load university data. Please check the console for more details.");
+        toast.error("Failed to load university data. Please check if the data files exist.");
       } finally {
         setIsLoading(false);
       }

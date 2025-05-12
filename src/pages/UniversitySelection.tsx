@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { 
@@ -10,7 +11,6 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { BookOpen, ChevronRight } from "lucide-react";
-import { toast } from "sonner";
 
 const pixelsOverlay = {
   position: "absolute" as const,
@@ -95,27 +95,6 @@ const UniversitySelection = () => {
     return schools[0];
   });
 
-  // Validate that data files exist when the component loads
-  useEffect(() => {
-    const checkDataAvailability = async () => {
-      try {
-        // Check if the data files exist
-        const response = await fetch('/school-data/Standardized weights/standardized_nus_majors.json');
-        
-        if (!response.ok) {
-          console.warn('University data files may be missing. Using fallback data.');
-          toast.info("Using default university data. Some features may be limited.");
-        } else {
-          console.log('University data files are available.');
-        }
-      } catch (error) {
-        console.error('Error checking university data files:', error);
-      }
-    };
-    
-    checkDataAvailability();
-  }, []);
-
   const handleUniversityChange = (value: string) => {
     const university = universities.find(uni => uni.id === value);
     if (university) {
@@ -135,8 +114,7 @@ const UniversitySelection = () => {
   };
 
   const handleNext = () => {
-    toast.success(`Selected: ${selectedUniversity.name}, ${selectedSchool.name}`);
-    // Navigate to next step or show modal with selected options
+    alert(`Selected: ${selectedUniversity.name}, ${selectedSchool.name}`);
   };
 
   return (
