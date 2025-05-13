@@ -90,7 +90,7 @@ export const fetchModuleRecommendations = async (
       
       try {
         // Load the appropriate module data file with correct path
-        const moduleDataResponse = await fetch(`/school-data/Module_code_and_description_${school}.json`);
+        const moduleDataResponse = await fetch(`/school-data/Module_code_and_description/Module_code_and_description_${school}.json`);
         if (!moduleDataResponse.ok) {
           console.error(`Failed to fetch module data for ${school}: ${moduleDataResponse.status}`);
           continue;
