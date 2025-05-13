@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -16,6 +15,9 @@ import { mapRiasecToCode, mapWorkValueToCode, formCode, getMatchingMajors } from
 import { processRiasecData } from '@/components/sections/RiasecChart';
 import { processWorkValuesData } from '@/components/sections/WorkValuesChart';
 import { Badge } from "@/components/ui/badge";
+import { fetchModuleRecommendations, Module } from '@/utils/recommendation/moduleRecommendationUtils';
+import { ModuleRatingCard } from '@/components/ModuleRatingCard';
+
 export const AboutMe = () => {
   const [activeTab, setActiveTab] = useState<"quiz" | "profile" | "resume">("quiz");
   const [riasecCode, setRiasecCode] = useState<string>("");
@@ -34,11 +36,13 @@ export const AboutMe = () => {
     workValueMatches: [],
     matchType: 'none'
   });
+  const [recommendedModules, setRecommendedModules] = useState<Module[]>([]);
+  const [loadingModules, setLoadingModules] = useState<boolean>(false);
   const navigate = useNavigate();
   const {
     isCurrentlyDark
   } = useTheme();
-
+  
   // Enhanced state for dynamic profile information
   const [profileInfo, setProfileInfo] = useState({
     strengths: [] as string[],
@@ -137,6 +141,18 @@ export const AboutMe = () => {
           const majorRecommendations = await getMatchingMajors(generatedRiasecCode, generatedWorkValueCode);
           console.log("Recommended majors:", majorRecommendations);
           setRecommendedMajors(majorRecommendations);
+          
+          // Fetch module recommendations based on the recommended majors
+          setLoadingModules(true);
+          try {
+            const modules = await fetchModuleRecommendations(majorRecommendations);
+            console.log("Recommended modules:", modules);
+            setRecommendedModules(modules);
+          } catch (error) {
+            console.error("Error fetching module recommendations:", error);
+          } finally {
+            setLoadingModules(false);
+          }
         }
       } catch (error) {
         console.error("Error loading user profiles:", error);
@@ -443,6 +459,50 @@ const generateWorkPreferencesFromWorkValues = (code: string): string[] => {
                         <p>No major recommendations found for your profile. Please complete all quizzes or contact support.</p>
                       </div>}
                   </div>
+                  
+                  {/* New Module Recommendations Section */}
+                  {(recommendedModules.length > 0 || loadingModules) && (
+                    <div className="mt-8 mb-6">
+                      <h3 className="text-lg font-semibold mb-3">Recommended Courses</h3>
+                      <p className="mb-4">Based on your recommended majors, these courses might interest you:</p>
+                      
+                      {loadingModules ? (
+                        <div className="flex justify-center py-4">
+                          <div className="animate-spin h-8 w-8 border-t-2 border-b-2 border-purple-500 rounded-full"></div>
+                        </div>
+                      ) : recommendedModules.length > 0 ? (
+                        <div className="space-y-6">
+                          {recommendedModules.map((module, index) => (
+                            <div key={`module-${index}`} className={`p-4 rounded-lg ${isCurrentlyDark ? 'bg-gray-800' : 'bg-gray-50'}`}>
+                              <div className="flex justify-between items-start mb-2">
+                                <div>
+                                  <span className="font-medium text-sm text-blue-500">{module.institution}</span>
+                                  <h4 className="text-lg font-bold">{module.modulecode}: {module.title}</h4>
+                                </div>
+                                <Badge className="ml-2">{module.institution}</Badge>
+                              </div>
+                              <p className="text-sm mt-2">
+                                {module.description.length > 200
+                                  ? `${module.description.substring(0, 200)}...`
+                                  : module.description}
+                              </p>
+                              {module.description.length > 200 && (
+                                <Button variant="link" className="p-0 h-auto text-sm mt-1" onClick={() => {
+                                  // You could implement a modal or expand functionality here
+                                  // For now we'll just show an alert with the full description
+                                  alert(module.description);
+                                }}>
+                                  Read more
+                                </Button>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-center py-4 italic">No course recommendations found for your profile.</p>
+                      )}
+                    </div>
+                  )}
                   
                   <div className="mt-6 p-4 rounded-lg bg-blue-50 dark:bg-blue-900">
                     <h3 className="text-lg font-semibold mb-2">Open-ended Questions</h3>
