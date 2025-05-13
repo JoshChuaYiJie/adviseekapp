@@ -155,23 +155,29 @@ export const AboutMe = () => {
       'A': ['Imaginative and Expressive', 'Intuitive and Original', 'Emotional and Open-minded', 'Open-minded'],
       'S': ['Empathetic and Friendly', '', 'Nurturing and Patient', 'Supportive and Cooperative'],
       'E': ['Charismatic and Ambitious', 'Optimistic and Energetic', 'Assertive and Goal-oriented'],
-      'C': ['Organized and Methodical', 'Detail-oriented and Conscientious 'Disciplined', 'Conscientious', 'Accurate']
+      'C': ['Organized and Methodical', 'Detail-oriented and Conscientious', 'Disciplined']
     };
 
     // Get the top 2-3 letters from the code
     const topLetters = code.slice(0, Math.min(3, code.length));
     
     // Collect traits for each letter in the code
-    const result: string[] = [];
+    const result = [];
     for (const letter of topLetters) {
       if (traits[letter]) {
-        // Add 2 traits from each letter category
+        // Add 2 random traits from each letter category
         const categoryTraits = traits[letter];
-        const selectedTraits = categoryTraits.slice(0, 2);
+        const selectedTraits = [];
+        const indices = [...Array(categoryTraits.length).keys()]; // Array of indices [0, 1, 2, ...]
+        for (let i = 0; i < Math.min(2, categoryTraits.length); i++) {
+          if (indices.length === 0) break; // Avoid errors if fewer than 2 traits
+          const randomIndex = Math.floor(Math.random() * indices.length);
+          const traitIndex = indices.splice(randomIndex, 1)[0]; // Remove and get random index
+          selectedTraits.push(categoryTraits[traitIndex]);
+        }
         result.push(...selectedTraits);
-      }
     }
-    
+  }
     return result.slice(0, 6); // Limit to 6 traits total
   };
   
