@@ -245,13 +245,35 @@ export const AboutMe = () => {
   // Updated function to generate work preferences based on Work Values code
   const generateWorkPreferencesFromWorkValues = (code: string): string[] => {
     const preferences: Record<string, string[]> = {
-      'A': ['Challenging tasks', 'Clear measurable goals', 'Opportunities for advancement', 'Regular performance feedback', 'Culture rewarding excellence'],
-      'R': ['Collaborative team-oriented settings', 'Supportive inclusive culture', 'Trust and mutual respect', 'Frequent colleague interaction'],
-      'I': ['Autonomous and flexible roles', 'Minimal supervision', 'Independent decision-making', 'Creative approaches to tasks'],
-      'Rc': ['Public acknowledgment of contributions', 'Clear promotion pathways', 'Recognition through awards', 'Career advancement opportunities'],
-      'W': ['Safe well-equipped workplace', 'Fair compensation', 'Reasonable hours', 'Job security', 'Work-life balance'],
-      'S': ['Supportive leadership', 'Clear guidance', 'Mentorship opportunities', 'Accessible resources', 'Encouraging atmosphere']
-    };
+  'A': [
+    'Challenging Tasks and Clear Measurable Goals',
+    'Opportunities for Advancement and Regular Performance Feedback',
+    'Culture Rewarding Excellence'
+  ],
+  'R': [
+    'Collaborative Team-Oriented Settings and Supportive Inclusive Culture',
+    'Trust and Mutual Respect and Frequent Colleague Interaction'
+  ],
+  'I': [
+    'Autonomous and Flexible Roles and Minimal Supervision',
+    'Independent Decision-Making and Creative Approaches to Tasks'
+  ],
+  'Rc': [
+    'Public Acknowledgment of Contributions and Clear Promotion Pathways',
+    'Recognition through Awards and Career Advancement Opportunities'
+  ],
+  'W': [
+    'Safe Well-Equipped Workplace and Fair Compensation',
+    'Reasonable Hours and Job Security',
+    'Work-Life Balance'
+  ],
+  'S': [
+    'Supportive Leadership and Clear Guidance',
+    'Mentorship Opportunities and Accessible Resources',
+    'Encouraging Atmosphere'
+  ]
+  };
+
 
     // Get the top 2-3 letters from the code
     const topLetters = code.slice(0, Math.min(3, code.length));
