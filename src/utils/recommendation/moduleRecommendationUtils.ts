@@ -44,6 +44,9 @@ export const fetchModuleRecommendations = async (
     
     // Load the mappings file
     const mappingsResponse = await fetch('/school-data/mappings.json');
+    if (!mappingsResponse.ok) {
+      throw new Error(`Failed to fetch mappings: ${mappingsResponse.status}`);
+    }
     const mappings = await mappingsResponse.json();
     
     // Initialize array to store module recommendations
@@ -85,21 +88,31 @@ export const fetchModuleRecommendations = async (
       
       console.log(`Found prefixes for ${majorName} at ${school}:`, prefixes);
       
-      // Load the appropriate module data file
-      const moduleDataResponse = await fetch(`/school-data/Module_code_and_description_${school}.json`);
-      const moduleData: Module[] = await moduleDataResponse.json();
-      
-      // Filter modules that match the prefixes
-      const matchingModules = moduleData.filter(module => {
-        const moduleCode = module.modulecode.trim().toUpperCase();
-        return prefixes.some(prefix => moduleCode.startsWith(prefix.trim().toUpperCase()));
-      });
-      
-      console.log(`Found ${matchingModules.length} matching modules for ${majorName}`);
-      
-      // Add the top X modules for this major to our recommendations
-      const majorModules = matchingModules.slice(0, modulesPerMajor);
-      recommendedModules.push(...majorModules);
+      try {
+        // Load the appropriate module data file with correct path
+        const moduleDataResponse = await fetch(`/school-data/Module_code_and_description_${school}.json`);
+        if (!moduleDataResponse.ok) {
+          console.error(`Failed to fetch module data for ${school}: ${moduleDataResponse.status}`);
+          continue;
+        }
+        
+        const moduleData: Module[] = await moduleDataResponse.json();
+        
+        // Filter modules that match the prefixes
+        const matchingModules = moduleData.filter(module => {
+          const moduleCode = module.modulecode.trim().toUpperCase();
+          return prefixes.some(prefix => moduleCode.startsWith(prefix.trim().toUpperCase()));
+        });
+        
+        console.log(`Found ${matchingModules.length} matching modules for ${majorName}`);
+        
+        // Add the top X modules for this major to our recommendations
+        const majorModules = matchingModules.slice(0, modulesPerMajor);
+        recommendedModules.push(...majorModules);
+      } catch (err) {
+        console.error(`Error loading module data for ${school}:`, err);
+        continue; // Continue with the next major
+      }
     }
     
     return recommendedModules;
