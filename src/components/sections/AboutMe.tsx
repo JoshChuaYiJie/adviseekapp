@@ -150,12 +150,12 @@ export const AboutMe = () => {
   // Updated function to generate strengths based on RIASEC code with specific traits
   const generateStrengthsFromRIASEC = (code: string): string[] => {
     const traits: Record<string, string[]> = {
-      'R': ['Independent', 'Practical', 'Reliable', 'Physically adept', 'Straightforward', 'Persistent'],
-      'I': ['Curious', 'Analytical', 'Logical', 'Observant', 'Introspective', 'Critical thinker'],
-      'A': ['Imaginative', 'Expressive', 'Intuitive', 'Original', 'Emotional', 'Open-minded'],
-      'S': ['Empathetic', 'Friendly', 'Nurturing', 'Cooperative', 'Patient', 'Idealistic'],
-      'E': ['Charismatic', 'Assertive', 'Ambitious', 'Optimistic', 'Energetic', 'Goal-oriented'],
-      'C': ['Organized', 'Methodical', 'Detail-oriented', 'Disciplined', 'Conscientious', 'Accurate']
+      'R': ['Independent and Reliable', 'Practical and Physically Adept', 'Straightforward and Persistent'],
+      'I': ['Curious and Analytical', 'Logical and Observant', 'Introspective', 'Critical thinker'],
+      'A': ['Imaginative and Expressive', 'Intuitive and Original', 'Emotional and Open-minded', 'Open-minded'],
+      'S': ['Empathetic and Friendly', '', 'Nurturing and Patient', 'Supportive and Cooperative'],
+      'E': ['Charismatic and Ambitious', 'Optimistic and Energetic', 'Assertive and Goal-oriented'],
+      'C': ['Organized and Methodical', 'Detail-oriented and Conscientious 'Disciplined', 'Conscientious', 'Accurate']
     };
 
     // Get the top 2-3 letters from the code
