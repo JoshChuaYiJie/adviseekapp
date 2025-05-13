@@ -29,6 +29,9 @@ import {
   fetchModulesMock
 } from './recommendation';
 
+// Module recommendation util
+import { fetchModuleRecommendations } from './recommendation/moduleRecommendationUtils';
+
 // Re-export all utilities
 export {
   // Mappers
@@ -54,5 +57,8 @@ export {
   rateModuleUtil,
   refineRecommendationsUtil,
   getFinalSelectionsUtil,
-  fetchModulesMock
+  fetchModulesMock,
+  
+  // Module recommendation
+  fetchModuleRecommendations
 };

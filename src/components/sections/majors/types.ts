@@ -32,3 +32,10 @@ export interface MajorProfileDisplay {
   riasecCode: string;
   workValueCode: string;
 }
+
+export interface Module {
+  modulecode: string;
+  title: string;
+  institution: string;
+  description: string;
+}
