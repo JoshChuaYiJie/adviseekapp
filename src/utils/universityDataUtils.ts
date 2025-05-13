@@ -91,7 +91,7 @@ export const loadUniversityData = async (university: string): Promise<University
     
     // Fix the file path to properly reference files in public folder
     // Remove the leading slash which causes the path to be resolved from the domain root
-    const filePath = `school-data/Standardized weights/standardized_${shortName}_majors.json`;
+    const filePath = `school-data/Standardized%20weights/standardized_${shortName}_majors.json`;
     
     console.log(`Fetching university data from ${filePath} for ${university}`);
     
