@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -294,21 +293,36 @@ export const useQuestionHandler = ({ userId }: QuestionHandlerProps) => {
     
     setSubmitting(true);
     try {
-      // Prepare responses for database - use the new open_ended_responses table
-      const responsesToSubmit = Object.entries(answeredQuestions).map(([questionId, responseData]) => {
+      // Filter out skipped or empty responses
+      const validResponses = Object.entries(answeredQuestions).filter(
+        ([_, responseData]) => !responseData.skipped && responseData.response.trim() !== ''
+      );
+      
+      if (validResponses.length === 0) {
+        toast({
+          title: "No Valid Responses",
+          description: "You haven't provided any non-empty responses to submit.",
+          variant: "default"
+        });
+        setSubmitting(false);
+        return;
+      }
+      
+      // Prepare responses for database - use the open_ended_responses table
+      const responsesToSubmit = validResponses.map(([questionId, responseData]) => {
         const questionInfo = questions.find(q => q.id === questionId);
         
         return {
           user_id: userId,
           question_id: questionId,
-          response: responseData.response,
+          response: responseData.response.trim(),
           skipped: responseData.skipped,
           major: questionInfo?.majorName || selectedMajor || '',
           question: questionInfo?.question || ''
         };
       });
       
-      // Upload responses to Supabase open_ended_responses table
+      // Always insert new responses (no upsert/update), allowing multiple submissions
       const { error } = await supabase
         .from('open_ended_responses')
         .insert(responsesToSubmit);
@@ -322,7 +336,8 @@ export const useQuestionHandler = ({ userId }: QuestionHandlerProps) => {
         .from('quiz_completion')
         .upsert({
           user_id: userId,
-          quiz_type: 'open-ended'
+          quiz_type: 'open-ended',
+          completed_at: new Date().toISOString()
         }, {
           onConflict: 'user_id, quiz_type'
         });

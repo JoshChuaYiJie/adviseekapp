@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
@@ -176,18 +175,35 @@ export const MajorRecommendations: React.FC<MajorRecommendationsProps> = ({
                         </span>
                       </div>
                       <p className="font-medium mb-3">{question.question}</p>
-                      <textarea
-                        value={answeredQuestions[question.id || '']?.response || ''}
-                        onChange={(e) => setAnsweredQuestions(prev => ({
-                          ...prev,
-                          [question.id || '']: {
-                            response: e.target.value,
-                            skipped: prev[question.id || '']?.skipped || false
-                          }
-                        }))}
-                        className="w-full border border-gray-300 rounded-md p-2 min-h-[100px]"
-                        placeholder="Type your answer here..."
-                      />
+                      <div className="space-y-2">
+                        <textarea
+                          value={answeredQuestions[question.id || '']?.response || ''}
+                          onChange={(e) => setAnsweredQuestions(prev => ({
+                            ...prev,
+                            [question.id || '']: {
+                              response: e.target.value,
+                              skipped: prev[question.id || '']?.skipped || false
+                            }
+                          }))}
+                          className="w-full border border-gray-300 rounded-md p-2 min-h-[100px]"
+                          placeholder="Type your answer here..."
+                        />
+                        <div className="flex justify-end mt-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setAnsweredQuestions(prev => ({
+                              ...prev,
+                              [question.id || '']: {
+                                response: '',
+                                skipped: true
+                              }
+                            }))}
+                          >
+                            {answeredQuestions[question.id || '']?.skipped ? 'Skipped' : 'Skip Question'}
+                          </Button>
+                        </div>
+                      </div>
                     </div>
                   ))}
                 </div>
