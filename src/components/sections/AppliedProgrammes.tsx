@@ -210,7 +210,7 @@ export const AppliedProgrammes = () => {
         </Button>
         <Button 
           variant="outline" 
-          onClick={() => navigate("/pickAI")}
+          onClick={() => navigate("/recommendations")}
           className="ml-4"
         >
           {t("university.ideal_programme", "What is my ideal programme?")}
