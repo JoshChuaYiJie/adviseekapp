@@ -147,13 +147,12 @@ export const AboutMe = () => {
     loadUserProfiles();
   }, []);
 
-  // Updated function to generate strengths based on RIASEC code with specific traits
   const generateStrengthsFromRIASEC = (code: string): string[] => {
     const traits: Record<string, string[]> = {
       'R': ['Independent and Reliable', 'Practical and Physically Adept', 'Straightforward and Persistent'],
       'I': ['Curious and Analytical', 'Logical and Observant', 'Introspective', 'Critical thinker'],
       'A': ['Imaginative and Expressive', 'Intuitive and Original', 'Emotional and Open-minded', 'Open-minded'],
-      'S': ['Empathetic and Friendly', '', 'Nurturing and Patient', 'Supportive and Cooperative'],
+      'S': ['Empathetic and Friendly', 'Nurturing and Patient', 'Supportive and Cooperative'],
       'E': ['Charismatic and Ambitious', 'Optimistic and Energetic', 'Assertive and Goal-oriented'],
       'C': ['Organized and Methodical', 'Detail-oriented and Conscientious', 'Disciplined']
     };
@@ -162,12 +161,12 @@ export const AboutMe = () => {
     const topLetters = code.slice(0, Math.min(3, code.length));
     
     // Collect traits for each letter in the code
-    const result = [];
+    const result: string[] = [];
     for (const letter of topLetters) {
       if (traits[letter]) {
         // Add 2 random traits from each letter category
         const categoryTraits = traits[letter];
-        const selectedTraits = [];
+        const selectedTraits: string[] = [];
         const indices = [...Array(categoryTraits.length).keys()]; // Array of indices [0, 1, 2, ...]
         for (let i = 0; i < Math.min(2, categoryTraits.length); i++) {
           if (indices.length === 0) break; // Avoid errors if fewer than 2 traits
@@ -176,8 +175,8 @@ export const AboutMe = () => {
           selectedTraits.push(categoryTraits[traitIndex]);
         }
         result.push(...selectedTraits);
+      }
     }
-  }
     return result.slice(0, 6); // Limit to 6 traits total
   };
   
