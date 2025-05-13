@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -38,11 +39,14 @@ export const AboutMe = () => {
     isCurrentlyDark
   } = useTheme();
 
-  // New state for dynamic profile information
+  // Enhanced state for dynamic profile information
   const [profileInfo, setProfileInfo] = useState({
     strengths: [] as string[],
-    workPreferences: [] as string[]
+    workPreferences: [] as string[],
+    likes: [] as string[],
+    dislikes: [] as string[]
   });
+  
   useEffect(() => {
     const loadUserProfiles = async () => {
       try {
@@ -107,9 +111,14 @@ export const AboutMe = () => {
         // Generate dynamic profile information based on RIASEC and Work Values
         const dynamicStrengths = generateStrengthsFromRIASEC(generatedRiasecCode);
         const dynamicWorkPreferences = generateWorkPreferencesFromWorkValues(generatedWorkValueCode);
+        const dynamicLikes = generateLikesFromRIASEC(generatedRiasecCode);
+        const dynamicDislikes = generateDislikesFromRIASEC(generatedRiasecCode);
+        
         setProfileInfo({
           strengths: dynamicStrengths,
-          workPreferences: dynamicWorkPreferences
+          workPreferences: dynamicWorkPreferences,
+          likes: dynamicLikes,
+          dislikes: dynamicDislikes
         });
         console.log("Final RIASEC profile state:", riasecChartData);
         console.log("Final Work Value profile state:", workValuesChartData);
@@ -138,86 +147,128 @@ export const AboutMe = () => {
     loadUserProfiles();
   }, []);
 
-  // New function to generate strengths based on RIASEC code
+  // Updated function to generate strengths based on RIASEC code with specific traits
   const generateStrengthsFromRIASEC = (code: string): string[] => {
-    const strengths: Record<string, string[]> = {
-      'R': ['Strong mechanical and technical abilities', 'Good at working with tools, machines, and equipment', 'Practical problem-solving skills', 'Physical coordination and dexterity'],
-      'I': ['Analytical thinking and problem-solving', 'Research and investigation skills', 'Abstract reasoning abilities', 'Scientific approach to challenges'],
-      'A': ['Creative and artistic expression', 'Innovative thinking and imagination', 'Attention to aesthetics and design', 'Self-expression and originality'],
-      'S': ['Strong interpersonal and communication skills', 'Empathetic understanding of others', 'Teaching and mentoring abilities', 'Collaborative teamwork skills'],
-      'E': ['Leadership and decision-making abilities', 'Persuasive communication and negotiation', 'Strategic thinking and initiative', 'Business acumen and organizational skills'],
-      'C': ['Detail-oriented with good organizational abilities', 'Data management and record-keeping skills', 'Systematic approach to tasks', 'Attention to accuracy and precision']
+    const traits: Record<string, string[]> = {
+      'R': ['Independent', 'Practical', 'Reliable', 'Physically adept', 'Straightforward', 'Persistent'],
+      'I': ['Curious', 'Analytical', 'Logical', 'Observant', 'Introspective', 'Critical thinker'],
+      'A': ['Imaginative', 'Expressive', 'Intuitive', 'Original', 'Emotional', 'Open-minded'],
+      'S': ['Empathetic', 'Friendly', 'Nurturing', 'Cooperative', 'Patient', 'Idealistic'],
+      'E': ['Charismatic', 'Assertive', 'Ambitious', 'Optimistic', 'Energetic', 'Goal-oriented'],
+      'C': ['Organized', 'Methodical', 'Detail-oriented', 'Disciplined', 'Conscientious', 'Accurate']
     };
 
     // Get the top 2-3 letters from the code
     const topLetters = code.slice(0, Math.min(3, code.length));
-
-    // Collect strengths for each letter in the code
+    
+    // Collect traits for each letter in the code
     const result: string[] = [];
     for (const letter of topLetters) {
-      if (strengths[letter]) {
-        // Add 1-2 strengths from each letter category
-        const categoryStrengths = strengths[letter];
-        const randomStrength = categoryStrengths[Math.floor(Math.random() * categoryStrengths.length)];
-        result.push(randomStrength);
+      if (traits[letter]) {
+        // Add 2 traits from each letter category
+        const categoryTraits = traits[letter];
+        const selectedTraits = categoryTraits.slice(0, 2);
+        result.push(...selectedTraits);
       }
     }
+    
+    return result.slice(0, 6); // Limit to 6 traits total
+  };
+  
+  // New function to generate likes based on RIASEC code
+  const generateLikesFromRIASEC = (code: string): string[] => {
+    const likes: Record<string, string[]> = {
+      'R': ['Working with tools, machines, or materials', 'Building or fixing things', 'Outdoor activities', 'Tasks with clear, tangible outcomes'],
+      'I': ['Researching', 'Experimenting', 'Analyzing data', 'Solving complex problems', 'Learning new concepts'],
+      'A': ['Creating art, writing, music, or designs', 'Experimenting with aesthetics', 'Expressing individuality'],
+      'S': ['Helping, teaching, or counseling others', 'Collaborating in teams', 'Building relationships', 'Making a positive impact'],
+      'E': ['Leading teams', 'Persuading others', 'Negotiating', 'Starting businesses', 'Taking risks'],
+      'C': ['Managing data', 'Creating schedules', 'Maintaining records', 'Following clear procedures', 'Structured environments']
+    };
 
-    // Ensure we have at least 4 strengths, filling in from other categories if needed
-    while (result.length < 4) {
-      const remainingLetters = 'RIASEC'.split('').filter(l => !topLetters.includes(l));
-      if (remainingLetters.length === 0) break;
-      const randomLetter = remainingLetters[Math.floor(Math.random() * remainingLetters.length)];
-      const categoryStrengths = strengths[randomLetter];
-      const randomStrength = categoryStrengths[Math.floor(Math.random() * categoryStrengths.length)];
-      if (!result.includes(randomStrength)) {
-        result.push(randomStrength);
+    // Get top 3 letters from the code
+    const topLetters = code.slice(0, Math.min(3, code.length));
+    
+    // Collect likes for each letter
+    const result: string[] = [];
+    for (const letter of topLetters) {
+      if (likes[letter]) {
+        // Add 1-2 likes from each category
+        const categoryLikes = likes[letter];
+        const randomIndex = Math.floor(Math.random() * categoryLikes.length);
+        result.push(categoryLikes[randomIndex]);
+        
+        // Add a second like if available
+        if (categoryLikes.length > 1) {
+          let secondIndex = (randomIndex + 1) % categoryLikes.length;
+          result.push(categoryLikes[secondIndex]);
+        }
       }
     }
-    return result;
+    
+    return result.slice(0, 4); // Limit to 4 total likes
+  };
+  
+  // New function to generate dislikes based on RIASEC code
+  const generateDislikesFromRIASEC = (code: string): string[] => {
+    const dislikes: Record<string, string[]> = {
+      'R': ['Abstract theorizing', 'Ambiguous tasks', 'Highly social or desk-bound work'],
+      'I': ['Routine tasks', 'Overly social environments', 'Lack of intellectual challenge'],
+      'A': ['Rigid structures', 'Repetitive tasks', 'Conforming to strict rules'],
+      'S': ['Isolated work', 'Competitive environments', 'Tasks without human connection'],
+      'E': ['Lack of control', 'Mundane tasks', 'Environments without opportunities for advancement'],
+      'C': ['Chaos', 'Ambiguity', 'Highly creative or unpredictable tasks']
+    };
+
+    // Get top 3 letters from the code
+    const topLetters = code.slice(0, Math.min(3, code.length));
+    
+    // Collect dislikes for each letter
+    const result: string[] = [];
+    for (const letter of topLetters) {
+      if (dislikes[letter]) {
+        // Add 1 dislike from each category
+        const categoryDislikes = dislikes[letter];
+        const randomDislike = categoryDislikes[Math.floor(Math.random() * categoryDislikes.length)];
+        result.push(randomDislike);
+      }
+    }
+    
+    return result.slice(0, 3); // Limit to 3 total dislikes
   };
 
-  // New function to generate work preferences based on Work Values code
+  // Updated function to generate work preferences based on Work Values code
   const generateWorkPreferencesFromWorkValues = (code: string): string[] => {
     const preferences: Record<string, string[]> = {
-      'A': ['Recognition for contributions and achievements', 'Opportunities to demonstrate expertise and excellence', 'Environment that values individual accomplishment', 'Merit-based advancement and rewards'],
-      'R': ['Opportunities for continuous learning', 'Intellectual challenges and stimulation', 'Research and analysis responsibilities', 'Exploration of new concepts and ideas'],
-      'S': ['Stable and secure work environment', 'Clear expectations and consistent routines', 'Predictable schedules and responsibilities', 'Long-term employment opportunities'],
-      'I': ['Independence in decision-making', 'Self-directed work arrangements', 'Autonomy in task management', 'Freedom to innovate and create'],
-      'E': ['Opportunities to influence organizational decisions', 'Leadership roles and responsibilities', 'Management of people and projects', 'Strategic planning and direction setting'],
-      'W': ['Collaborative team settings', 'Social interaction with colleagues', 'Supportive and friendly workplace culture', 'Opportunities to help and mentor others']
+      'A': ['Challenging tasks', 'Clear measurable goals', 'Opportunities for advancement', 'Regular performance feedback', 'Culture rewarding excellence'],
+      'R': ['Collaborative team-oriented settings', 'Supportive inclusive culture', 'Trust and mutual respect', 'Frequent colleague interaction'],
+      'I': ['Autonomous and flexible roles', 'Minimal supervision', 'Independent decision-making', 'Creative approaches to tasks'],
+      'Rc': ['Public acknowledgment of contributions', 'Clear promotion pathways', 'Recognition through awards', 'Career advancement opportunities'],
+      'W': ['Safe well-equipped workplace', 'Fair compensation', 'Reasonable hours', 'Job security', 'Work-life balance'],
+      'S': ['Supportive leadership', 'Clear guidance', 'Mentorship opportunities', 'Accessible resources', 'Encouraging atmosphere']
     };
 
     // Get the top 2-3 letters from the code
     const topLetters = code.slice(0, Math.min(3, code.length));
-
+    
     // Collect preferences for each letter in the code
     const result: string[] = [];
     for (const letter of topLetters) {
-      if (preferences[letter]) {
+      const key = letter === 'C' && code.includes('R') ? 'Rc' : letter; // Handle special case for Rc
+      if (preferences[key]) {
         // Add 1-2 preferences from each letter category
-        const categoryPrefs = preferences[letter];
-        const randomPref = categoryPrefs[Math.floor(Math.random() * categoryPrefs.length)];
-        result.push(randomPref);
+        const categoryPrefs = preferences[key];
+        result.push(...categoryPrefs.slice(0, 2));
       }
     }
-
-    // Ensure we have at least 4 preferences, filling in from other categories if needed
-    while (result.length < 4) {
-      const remainingLetters = 'ARSIEW'.split('').filter(l => !topLetters.includes(l));
-      if (remainingLetters.length === 0) break;
-      const randomLetter = remainingLetters[Math.floor(Math.random() * remainingLetters.length)];
-      const categoryPrefs = preferences[randomLetter];
-      const randomPref = categoryPrefs[Math.floor(Math.random() * categoryPrefs.length)];
-      if (!result.includes(randomPref)) {
-        result.push(randomPref);
-      }
-    }
-    return result;
+    
+    return result.slice(0, 4); // Limit to 4 preferences
   };
+
   const handleResumeClick = () => {
     navigate("/resumebuilder");
   };
+  
   const handleOpenEndedQuiz = () => {
     navigate("/open-ended");
   };
@@ -232,6 +283,7 @@ export const AboutMe = () => {
     const match = major.match(/ at (NUS|NTU|SMU)$/);
     return match ? match[1] : '';
   };
+  
   return <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
@@ -281,6 +333,22 @@ export const AboutMe = () => {
                       <h3 className="text-lg font-semibold mb-2">Work Environment Preferences</h3>
                       <ul className="list-disc pl-5 space-y-1">
                         {profileInfo.workPreferences.map((preference, index) => <li key={`pref-${index}`}>{preference}</li>)}
+                      </ul>
+                    </div>
+                    
+                    {/* New Likes section */}
+                    <div>
+                      <h3 className="text-lg font-semibold mb-2">Likes</h3>
+                      <ul className="list-disc pl-5 space-y-1">
+                        {profileInfo.likes.map((like, index) => <li key={`like-${index}`}>{like}</li>)}
+                      </ul>
+                    </div>
+                    
+                    {/* New Dislikes section */}
+                    <div>
+                      <h3 className="text-lg font-semibold mb-2">Dislikes</h3>
+                      <ul className="list-disc pl-5 space-y-1">
+                        {profileInfo.dislikes.map((dislike, index) => <li key={`dislike-${index}`}>{dislike}</li>)}
                       </ul>
                     </div>
                   </div>
