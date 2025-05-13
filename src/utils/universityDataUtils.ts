@@ -89,9 +89,9 @@ export const loadUniversityData = async (university: string): Promise<University
         return mockUniversityData; // Return mock data instead of empty data
     }
     
-    // Fix the file path to properly reference files in public folder
-    // Remove the leading slash which causes the path to be resolved from the domain root
-    const filePath = `school-data/Standardized%20weights/standardized_${shortName}_majors.json`;
+    // Create an absolute path that works regardless of the base URL
+    // Don't use relative paths starting with / as they resolve differently in different environments
+    const filePath = new URL(`/school-data/Standardized%20weights/standardized_${shortName}_majors.json`, window.location.origin).href;
     
     console.log(`Fetching university data from ${filePath} for ${university}`);
     
@@ -116,9 +116,33 @@ export const loadUniversityData = async (university: string): Promise<University
     } catch (error) {
       console.error(`Error loading university data for ${university} from ${filePath}:`, error);
       
-      // Return mock data as fallback
-      console.log('Using mock data as fallback');
-      return mockUniversityData;
+      // Try with an alternative path format as fallback
+      try {
+        const fallbackPath = `/school-data/Standardized%20weights/standardized_${shortName}_majors.json`;
+        console.log(`Trying fallback path: ${fallbackPath}`);
+        
+        const fallbackResponse = await fetch(fallbackPath);
+        
+        if (!fallbackResponse.ok) {
+          console.error(`Failed to fetch from fallback path with status: ${fallbackResponse.status}`);
+          throw new Error(`HTTP error! Status: ${fallbackResponse.status}`);
+        }
+        
+        const fallbackData = await fallbackResponse.json();
+        
+        if (!fallbackData || !fallbackData.programs || !Array.isArray(fallbackData.programs)) {
+          throw new Error(`Invalid data format from fallback path`);
+        }
+        
+        console.log(`Successfully loaded data from fallback path for ${university}`);
+        dataCache[normalizedName] = fallbackData;
+        return fallbackData;
+      } catch (fallbackError) {
+        console.error(`Fallback path also failed:`, fallbackError);
+        // Return mock data as fallback
+        console.log('Using mock data as final fallback');
+        return mockUniversityData;
+      }
     }
   } catch (error) {
     console.error('Error in loadUniversityData:', error);
