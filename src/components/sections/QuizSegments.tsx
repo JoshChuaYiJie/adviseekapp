@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -10,6 +9,7 @@ import { McqQuestionsDisplay } from "@/components/McqQuestionsDisplay";
 import { MajorRecommendations } from "./MajorRecommendations";
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { RecommendationDisclaimer } from "@/components/CourseQuiz/RecommendationDisclaimer";
 
 type QuizSegment = {
   id: string;
@@ -30,6 +30,9 @@ export const QuizSegments = () => {
   // State for user's RIASEC and Work Value profiles
   const [riasecProfile, setRiasecProfile] = useState<Array<{ component: string; average: number; score: number }>>([]);
   const [workValueProfile, setWorkValueProfile] = useState<Array<{ component: string; average: number; score: number }>>([]);
+  
+  // State to show the recommendation disclaimer dialog
+  const [showDisclaimer, setShowDisclaimer] = useState(false);
   
   // Function to load user profiles
   const loadUserProfiles = async (userId: string) => {
@@ -261,8 +264,8 @@ export const QuizSegments = () => {
         return;
       }
       
-      // Redirect to the dedicated open-ended quiz page
-      navigate('/open-ended');
+      // Show disclaimer instead of navigating directly
+      setShowDisclaimer(true);
     } else {
       navigate(`/quiz/${segmentId}`);
     }
@@ -368,6 +371,12 @@ export const QuizSegments = () => {
           </AlertDescription>
         </Alert>
       )}
+      
+      {/* Add the Recommendation Disclaimer Dialog */}
+      <RecommendationDisclaimer 
+        isOpen={showDisclaimer} 
+        onClose={() => setShowDisclaimer(false)} 
+      />
     </div>
   );
 };

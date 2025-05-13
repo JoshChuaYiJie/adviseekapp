@@ -24,6 +24,7 @@ const Recommendations = () => {
   const [showSuggestion, setShowSuggestion] = useState(false);
   const [showProgramme, setShowProgramme] = useState(false);
   const [ratedModulesCount, setRatedModulesCount] = useState(0);
+  const [allModulesRated, setAllModulesRated] = useState(false);
 
   // Load recommendations on component mount if they're not already loaded
   useEffect(() => {
@@ -45,6 +46,18 @@ const Recommendations = () => {
       setRatedModulesCount(Object.keys(userFeedback).length);
     }
   }, [userFeedback]);
+  
+  // New effect to handle redirect after rating all modules
+  useEffect(() => {
+    if (allModulesRated) {
+      // Use a timeout to allow the user to see the completion message
+      const redirectTimer = setTimeout(() => {
+        navigate('/dashboard');
+      }, 2000);
+      
+      return () => clearTimeout(redirectTimer);
+    }
+  }, [allModulesRated, navigate]);
 
   const handleRate = async () => {
     const currentModule = recommendations[currentIndex];
@@ -60,10 +73,14 @@ const Recommendations = () => {
         setRating(5);
         setShowAnimation(true);
       } else {
+        // All modules have been rated
         toast({
           title: "All modules rated",
-          description: "Thank you for rating all the modules.",
+          description: "Thank you for rating all the modules. Redirecting to dashboard...",
         });
+        
+        // Set a flag to trigger the redirect
+        setAllModulesRated(true);
         
         // Pass an empty array as the argument to refineRecommendations
         await refineRecommendations([]);
@@ -226,6 +243,16 @@ const Recommendations = () => {
             >
               Rate and Continue
             </Button>
+          </div>
+        )}
+
+        {allModulesRated && (
+          <div className="text-center animate-fade-in bg-white/80 shadow-lg p-8 rounded-2xl max-w-xl mx-auto">
+            <h2 className="text-3xl font-bold mb-4 text-purple-700">Thank you for your ratings!</h2>
+            <p className="text-lg mb-8 text-gray-700">Redirecting to your dashboard...</p>
+            <div className="flex justify-center">
+              <div className="animate-spin h-8 w-8 border-t-2 border-b-2 border-purple-500 rounded-full"></div>
+            </div>
           </div>
         )}
       </div>
