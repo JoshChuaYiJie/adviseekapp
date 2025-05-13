@@ -243,54 +243,63 @@ export const AboutMe = () => {
   };
 
   // Updated function to generate work preferences based on Work Values code
-  const generateWorkPreferencesFromWorkValues = (code: string): string[] => {
-    const preferences: Record<string, string[]> = {
-  'A': [
-    'Challenging Tasks and Clear Measurable Goals',
-    'Opportunities for Advancement and Regular Performance Feedback',
-    'Culture Rewarding Excellence'
-  ],
-  'R': [
-    'Collaborative Team-Oriented Settings and Supportive Inclusive Culture',
-    'Trust and Mutual Respect and Frequent Colleague Interaction'
-  ],
-  'I': [
-    'Autonomous and Flexible Roles and Minimal Supervision',
-    'Independent Decision-Making and Creative Approaches to Tasks'
-  ],
-  'Rc': [
-    'Public Acknowledgment of Contributions and Clear Promotion Pathways',
-    'Recognition through Awards and Career Advancement Opportunities'
-  ],
-  'W': [
-    'Safe Well-Equipped Workplace and Fair Compensation',
-    'Reasonable Hours and Job Security',
-    'Work-Life Balance'
-  ],
-  'S': [
-    'Supportive Leadership and Clear Guidance',
-    'Mentorship Opportunities and Accessible Resources',
-    'Encouraging Atmosphere'
-  ]
+const generateWorkPreferencesFromWorkValues = (code: string): string[] => {
+  const preferences: Record<string, string[]> = {
+    'A': [
+      'Challenging Tasks and Clear Measurable Goals',
+      'Opportunities for Advancement and Regular Performance Feedback',
+      'Culture Rewarding Excellence'
+    ],
+    'R': [
+      'Collaborative Team-Oriented Settings and Supportive Inclusive Culture',
+      'Trust and Mutual Respect and Frequent Colleague Interaction'
+    ],
+    'I': [
+      'Autonomous and Flexible Roles and Minimal Supervision',
+      'Independent Decision-Making and Creative Approaches to Tasks'
+    ],
+    'Rc': [
+      'Public Acknowledgment of Contributions and Clear Promotion Pathways',
+      'Recognition through Awards and Career Advancement Opportunities'
+    ],
+    'W': [
+      'Safe Well-Equipped Workplace and Fair Compensation',
+      'Reasonable Hours and Job Security',
+      'Work-Life Balance'
+    ],
+    'S': [
+      'Supportive Leadership and Clear Guidance',
+      'Mentorship Opportunities and Accessible Resources',
+      'Encouraging Atmosphere'
+    ]
   };
 
+  const result: string[] = [];
+  const upperCode = code.toUpperCase();
+  const uniqueLetters = [...new Set(upperCode.split(''))];
 
-    // Get the top 2-3 letters from the code
-    const topLetters = code.slice(0, Math.min(3, code.length));
-    
-    // Collect preferences for each letter in the code
-    const result: string[] = [];
-    for (const letter of topLetters) {
-      const key = letter === 'C' && code.includes('R') ? 'Rc' : letter; // Handle special case for Rc
-      if (preferences[key]) {
-        // Add 1-2 preferences from each letter category
-        const categoryPrefs = preferences[key];
-        result.push(...categoryPrefs.slice(0, 2));
+  // Step 1: If 4-letter code with both R and C, include Rc first
+  if (upperCode.length === 4 && uniqueLetters.includes('R') && uniqueLetters.includes('C')) {
+    result.push(...preferences['Rc'].slice(0, 2));
+  }
+
+  // Step 2: Go through the top 3 letters in the original code (in order) and pull prefs
+  for (const letter of upperCode.slice(0, 3)) {
+    const key = letter;
+    if (preferences[key]) {
+      for (const pref of preferences[key]) {
+        if (result.length >= 4) break;
+        if (!result.includes(pref)) {
+          result.push(pref);
+        }
       }
     }
-    
-    return result.slice(0, 4); // Limit to 4 preferences
-  };
+    if (result.length >= 4) break;
+  }
+
+  return result.slice(0, 4); // Return up to 4 preferences
+};
+
 
   const handleResumeClick = () => {
     navigate("/resumebuilder");
