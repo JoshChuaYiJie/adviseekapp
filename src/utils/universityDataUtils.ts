@@ -89,61 +89,58 @@ export const loadUniversityData = async (university: string): Promise<University
         return mockUniversityData; // Return mock data instead of empty data
     }
     
-    // Create an absolute path that works regardless of the base URL
-    // Don't use relative paths starting with / as they resolve differently in different environments
-    const filePath = new URL(`/school-data/Standardized%20weights/standardized_${shortName}_majors.json`, window.location.origin).href;
+    // We'll try different path strategies to load the file
+    const fileStrategies = [
+      // Strategy 1: Using the base URL of the site with no leading slash
+      `${window.location.origin}/school-data/Standardized%20weights/standardized_${shortName}_majors.json`,
+      
+      // Strategy 2: Relative path with just a leading slash
+      `/school-data/Standardized%20weights/standardized_${shortName}_majors.json`,
+      
+      // Strategy 3: Just the file path with no leading slash
+      `school-data/Standardized%20weights/standardized_${shortName}_majors.json`
+    ];
     
-    console.log(`Fetching university data from ${filePath} for ${university}`);
+    let data = null;
+    let successPath = '';
     
-    try {
-      const response = await fetch(filePath);
-      
-      if (!response.ok) {
-        console.error(`Failed to fetch from ${filePath} with status: ${response.status}`);
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      console.log(`Successfully loaded data for ${university}`, data);
-      
-      if (!data || !data.programs || !Array.isArray(data.programs)) {
-        console.error(`Invalid data format for ${university}`);
-        throw new Error(`Invalid data format for ${university}`);
-      }
-      
-      dataCache[normalizedName] = data;
-      return data;
-    } catch (error) {
-      console.error(`Error loading university data for ${university} from ${filePath}:`, error);
-      
-      // Try with an alternative path format as fallback
+    // Try each file loading strategy
+    for (const filePath of fileStrategies) {
       try {
-        const fallbackPath = `/school-data/Standardized%20weights/standardized_${shortName}_majors.json`;
-        console.log(`Trying fallback path: ${fallbackPath}`);
+        console.log(`Attempting to fetch from: ${filePath}`);
+        const response = await fetch(filePath);
         
-        const fallbackResponse = await fetch(fallbackPath);
-        
-        if (!fallbackResponse.ok) {
-          console.error(`Failed to fetch from fallback path with status: ${fallbackResponse.status}`);
-          throw new Error(`HTTP error! Status: ${fallbackResponse.status}`);
+        if (!response.ok) {
+          console.log(`Strategy failed for ${filePath} with status: ${response.status}`);
+          continue;
         }
         
-        const fallbackData = await fallbackResponse.json();
+        const fetchedData = await response.json();
         
-        if (!fallbackData || !fallbackData.programs || !Array.isArray(fallbackData.programs)) {
-          throw new Error(`Invalid data format from fallback path`);
+        if (!fetchedData || !fetchedData.programs || !Array.isArray(fetchedData.programs)) {
+          console.log(`Invalid data format from ${filePath}`);
+          continue;
         }
         
-        console.log(`Successfully loaded data from fallback path for ${university}`);
-        dataCache[normalizedName] = fallbackData;
-        return fallbackData;
-      } catch (fallbackError) {
-        console.error(`Fallback path also failed:`, fallbackError);
-        // Return mock data as fallback
-        console.log('Using mock data as final fallback');
-        return mockUniversityData;
+        // If we got here, we have valid data
+        data = fetchedData;
+        successPath = filePath;
+        break;
+      } catch (error) {
+        console.log(`Error with strategy ${filePath}:`, error);
+        // Continue to next strategy
       }
     }
+    
+    if (data) {
+      console.log(`Successfully loaded data from ${successPath} for ${university}`);
+      dataCache[normalizedName] = data;
+      return data;
+    }
+    
+    // If all strategies fail, use mock data
+    console.error(`All file loading strategies failed for ${university}, using mock data`);
+    return mockUniversityData;
   } catch (error) {
     console.error('Error in loadUniversityData:', error);
     return mockUniversityData; // Return mock data instead of null

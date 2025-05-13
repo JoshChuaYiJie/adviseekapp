@@ -11,12 +11,11 @@ import {
 import { MajorRecommendationsType } from './types';
 import { processRiasecData } from '@/components/sections/RiasecChart';
 import { processWorkValuesData } from '@/components/sections/WorkValuesChart';
-import { Info } from 'lucide-react';
 
 interface RecommendationLogicProps {
   topRiasec: Array<{ component: string; average: number; score: number }>;
   topWorkValues: Array<{ component: string; average: number; score: number }>;
-  onRecommendationsLoaded: (recommendations: MajorRecommendationsType) => void;
+  onRecommendationsLoaded?: (recommendations: MajorRecommendationsType) => void;
 }
 
 export const useRecommendationLogic = ({ 
@@ -29,6 +28,7 @@ export const useRecommendationLogic = ({
   const [userId, setUserId] = useState<string | null>(null);
   const [riasecCode, setRiasecCode] = useState<string>('');
   const [workValueCode, setWorkValueCode] = useState<string>('');
+  const [recommendations, setRecommendations] = useState<MajorRecommendationsType | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   // Log the input arrays for debugging
@@ -239,7 +239,12 @@ export const useRecommendationLogic = ({
           setError(null);
         }
         
-        onRecommendationsLoaded(majorRecs);
+        setRecommendations(majorRecs);
+        
+        // Call the callback if provided
+        if (onRecommendationsLoaded) {
+          onRecommendationsLoaded(majorRecs);
+        }
       } catch (error) {
         console.error('RecommendationLogic - Error getting major recommendations:', error);
         setError("Failed to load major recommendations. Please try again later.");
@@ -268,6 +273,7 @@ export const useRecommendationLogic = ({
     riasecCode,
     workValueCode,
     userId,
-    error
+    error,
+    recommendations
   };
 };

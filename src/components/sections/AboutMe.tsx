@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -44,6 +43,12 @@ export const AboutMe = () => {
   const navigate = useNavigate();
   const { isCurrentlyDark } = useTheme();
 
+  // New state for dynamic profile information
+  const [profileInfo, setProfileInfo] = useState({
+    strengths: [] as string[],
+    workPreferences: [] as string[]
+  });
+  
   useEffect(() => {
     const loadUserProfiles = async () => {
       try {
@@ -106,6 +111,15 @@ export const AboutMe = () => {
           generatedWorkValueCode = "ARS";
           setWorkValueCode("ARS");
         }
+
+        // Generate dynamic profile information based on RIASEC and Work Values
+        const dynamicStrengths = generateStrengthsFromRIASEC(generatedRiasecCode);
+        const dynamicWorkPreferences = generateWorkPreferencesFromWorkValues(generatedWorkValueCode);
+        
+        setProfileInfo({
+          strengths: dynamicStrengths,
+          workPreferences: dynamicWorkPreferences
+        });
         
         console.log("Final RIASEC profile state:", riasecChartData);
         console.log("Final Work Value profile state:", workValuesChartData);
@@ -137,6 +151,150 @@ export const AboutMe = () => {
     
     loadUserProfiles();
   }, []);
+
+  // New function to generate strengths based on RIASEC code
+  const generateStrengthsFromRIASEC = (code: string): string[] => {
+    const strengths: Record<string, string[]> = {
+      'R': [
+        'Strong mechanical and technical abilities',
+        'Good at working with tools, machines, and equipment',
+        'Practical problem-solving skills',
+        'Physical coordination and dexterity'
+      ],
+      'I': [
+        'Analytical thinking and problem-solving',
+        'Research and investigation skills', 
+        'Abstract reasoning abilities',
+        'Scientific approach to challenges'
+      ],
+      'A': [
+        'Creative and artistic expression',
+        'Innovative thinking and imagination',
+        'Attention to aesthetics and design',
+        'Self-expression and originality'
+      ],
+      'S': [
+        'Strong interpersonal and communication skills',
+        'Empathetic understanding of others',
+        'Teaching and mentoring abilities',
+        'Collaborative teamwork skills'
+      ],
+      'E': [
+        'Leadership and decision-making abilities',
+        'Persuasive communication and negotiation',
+        'Strategic thinking and initiative',
+        'Business acumen and organizational skills'
+      ],
+      'C': [
+        'Detail-oriented with good organizational abilities',
+        'Data management and record-keeping skills',
+        'Systematic approach to tasks',
+        'Attention to accuracy and precision'
+      ]
+    };
+    
+    // Get the top 2-3 letters from the code
+    const topLetters = code.slice(0, Math.min(3, code.length));
+    
+    // Collect strengths for each letter in the code
+    const result: string[] = [];
+    for (const letter of topLetters) {
+      if (strengths[letter]) {
+        // Add 1-2 strengths from each letter category
+        const categoryStrengths = strengths[letter];
+        const randomStrength = categoryStrengths[Math.floor(Math.random() * categoryStrengths.length)];
+        result.push(randomStrength);
+      }
+    }
+    
+    // Ensure we have at least 4 strengths, filling in from other categories if needed
+    while (result.length < 4) {
+      const remainingLetters = 'RIASEC'.split('').filter(l => !topLetters.includes(l));
+      if (remainingLetters.length === 0) break;
+      
+      const randomLetter = remainingLetters[Math.floor(Math.random() * remainingLetters.length)];
+      const categoryStrengths = strengths[randomLetter];
+      const randomStrength = categoryStrengths[Math.floor(Math.random() * categoryStrengths.length)];
+      
+      if (!result.includes(randomStrength)) {
+        result.push(randomStrength);
+      }
+    }
+    
+    return result;
+  };
+  
+  // New function to generate work preferences based on Work Values code
+  const generateWorkPreferencesFromWorkValues = (code: string): string[] => {
+    const preferences: Record<string, string[]> = {
+      'A': [
+        'Recognition for contributions and achievements',
+        'Opportunities to demonstrate expertise and excellence',
+        'Environment that values individual accomplishment',
+        'Merit-based advancement and rewards'
+      ],
+      'R': [
+        'Opportunities for continuous learning',
+        'Intellectual challenges and stimulation',
+        'Research and analysis responsibilities',
+        'Exploration of new concepts and ideas'
+      ],
+      'S': [
+        'Stable and secure work environment',
+        'Clear expectations and consistent routines',
+        'Predictable schedules and responsibilities',
+        'Long-term employment opportunities'
+      ],
+      'I': [
+        'Independence in decision-making',
+        'Self-directed work arrangements',
+        'Autonomy in task management',
+        'Freedom to innovate and create'
+      ],
+      'E': [
+        'Opportunities to influence organizational decisions',
+        'Leadership roles and responsibilities',
+        'Management of people and projects',
+        'Strategic planning and direction setting'
+      ],
+      'W': [
+        'Collaborative team settings',
+        'Social interaction with colleagues',
+        'Supportive and friendly workplace culture',
+        'Opportunities to help and mentor others'
+      ]
+    };
+    
+    // Get the top 2-3 letters from the code
+    const topLetters = code.slice(0, Math.min(3, code.length));
+    
+    // Collect preferences for each letter in the code
+    const result: string[] = [];
+    for (const letter of topLetters) {
+      if (preferences[letter]) {
+        // Add 1-2 preferences from each letter category
+        const categoryPrefs = preferences[letter];
+        const randomPref = categoryPrefs[Math.floor(Math.random() * categoryPrefs.length)];
+        result.push(randomPref);
+      }
+    }
+    
+    // Ensure we have at least 4 preferences, filling in from other categories if needed
+    while (result.length < 4) {
+      const remainingLetters = 'ARSIEW'.split('').filter(l => !topLetters.includes(l));
+      if (remainingLetters.length === 0) break;
+      
+      const randomLetter = remainingLetters[Math.floor(Math.random() * remainingLetters.length)];
+      const categoryPrefs = preferences[randomLetter];
+      const randomPref = categoryPrefs[Math.floor(Math.random() * categoryPrefs.length)];
+      
+      if (!result.includes(randomPref)) {
+        result.push(randomPref);
+      }
+    }
+    
+    return result;
+  };
 
   const handleResumeClick = () => {
     navigate("/resumebuilder");
@@ -215,22 +373,21 @@ export const AboutMe = () => {
                     <div>
                       <h3 className="text-lg font-semibold mb-2">Strengths</h3>
                       <ul className="list-disc pl-5 space-y-1">
-                        <li>Analytical thinking and problem-solving</li>
-                        <li>Creative approaches to challenges</li>
-                        <li>Strong communication and interpersonal skills</li>
-                        <li>Detail-oriented with good organizational abilities</li>
+                        {profileInfo.strengths.map((strength, index) => (
+                          <li key={`strength-${index}`}>{strength}</li>
+                        ))}
                       </ul>
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold mb-2">Work Environment Preferences</h3>
                       <ul className="list-disc pl-5 space-y-1">
-                        <li>Collaborative team settings</li>
-                        <li>Opportunities for continuous learning</li>
-                        <li>Balance between structure and innovation</li>
-                        <li>Recognition for contributions and achievements</li>
+                        {profileInfo.workPreferences.map((preference, index) => (
+                          <li key={`pref-${index}`}>{preference}</li>
+                        ))}
                       </ul>
                     </div>
                   </div>
+                  
                   <Separator className="my-6" />
                   
                   {/* Recommended Majors Section */}

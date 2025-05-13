@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
@@ -5,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { UserProfileDisplay } from './majors/UserProfileDisplay';
 import { MajorsList } from './majors/MajorsList';
 import { MajorQuestionDisplay } from './majors/MajorQuestionDisplay';
-import { MajorRecommendationsType, OpenEndedResponse } from './majors/types';
+import { OpenEndedQuestion } from './majors/types';
 import { useRecommendationLogic } from './majors/RecommendationLogic';
 import { useQuestionHandler } from './majors/QuestionHandler';
 
@@ -22,7 +23,6 @@ export const MajorRecommendations: React.FC<MajorRecommendationsProps> = ({
   isQuizMode = false
 }) => {
   const navigate = useNavigate();
-  const [recommendations, setRecommendations] = useState<MajorRecommendationsType | null>(null);
   const [selectedMajor, setSelectedMajor] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('all');
   
@@ -31,10 +31,9 @@ export const MajorRecommendations: React.FC<MajorRecommendationsProps> = ({
   console.log("MajorRecommendations - Received topWorkValues:", topWorkValues);
   
   // Use recommendation logic
-  const { loading, riasecCode, workValueCode, userId } = useRecommendationLogic({
+  const { loading, riasecCode, workValueCode, userId, recommendations } = useRecommendationLogic({
     topRiasec,
-    topWorkValues,
-    onRecommendationsLoaded: setRecommendations
+    topWorkValues
   });
 
   // Use question handler
@@ -56,7 +55,7 @@ export const MajorRecommendations: React.FC<MajorRecommendationsProps> = ({
     if (isQuizMode && recommendations && recommendedMajors.length > 0) {
       prepareQuestionsForRecommendedMajors();
     }
-  }, [isQuizMode, recommendations, recommendedMajors, prepareQuestionsForRecommendedMajors]);
+  }, [isQuizMode, recommendations, recommendedMajors.length, prepareQuestionsForRecommendedMajors]);
 
   const handleMajorSelect = async (majorName: string) => {
     setSelectedMajor(majorName);
@@ -67,9 +66,12 @@ export const MajorRecommendations: React.FC<MajorRecommendationsProps> = ({
     setActiveTab(tabId);
   };
 
-  const handleTakeQuiz = () => {
-    // Redirect to the open-ended quiz page
-    navigate('/open-ended');
+  const getQuestionStatus = (questionId: string): 'default' | 'skipped' | 'completed' => {
+    const response = answeredQuestions[questionId];
+    if (!response) return 'default';
+    if (response.skipped) return 'skipped';
+    if (response.response.trim().length > 0) return 'completed';
+    return 'default';
   };
 
   return (
@@ -134,23 +136,14 @@ export const MajorRecommendations: React.FC<MajorRecommendationsProps> = ({
                 <Skeleton className="h-4 w-[260px]" />
               </div>
             ) : questions.length > 0 ? (
-              <>
-                <MajorQuestionDisplay
-                  selectedMajor={selectedMajor}
-                  openEndedQuestions={questions}
-                  loadingQuestions={false}
-                  onBackToList={() => setSelectedMajor(null)}
-                  isQuizMode={true}
-                  onSubmitResponses={() => handleSubmitResponses(selectedMajor)}
-                />
-                <button
-                  onClick={() => handleSubmitResponses(selectedMajor)}
-                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
-                  disabled={submitting || completed}
-                >
-                  {submitting ? 'Submitting...' : completed ? 'Submitted' : 'Submit Responses'}
-                </button>
-              </>
+              <MajorQuestionDisplay
+                selectedMajor={selectedMajor}
+                openEndedQuestions={questions}
+                loadingQuestions={false}
+                onBackToList={() => setSelectedMajor(null)}
+                isQuizMode={true}
+                onSubmitResponses={() => handleSubmitResponses(selectedMajor)}
+              />
             ) : (
               <p>No specific questions found for this major.</p>
             )}
@@ -167,53 +160,71 @@ export const MajorRecommendations: React.FC<MajorRecommendationsProps> = ({
             ) : (
               <>
                 <div className="space-y-6 mb-6">
-                  {questions.map((question, index) => (
-                    <div key={question.id || index} className="border border-gray-200 rounded-lg p-4">
-                      <div className="flex justify-between mb-2">
-                        <span className="text-sm font-medium text-gray-500">
-                          {question.majorName || "General"} - {question.category || "General"}
-                        </span>
-                      </div>
-                      <p className="font-medium mb-3">{question.question}</p>
-                      <div className="space-y-2">
-                        <textarea
-                          value={answeredQuestions[question.id || '']?.response || ''}
-                          onChange={(e) => setAnsweredQuestions(prev => ({
-                            ...prev,
-                            [question.id || '']: {
-                              response: e.target.value,
-                              skipped: prev[question.id || '']?.skipped || false
-                            }
-                          }))}
-                          className="w-full border border-gray-300 rounded-md p-2 min-h-[100px]"
-                          placeholder="Type your answer here..."
-                        />
-                        <div className="flex justify-end mt-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setAnsweredQuestions(prev => ({
+                  {questions.map((question, index) => {
+                    const status = getQuestionStatus(question.id);
+                    const isSkipped = status === 'skipped';
+                    const isCompleted = status === 'completed';
+                    
+                    // Define dynamic classes based on status
+                    let boxClasses = "border border-gray-200 rounded-lg p-4";
+                    if (isSkipped) boxClasses += " bg-amber-50 dark:bg-amber-900/20";
+                    if (isCompleted) boxClasses += " bg-green-50 dark:bg-green-900/20";
+                    
+                    return (
+                      <div key={question.id || index} className={boxClasses}>
+                        <div className="flex justify-between mb-2">
+                          <span className="text-sm font-medium text-gray-500">
+                            {question.majorName || "General"} - {question.category || "General"}
+                          </span>
+                        </div>
+                        <p className="font-medium mb-3">{question.question}</p>
+                        <div className="space-y-2">
+                          <textarea
+                            value={isSkipped ? "(Skipped)" : (answeredQuestions[question.id]?.response || '')}
+                            onChange={(e) => setAnsweredQuestions(prev => ({
                               ...prev,
-                              [question.id || '']: {
-                                response: '',
-                                skipped: true
+                              [question.id]: {
+                                response: e.target.value,
+                                skipped: false
                               }
                             }))}
-                          >
-                            {answeredQuestions[question.id || '']?.skipped ? 'Skipped' : 'Skip Question'}
-                          </Button>
+                            className={`w-full border border-gray-300 rounded-md p-2 min-h-[100px] ${
+                              isSkipped ? 'bg-gray-100 text-gray-500' : 
+                              isCompleted ? 'border-green-300' : ''
+                            }`}
+                            placeholder="Type your answer here..."
+                            disabled={isSkipped}
+                          />
+                          <div className="flex justify-end mt-2">
+                            <Button
+                              variant={isSkipped ? "secondary" : "outline"}
+                              size="sm"
+                              onClick={() => setAnsweredQuestions(prev => ({
+                                ...prev,
+                                [question.id]: {
+                                  response: '',
+                                  skipped: true
+                                }
+                              }))}
+                              className={`${
+                                isSkipped ? 'bg-amber-100 text-amber-800 hover:bg-amber-200 dark:bg-amber-800 dark:text-amber-100' : ''
+                              }`}
+                            >
+                              {isSkipped ? 'Skipped' : 'Skip Question'}
+                            </Button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
-                <button
+                <Button
                   onClick={() => handleSubmitResponses(null)}
-                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
+                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4 w-full"
                   disabled={submitting || completed}
                 >
                   {submitting ? 'Submitting...' : completed ? 'Submitted' : 'Submit Responses'}
-                </button>
+                </Button>
               </>
             )}
           </>

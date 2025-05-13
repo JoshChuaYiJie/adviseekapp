@@ -314,21 +314,30 @@ export const useQuestionHandler = ({ userId }: QuestionHandlerProps) => {
         
         return {
           user_id: userId,
-          question_id: questionId,
+          question: questionInfo?.question || '',
           response: responseData.response.trim(),
-          skipped: responseData.skipped,
           major: questionInfo?.majorName || selectedMajor || '',
-          question: questionInfo?.question || ''
         };
       });
       
-      // Always insert new responses (no upsert/update), allowing multiple submissions
-      const { error } = await supabase
-        .from('open_ended_responses')
-        .insert(responsesToSubmit);
-        
-      if (error) {
-        throw new Error(error.message);
+      console.log("Submitting responses:", responsesToSubmit);
+      
+      // Insert valid responses individually to ensure they all get saved
+      let allSuccess = true;
+      
+      for (const response of responsesToSubmit) {
+        const { error } = await supabase
+          .from('open_ended_responses')
+          .insert(response);
+          
+        if (error) {
+          console.error("Error inserting response:", error);
+          allSuccess = false;
+        }
+      }
+      
+      if (!allSuccess) {
+        throw new Error("Some responses failed to save");
       }
       
       // Update quiz completion status
