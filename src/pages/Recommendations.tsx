@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -25,7 +24,6 @@ const Recommendations = () => {
   const [showSuggestion, setShowSuggestion] = useState(false);
   const [showProgramme, setShowProgramme] = useState(false);
   const [ratedModulesCount, setRatedModulesCount] = useState(0);
-  const [completionRedirect, setCompletionRedirect] = useState(false);
 
   // Load recommendations on component mount if they're not already loaded
   useEffect(() => {
@@ -48,16 +46,6 @@ const Recommendations = () => {
     }
   }, [userFeedback]);
 
-  // Handle redirection after completing all ratings
-  useEffect(() => {
-    if (completionRedirect) {
-      const timer = setTimeout(() => {
-        navigate('/dashboard');
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [completionRedirect, navigate]);
-
   const handleRate = async () => {
     const currentModule = recommendations[currentIndex];
     if (!currentModule) return;
@@ -74,11 +62,11 @@ const Recommendations = () => {
       } else {
         toast({
           title: "All modules rated",
-          description: "Thank you for rating all the modules! Redirecting to dashboard...",
+          description: "Thank you for rating all the modules.",
         });
         
-        // Trigger completion state to redirect
-        setCompletionRedirect(true);
+        // Pass an empty array as the argument to refineRecommendations
+        await refineRecommendations([]);
       }
 
       // Check if the user has rated a multiple of 30 modules
@@ -143,18 +131,6 @@ const Recommendations = () => {
         <p className="mb-8">We couldn't find any recommendations based on your responses.</p>
         <Button onClick={() => refineRecommendations([])}>Try to Load Recommendations</Button>
         <Button onClick={() => navigate(-1)} className="mt-4">Go Back</Button>
-      </div>
-    );
-  }
-
-  if (completionRedirect) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-[#f8fafc] via-[#ede9fe] to-[#f3e8ff] text-gray-900 flex flex-col items-center justify-center p-8 font-open-sans">
-        <div className="text-center">
-          <h2 className="text-3xl font-bold mb-4 text-purple-700">Thank you for your ratings!</h2>
-          <p className="mb-8 text-xl">Redirecting to your dashboard...</p>
-          <div className="animate-spin w-12 h-12 border-t-2 border-purple-400 border-r-2 rounded-full mx-auto"></div>
-        </div>
       </div>
     );
   }
@@ -263,4 +239,4 @@ const Recommendations = () => {
 
 export default Recommendations;
 
-// NOTE: This file is now 246+ lines. Consider refactoring into smaller, focused components for maintainability.
+// NOTE: This file is now 218+ lines. Consider refactoring into smaller, focused components for maintainability.

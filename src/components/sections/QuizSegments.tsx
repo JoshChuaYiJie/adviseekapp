@@ -1,159 +1,373 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { useQuiz } from "@/contexts/QuizContext";
-import { 
-  Dialog, 
-  DialogTrigger 
-} from "@/components/ui/dialog";
-import { RecommendationDisclaimer } from "@/components/RecommendationDisclaimer";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useTheme } from "@/contexts/ThemeContext";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { LockIcon } from "lucide-react";
+import { McqQuestionsDisplay } from "@/components/McqQuestionsDisplay";
+import { MajorRecommendations } from "./MajorRecommendations";
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
-interface QuizSegment {
+type QuizSegment = {
   id: string;
   title: string;
   description: string;
-  icon: JSX.Element;
-  bgColor: string;
-}
+  locked?: boolean;
+  completed?: boolean;
+};
 
 export const QuizSegments = () => {
+  const { isCurrentlyDark } = useTheme();
   const navigate = useNavigate();
-  const { completedQuizzes } = useQuiz();
-  const [disclaimerOpen, setDisclaimerOpen] = useState(false);
-
-  // Parse completed segments from local storage for backward compatibility
-  const localCompletedSegments = JSON.parse(localStorage.getItem("completed_quiz_segments") || "[]");
+  const { toast } = useToast();
+  const [activeTab, setActiveTab] = useState("interest-part 1");
+  const [userId, setUserId] = useState<string | null>(null);
+  const [completedSegments, setCompletedSegments] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+  // State for user's RIASEC and Work Value profiles
+  const [riasecProfile, setRiasecProfile] = useState<Array<{ component: string; average: number; score: number }>>([]);
+  const [workValueProfile, setWorkValueProfile] = useState<Array<{ component: string; average: number; score: number }>>([]);
   
-  // Combine both sources
-  const allCompletedQuizzes = [...new Set([...(completedQuizzes || []), ...localCompletedSegments])];
-
-  const handleExploreClick = (segmentId: string) => {
-    navigate(`/quiz/${segmentId}`);
+  // Function to load user profiles
+  const loadUserProfiles = async (userId: string) => {
+    try {
+      console.log("Loading user profiles for", userId);
+      
+      // Fetch RIASEC profile from user_responses table
+      const { data: riasecData, error: riasecError } = await supabase
+        .from('user_responses')
+        .select('component, score')
+        .eq('user_id', userId)
+        .eq('quiz_type', 'riasec');
+      
+      if (riasecError) {
+        console.error('Error fetching RIASEC profile:', riasecError);
+      } else {
+        console.log("RIASEC data:", riasecData);
+        if (riasecData && riasecData.length > 0) {
+          // Transform data to match expected format with average property
+          // Then sort by score in descending order to get highest percentages first
+          const transformedData = riasecData
+            .map(item => ({
+              component: item.component,
+              score: item.score,
+              average: item.score // Use score as average for compatibility
+            }))
+            .sort((a, b) => b.score - a.score); // Sort by score descending
+            
+          console.log("Transformed RIASEC data:", transformedData);
+          setRiasecProfile(transformedData);
+        }
+      }
+      
+      // Fetch Work Value profile from user_responses table with added detailed logging
+      const { data: workValueData, error: workValueError } = await supabase
+        .from('user_responses')
+        .select('component, score')
+        .eq('user_id', userId)
+        .eq('quiz_type', 'work_value');
+      
+      if (workValueError) {
+        console.error('Error fetching Work Value profile:', workValueError);
+      } else {
+        console.log("Work Value data:", workValueData);
+        if (workValueData && workValueData.length > 0) {
+          // Transform data to match expected format with average property
+          // Then sort by score in descending order to get highest percentages first
+          const transformedData = workValueData
+            .map(item => ({
+              component: item.component,
+              score: item.score,
+              average: item.score // Use score as average for compatibility
+            }))
+            .sort((a, b) => b.score - a.score); // Sort by score descending
+            
+          console.log("Transformed Work Value data:", transformedData);
+          setWorkValueProfile(transformedData);
+        }
+      }
+      
+      // For debugging: Log both profiles after loading
+      console.log("Final RIASEC profile state:", riasecProfile);
+      console.log("Final Work Value profile state:", workValueProfile);
+    } catch (error) {
+      console.error('Error loading user profiles:', error);
+    }
   };
   
-  const handleIdealProgrammeClick = () => {
-    // Show the disclaimer dialog instead of navigating directly
-    setDisclaimerOpen(true);
+  useEffect(() => {
+    // Check for authenticated user
+    const checkAuth = async () => {
+      setLoading(true);
+      const { data: { session } } = await supabase.auth.getSession();
+      const currentUserId = session?.user?.id || null;
+      setUserId(currentUserId);
+      
+      // Get completed segments
+      let completed: string[] = [];
+      
+      if (currentUserId) {
+        // Load user profiles for RIASEC and Work Values
+        await loadUserProfiles(currentUserId);
+        
+        // Try to get from Supabase first
+        try {
+          // Direct supabase client call since this table isn't in the types yet
+          const { data, error } = await supabase
+            .from('quiz_completion')
+            .select('quiz_type')
+            .eq('user_id', currentUserId);
+            
+          if (error) {
+            console.error('Error fetching quiz completions:', error);
+            // Fallback to localStorage
+            completed = getCompletedSegmentsFromLocalStorage();
+          } else if (data) {
+            completed = data.map(item => item.quiz_type);
+            console.log("Completed quiz segments from database:", completed);
+            // Update localStorage for consistency
+            localStorage.setItem('completed_quiz_segments', JSON.stringify(completed));
+          }
+        } catch (err) {
+          console.error('Error checking completed quizzes:', err);
+          // Fallback to localStorage
+          completed = getCompletedSegmentsFromLocalStorage();
+        }
+      } else {
+        // Not logged in, use localStorage
+        completed = getCompletedSegmentsFromLocalStorage();
+      }
+      
+      setCompletedSegments(completed);
+      setLoading(false);
+    };
+    
+    checkAuth();
+    
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      const newUserId = session?.user?.id || null;
+      setUserId(newUserId);
+      
+      // If user just logged in, fetch their completed quizzes and profiles
+      if (event === 'SIGNED_IN' && session?.user?.id) {
+        fetchCompletedQuizzes(session.user.id);
+        loadUserProfiles(session.user.id);
+      }
+    });
+    
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+  
+  // Get completed segments from localStorage
+  const getCompletedSegmentsFromLocalStorage = () => {
+    const completed = localStorage.getItem("completed_quiz_segments");
+    return completed ? JSON.parse(completed) : [];
   };
-
-  const segments: QuizSegment[] = [
+  
+  // Fetch completed quizzes from Supabase
+  const fetchCompletedQuizzes = async (userId: string) => {
+    try {
+      // Direct supabase client call since this table isn't in the types yet
+      const { data, error } = await supabase
+        .from('quiz_completion')
+        .select('quiz_type')
+        .eq('user_id', userId);
+        
+      if (error) {
+        console.error('Error fetching quiz completions:', error);
+        return;
+      }
+      
+      if (data) {
+        const completed = data.map(item => item.quiz_type);
+        console.log("Fetched completed quiz segments:", completed);
+        setCompletedSegments(completed);
+        // Update localStorage for consistency
+        localStorage.setItem('completed_quiz_segments', JSON.stringify(completed));
+      }
+    } catch (err) {
+      console.error('Error fetching completed quizzes:', err);
+    }
+  };
+  
+  // Check if all required segments are completed
+  const allSegmentsCompleted = ["interest-part 1", "interest-part 2", "competence", "work-values"].every(
+    segment => completedSegments.includes(segment)
+  );
+  
+  const quizSegments: QuizSegment[] = [
     {
       id: "interest-part 1",
-      title: "Discover Your Interests",
-      description: "Part 1: Interests quiz to help you discover what you enjoy.",
-      icon: <span className="text-2xl">🔍</span>,
-      bgColor: "bg-blue-50 dark:bg-blue-900"
+      title: "Interest Part 1",
+      description: "Answer questions about your interests in different activities and subjects.",
+      completed: completedSegments.includes("interest-part 1")
     },
     {
       id: "interest-part 2",
-      title: "Exploring Interests",
-      description: "Part 2: Dive deeper into your personal interests.",
-      icon: <span className="text-2xl">🧩</span>,
-      bgColor: "bg-green-50 dark:bg-green-900"
+      title: "Interest Part 2",
+      description: "Continue exploring your interests with additional questions.",
+      completed: completedSegments.includes("interest-part 2")
     },
     {
       id: "competence",
-      title: "Your Skills",
-      description: "Rate your skills and competencies in different areas.",
-      icon: <span className="text-2xl">⭐</span>,
-      bgColor: "bg-yellow-50 dark:bg-yellow-900"
+      title: "Competence",
+      description: "Rate your confidence in performing various tasks and activities.",
+      completed: completedSegments.includes("competence")
     },
     {
       id: "work-values",
       title: "Work Values",
-      description: "Identify what matters most to you in a career.",
-      icon: <span className="text-2xl">💼</span>,
-      bgColor: "bg-purple-50 dark:bg-purple-900"
+      description: "Identify what aspects of work are most important to you.",
+      completed: completedSegments.includes("work-values")
     },
+    {
+      id: "open-ended",
+      title: "Open-ended Questions",
+      description: "Answer questions specific to your chosen field of study.",
+      locked: !allSegmentsCompleted,
+      completed: completedSegments.includes("open-ended")
+    }
   ];
+  
+  const handleStartQuiz = (segmentId: string) => {
+    if (!userId) {
+      toast({
+        title: "Not Logged In",
+        description: "Please log in to save your quiz progress across devices.",
+        variant: "default"
+      });
+    }
+    
+    if (segmentId === "open-ended") {
+      console.log("Open-ended quiz requested. Profiles:", {
+        riasecProfile: riasecProfile,
+        workValueProfile: workValueProfile,
+        allSegmentsCompleted
+      });
+      
+      // Allow access to open-ended quiz as long as all segments are completed
+      if (!allSegmentsCompleted) {
+        toast({
+          title: "Profile Not Complete",
+          description: "Please complete the other quiz segments first to generate your profile.",
+          variant: "default" 
+        });
+        return;
+      }
+      
+      // Redirect to the dedicated open-ended quiz page
+      navigate('/open-ended');
+    } else {
+      navigate(`/quiz/${segmentId}`);
+    }
+  };
 
-  const isAllQuizzesCompleted = segments.every(segment => 
-    allCompletedQuizzes.includes(segment.id)
-  );
-
+  const isExploreTab = activeTab === "explore";
+  
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center p-6">
+        <div className="animate-spin h-8 w-8 border-t-2 border-b-2 border-purple-500 rounded-full"></div>
+      </div>
+    );
+  }
+  
   return (
-    <div className="mx-auto max-w-4xl p-4">
-      <div className="mb-6 text-center">
-        <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-2">Personality Quizzes</h2>
-        <p className="text-gray-600 dark:text-gray-400">Complete all quizzes to receive your university programme recommendations</p>
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-2">
-        {segments.map((segment) => {
-          const isCompleted = allCompletedQuizzes.includes(segment.id);
-          return (
-            <div 
+    <div className="space-y-6">
+      <Tabs 
+        defaultValue={activeTab} 
+        onValueChange={(newTab) => {
+          setActiveTab(newTab);
+        }}
+        className="w-full"
+      >
+        <TabsList className="mb-4 flex flex-wrap">
+          {quizSegments.map(segment => (
+            <TabsTrigger 
               key={segment.id} 
-              className={`rounded-lg p-5 shadow-md transition-all hover:shadow-lg ${segment.bgColor} ${
-                isCompleted ? "border-2 border-green-400 dark:border-green-600" : ""
-              }`}
+              value={segment.id}
+              className={segment.completed ? "text-green-500" : ""}
             >
-              <div className="flex items-start mb-3">
-                <div className="mr-3 bg-white dark:bg-gray-800 h-10 w-10 rounded-full flex items-center justify-center shadow-sm">
-                  {segment.icon}
-                </div>
-                <div>
-                  <h3 className="font-semibold text-gray-900 dark:text-gray-100">{segment.title}</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-300">{segment.description}</p>
-                </div>
+              {segment.title}
+              {segment.completed && <span className="ml-2">✓</span>}
+            </TabsTrigger>
+          ))}
+          <TabsTrigger value="explore">
+            Questions Explorer
+          </TabsTrigger>
+        </TabsList>
+        
+        {quizSegments.map(segment => (
+          <TabsContent key={segment.id} value={segment.id} className="space-y-6">
+            <div className={`p-6 ${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg shadow`}>
+              <div className="flex flex-col items-center justify-center py-12 space-y-6 text-center">
+                <h2 className="text-2xl font-medium">{segment.title}</h2>
+                <p className="text-gray-500 dark:text-gray-400 max-w-lg">
+                  {segment.description}
+                </p>
+                
+                {segment.locked ? (
+                  <div className="flex flex-col items-center space-y-4">
+                    <div className="w-16 h-16 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                      <LockIcon size={24} className="text-gray-500 dark:text-gray-400" />
+                    </div>
+                    <Alert className={`${isCurrentlyDark ? 'bg-gray-700' : 'bg-gray-100'} max-w-md`}>
+                      <AlertTitle>This section is locked</AlertTitle>
+                      <AlertDescription>
+                        Complete all previous quiz segments to unlock open-ended questions.
+                      </AlertDescription>
+                    </Alert>
+                  </div>
+                ) : (
+                  <>
+                    {segment.completed ? (
+                      <div className="flex flex-col items-center space-y-4">
+                        <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center">
+                          <span className="text-green-600 dark:text-green-400 text-3xl">✓</span>
+                        </div>
+                        <p className="text-green-600 dark:text-green-400">You've completed this section!</p>
+                        <Button 
+                          variant="outline" 
+                          onClick={() => handleStartQuiz(segment.id)}
+                        >
+                          Retake Quiz
+                        </Button>
+                      </div>
+                    ) : (
+                      <Button 
+                        size="lg" 
+                        onClick={() => handleStartQuiz(segment.id)}
+                        className="px-8"
+                      >
+                        Start Quiz
+                      </Button>
+                    )}
+                  </>
+                )}
               </div>
-              <div className="mt-3">
-                <Button 
-                  variant={isCompleted ? "outline" : "default"}
-                  className={`w-full ${isCompleted ? "bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200" : ""}`}
-                  onClick={() => handleExploreClick(segment.id)}
-                >
-                  {isCompleted ? "Review Quiz" : "Start Quiz"}
-                </Button>
-              </div>
-              {isCompleted && (
-                <div className="flex items-center mt-2 text-green-600 dark:text-green-400 text-sm">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  Completed
-                </div>
-              )}
             </div>
-          );
-        })}
-      </div>
+          </TabsContent>
+        ))}
 
-      <div className="mt-8 text-center">
-        <div className={`p-6 rounded-lg ${isAllQuizzesCompleted ? "bg-gradient-to-r from-purple-400 to-indigo-500" : "bg-gray-100 dark:bg-gray-800"}`}>
-          <h3 className={`text-xl font-bold mb-2 ${isAllQuizzesCompleted ? "text-white" : "text-gray-700 dark:text-gray-300"}`}>
-            {isAllQuizzesCompleted 
-              ? "Great job! You've completed all quizzes" 
-              : "Complete all quizzes to unlock your recommendation"
-            }
-          </h3>
-          <p className={`mb-4 ${isAllQuizzesCompleted ? "text-white text-opacity-80" : "text-gray-500 dark:text-gray-400"}`}>
-            {isAllQuizzesCompleted 
-              ? "We can now recommend the perfect university programme for you" 
-              : "Your responses help us understand your interests and values"
-            }
-          </p>
-
-          <Dialog open={disclaimerOpen} onOpenChange={setDisclaimerOpen}>
-            <DialogTrigger asChild>
-              <Button 
-                size="lg"
-                disabled={!isAllQuizzesCompleted}
-                className={`px-8 py-2 ${
-                  isAllQuizzesCompleted 
-                    ? "bg-white text-indigo-600 hover:bg-gray-100" 
-                    : "bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed"
-                }`}
-                onClick={isAllQuizzesCompleted ? handleIdealProgrammeClick : undefined}
-              >
-                {isAllQuizzesCompleted ? "What is my ideal programme?" : "Complete all quizzes first"}
-              </Button>
-            </DialogTrigger>
-            <RecommendationDisclaimer onClose={() => setDisclaimerOpen(false)} />
-          </Dialog>
-        </div>
-      </div>
+        <TabsContent value="explore" className="space-y-6">
+          <McqQuestionsDisplay />
+        </TabsContent>
+      </Tabs>
+      
+      {!userId && (
+        <Alert className="bg-amber-50 text-amber-800 dark:bg-amber-900 dark:text-amber-200 border-amber-200">
+          <AlertTitle>Not signed in</AlertTitle>
+          <AlertDescription>
+            Sign in to save your quiz progress across devices.
+          </AlertDescription>
+        </Alert>
+      )}
     </div>
   );
 };
