@@ -20,3 +20,11 @@ export interface MajorRecommendations {
   workValueCode: string;
   matchType: 'exact' | 'permutation' | 'riasec' | 'workValue' | 'none';
 }
+
+// Define interface for module objects from the recommendations
+export interface RecommendationModule {
+  modulecode: string;
+  title: string;
+  institution: "NUS" | "NTU" | "SMU";
+  description: string;
+}

@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Module } from '@/integrations/supabase/client';
 import { getUserId } from '../utils/databaseHelpers';
@@ -29,7 +30,11 @@ export const useRecommendations = (modules: Module[]) => {
         exactMatches: ["Computer Science at NUS", "Information Systems at NUS"],
         permutationMatches: [],
         riasecMatches: ["Software Engineering at NTU", "Data Science at SMU"],
-        workValueMatches: ["Computer Engineering at NTU"]
+        workValueMatches: ["Computer Engineering at NTU"],
+        questionFiles: [], // Added missing property
+        riasecCode: "RSI", // Added missing property
+        workValueCode: "ACR", // Added missing property
+        matchType: 'exact' // Added missing property with valid value
       };
       
       // Get module recommendations based on these majors
@@ -48,7 +53,7 @@ export const useRecommendations = (modules: Module[]) => {
         created_at: new Date().toISOString(),
         module: {
           id: Math.floor(Math.random() * 10000),
-          university: module.institution,
+          university: module.institution as "NUS" | "NTU" | "SMU", // Type cast to match the expected type
           course_code: module.modulecode,
           title: module.title,
           description: module.description || "No description available.",
@@ -106,7 +111,11 @@ export const useRecommendations = (modules: Module[]) => {
         exactMatches: ["Computer Science at NUS", "Business at NUS"],
         permutationMatches: [],
         riasecMatches: ["Information Systems at NTU", "Data Science at SMU"],
-        workValueMatches: ["Computer Engineering at NTU"]
+        workValueMatches: ["Computer Engineering at NTU"],
+        questionFiles: [], // Added missing property
+        riasecCode: "RIA", // Added missing property
+        workValueCode: "ARC", // Added missing property
+        matchType: 'riasec' // Added missing property with valid value
       };
       
       const moduleRecs = await fetchModuleRecommendations(mockMajorRecommendations);
@@ -120,7 +129,7 @@ export const useRecommendations = (modules: Module[]) => {
         created_at: new Date().toISOString(),
         module: {
           id: Math.floor(Math.random() * 10000),
-          university: module.institution,
+          university: module.institution as "NUS" | "NTU" | "SMU", // Type cast to match the expected type
           course_code: module.modulecode,
           title: module.title,
           description: module.description || "No description available.",

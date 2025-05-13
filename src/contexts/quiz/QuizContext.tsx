@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { Module } from '@/integrations/supabase/client';
 import { QuizContextType } from './types';
@@ -8,6 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { McqQuestion } from '@/utils/quizQuestions';
 import { fetchModuleRecommendations } from '@/utils/recommendationUtils';
+import { MajorRecommendationsType } from '@/components/sections/majors/types';
 
 // Create the context with default values
 const QuizContext = createContext<QuizContextType>({
@@ -243,11 +243,15 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
       
       // Get major recommendations - we need to simulate this using our utility
       // For simplicity, we'll use mock data here, but in a real implementation you would use the actual data
-      const mockRecommendations = {
+      const mockRecommendations: MajorRecommendationsType = {
         exactMatches: ["Computer Science at NUS", "Information Systems at NUS"],
         permutationMatches: [],
         riasecMatches: ["Software Engineering at NTU", "Data Science at SMU"],
-        workValueMatches: ["Computer Engineering at NTU"]
+        workValueMatches: ["Computer Engineering at NTU"],
+        questionFiles: [], // Added missing required property
+        riasecCode: "RIC", // Added missing required property
+        workValueCode: "ARS", // Added missing required property
+        matchType: 'exact' // Added missing required property with a valid value
       };
       
       // Get module recommendations based on these majors

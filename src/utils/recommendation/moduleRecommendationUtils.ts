@@ -4,7 +4,7 @@ import { MajorRecommendationsType } from '@/components/sections/majors/types';
 export interface Module {
   modulecode: string;
   title: string;
-  institution: string;
+  institution: "NUS" | "NTU" | "SMU";
   description: string;
 }
 
@@ -55,13 +55,13 @@ export const fetchModuleRecommendations = async (
     // Process each major to find relevant modules
     for (const major of topMajors) {
       // Determine which school (NUS, NTU, SMU) the major belongs to
-      let school = '';
+      let school: "NUS" | "NTU" | "SMU" | "" = "";
       if (major.includes('at NUS')) {
-        school = 'NUS';
+        school = "NUS";
       } else if (major.includes('at NTU')) {
-        school = 'NTU';
+        school = "NTU";
       } else if (major.includes('at SMU')) {
-        school = 'SMU';
+        school = "SMU";
       } else {
         // If school is not specified, skip this major
         console.log(`School not specified for major: ${major}`);
@@ -96,10 +96,10 @@ export const fetchModuleRecommendations = async (
           continue;
         }
         
-        const moduleData: Module[] = await moduleDataResponse.json();
+        const moduleData = await moduleDataResponse.json();
         
         // Filter modules that match the prefixes
-        const matchingModules = moduleData.filter(module => {
+        const matchingModules = moduleData.filter((module: any) => {
           const moduleCode = module.modulecode.trim().toUpperCase();
           return prefixes.some(prefix => moduleCode.startsWith(prefix.trim().toUpperCase()));
         });
@@ -107,7 +107,11 @@ export const fetchModuleRecommendations = async (
         console.log(`Found ${matchingModules.length} matching modules for ${majorName}`);
         
         // Add the top X modules for this major to our recommendations
-        const majorModules = matchingModules.slice(0, modulesPerMajor);
+        const majorModules = matchingModules.slice(0, modulesPerMajor).map((module: any) => ({
+          ...module,
+          institution: school // Ensure the institution property is correctly typed
+        }));
+        
         recommendedModules.push(...majorModules);
       } catch (err) {
         console.error(`Error loading module data for ${school}:`, err);
