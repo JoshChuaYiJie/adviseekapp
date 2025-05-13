@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
@@ -8,7 +7,7 @@ import { MajorsList } from './majors/MajorsList';
 import { MajorQuestionDisplay } from './majors/MajorQuestionDisplay';
 import { OpenEndedQuestion } from './majors/types';
 import { useRecommendationLogic } from './majors/RecommendationLogic';
-import { useQuestionHandler } from './majors/QuestionHandler';
+import { useQuestionHandler } from './majors/useQuestionHandler';
 
 // Define props interface
 interface MajorRecommendationsProps {

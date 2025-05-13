@@ -1,15 +1,18 @@
-
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { ArrowLeft, ArrowRight, Check, SkipForward } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
-import { useQuestionHandler } from './QuestionHandler';
 import { useTheme } from '@/contexts/ThemeContext';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+import { Skeleton } from '@/components/ui/skeleton';
+import { ArrowLeft, ArrowRight, SkipForward } from 'lucide-react';
+import { getMatchingMajors, mapRiasecToCode, mapWorkValueToCode, formCode } from '@/utils/recommendation';
+import { formatMajorForFile } from '@/components/sections/majors/MajorUtils';
+import { useQuestionHandler } from './useQuestionHandler';
 
 interface MajorOpenEndedQuizProps {
   major: string | null;
@@ -20,6 +23,7 @@ const MajorOpenEndedQuiz: React.FC<MajorOpenEndedQuizProps> = ({ major }) => {
   const [userId, setUserId] = useState<string | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const { isCurrentlyDark } = useTheme();
+  const { toast } = useToast();
 
   const {
     questions,
