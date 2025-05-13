@@ -25,6 +25,17 @@ const Recommendations = () => {
   const [showProgramme, setShowProgramme] = useState(false);
   const [ratedModulesCount, setRatedModulesCount] = useState(0);
 
+  // Load recommendations on component mount if they're not already loaded
+  useEffect(() => {
+    const loadRecommendations = async () => {
+      if (!recommendations || recommendations.length === 0) {
+        await refineRecommendations([]);
+      }
+    };
+    
+    loadRecommendations();
+  }, [recommendations, refineRecommendations]);
+
   useEffect(() => {
     setShowAnimation(true);
   }, []);
@@ -118,7 +129,8 @@ const Recommendations = () => {
       <div className="min-h-screen bg-gradient-to-br from-[#f8fafc] via-[#ede9fe] to-[#f3e8ff] text-gray-900 flex flex-col items-center justify-center p-8 font-open-sans">
         <h2 className="text-3xl font-bold mb-4">No Recommendations Available</h2>
         <p className="mb-8">We couldn't find any recommendations based on your responses.</p>
-        <Button onClick={() => navigate(-1)}>Go Back</Button>
+        <Button onClick={() => refineRecommendations([])}>Try to Load Recommendations</Button>
+        <Button onClick={() => navigate(-1)} className="mt-4">Go Back</Button>
       </div>
     );
   }
