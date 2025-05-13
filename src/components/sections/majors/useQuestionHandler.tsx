@@ -11,6 +11,7 @@ export const useQuestionHandler = ({ userId }: { userId: string | null }) => {
   const [submitting, setSubmitting] = useState(false);
   const [completed, setCompleted] = useState(false);
   const [recommendedMajors, setRecommendedMajors] = useState<string[]>([]);
+  const [loadingRecommendations, setLoadingRecommendations] = useState(false);
   const { toast } = useToast();
 
   // Load questions for a specific major
@@ -64,11 +65,13 @@ export const useQuestionHandler = ({ userId }: { userId: string | null }) => {
 
   // Prepare questions for recommended majors
   const prepareQuestionsForRecommendedMajors = async () => {
+    setLoadingRecommendations(true);
     setLoadingQuestions(true);
     // Here you would implement logic to load questions based on recommended majors
     // This is a placeholder implementation
     setRecommendedMajors(['Computer Science', 'Data Science', 'Business Analytics']);
     setLoadingQuestions(false);
+    setLoadingRecommendations(false);
   };
 
   // Submit responses to the database
@@ -147,6 +150,7 @@ export const useQuestionHandler = ({ userId }: { userId: string | null }) => {
     loadQuestions,
     handleSubmitResponses,
     recommendedMajors,
+    loadingRecommendations,
     prepareQuestionsForRecommendedMajors
   };
 };
