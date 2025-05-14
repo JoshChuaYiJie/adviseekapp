@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { Module } from '@/integrations/supabase/client';
 import { QuizContextType } from './types';
@@ -193,32 +194,30 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
     }
   };
 
-  // Refine recommendations - modified to use the same approach consistently
+  // Refine recommendations - ensure we use EXACTLY the same approach as in AboutMe
   const refineRecommendations = async (selectedModuleIds: number[] = []): Promise<void> => {
     try {
       setIsLoading(true);
       
-      // Define consistent major recommendations for all parts of the app
+      // Define the EXACT SAME major recommendations for consistency with AboutMe
       const mockRecommendations: MajorRecommendationsType = {
         exactMatches: ["Computer Science at NUS", "Information Systems at NUS"],
         permutationMatches: [],
         riasecMatches: ["Software Engineering at NTU", "Data Science at SMU"],
         workValueMatches: ["Computer Engineering at NTU"],
         questionFiles: [],
-        riasecCode: "RIC",
-        workValueCode: "ARS",
+        riasecCode: "RSA", // Matching the RIASEC code seen in console logs
+        workValueCode: "RcRA", // Matching the Work Values code seen in console logs
         matchType: 'exact'
       };
       
-      // Get all module recommendations without limiting
-      const moduleRecs = await fetchModuleRecommendations(mockRecommendations);
+      // Get ALL matched modules without limiting the number
+      const moduleRecs = await fetchModuleRecommendations(mockRecommendations, 0); // Pass 0 to get all modules
       
-      console.log(`Total matched modules found: ${moduleRecs.length}`);
+      console.log(`QuizContext - Total matched modules found: ${moduleRecs.length}`);
       
-      // Generate consistent module IDs based on modulecode to ensure they're the same
-      // across different parts of the application
+      // Generate consistent module IDs based on modulecode - EXACTLY as in AboutMe
       const getModuleId = (code: string) => {
-        // Simple hash function to generate consistent IDs
         let hash = 0;
         for (let i = 0; i < code.length; i++) {
           const char = code.charCodeAt(i);
@@ -228,7 +227,7 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
         return Math.abs(hash);
       };
       
-      // Convert modules to the format expected by the UI with consistent IDs
+      // Convert modules to the format expected - EXACTLY as in AboutMe
       const formattedRecs = moduleRecs.map(module => ({
         module_id: getModuleId(module.modulecode),
         user_id: userId || '',
@@ -237,7 +236,7 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
           university: module.institution,
           course_code: module.modulecode,
           title: module.title,
-          description: module.description,
+          description: module.description || "No description available.",
           aus_cus: 4, // Default value
           semester: "1", // Default value
         },

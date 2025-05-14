@@ -17,9 +17,10 @@ export const useRecommendations = (modules: Module[]) => {
   const [userFeedback, setUserFeedback] = useState<Record<number, number>>({});
   const [finalSelections, setFinalSelections] = useState<ModuleSelection[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
-  // Generate consistent module IDs based on modulecode
+  // Generate consistent module IDs based on modulecode - EXACTLY as in QuizContext
   const getModuleId = (code: string) => {
     let hash = 0;
     for (let i = 0; i < code.length; i++) {
@@ -35,20 +36,20 @@ export const useRecommendations = (modules: Module[]) => {
     try {
       setIsLoading(true);
       
-      // Use the same mock major recommendations as in QuizContext
+      // Use the EXACT SAME mock major recommendations as in QuizContext
       const mockMajorRecommendations: MajorRecommendationsType = {
         exactMatches: ["Computer Science at NUS", "Information Systems at NUS"],
         permutationMatches: [],
         riasecMatches: ["Software Engineering at NTU", "Data Science at SMU"],
         workValueMatches: ["Computer Engineering at NTU"],
         questionFiles: [], 
-        riasecCode: "RSI", 
-        workValueCode: "ACR", 
+        riasecCode: "RSA", // Matching the RIASEC code seen in console logs  
+        workValueCode: "RcRA", // Matching the Work Values code seen in console logs
         matchType: 'exact' 
       };
       
       // Get module recommendations based on these majors - no longer limiting the results
-      const moduleRecs = await fetchModuleRecommendations(mockMajorRecommendations);
+      const moduleRecs = await fetchModuleRecommendations(mockMajorRecommendations, 0);
       
       if (!moduleRecs || moduleRecs.length === 0) {
         throw new Error("No module recommendations found");
@@ -79,9 +80,11 @@ export const useRecommendations = (modules: Module[]) => {
       // Also load user feedback (ratings)
       await loadUserFeedback(userId);
       setIsLoading(false);
+      setError(null);
     } catch (err) {
       console.error("Error generating recommendations:", err);
       setIsLoading(false);
+      setError(err instanceof Error ? err.message : "Failed to generate recommendations");
       throw err;
     }
   };
@@ -112,25 +115,25 @@ export const useRecommendations = (modules: Module[]) => {
     }
   };
 
-  // Load recommendations - now uses the same approach as in QuizContext
+  // Load recommendations - now uses the EXACT SAME approach as in QuizContext
   const loadRecommendations = async (userId: string) => {
     try {
       setIsLoading(true);
       
-      // Use the same mock major recommendations as in QuizContext
+      // Use the EXACT SAME mock major recommendations as in QuizContext
       const mockMajorRecommendations: MajorRecommendationsType = {
         exactMatches: ["Computer Science at NUS", "Information Systems at NUS"],
         permutationMatches: [],
         riasecMatches: ["Software Engineering at NTU", "Data Science at SMU"],
         workValueMatches: ["Computer Engineering at NTU"],
         questionFiles: [],
-        riasecCode: "RIC",
-        workValueCode: "ARS",
+        riasecCode: "RSA", // Matching the RIASEC code seen in console logs
+        workValueCode: "RcRA", // Matching the Work Values code seen in console logs
         matchType: 'exact'
       };
       
-      // Get all matching modules
-      const moduleRecs = await fetchModuleRecommendations(mockMajorRecommendations);
+      // Get all matching modules without limiting
+      const moduleRecs = await fetchModuleRecommendations(mockMajorRecommendations, 0);
       
       console.log(`Loaded ${moduleRecs.length} module recommendations`);
       
@@ -158,10 +161,12 @@ export const useRecommendations = (modules: Module[]) => {
       await loadUserFeedback(userId);
       
       setIsLoading(false);
+      setError(null);
       return formattedRecs;
     } catch (err) {
       console.error("Error loading recommendations:", err);
       setIsLoading(false);
+      setError(err instanceof Error ? err.message : "Failed to load recommendations");
       throw err;
     }
   };
@@ -194,7 +199,7 @@ export const useRecommendations = (modules: Module[]) => {
     }
   };
 
-  // Refine recommendations based on user feedback
+  // Refine recommendations based on user feedback - ensure it matches QuizContext
   const refineRecommendations = async (selectedModuleIds: number[] = []) => {
     try {
       setIsLoading(true);
@@ -204,7 +209,7 @@ export const useRecommendations = (modules: Module[]) => {
         throw new Error("You must be logged in to refine recommendations");
       }
       
-      // Load the updated recommendations using the new approach
+      // Load the updated recommendations using the same approach as QuizContext
       await loadRecommendations(userId);
       
       toast({
@@ -213,6 +218,7 @@ export const useRecommendations = (modules: Module[]) => {
       });
     } catch (err) {
       console.error("Error refining recommendations:", err);
+      setError(err instanceof Error ? err.message : "Failed to refine recommendations");
       toast({
         title: "Error",
         description: "Failed to refine recommendations. Please try again.",
@@ -265,6 +271,7 @@ export const useRecommendations = (modules: Module[]) => {
     userFeedback,
     finalSelections,
     isLoading,
+    error,
     setIsLoading,
     generateRecommendations,
     loadRecommendations,

@@ -11,12 +11,12 @@ export interface Module {
 /**
  * Fetches module recommendations based on the top recommended majors
  * @param recommendations The major recommendations object
- * @param limit The maximum number of majors to use (default: 5)
+ * @param limit The maximum number of majors to use (0 for unlimited)
  * @returns A promise that resolves to an array of recommended modules
  */
 export const fetchModuleRecommendations = async (
   recommendations: MajorRecommendationsType,
-  limit = 5
+  limit = 0
 ): Promise<Module[]> => {
   try {
     // Get the combined list of all recommended majors
@@ -30,7 +30,7 @@ export const fetchModuleRecommendations = async (
     // Take only unique majors by creating a Set and converting back to array
     const uniqueMajors = [...new Set(allMajors)];
     
-    // Limit to the top N majors if specified
+    // Limit to the top N majors if specified and limit > 0
     const topMajors = limit > 0 ? uniqueMajors.slice(0, limit) : uniqueMajors;
     
     if (topMajors.length === 0) {
