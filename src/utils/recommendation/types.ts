@@ -1,5 +1,6 @@
 
 
+
 // Types for major recommendations
 export interface OccupationMajorMapping {
   occupation: string;
@@ -31,7 +32,7 @@ export interface Module {
 // Extended module format used in some UI components
 export interface UIModule {
   id: number;
-  university: string;
+  university: "NUS" | "NTU" | "SMU";  // Updated from string to match Module.institution type
   course_code: string;
   title: string;
   description: string;
@@ -44,3 +45,4 @@ export interface RecommendationResponse {
   majors: string[];
   files: string[];
 }
+

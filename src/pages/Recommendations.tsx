@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -30,7 +31,7 @@ const Recommendations = () => {
   const recommendations = recommendedModules.map((rec) => ({
     module: {
       id: getModuleId(rec.modulecode),
-      university: rec.institution,
+      university: rec.institution, // This maps correctly now due to type change
       course_code: rec.modulecode,
       title: rec.title,
       description: rec.description || "No description available.",

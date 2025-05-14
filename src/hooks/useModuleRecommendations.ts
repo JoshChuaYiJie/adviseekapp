@@ -1,4 +1,5 @@
 
+
 import { useState, useEffect } from 'react';
 import { Module, UIModule } from '@/utils/recommendation/types';
 import { useGlobalProfile } from '@/contexts/GlobalProfileContext';
@@ -52,3 +53,4 @@ export const useModuleRecommendations = () => {
     refetchRecommendations: refreshProfileData
   };
 };
+
