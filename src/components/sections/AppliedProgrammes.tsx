@@ -15,10 +15,8 @@ import {
   UniversityData,
   Major
 } from "@/utils/universityDataUtils";
-import { supabase } from "@/integrations/supabase/client";
 
 interface Programme {
-  id?: string;
   logo: string;
   school: string;
   course: string;
@@ -38,15 +36,9 @@ export const AppliedProgrammes = () => {
   const [availableDegrees, setAvailableDegrees] = useState<string[]>([]);
   const [availableMajors, setAvailableMajors] = useState<Major[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { isCurrentlyDark } = useTheme();
   const { t } = useTranslation();
-
-  // Fetch saved applied programs when component mounts
-  useEffect(() => {
-    fetchAppliedPrograms();
-  }, []);
 
   // Load university data when university changes
   useEffect(() => {
@@ -112,51 +104,6 @@ export const AppliedProgrammes = () => {
     }
   }, [selectedDegree]);
 
-  // Fetch applied programs from Supabase
-  const fetchAppliedPrograms = async () => {
-    try {
-      setIsLoading(true);
-      
-      const { data: session } = await supabase.auth.getSession();
-      if (!session?.session?.user) {
-        console.log("User not authenticated");
-        setIsLoading(false);
-        return;
-      }
-      
-      const { data, error } = await supabase
-        .from('applied_programs')
-        .select('*')
-        .order('created_at', { ascending: false });
-      
-      if (error) {
-        console.error("Error fetching applied programs:", error);
-        toast.error("Failed to load your applied programs");
-        setIsLoading(false);
-        return;
-      }
-      
-      if (data && data.length > 0) {
-        const formattedPrograms = data.map(prog => ({
-          id: prog.id,
-          logo: prog.logo_path || `/school-logos/${getUniversityShortName(prog.university)}.png`,
-          school: prog.school,
-          course: prog.major,
-          degree: prog.degree || "",
-          major: prog.major,
-          college: prog.college || "",
-          extras: prog.extras || `${prog.degree || ""} ${prog.college ? `- ${prog.college}` : ""}`
-        }));
-        
-        setAppliedProgrammes(formattedPrograms);
-      }
-    } catch (error) {
-      console.error("Error in fetchAppliedPrograms:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const handleUniversityChange = (value: string) => {
     console.log(`University selected: ${value}`);
     setSelectedUniversity(value);
@@ -174,75 +121,33 @@ export const AppliedProgrammes = () => {
     setSelectedMajor(value);
   };
 
-  const handleAddUniversity = async () => {
+  const handleAddUniversity = () => {
     if (!selectedUniversity || !selectedDegree || !selectedMajor) return;
     
-    try {
-      setIsSaving(true);
-      const shortName = getUniversityShortName(selectedUniversity);
-      const selectedMajorObj = availableMajors.find(m => m.major === selectedMajor);
-      
-      // Check if user is authenticated
-      const { data: session } = await supabase.auth.getSession();
-      if (!session?.session?.user) {
-        toast.error("You must be logged in to save programs");
-        setIsSaving(false);
-        return;
-      }
-      
-      // Save to Supabase
-      const { data, error } = await supabase
-        .from('applied_programs')
-        .insert({
-          user_id: session.session.user.id,
-          university: selectedUniversity,
-          school: shortName,
-          degree: selectedDegree,
-          major: selectedMajor,
-          college: selectedMajorObj?.college || null,
-          logo_path: `/school-logos/${shortName}.png`,
-          extras: `${selectedDegree} - ${selectedMajorObj?.college || ''}`
-        })
-        .select();
-      
-      if (error) {
-        console.error("Error saving applied program:", error);
-        toast.error("Failed to save program");
-        setIsSaving(false);
-        return;
-      }
-      
-      // Add to local state
-      const newProgramme = {
-        id: data[0].id,
-        logo: `/school-logos/${shortName}.png`,
-        school: shortName,
-        course: selectedMajor,
-        degree: selectedDegree,
-        major: selectedMajor,
-        college: selectedMajorObj?.college,
-        extras: `${selectedDegree} - ${selectedMajorObj?.college || ''}`
-      };
-      
-      setAppliedProgrammes([...appliedProgrammes, newProgramme]);
-      toast.success("Program added successfully");
-      
-      // Reset form
-      setSelectedUniversity("");
-      setSelectedDegree("");
-      setSelectedMajor("");
-    } catch (error) {
-      console.error("Error in handleAddUniversity:", error);
-      toast.error("Failed to add university");
-    } finally {
-      setIsSaving(false);
-    }
+    const shortName = getUniversityShortName(selectedUniversity);
+    const selectedMajorObj = availableMajors.find(m => m.major === selectedMajor);
+    
+    const newProgramme = {
+      logo: `/school-logos/${shortName}.png`,
+      school: shortName,
+      course: selectedMajor,
+      degree: selectedDegree,
+      major: selectedMajor,
+      college: selectedMajorObj?.college,
+      extras: `${selectedDegree} - ${selectedMajorObj?.college || ''}`
+    };
+    
+    setAppliedProgrammes([...appliedProgrammes, newProgramme]);
+    toast.success("Program added successfully");
+    setSelectedUniversity("");
+    setSelectedDegree("");
+    setSelectedMajor("");
   };
 
   return (
     <div className="space-y-6 w-full max-w-full">
       <div className={`space-y-4 p-6 ${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg shadow w-full`}>
-        <Select value={selectedUniversity} onValueChange={handleUniversityChange} disabled={isLoading || isSaving}>
+        <Select value={selectedUniversity} onValueChange={handleUniversityChange} disabled={isLoading}>
           <SelectTrigger className={`w-full ${isCurrentlyDark ? 'bg-gray-700 text-white border-gray-600' : ''}`}>
             <SelectValue placeholder={t("university.select", "Select a university")} />
           </SelectTrigger>
@@ -260,7 +165,7 @@ export const AppliedProgrammes = () => {
         )}
         
         {selectedUniversity && (
-          <Select value={selectedDegree} onValueChange={handleDegreeChange} disabled={isLoading || isSaving || !availableDegrees.length}>
+          <Select value={selectedDegree} onValueChange={handleDegreeChange} disabled={isLoading || !availableDegrees.length}>
             <SelectTrigger className={`w-full ${isCurrentlyDark ? 'bg-gray-700 text-white border-gray-600' : ''}`}>
               <SelectValue placeholder={isLoading ? "Loading..." : t("degree.select", "Select a degree")} />
             </SelectTrigger>
@@ -279,7 +184,7 @@ export const AppliedProgrammes = () => {
         )}
         
         {selectedDegree && (
-          <Select value={selectedMajor} onValueChange={handleMajorChange} disabled={isLoading || isSaving || !availableMajors.length}>
+          <Select value={selectedMajor} onValueChange={handleMajorChange} disabled={isLoading || !availableMajors.length}>
             <SelectTrigger className={`w-full ${isCurrentlyDark ? 'bg-gray-700 text-white border-gray-600' : ''}`}>
               <SelectValue placeholder={isLoading ? "Loading..." : t("major.select", "Select a major")} />
             </SelectTrigger>
@@ -299,9 +204,9 @@ export const AppliedProgrammes = () => {
         
         <Button 
           onClick={handleAddUniversity}
-          disabled={!selectedUniversity || !selectedDegree || !selectedMajor || isLoading || isSaving}
+          disabled={!selectedUniversity || !selectedDegree || !selectedMajor || isLoading}
         >
-          {isSaving ? "Saving..." : t("university.add", "Add University")}
+          {t("university.add", "Add University")}
         </Button>
         <Button 
           variant="outline" 
@@ -312,11 +217,7 @@ export const AppliedProgrammes = () => {
         </Button>
       </div>
 
-      {isLoading ? (
-        <div className={`p-6 ${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg shadow w-full flex justify-center`}>
-          <div className="animate-spin h-10 w-10 border-t-2 border-b-2 border-blue-500 rounded-full"></div>
-        </div>
-      ) : appliedProgrammes.length > 0 && (
+      {appliedProgrammes.length > 0 && (
         <div className={`p-6 ${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg shadow w-full`}>
           <Table>
             <TableHeader>
@@ -330,7 +231,7 @@ export const AppliedProgrammes = () => {
             </TableHeader>
             <TableBody>
               {appliedProgrammes.map((prog, idx) => (
-                <TableRow key={prog.id || idx}>
+                <TableRow key={idx}>
                   <TableCell>
                     <img src={prog.logo} alt={prog.school} className="h-12 w-12 object-contain" />
                   </TableCell>
