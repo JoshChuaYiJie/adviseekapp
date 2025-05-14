@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { Module } from '@/utils/recommendation/types';
+import { Module, UIModule } from '@/utils/recommendation/types';
 import { useGlobalProfile } from '@/contexts/GlobalProfileContext';
 
 export interface RecommendedModule {
@@ -21,12 +21,10 @@ export const useModuleRecommendations = () => {
   const formattedModules: RecommendedModule[] = globalModules.map(module => ({
     module: {
       id: module.id || getModuleId(module.modulecode),
-      university: module.institution,
-      course_code: module.modulecode,
+      modulecode: module.modulecode,
       title: module.title,
-      description: module.description || "No description available.",
-      aus_cus: 4, // Default value
-      semester: "1" // Default value
+      institution: module.institution,
+      description: module.description || "No description available."
     },
     reasoning: ["Based on your recommended majors"]
   }));
@@ -36,7 +34,7 @@ export const useModuleRecommendations = () => {
     console.log("useModuleRecommendations - Loaded modules from global context:", formattedModules.length);
   }, [formattedModules.length]);
 
-  // Generate consistent module IDs based on modulecode - EXACTLY as before
+  // Generate consistent module IDs based on modulecode
   const getModuleId = (code: string) => {
     let hash = 0;
     for (let i = 0; i < code.length; i++) {

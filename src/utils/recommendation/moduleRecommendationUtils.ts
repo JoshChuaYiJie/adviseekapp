@@ -1,6 +1,6 @@
 
 import { MajorRecommendationsType } from '@/components/sections/majors/types';
-import { Module } from '@/utils/recommendation/types';
+import { Module } from './types';
 
 /**
  * Fetches module recommendations based on the top recommended majors

@@ -1,9 +1,11 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { mapRiasecToCode, mapWorkValueToCode, formCode, getMatchingMajors } from '@/utils/recommendation';
 import { processRiasecData } from '@/components/sections/RiasecChart';
 import { processWorkValuesData } from '@/components/sections/WorkValuesChart';
-import { fetchModuleRecommendations, Module } from '@/utils/recommendation/moduleRecommendationUtils';
+import { fetchModuleRecommendations } from '@/utils/recommendation/moduleRecommendationUtils';
+import { Module } from '@/utils/recommendation/types';
 import { MajorRecommendationsType } from '@/components/sections/majors/types';
 
 // Define the context type

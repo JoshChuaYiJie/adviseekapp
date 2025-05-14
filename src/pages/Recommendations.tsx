@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useQuiz } from "@/contexts/QuizContext";
 import { ModuleRatingCard } from "@/components/ModuleRatingCard";
 import { useGlobalProfile } from "@/contexts/GlobalProfileContext";
+import { Module, UIModule } from "@/utils/recommendation/types";
 
 const Recommendations = () => {
   const navigate = useNavigate();
@@ -35,7 +36,7 @@ const Recommendations = () => {
       description: rec.description || "No description available.",
       aus_cus: 4,
       semester: "1" 
-    },
+    } as UIModule,
     module_id: getModuleId(rec.modulecode),
     user_id: "",
     reason: "Recommended based on your major preferences",
