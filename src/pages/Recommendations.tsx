@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -23,13 +22,8 @@ const Recommendations = () => {
     error 
   } = useModuleRecommendations();
 
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [rating, setRating] = useState(5);
-  const [showAnimation, setShowAnimation] = useState(false);
-  const [showSuggestion, setShowSuggestion] = useState(false);
-  const [showProgramme, setShowProgramme] = useState(false);
-  const [ratedModulesCount, setRatedModulesCount] = useState(0);
-  const [allModulesRated, setAllModulesRated] = useState(false);
+  // Log immediately for debugging
+  console.log("Recommendations in /recommendations page:", recommendedModules.length);
 
   // Convert recommendedModules to the same format as recommendations
   const recommendations = recommendedModules.map((rec) => ({
@@ -40,9 +34,19 @@ const Recommendations = () => {
     created_at: new Date().toISOString()
   }));
 
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [rating, setRating] = useState(5);
+  const [showAnimation, setShowAnimation] = useState(false);
+  const [showSuggestion, setShowSuggestion] = useState(false);
+  const [showProgramme, setShowProgramme] = useState(false);
+  const [ratedModulesCount, setRatedModulesCount] = useState(0);
+  const [allModulesRated, setAllModulesRated] = useState(false);
+
   useEffect(() => {
     setShowAnimation(true);
-  }, []);
+    // Log whenever recommendations change
+    console.log("Recommendations updated in effect:", recommendations.length, recommendations);
+  }, [recommendations.length]);
 
   useEffect(() => {
     if (userFeedback) {
@@ -149,7 +153,7 @@ const Recommendations = () => {
     );
   }
 
-  console.log('Recommendations in /recommendations page:', recommendations);
+  console.log('Final recommendations in /recommendations page:', recommendations);
   const currentModule = recommendations[currentIndex];
 
   return (

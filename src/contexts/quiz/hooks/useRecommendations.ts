@@ -34,6 +34,9 @@ export const useRecommendations = () => {
     module: rec.module
   }));
 
+  // Log the recommendations for debugging
+  console.log("Recommendations in useRecommendations:", recommendations.length);
+
   // Load user feedback (ratings)
   const loadUserFeedback = async (userId: string) => {
     try {
