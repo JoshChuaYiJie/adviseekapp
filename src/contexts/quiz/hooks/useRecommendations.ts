@@ -4,92 +4,35 @@ import { Module } from '@/integrations/supabase/client';
 import { getUserId } from '../utils/databaseHelpers';
 import { useToast } from '@/hooks/use-toast';
 import { Recommendation, ModuleSelection } from '../types/recommendationTypes';
-import { fetchModuleRecommendations } from '@/utils/recommendationUtils';
-import { MajorRecommendationsType } from '@/components/sections/majors/types';
 import { supabase } from '@/integrations/supabase/client';
 import { rateModuleUtil, getFinalSelectionsUtil } from '@/utils/recommendationUtils';
+import { useModuleRecommendations } from '@/hooks/useModuleRecommendations';
 
 // Fix: Changed 'export { Recommendation }' to 'export type { Recommendation }'
 export type { Recommendation } from '../types/recommendationTypes';
 
-export const useRecommendations = (modules: Module[]) => {
-  const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
+export const useRecommendations = () => {
   const [userFeedback, setUserFeedback] = useState<Record<number, number>>({});
   const [finalSelections, setFinalSelections] = useState<ModuleSelection[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
 
-  // Generate consistent module IDs based on modulecode - EXACTLY as in QuizContext
-  const getModuleId = (code: string) => {
-    let hash = 0;
-    for (let i = 0; i < code.length; i++) {
-      const char = code.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
-      hash = hash & hash; // Convert to 32bit integer
-    }
-    return Math.abs(hash);
-  };
+  // Use our centralized module recommendations hook
+  const { 
+    recommendedModules, 
+    loadingModules: isLoading, 
+    error, 
+    refetchRecommendations
+  } = useModuleRecommendations();
 
-  // Generate recommendations
-  const generateRecommendations = async (userId: string) => {
-    try {
-      setIsLoading(true);
-      console.log("useRecommendations - Generating recommendations");
-      
-      // Use the EXACT SAME mock major recommendations as in QuizContext
-      const mockMajorRecommendations: MajorRecommendationsType = {
-        exactMatches: ["Computer Science at NUS", "Information Systems at NUS"],
-        permutationMatches: [],
-        riasecMatches: ["Software Engineering at NTU", "Data Science at SMU"],
-        workValueMatches: ["Computer Engineering at NTU"],
-        questionFiles: [], 
-        riasecCode: "RSA", // Matching the RIASEC code seen in console logs  
-        workValueCode: "RcRA", // Matching the Work Values code seen in console logs
-        matchType: 'exact' 
-      };
-      
-      // Get module recommendations based on these majors - no longer limiting the results
-      const moduleRecs = await fetchModuleRecommendations(mockMajorRecommendations, 0);
-      
-      if (!moduleRecs || moduleRecs.length === 0) {
-        throw new Error("No module recommendations found");
-      }
-      
-      console.log(`Generated ${moduleRecs.length} module recommendations in useRecommendations`);
-      
-      // Convert to the format expected by the UI with consistent IDs
-      const formattedRecs: Recommendation[] = moduleRecs.map(module => ({
-        id: Math.floor(Math.random() * 10000),
-        user_id: userId,
-        module_id: getModuleId(module.modulecode),
-        reason: "Recommended based on your major preferences",
-        created_at: new Date().toISOString(),
-        module: {
-          id: getModuleId(module.modulecode),
-          university: module.institution as "NUS" | "NTU" | "SMU",
-          course_code: module.modulecode,
-          title: module.title,
-          description: module.description || "No description available.",
-          aus_cus: 4, // Default value
-          semester: "1" // Default value
-        }
-      }));
-      
-      console.log("useRecommendations - Formatted recommendations:", formattedRecs.length);
-      setRecommendations(formattedRecs);
-      
-      // Also load user feedback (ratings)
-      await loadUserFeedback(userId);
-      setIsLoading(false);
-      setError(null);
-    } catch (err) {
-      console.error("Error generating recommendations:", err);
-      setIsLoading(false);
-      setError(err instanceof Error ? err.message : "Failed to generate recommendations");
-      throw err;
-    }
-  };
+  // Convert recommendedModules to the Recommendation[] format expected by other components
+  const recommendations = recommendedModules.map(rec => ({
+    id: Math.floor(Math.random() * 10000),
+    user_id: '',
+    module_id: rec.module.id,
+    reason: rec.reasoning[0] || "Recommended based on your major preferences",
+    created_at: new Date().toISOString(),
+    module: rec.module
+  }));
 
   // Load user feedback (ratings)
   const loadUserFeedback = async (userId: string) => {
@@ -117,60 +60,34 @@ export const useRecommendations = (modules: Module[]) => {
     }
   };
 
-  // Load recommendations - now uses the EXACT SAME approach as in QuizContext
+  // Load recommendations
   const loadRecommendations = async (userId: string) => {
     try {
-      setIsLoading(true);
-      console.log("useRecommendations - Loading recommendations");
-      
-      // Use the EXACT SAME mock major recommendations as in QuizContext
-      const mockMajorRecommendations: MajorRecommendationsType = {
-        exactMatches: ["Computer Science at NUS", "Information Systems at NUS"],
-        permutationMatches: [],
-        riasecMatches: ["Software Engineering at NTU", "Data Science at SMU"],
-        workValueMatches: ["Computer Engineering at NTU"],
-        questionFiles: [],
-        riasecCode: "RSA", // Matching the RIASEC code seen in console logs
-        workValueCode: "RcRA", // Matching the Work Values code seen in console logs
-        matchType: 'exact'
-      };
-      
-      // Get all matching modules without limiting
-      const moduleRecs = await fetchModuleRecommendations(mockMajorRecommendations, 0);
-      
-      console.log(`useRecommendations - Loaded ${moduleRecs.length} module recommendations`);
-      
-      // Convert to the format expected by the UI with consistent IDs
-      const formattedRecs: Recommendation[] = moduleRecs.map(module => ({
-        id: Math.floor(Math.random() * 10000),
-        user_id: userId,
-        module_id: getModuleId(module.modulecode),
-        reason: "Recommended based on your major preferences",
-        created_at: new Date().toISOString(),
-        module: {
-          id: getModuleId(module.modulecode),
-          university: module.institution as "NUS" | "NTU" | "SMU",
-          course_code: module.modulecode,
-          title: module.title,
-          description: module.description || "No description available.",
-          aus_cus: 4,
-          semester: "1"
-        }
-      }));
-      
-      console.log("useRecommendations - Setting recommendations:", formattedRecs.length);
-      setRecommendations(formattedRecs);
+      // Use our centralized refetchRecommendations function
+      await refetchRecommendations();
       
       // Also load user feedback (ratings)
       await loadUserFeedback(userId);
       
-      setIsLoading(false);
-      setError(null);
-      return formattedRecs;
+      return recommendations;
     } catch (err) {
       console.error("Error loading recommendations:", err);
-      setIsLoading(false);
-      setError(err instanceof Error ? err.message : "Failed to load recommendations");
+      throw err;
+    }
+  };
+
+  // Generate recommendations
+  const generateRecommendations = async (userId: string) => {
+    try {
+      // Use our centralized refetchRecommendations function
+      await refetchRecommendations();
+      
+      // Also load user feedback (ratings)
+      await loadUserFeedback(userId);
+      
+      return recommendations;
+    } catch (err) {
+      console.error("Error generating recommendations:", err);
       throw err;
     }
   };
@@ -203,18 +120,16 @@ export const useRecommendations = (modules: Module[]) => {
     }
   };
 
-  // Refine recommendations based on user feedback - ensure it matches QuizContext
+  // Refine recommendations - now just uses refetchRecommendations
   const refineRecommendations = async (selectedModuleIds: number[] = []) => {
     try {
-      setIsLoading(true);
-      
       const userId = await getUserId();
       if (!userId) {
         throw new Error("You must be logged in to refine recommendations");
       }
       
-      // Load the updated recommendations using the same approach as QuizContext
-      await loadRecommendations(userId);
+      // Use centralized refetchRecommendations function
+      await refetchRecommendations();
       
       toast({
         title: "Recommendations Refined",
@@ -222,14 +137,11 @@ export const useRecommendations = (modules: Module[]) => {
       });
     } catch (err) {
       console.error("Error refining recommendations:", err);
-      setError(err instanceof Error ? err.message : "Failed to refine recommendations");
       toast({
         title: "Error",
         description: "Failed to refine recommendations. Please try again.",
         variant: "destructive",
       });
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -276,7 +188,7 @@ export const useRecommendations = (modules: Module[]) => {
     finalSelections,
     isLoading,
     error,
-    setIsLoading,
+    setIsLoading: (loading: boolean) => null, // This is now handled by the useModuleRecommendations hook
     generateRecommendations,
     loadRecommendations,
     rateModule,

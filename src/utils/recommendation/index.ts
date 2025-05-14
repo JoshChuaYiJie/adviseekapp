@@ -1,9 +1,29 @@
 
-// Re-export all utilities from their respective files
-export * from './mappers';
-export type * from './types';
-export * from './fileUtils';
-export * from './codeMatchingUtils';
-export * from './majorMatching';
-export * from './matchingHelpers';
-export * from './recommendationHelpers';
+// Re-export from recommendation module - for backward compatibility
+import {
+  fetchModuleRecommendations,
+  Module
+} from './moduleRecommendationUtils';
+
+import {
+  generateRecommendationsUtil,
+  loadUserFeedbackUtil,
+  loadRecommendationsUtil,
+  rateModuleUtil,
+  refineRecommendationsUtil,
+  getFinalSelectionsUtil,
+  fetchModulesMock
+} from './recommendationHelpers';
+
+// Re-export all the functions
+export {
+  fetchModuleRecommendations,
+  generateRecommendationsUtil,
+  loadUserFeedbackUtil,
+  loadRecommendationsUtil,
+  rateModuleUtil,
+  refineRecommendationsUtil,
+  getFinalSelectionsUtil,
+  fetchModulesMock,
+  type Module
+};

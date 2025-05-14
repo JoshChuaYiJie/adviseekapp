@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { Module } from '@/integrations/supabase/client';
 import { QuizContextType } from './types';
@@ -6,8 +7,7 @@ import { useModules } from './hooks/useModules';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { McqQuestion } from '@/utils/quizQuestions';
-import { fetchModuleRecommendations } from '@/utils/recommendationUtils';
-import { MajorRecommendationsType } from '@/components/sections/majors/types';
+import { useModuleRecommendations } from '@/hooks/useModuleRecommendations';
 
 // Create the context with default values
 const QuizContext = createContext<QuizContextType>({
@@ -44,12 +44,18 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
   const [error, setError] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [completedQuizzes, setCompletedQuizzes] = useState<string[]>([]);
-  const [recommendations, setRecommendations] = useState<any[]>([]);
   const [userFeedback, setUserFeedback] = useState<Record<number, number>>({});
   const [finalSelections, setFinalSelections] = useState<Module[]>([]);
   const [questions, setQuestions] = useState<McqQuestion[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [debugInfo, setDebugInfo] = useState<any>(null);
+  
+  // Use our new module recommendations hook
+  const { 
+    recommendedModules, 
+    loadingModules, 
+    refetchRecommendations 
+  } = useModuleRecommendations();
   
   // Custom hooks
   const { modules, error: modulesError } = useModules();
@@ -192,61 +198,12 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
       });
     }
   };
-
-  // Generate consistent module IDs based on modulecode - For consistency
-  const getModuleId = (code: string) => {
-    let hash = 0;
-    for (let i = 0; i < code.length; i++) {
-      const char = code.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
-      hash = hash & hash; // Convert to 32bit integer
-    }
-    return Math.abs(hash);
-  };
   
-  // Refine recommendations - ensure we use EXACTLY the same approach consistently
+  // Refine recommendations by refetching them using the hook
   const refineRecommendations = async (selectedModuleIds: number[] = []): Promise<void> => {
     try {
       setIsLoading(true);
-      console.log("QuizContext - Starting refineRecommendations");
-      
-      // Define the EXACT SAME major recommendations for consistency
-      const mockRecommendations: MajorRecommendationsType = {
-        exactMatches: ["Computer Science at NUS", "Information Systems at NUS"],
-        permutationMatches: [],
-        riasecMatches: ["Software Engineering at NTU", "Data Science at SMU"],
-        workValueMatches: ["Computer Engineering at NTU"],
-        questionFiles: [],
-        riasecCode: "RSA", // Matching the RIASEC code seen in console logs
-        workValueCode: "RcRA", // Matching the Work Values code seen in console logs
-        matchType: 'exact'
-      };
-      
-      // Get ALL matched modules without limiting the number
-      const moduleRecs = await fetchModuleRecommendations(mockRecommendations, 0); // Pass 0 to get all modules
-      
-      console.log(`QuizContext - Total matched modules found: ${moduleRecs.length}`);
-      
-      // Convert modules to the format expected - EXACTLY consistent
-      const formattedRecs = moduleRecs.map(module => ({
-        module_id: getModuleId(module.modulecode),
-        user_id: userId || '',
-        module: {
-          id: getModuleId(module.modulecode),
-          university: module.institution,
-          course_code: module.modulecode,
-          title: module.title,
-          description: module.description || "No description available.",
-          aus_cus: 4, // Default value
-          semester: "1", // Default value
-        },
-        reason: "Recommended based on your major preferences",
-        created_at: new Date().toISOString(),
-        reasoning: ["Based on your recommended majors"]
-      }));
-      
-      console.log(`QuizContext - Setting ${formattedRecs.length} recommendations`);
-      setRecommendations(formattedRecs);
+      await refetchRecommendations(); // Use the hook's refetch function
       setIsLoading(false);
     } catch (err) {
       console.error("Error refining recommendations:", err);
@@ -263,6 +220,13 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
   // Get final selections
   const getFinalSelections = async () => {
     try {
+      // Map recommendedModules to match the expected format
+      const recommendations = recommendedModules.map(rec => ({
+        module: rec.module,
+        module_id: rec.module.id,
+        reason: rec.reasoning[0] || "Recommended based on your major preferences"
+      }));
+      
       // Filter to highly rated modules (7+)
       const highlyRated = recommendations.filter(rec => 
         userFeedback[rec.module_id] >= 7
@@ -291,12 +255,22 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
     setCurrentStep(1);
   };
   
+  // Format recommendations to match the expected format in the context
+  const recommendations = recommendedModules.map(rec => ({
+    module_id: rec.module.id,
+    user_id: userId || '',
+    module: rec.module,
+    reason: "Recommended based on your major preferences",
+    created_at: new Date().toISOString(),
+    reasoning: rec.reasoning
+  }));
+  
   // Memoize the context value to prevent unnecessary rerenders
   const contextValue = useMemo<QuizContextType>(() => ({
     currentStep,
     responses,
     questions,
-    isLoading,
+    isLoading: isLoading || loadingModules,
     isSubmitting,
     error: error || null,
     recommendations,
@@ -317,8 +291,10 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
     responses, 
     questions, 
     isLoading, 
+    loadingModules,
     isSubmitting, 
     error,
+    recommendedModules,
     recommendations,
     userFeedback,
     modules,

@@ -6,18 +6,22 @@ import { Slider } from "@/components/ui/slider";
 import { useToast } from "@/hooks/use-toast";
 import { useQuiz } from "@/contexts/QuizContext";
 import { ModuleRatingCard } from "@/components/ModuleRatingCard";
+import { useModuleRecommendations } from "@/hooks/useModuleRecommendations";
 
 const Recommendations = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { 
-    recommendations, 
-    isLoading, 
-    error,
     rateModule,
-    userFeedback,
-    refineRecommendations
+    userFeedback
   } = useQuiz();
+  
+  // Use our new hook for recommendations
+  const { 
+    recommendedModules, 
+    loadingModules: isLoading, 
+    error 
+  } = useModuleRecommendations();
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [rating, setRating] = useState(5);
@@ -27,17 +31,14 @@ const Recommendations = () => {
   const [ratedModulesCount, setRatedModulesCount] = useState(0);
   const [allModulesRated, setAllModulesRated] = useState(false);
 
-  // Load recommendations on component mount if they're not already loaded
-  useEffect(() => {
-    const loadRecommendations = async () => {
-      if (!recommendations || recommendations.length === 0) {
-        console.log("Loading recommendations from /recommendations page");
-        await refineRecommendations([]);
-      }
-    };
-    
-    loadRecommendations();
-  }, [recommendations, refineRecommendations]);
+  // Convert recommendedModules to the same format as recommendations
+  const recommendations = recommendedModules.map((rec) => ({
+    module: rec.module,
+    module_id: rec.module.id,
+    user_id: "",
+    reason: rec.reasoning[0] || "Recommended based on your major preferences",
+    created_at: new Date().toISOString()
+  }));
 
   useEffect(() => {
     setShowAnimation(true);
@@ -83,9 +84,6 @@ const Recommendations = () => {
       } else {
         // All modules have been rated - set flag to trigger the redirect
         setAllModulesRated(true);
-        
-        // Pass an empty array as the argument to refineRecommendations
-        await refineRecommendations([]);
       }
 
       // Check if the user has rated a multiple of 30 modules
@@ -120,8 +118,6 @@ const Recommendations = () => {
   const handleRateMore = async () => {
     setShowSuggestion(false);
     setShowProgramme(false);
-    // Pass an empty array as the argument to refineRecommendations
-    await refineRecommendations([]);
   };
 
   if (isLoading) {
@@ -148,8 +144,7 @@ const Recommendations = () => {
       <div className="min-h-screen bg-gradient-to-br from-[#f8fafc] via-[#ede9fe] to-[#f3e8ff] text-gray-900 flex flex-col items-center justify-center p-8 font-open-sans">
         <h2 className="text-3xl font-bold mb-4">No Recommendations Available</h2>
         <p className="mb-8">We couldn't find any recommendations based on your responses.</p>
-        <Button onClick={() => refineRecommendations([])}>Try to Load Recommendations</Button>
-        <Button onClick={() => navigate(-1)} className="mt-4">Go Back</Button>
+        <Button onClick={() => navigate(-1)}>Go Back</Button>
       </div>
     );
   }
