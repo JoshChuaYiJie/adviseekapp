@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -334,10 +333,10 @@ const SegmentedQuiz = () => {
     try {
       addDebugLog("Loading previous answers", { userId, segmentId });
       
-      // Get user responses for this segment
+      // Get user responses for this segment with more detailed query
       const { data, error } = await supabase
         .from('user_responses')
-        .select('question_id, response, score')
+        .select('question_id, response, response_array, score, component')
         .eq('user_id', userId)
         .eq('quiz_type', segmentId);
       
@@ -358,11 +357,15 @@ const SegmentedQuiz = () => {
         const savedScores: Record<string, number> = {};
         
         data.forEach(item => {
+          // Handle both string responses and array responses
           if (item.response) {
             savedAnswers[item.question_id] = item.response;
+          } else if (item.response_array && Array.isArray(item.response_array) && item.response_array.length > 0) {
+            // Handle array responses if needed
+            savedAnswers[item.question_id] = item.response_array[0];
           }
           
-          if (item.score) {
+          if (item.score !== null && item.score !== undefined) {
             savedScores[item.question_id] = item.score;
           }
         });
