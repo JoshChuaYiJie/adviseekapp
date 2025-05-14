@@ -391,6 +391,7 @@ const SegmentedQuiz = () => {
     const question = questions.find(q => q.id === questionId);
     if (!question) return;
     
+    // Convert score to number to ensure type safety
     const score = question.optionScores?.[answer] || 0;
     
     setAnswers(prev => ({

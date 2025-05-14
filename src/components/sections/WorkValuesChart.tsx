@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
@@ -20,7 +19,7 @@ export const processWorkValuesData = async (userId: string) => {
     }
     
     // Calculate total for percentages
-    const totalValue = Object.values(profile).reduce((sum, val) => sum + val, 0);
+    const totalValue = Object.values(profile).reduce((sum, val) => sum + (val as number), 0);
     
     // Convert to array format for chart data with percentages
     const chartData = Object.entries(profile)

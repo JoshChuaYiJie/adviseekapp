@@ -1,4 +1,5 @@
 
+
 import { supabase } from '@/integrations/supabase/client';
 
 // Get current user ID from authentication
@@ -37,6 +38,117 @@ export const inspectResponses = async (userId: string, pattern?: 'RIASEC' | 'Wor
   } catch (error) {
     console.error('Error inspecting responses:', error);
     throw error;
+  }
+};
+
+// Calculate RIASEC profile from user responses
+export const calculateRiasecProfile = async (userId: string): Promise<Record<string, number>> => {
+  try {
+    console.log(`Calculating RIASEC profile for user ${userId}`);
+    
+    // Get all RIASEC-related responses
+    const responses = await inspectResponses(userId, 'RIASEC');
+    
+    if (!responses || responses.length === 0) {
+      console.log("No RIASEC responses found for user");
+      return {};
+    }
+    
+    // Initialize component scores
+    const componentScores: Record<string, number> = {
+      Realistic: 0,
+      Investigative: 0,
+      Artistic: 0,
+      Social: 0,
+      Enterprising: 0,
+      Conventional: 0
+    };
+    
+    // Process each response
+    responses.forEach(response => {
+      // Skip responses without component or score
+      if (!response.component || response.score === null || response.score === undefined) {
+        return;
+      }
+      
+      // Make sure component is one of the RIASEC components
+      const component = response.component as string;
+      if (component in componentScores) {
+        // Add score to component total
+        componentScores[component] += Number(response.score);
+      }
+    });
+    
+    console.log('Calculated RIASEC component scores:', componentScores);
+    
+    // Filter out zero scores
+    const filteredScores: Record<string, number> = {};
+    Object.entries(componentScores).forEach(([key, value]) => {
+      if (value > 0) {
+        filteredScores[key] = value;
+      }
+    });
+    
+    return filteredScores;
+  } catch (error) {
+    console.error('Error calculating RIASEC profile:', error);
+    return {};
+  }
+};
+
+// Calculate Work Values profile from user responses
+export const calculateWorkValuesProfile = async (userId: string): Promise<Record<string, number>> => {
+  try {
+    console.log(`Calculating Work Values profile for user ${userId}`);
+    
+    // Get all Work Values responses
+    const responses = await inspectResponses(userId, 'WorkValues');
+    
+    if (!responses || responses.length === 0) {
+      console.log("No Work Values responses found for user");
+      return {};
+    }
+    
+    // Initialize component scores
+    const componentScores: Record<string, number> = {
+      Achievement: 0,
+      Independence: 0,
+      Recognition: 0,
+      Relationships: 0,
+      Support: 0,
+      'Working Conditions': 0,
+      Altruism: 0
+    };
+    
+    // Process each response
+    responses.forEach(response => {
+      // Skip responses without component or score
+      if (!response.component || response.score === null || response.score === undefined) {
+        return;
+      }
+      
+      // Make sure component is one of the Work Values components
+      const component = response.component as string;
+      if (component in componentScores) {
+        // Add score to component total
+        componentScores[component] += Number(response.score);
+      }
+    });
+    
+    console.log('Calculated Work Values component scores:', componentScores);
+    
+    // Filter out zero scores
+    const filteredScores: Record<string, number> = {};
+    Object.entries(componentScores).forEach(([key, value]) => {
+      if (value > 0) {
+        filteredScores[key] = value;
+      }
+    });
+    
+    return filteredScores;
+  } catch (error) {
+    console.error('Error calculating Work Values profile:', error);
+    return {};
   }
 };
 
@@ -135,3 +247,4 @@ export const validateUserResponsesTable = async () => {
     };
   }
 };
+
