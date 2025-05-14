@@ -1,13 +1,22 @@
 
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Slider } from "@/components/ui/slider";
 import { useToast } from "@/hooks/use-toast";
 import { useQuiz } from "@/contexts/QuizContext";
 import { ModuleRatingCard } from "@/components/ModuleRatingCard";
 import { useGlobalProfile } from "@/contexts/GlobalProfileContext";
-import { Module, UIModule } from "@/utils/recommendation/types";
+import { UIModule } from "@/utils/recommendation/types";
+
+// Import our new components
+import { LoadingCard } from "@/components/recommendations/LoadingCard";
+import { ErrorCard } from "@/components/recommendations/ErrorCard";
+import { EmptyStateCard } from "@/components/recommendations/EmptyStateCard";
+import { ProgressHeader } from "@/components/recommendations/ProgressHeader";
+import { RateModuleCard } from "@/components/recommendations/RateModuleCard";
+import { SuggestionCard } from "@/components/recommendations/SuggestionCard";
+import { ProgrammeCard } from "@/components/recommendations/ProgrammeCard";
+import { CompletionCard } from "@/components/recommendations/CompletionCard";
+import { getModuleId } from "@/components/recommendations/utils";
 
 const Recommendations = () => {
   const navigate = useNavigate();
@@ -17,7 +26,7 @@ const Recommendations = () => {
     userFeedback
   } = useQuiz();
   
-  // Use the global profile context instead of the useModuleRecommendations hook
+  // Use the global profile context
   const { 
     recommendedModules, 
     isLoading, 
@@ -31,7 +40,7 @@ const Recommendations = () => {
   const recommendations = recommendedModules.map((rec) => ({
     module: {
       id: getModuleId(rec.modulecode),
-      university: rec.institution, // This maps correctly now due to type change
+      university: rec.institution,
       course_code: rec.modulecode,
       title: rec.title,
       description: rec.description || "No description available.",
@@ -43,17 +52,6 @@ const Recommendations = () => {
     reason: "Recommended based on your major preferences",
     created_at: new Date().toISOString()
   }));
-
-  // Generate consistent module IDs - same as in other places
-  function getModuleId(code: string): number {
-    let hash = 0;
-    for (let i = 0; i < code.length; i++) {
-      const char = code.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
-      hash = hash & hash; // Convert to 32bit integer
-    }
-    return Math.abs(hash);
-  }
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [rating, setRating] = useState(5);
@@ -140,38 +138,22 @@ const Recommendations = () => {
     });
   };
 
-  const handleRateMore = async () => {
+  const handleRateMore = () => {
     setShowSuggestion(false);
     setShowProgramme(false);
   };
 
+  // Rendering conditions
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-[#f8fafc] via-[#ede9fe] to-[#f3e8ff] text-gray-900 flex flex-col items-center justify-center p-8 font-open-sans">
-        <div className="animate-spin w-12 h-12 border-t-2 border-purple-400 border-r-2 rounded-full mb-4"></div>
-        <h2 className="text-2xl font-medium">Loading recommendations...</h2>
-      </div>
-    );
+    return <LoadingCard />;
   }
 
   if (error) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-[#f8fafc] via-[#ede9fe] to-[#f3e8ff] text-gray-900 flex flex-col items-center justify-center p-8 font-open-sans">
-        <h2 className="text-3xl font-bold text-red-400 mb-4">Error</h2>
-        <p className="mb-8">{error}</p>
-        <Button onClick={() => navigate(-1)}>Go Back</Button>
-      </div>
-    );
+    return <ErrorCard error={error} onBack={() => navigate(-1)} />;
   }
 
   if (!recommendations || recommendations.length === 0) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-[#f8fafc] via-[#ede9fe] to-[#f3e8ff] text-gray-900 flex flex-col items-center justify-center p-8 font-open-sans">
-        <h2 className="text-3xl font-bold mb-4">No Recommendations Available</h2>
-        <p className="mb-8">We couldn't find any recommendations based on your responses.</p>
-        <Button onClick={() => navigate(-1)}>Go Back</Button>
-      </div>
-    );
+    return <EmptyStateCard onBack={() => navigate(-1)} />;
   }
 
   console.log('Final recommendations in /recommendations page:', recommendations);
@@ -179,59 +161,24 @@ const Recommendations = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#f8fafc] via-[#ede9fe] to-[#f3e8ff] text-gray-900 font-poppins flex flex-col">
-      <header className="sticky top-0 z-10 bg-white/70 backdrop-blur-md border-b border-purple-100 p-4 shadow-sm">
-        <div className="container mx-auto flex justify-between items-center">
-          <h1 className="text-2xl font-extrabold text-purple-700 font-poppins drop-shadow-sm">Module Recommendations</h1>
-          <div className="text-lg font-medium text-purple-400">
-            {currentIndex + 1} of {recommendations.length} modules
-          </div>
-        </div>
-        <div className="container mx-auto mt-2">
-          <div className="h-1 bg-purple-100 rounded-full">
-            <div 
-              className="h-full bg-gradient-to-r from-purple-400 to-indigo-400 rounded-full transition-all duration-300 ease-in-out" 
-              style={{ width: `${((currentIndex + 1) / recommendations.length) * 100}%` }}
-            ></div>
-          </div>
-        </div>
-      </header>
+      <ProgressHeader 
+        currentIndex={currentIndex} 
+        totalModules={recommendations.length} 
+      />
 
       <div className="flex-1 flex flex-col items-center justify-center p-4 md:p-8">
         {showSuggestion && (
-          <div className="text-center animate-fade-in bg-white/80 shadow-lg p-8 rounded-2xl max-w-xl mx-auto">
-            <h2 className="text-3xl font-bold mb-4 text-purple-700">Your suggested programme is ready!</h2>
-            <p className="text-lg mb-8 text-gray-700">View it now or rate 30 more modules for a more refined suggestion</p>
-            <div className="space-x-4">
-              <Button 
-                onClick={handleViewSuggestion}
-                className="bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white font-bold"
-              >
-                View suggestion
-              </Button>
-              <Button onClick={handleRateMore} variant="outline" className="font-bold border-purple-200">Rate more modules</Button>
-            </div>
-          </div>
+          <SuggestionCard 
+            onViewSuggestion={handleViewSuggestion} 
+            onRateMore={handleRateMore} 
+          />
         )}
 
         {showProgramme && (
-          <div className="text-center animate-fade-in bg-white/80 shadow-lg p-8 rounded-2xl max-w-2xl mx-auto">
-            <h2 className="text-3xl font-bold mb-4 text-purple-700">
-              Your recommended programme is a degree in computer science in NUS with an optional major in economics
-            </h2>
-            <p className="text-lg mb-8 text-gray-700">
-              Based on your responses, you demonstrate strong analytical skills and interest in technology.
-              Your learning style and career goals align well with the computer science program at NUS.
-            </p>
-            <div className="space-x-4">
-              <Button 
-                onClick={handleAcceptSuggestion} 
-                className="bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white font-bold"
-              >
-                Accept suggestion
-              </Button>
-              <Button onClick={handleRateMore} variant="outline" className="font-bold border-purple-200">Rate more suggestions</Button>
-            </div>
-          </div>
+          <ProgrammeCard 
+            onAcceptSuggestion={handleAcceptSuggestion} 
+            onRateMore={handleRateMore} 
+          />
         )}
 
         {!showSuggestion && !showProgramme && currentModule && (
@@ -245,39 +192,14 @@ const Recommendations = () => {
         )}
 
         {!showSuggestion && !showProgramme && currentModule && (
-          <div className="w-full max-w-md mt-8 bg-white/90 shadow-md rounded-xl p-6">
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-sm font-medium text-gray-500">Not interested</span>
-              <span className="font-bold text-xl text-purple-500">{rating}/10</span>
-              <span className="text-sm font-medium text-gray-500">Very interested</span>
-            </div>
-            <Slider
-              value={[rating]}
-              min={1}
-              max={10}
-              step={1}
-              onValueChange={([value]) => setRating(value)}
-              className="mb-6"
-            />
-            <Button 
-              onClick={handleRate}
-              size="lg"
-              className="w-full bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white font-bold py-6 rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-105"
-            >
-              Rate and Continue
-            </Button>
-          </div>
+          <RateModuleCard 
+            rating={rating}
+            onRatingChange={setRating}
+            onRate={handleRate}
+          />
         )}
 
-        {allModulesRated && (
-          <div className="text-center animate-fade-in bg-white/80 shadow-lg p-8 rounded-2xl max-w-xl mx-auto">
-            <h2 className="text-3xl font-bold mb-4 text-purple-700">Thank you for your ratings!</h2>
-            <p className="text-lg mb-8 text-gray-700">Redirecting to your dashboard...</p>
-            <div className="flex justify-center">
-              <div className="animate-spin h-8 w-8 border-t-2 border-b-2 border-purple-500 rounded-full"></div>
-            </div>
-          </div>
-        )}
+        {allModulesRated && <CompletionCard />}
       </div>
 
       <footer className="p-4 text-center text-sm text-gray-400">
