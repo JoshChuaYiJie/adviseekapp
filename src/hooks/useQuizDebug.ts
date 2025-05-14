@@ -1,63 +1,61 @@
 
 import { useState, useCallback } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 import { inspectResponses } from '@/contexts/quiz/utils/databaseHelpers';
+import { useToast } from './use-toast';
 
-export const useQuizDebug = () => {
+export function useQuizDebug() {
   const [isLoading, setIsLoading] = useState(false);
-  const [responseData, setResponseData] = useState<any[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [userId, setUserId] = useState<string | null>(null);
-
-  const init = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      const { data: { session } } = await supabase.auth.getSession();
-      const currentUserId = session?.user?.id || null;
-      setUserId(currentUserId);
-      
-      if (!currentUserId) {
-        setError('No authenticated user found');
-        setIsLoading(false);
-        return;
-      }
-      
-      // Default to empty array
-      setResponseData([]);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error occurred');
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  const fetchResponses = useCallback(async (pattern?: 'RIASEC' | 'WorkValues' | 'All') => {
+  const [responses, setResponses] = useState<any[]>([]);
+  const { toast } = useToast();
+  
+  const fetchUserResponses = useCallback(async (userId: string | null, pattern?: string) => {
     if (!userId) {
-      setError('No user ID available');
-      return;
+      toast({
+        title: "Debug error",
+        description: "User ID is required to fetch responses",
+        variant: "destructive",
+      });
+      return [];
     }
     
     try {
       setIsLoading(true);
-      setError(null);
-      
       const data = await inspectResponses(userId, pattern);
-      setResponseData(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error fetching responses');
+      setResponses(data);
+      
+      if (data.length === 0) {
+        toast({
+          title: "No responses found",
+          description: pattern 
+            ? `No responses matching pattern "${pattern}" found`
+            : "No responses found for this user",
+          variant: "default",
+        });
+      } else {
+        toast({
+          title: "Responses loaded",
+          description: `Found ${data.length} responses`,
+          variant: "default",
+        });
+      }
+      
+      return data;
+    } catch (error) {
+      console.error("Error fetching responses:", error);
+      toast({
+        title: "Debug error",
+        description: `Failed to fetch responses: ${error instanceof Error ? error.message : String(error)}`,
+        variant: "destructive",
+      });
+      return [];
     } finally {
       setIsLoading(false);
     }
-  }, [userId]);
-
+  }, [toast]);
+  
   return {
     isLoading,
-    responseData,
-    error,
-    userId,
-    init,
-    fetchResponses
+    responses,
+    fetchUserResponses,
   };
-};
-
-export default useQuizDebug;
+}

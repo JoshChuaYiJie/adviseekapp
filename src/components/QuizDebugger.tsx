@@ -1,190 +1,384 @@
-
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { useQuizDebug } from '@/hooks/useQuizDebug';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2, Bug, ArrowRight, Database, RefreshCw } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { CheckCircle2, XCircle, AlertTriangle, Bug, AlertCircle } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { validateUserResponsesTable, testInsertResponse } from "@/contexts/quiz/utils/databaseHelpers";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
-// Update props to include userId and authStatus
-interface QuizDebuggerProps {
-  userId: string;
-  authStatus: 'checking' | 'authenticated' | 'unauthenticated';
+export interface QuizDebugData {
+  userId?: string | null;
+  authStatus?: 'checking' | 'authenticated' | 'unauthenticated';
+  quizType?: string | null;
+  responses?: Record<string, any>;
+  errors?: any[];
 }
 
-const QuizDebugger = ({ userId, authStatus }: QuizDebuggerProps) => {
-  const [activeTab, setActiveTab] = useState('riasec');
-  const { 
-    isLoading, 
-    responseData, 
-    error, 
-    init, 
-    fetchResponses 
-  } = useQuizDebug();
-
+export const QuizDebugger: React.FC<QuizDebugData> = ({
+  userId,
+  authStatus,
+  quizType,
+  responses,
+  errors
+}) => {
+  const { toast } = useToast();
+  const [validationResults, setValidationResults] = useState<any>(null);
+  const [testResult, setTestResult] = useState<any>(null);
+  const [isValidating, setIsValidating] = useState(false);
+  const [isTesting, setIsTesting] = useState(false);
+  const [lastResponses, setLastResponses] = useState<any[] | null>(null);
+  const [lastError, setLastError] = useState<any | null>(null);
+  
   useEffect(() => {
-    if (authStatus === 'authenticated' && userId) {
-      init();
+    if (errors && errors.length > 0 && errors !== lastError) {
+      setLastError(errors);
     }
-  }, [authStatus, userId, init]);
-
-  const handleFetchResponses = (pattern?: 'RIASEC' | 'WorkValues' | 'All') => {
-    fetchResponses(pattern);
+  }, [errors]);
+  
+  const validateDatabase = async () => {
+    setIsValidating(true);
+    try {
+      const results = await validateUserResponsesTable();
+      setValidationResults(results);
+      
+      toast({
+        title: results.success ? "Validation successful" : "Validation warnings",
+        description: results.details,
+        variant: results.success ? "default" : "destructive"
+      });
+    } catch (err) {
+      console.error("Error validating database:", err);
+      setValidationResults({
+        success: false,
+        details: `Error: ${err instanceof Error ? err.message : String(err)}`
+      });
+      
+      toast({
+        title: "Validation error",
+        description: `Error checking database configuration: ${err instanceof Error ? err.message : String(err)}`,
+        variant: "destructive"
+      });
+    } finally {
+      setIsValidating(false);
+    }
   };
-
+  
+  const runTestInsert = async () => {
+    setIsTesting(true);
+    try {
+      const result = await testInsertResponse();
+      setTestResult(result);
+      
+      toast({
+        title: result.success ? "Test successful" : "Test failed",
+        description: result.message,
+        variant: result.success ? "default" : "destructive"
+      });
+    } catch (err) {
+      console.error("Error running test insert:", err);
+      setTestResult({
+        success: false,
+        message: `Error: ${err instanceof Error ? err.message : String(err)}`,
+        details: err
+      });
+      
+      toast({
+        title: "Test error",
+        description: `Error testing insert: ${err instanceof Error ? err.message : String(err)}`,
+        variant: "destructive"
+      });
+    } finally {
+      setIsTesting(false);
+    }
+  };
+  
+  const loadLastResponses = async () => {
+    if (!userId) {
+      toast({
+        title: "Not authenticated",
+        description: "Please log in to view your responses",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    try {
+      const { data, error } = await supabase
+        .from('user_responses')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(10);
+      
+      if (error) {
+        console.error('Error loading responses:', error);
+        toast({
+          title: "Error",
+          description: `Failed to load responses: ${error.message}`,
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      setLastResponses(data);
+      
+      if (data && data.length > 0) {
+        toast({
+          title: "Responses loaded",
+          description: `Loaded ${data.length} recent responses`,
+          variant: "default"
+        });
+      } else {
+        toast({
+          title: "No responses found",
+          description: "No responses found for your account",
+          variant: "destructive"
+        });
+      }
+    } catch (err) {
+      console.error("Error loading responses:", err);
+      toast({
+        title: "Error",
+        description: `Failed to load responses: ${err instanceof Error ? err.message : String(err)}`,
+        variant: "destructive"
+      });
+    }
+  };
+  
   return (
-    <Card className="w-full">
+    <Card className="max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle className="flex items-center">
-          <Bug className="mr-2 h-4 w-4" />
-          Quiz Response Debugger
-          {isLoading && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
+        <CardTitle className="flex items-center gap-2">
+          <Bug className="h-5 w-5" />
+          Quiz Debugger
         </CardTitle>
+        <CardDescription>
+          Tools for debugging quiz response issues
+        </CardDescription>
       </CardHeader>
-      <CardContent>
-        {authStatus !== 'authenticated' ? (
-          <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded border border-yellow-200 dark:border-yellow-800 text-yellow-800 dark:text-yellow-100">
-            Please log in to use the debugger.
-          </div>
-        ) : (
-          <>
-            <div className="mb-4 space-x-2">
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => handleFetchResponses('RIASEC')}
-                disabled={isLoading}
-              >
-                <Database className="mr-2 h-3 w-3" />
-                Fetch RIASEC
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => handleFetchResponses('WorkValues')}
-                disabled={isLoading}
-              >
-                <Database className="mr-2 h-3 w-3" />
-                Fetch Work Values
-              </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => handleFetchResponses('All')}
-                disabled={isLoading}
-              >
-                <Database className="mr-2 h-3 w-3" />
-                Fetch All
-              </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => init()}
-                disabled={isLoading}
-              >
-                <RefreshCw className="mr-2 h-3 w-3" />
-                Reset
-              </Button>
-            </div>
-
-            <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="mb-4">
-                <TabsTrigger value="riasec">RIASEC Data</TabsTrigger>
-                <TabsTrigger value="workvalues">Work Values Data</TabsTrigger>
-                <TabsTrigger value="raw">Raw Responses</TabsTrigger>
-              </TabsList>
-
-              <TabsContent value="riasec">
-                <DataTabContent 
-                  data={responseData.filter(r => 
-                    ['interest-part 1', 'interest-part 2', 'competence'].includes(r.quiz_type)
-                  )} 
-                  isLoading={isLoading}
-                  error={error}
-                  title="RIASEC Responses"
-                />
-              </TabsContent>
-
-              <TabsContent value="workvalues">
-                <DataTabContent 
-                  data={responseData.filter(r => r.quiz_type === 'work-values')} 
-                  isLoading={isLoading}
-                  error={error}
-                  title="Work Values Responses"
-                />
-              </TabsContent>
-
-              <TabsContent value="raw">
-                <div className="rounded border bg-muted/50 p-2 mb-2">
-                  <pre className="text-xs overflow-auto max-h-[400px]">
-                    {JSON.stringify(responseData, null, 2)}
-                  </pre>
-                </div>
-              </TabsContent>
-            </Tabs>
-          </>
-        )}
-      </CardContent>
-    </Card>
-  );
-};
-
-interface DataTabContentProps {
-  data: any[];
-  isLoading: boolean;
-  error: string | null;
-  title: string;
-}
-
-const DataTabContent = ({ data, isLoading, error, title }: DataTabContentProps) => {
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center p-8">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-  
-  if (error) {
-    return (
-      <div className="p-4 bg-red-50 dark:bg-red-900/20 rounded border border-red-200 dark:border-red-800 text-red-800 dark:text-red-100">
-        Error: {error}
-      </div>
-    );
-  }
-  
-  if (!data || data.length === 0) {
-    return (
-      <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700">
-        No {title.toLowerCase()} found. Try taking a quiz first!
-      </div>
-    );
-  }
-  
-  return (
-    <ScrollArea className="h-[400px]">
-      <div className="space-y-2">
-        {data.map((item, index) => (
-          <div key={index} className="p-2 rounded border bg-card">
-            <div className="text-xs font-mono">
-              <div className="grid grid-cols-2 gap-1">
-                <span className="font-bold">Quiz Type:</span>
-                <span>{item.quiz_type}</span>
-                <span className="font-bold">Question ID:</span>
-                <span>{item.question_id}</span>
-                <span className="font-bold">Response:</span>
-                <span>{item.response}</span>
-                <span className="font-bold">Score:</span>
-                <span>{item.score}</span>
-                <span className="font-bold">Component:</span>
-                <span>{item.component || 'None'}</span>
+      
+      <Tabs defaultValue="status">
+        <TabsList className="grid grid-cols-4 mx-6">
+          <TabsTrigger value="status">Status</TabsTrigger>
+          <TabsTrigger value="validation">Database</TabsTrigger>
+          <TabsTrigger value="responses">Responses</TabsTrigger>
+          <TabsTrigger value="testing">Testing</TabsTrigger>
+        </TabsList>
+        
+        <CardContent>
+          <TabsContent value="status">
+            <h3 className="text-lg font-semibold mb-3">Current Status</h3>
+            
+            <div className="space-y-3">
+              <div>
+                <h4 className="font-medium text-sm text-gray-500">Authentication</h4>
+                {authStatus === 'checking' ? (
+                  <Alert className="bg-amber-50">
+                    <AlertCircle className="h-4 w-4 text-amber-500" />
+                    <AlertTitle>Checking authentication...</AlertTitle>
+                  </Alert>
+                ) : authStatus === 'authenticated' ? (
+                  <Alert className="bg-green-50">
+                    <CheckCircle2 className="h-4 w-4 text-green-500" />
+                    <AlertTitle>Authenticated</AlertTitle>
+                    <AlertDescription>
+                      User ID: {userId}
+                    </AlertDescription>
+                  </Alert>
+                ) : (
+                  <Alert className="bg-amber-50">
+                    <AlertTriangle className="h-4 w-4 text-amber-500" />
+                    <AlertTitle>Not authenticated</AlertTitle>
+                    <AlertDescription>
+                      You need to be logged in to save responses to the database
+                    </AlertDescription>
+                  </Alert>
+                )}
               </div>
+              
+              <div>
+                <h4 className="font-medium text-sm text-gray-500">Quiz Information</h4>
+                {quizType ? (
+                  <div className="p-3 bg-blue-50 rounded-md">
+                    <p><strong>Quiz Type:</strong> {quizType}</p>
+                    <p><strong>Questions Answered:</strong> {responses ? Object.keys(responses).length : 0}</p>
+                  </div>
+                ) : (
+                  <div className="p-3 bg-gray-50 rounded-md">
+                    <p>No active quiz</p>
+                  </div>
+                )}
+              </div>
+              
+              {lastError && (
+                <div>
+                  <h4 className="font-medium text-sm text-gray-500">Last Error</h4>
+                  <Alert className="bg-red-50">
+                    <XCircle className="h-4 w-4 text-red-500" />
+                    <AlertTitle>Error occurred</AlertTitle>
+                    <AlertDescription>
+                      {typeof lastError === 'string' ? lastError : JSON.stringify(lastError, null, 2)}
+                    </AlertDescription>
+                  </Alert>
+                </div>
+              )}
             </div>
-          </div>
-        ))}
-      </div>
-    </ScrollArea>
+          </TabsContent>
+          
+          <TabsContent value="validation">
+            <div className="space-y-3">
+              <Button 
+                onClick={validateDatabase} 
+                disabled={isValidating}
+                className="w-full"
+              >
+                {isValidating ? 'Validating...' : 'Validate Database Configuration'}
+              </Button>
+              
+              {validationResults && (
+                <>
+                  <h4 className="font-medium">Validation Results</h4>
+                  
+                  <Alert className={validationResults.success ? 'bg-green-50' : 'bg-amber-50'}>
+                    {validationResults.success ? (
+                      <CheckCircle2 className="h-4 w-4 text-green-500" />
+                    ) : (
+                      <AlertTriangle className="h-4 w-4 text-amber-500" />
+                    )}
+                    <AlertTitle>
+                      {validationResults.success ? 'Configuration is valid' : 'Configuration warnings'}
+                    </AlertTitle>
+                    <AlertDescription>
+                      {validationResults.details}
+                    </AlertDescription>
+                  </Alert>
+                  
+                  <div className="space-y-1 text-sm">
+                    <div className="flex items-center">
+                      <span className="w-6">
+                        {validationResults.hasRlsEnabled ? '✅' : '❌'}
+                      </span>
+                      <span>RLS enabled on user_responses table</span>
+                    </div>
+                    <div className="flex items-center">
+                      <span className="w-6">
+                        {validationResults.hasUniqueConstraint ? '✅' : '❌'}
+                      </span>
+                      <span>Unique constraint on user_id + id</span>
+                    </div>
+                    <div className="flex items-center">
+                      <span className="w-6">
+                        {validationResults.hasCorrectPolicy ? '✅' : '❌'}
+                      </span>
+                      <span>Correct RLS policy (user_id = auth.uid())</span>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="responses">
+            <div className="space-y-3">
+              <Button 
+                onClick={loadLastResponses} 
+                disabled={!userId}
+                className="w-full"
+              >
+                Load Recent Responses
+              </Button>
+              
+              {lastResponses && (
+                <>
+                  <h4 className="font-medium">
+                    {lastResponses.length > 0
+                      ? `Last ${lastResponses.length} Responses`
+                      : 'No responses found'}
+                  </h4>
+                  
+                  {lastResponses.length > 0 ? (
+                    <ScrollArea className="h-60">
+                      <div className="space-y-2">
+                        {lastResponses.map((response, index) => (
+                          <div key={index} className="p-2 bg-gray-50 rounded-md text-sm">
+                            <p><strong>ID:</strong> {response.id}</p>
+                            <p><strong>Question ID:</strong> {response.question_id}</p>
+                            <p><strong>Quiz Type:</strong> {response.quiz_type || 'N/A'}</p>
+                            <p><strong>Response:</strong> {response.response || JSON.stringify(response.response_array)}</p>
+                            <p><strong>Score:</strong> {response.score}</p>
+                            <p><strong>Created:</strong> {new Date(response.created_at).toLocaleString()}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </ScrollArea>
+                  ) : null}
+                </>
+              )}
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="testing">
+            <div className="space-y-3">
+              <Button 
+                onClick={runTestInsert} 
+                disabled={isTesting || authStatus !== 'authenticated'}
+                className="w-full"
+              >
+                {isTesting ? 'Testing...' : 'Run Test Insert'}
+              </Button>
+              
+              {authStatus !== 'authenticated' && (
+                <Alert className="bg-amber-50">
+                  <AlertTriangle className="h-4 w-4 text-amber-500" />
+                  <AlertTitle>Authentication required</AlertTitle>
+                  <AlertDescription>
+                    You need to be logged in to run test inserts
+                  </AlertDescription>
+                </Alert>
+              )}
+              
+              {testResult && (
+                <>
+                  <h4 className="font-medium">Test Results</h4>
+                  
+                  <Alert className={testResult.success ? 'bg-green-50' : 'bg-red-50'}>
+                    {testResult.success ? (
+                      <CheckCircle2 className="h-4 w-4 text-green-500" />
+                    ) : (
+                      <XCircle className="h-4 w-4 text-red-500" />
+                    )}
+                    <AlertTitle>
+                      {testResult.success ? 'Test successful' : 'Test failed'}
+                    </AlertTitle>
+                    <AlertDescription>
+                      {testResult.message}
+                    </AlertDescription>
+                  </Alert>
+                  
+                  {testResult.details && (
+                    <div className="p-3 bg-gray-50 rounded-md text-xs overflow-x-auto">
+                      <pre>{JSON.stringify(testResult.details, null, 2)}</pre>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          </TabsContent>
+        </CardContent>
+      </Tabs>
+      
+      <CardFooter className="flex justify-between">
+        <Button variant="outline" onClick={() => window.location.href = "/?section=about-me"}>
+          Return to Dashboard
+        </Button>
+        <Button variant="destructive" onClick={() => localStorage.clear()}>
+          Clear LocalStorage
+        </Button>
+      </CardFooter>
+    </Card>
   );
 };
 

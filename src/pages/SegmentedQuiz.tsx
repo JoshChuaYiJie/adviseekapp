@@ -18,7 +18,7 @@ import {
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Card } from "@/components/ui/card";
 
-// Import debugging helper with the correct function
+// Import debugging helper
 import { validateUserResponsesTable, testInsertResponse } from "@/contexts/quiz/utils/databaseHelpers";
 
 // Define question type locally instead of importing from quizQuestions
@@ -333,10 +333,10 @@ const SegmentedQuiz = () => {
     try {
       addDebugLog("Loading previous answers", { userId, segmentId });
       
-      // Get user responses for this segment with more detailed query
+      // Get user responses for this segment
       const { data, error } = await supabase
         .from('user_responses')
-        .select('question_id, response, response_array, score, component')
+        .select('question_id, response, score')
         .eq('user_id', userId)
         .eq('quiz_type', segmentId);
       
@@ -357,15 +357,11 @@ const SegmentedQuiz = () => {
         const savedScores: Record<string, number> = {};
         
         data.forEach(item => {
-          // Handle both string responses and array responses
           if (item.response) {
             savedAnswers[item.question_id] = item.response;
-          } else if (item.response_array && Array.isArray(item.response_array) && item.response_array.length > 0) {
-            // Handle array responses if needed
-            savedAnswers[item.question_id] = item.response_array[0];
           }
           
-          if (item.score !== null && item.score !== undefined) {
+          if (item.score) {
             savedScores[item.question_id] = item.score;
           }
         });
@@ -391,7 +387,6 @@ const SegmentedQuiz = () => {
     const question = questions.find(q => q.id === questionId);
     if (!question) return;
     
-    // Convert score to number to ensure type safety
     const score = question.optionScores?.[answer] || 0;
     
     setAnswers(prev => ({
@@ -791,13 +786,6 @@ const SegmentedQuiz = () => {
                             {entry.timestamp.toLocaleTimeString()} - 
                           </span>
                           <span className="ml-1">{entry.message}</span>
-                          {entry.data && (
-                            <pre className="text-xs overflow-auto max-w-full">
-                              {typeof entry.data === 'object' ? 
-                                JSON.stringify(entry.data, null, 2) : 
-                                String(entry.data)}
-                            </pre>
-                          )}
                         </div>
                       ))}
                     </div>

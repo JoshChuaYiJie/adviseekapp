@@ -1,10 +1,10 @@
+
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { calculateWorkValuesProfile, getUserId, inspectResponses } from '@/contexts/quiz/utils/databaseHelpers';
 import { Button } from '@/components/ui/button';
 import { Bug } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
 
 // Expose this data for other components to use
 export const processWorkValuesData = async (userId: string) => {
@@ -12,21 +12,21 @@ export const processWorkValuesData = async (userId: string) => {
     const profile = await calculateWorkValuesProfile(userId);
     console.log('Raw Work Values Profile:', profile);
     
-    // Skip empty profiles
-    if (Object.keys(profile).length === 0) {
-      console.log("Empty Work Values profile, returning empty array");
-      return [];
-    }
-    
     // Calculate total for percentages
-    const totalValue = Object.values(profile).reduce((sum, val) => sum + (val as number), 0);
+    const totalValue = Object.values(profile).reduce((sum, val) => sum + val, 0);
     
-    // Convert to array format for chart data with percentages
+    // Convert to array format for chart data with display names
     const chartData = Object.entries(profile)
-      .map(([name, value]) => ({
-        name,
-        value: typeof value === 'number' ? value : 0
-      }))
+      .map(([name, value]) => {
+        // Special case for Recognition
+        let displayName = name === 'Recognition' ? 'Rc' : name.charAt(0);
+        
+        return {
+          name,
+          displayName,
+          value: typeof value === 'number' ? value : 0
+        };
+      })
       .filter(item => item.value > 0)
       .sort((a, b) => b.value - a.value); // Sort by value descending
 
@@ -39,15 +39,14 @@ export const processWorkValuesData = async (userId: string) => {
 };
 
 export const WorkValuesChart = () => {
-  const { toast } = useToast();
-  const [workValuesData, setWorkValuesData] = useState<Array<{name: string, value: number}>>([]);
+  const [workValuesData, setWorkValuesData] = useState<Array<{name: string, value: number, displayName: string}>>([]);
   const [loading, setLoading] = useState(true);
   const [showAnimation, setShowAnimation] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [debugMode, setDebugMode] = useState(false);
   
   // Distinct color palette for Work Values
-  const COLORS = ['#4BC0C0', '#FF9F40', '#9966FF', '#FF6384', '#36A2EB', '#FFCE56', '#8884d8', '#82ca9d'];
+  const COLORS = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'];
 
   useEffect(() => {
     const loadWorkValuesProfile = async () => {
@@ -60,19 +59,16 @@ export const WorkValuesChart = () => {
           console.log("Got user ID for Work Values chart:", userId);
           
           // For debugging, inspect responses directly
-          const responses = await inspectResponses(userId, 'WorkValues');
-          console.log("Work Values-related responses:", responses);
+          if (process.env.NODE_ENV !== 'production') {
+            const responses = await inspectResponses(userId, 'work');
+            console.log("Work Values-related responses:", responses);
+          }
           
           const chartData = await processWorkValuesData(userId);
           setWorkValuesData(chartData);
           
           if (chartData.length === 0) {
-            setError("No Work Values data available. Please complete the work values quiz.");
-            toast({
-              title: "No Work Values Data",
-              description: "Please complete the work values quiz to see your work values profile.",
-              variant: "default"
-            });
+            setError("No Work Values data available. Please complete the Work Values quiz.");
           } else {
             // Add slight delay for animation
             setTimeout(() => setShowAnimation(true), 100);
@@ -84,18 +80,13 @@ export const WorkValuesChart = () => {
       } catch (error) {
         console.error("Error loading Work Values profile:", error);
         setError("Failed to load Work Values profile. Please try again later.");
-        toast({
-          title: "Error",
-          description: "Failed to load Work Values profile data",
-          variant: "destructive"
-        });
       } finally {
         setLoading(false);
       }
     };
 
     loadWorkValuesProfile();
-  }, [toast]);
+  }, []);
 
   const toggleDebugMode = () => {
     setDebugMode(!debugMode);
@@ -117,12 +108,14 @@ export const WorkValuesChart = () => {
         </CardHeader>
         <CardContent className="flex flex-col items-center justify-center h-[200px]">
           <p className="text-gray-500 text-center mb-4">
-            {error || "Complete the work values quiz to see your Work Values profile."}
+            {error || "Complete the work values quiz to see your profile."}
           </p>
-          <Button variant="outline" size="sm" onClick={toggleDebugMode}>
-            <Bug className="h-3 w-3 mr-1" />
-            Debug Info
-          </Button>
+          {process.env.NODE_ENV !== 'production' && (
+            <Button variant="outline" size="sm" onClick={toggleDebugMode}>
+              <Bug className="h-3 w-3 mr-1" />
+              Debug Info
+            </Button>
+          )}
           {debugMode && (
             <div className="w-full mt-4 p-4 bg-gray-50 dark:bg-gray-800 rounded text-xs font-mono overflow-auto">
               <p>Make sure you've completed this quiz:</p>
@@ -132,12 +125,11 @@ export const WorkValuesChart = () => {
               <p className="mt-2">Your responses should have component values like:</p>
               <ul className="list-disc pl-6">
                 <li>Achievement</li>
-                <li>Working Conditions</li>
+                <li>Independence</li>
                 <li>Recognition</li>
                 <li>Relationships</li>
                 <li>Support</li>
-                <li>Independence</li>
-                <li>Altruism</li>
+                <li>Working Conditions</li>
               </ul>
             </div>
           )}
@@ -163,7 +155,7 @@ export const WorkValuesChart = () => {
                 cx="50%"
                 cy="50%"
                 labelLine={false}
-                label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                label={({ displayName, percent }) => `${displayName} (${(percent * 100).toFixed(0)}%)`}
                 outerRadius={80}
                 fill="#8884d8"
                 dataKey="value"
@@ -175,24 +167,38 @@ export const WorkValuesChart = () => {
                 ))}
               </Pie>
               <Tooltip 
-                formatter={(value, name) => {
-                  // Show raw value and percentage on hover
+                formatter={(value, name, props) => {
+                  // Calculate and show percentage on hover
                   const percent = ((value as number) / totalValue * 100).toFixed(1);
-                  return [`${percent}%`, name];
+                  
+                  // Extract full name from props when available
+                  let label = name;
+                  if (props && props.payload && typeof props.payload === 'object' && 'name' in props.payload) {
+                    label = props.payload.name as string;
+                  }
+                  
+                  return [`${percent}%`, label];
                 }} 
               />
-              <Legend />
+              <Legend 
+                formatter={(value, entry) => {
+                  // Type safety check to access the payload property
+                  if (entry && entry.payload && typeof entry.payload === 'object' && 'name' in entry.payload) {
+                    return entry.payload.name as string;
+                  }
+                  return '';
+                }} 
+              />
             </PieChart>
           </ResponsiveContainer>
         </div>
         <div className="mt-4 text-sm text-gray-500">
-          <p><strong>Achievement</strong>: You value accomplishment and using your abilities</p>
-          <p><strong>Working Conditions</strong>: You value job security and good environments</p>
-          <p><strong>Recognition</strong>: You value being recognized for your contributions</p>
-          <p><strong>Relationships</strong>: You value positive social interactions</p>
-          <p><strong>Support</strong>: You value supportive management and competent supervision</p>
-          <p><strong>Independence</strong>: You value autonomy and working independently</p>
-          <p><strong>Altruism</strong>: You value helping others and contributing to society</p>
+          <p><strong>A</strong>: Achievement - Results-oriented, sense of accomplishment</p>
+          <p><strong>I</strong>: Independence - Autonomy, self-direction</p>
+          <p><strong>Rc</strong>: Recognition - Visibility, status, appreciation</p>
+          <p><strong>R</strong>: Relationships - Connection with colleagues</p>
+          <p><strong>S</strong>: Support - Assistance and encouragement</p>
+          <p><strong>W</strong>: Working Conditions - Environment, job security</p>
         </div>
       </CardContent>
     </Card>
