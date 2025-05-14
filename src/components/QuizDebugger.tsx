@@ -7,12 +7,17 @@ import useQuizDebug from '@/hooks/useQuizDebug';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { validateUserResponsesTable } from '@/contexts/quiz/utils/databaseHelpers';
 
-export const QuizDebugger = () => {
+interface QuizDebuggerProps {
+  userId?: string | null;
+  authStatus?: 'checking' | 'authenticated' | 'unauthenticated';
+}
+
+export const QuizDebugger = ({ userId, authStatus }: QuizDebuggerProps = {}) => {
   const { 
     isLoading, 
     responseData, 
     error, 
-    userId, 
+    userId: debugUserId, 
     init, 
     fetchResponses 
   } = useQuizDebug();
@@ -32,7 +37,10 @@ export const QuizDebugger = () => {
     }
   };
 
-  if (!userId) {
+  // Use the userId prop if provided, otherwise use the one from the hook
+  const effectiveUserId = userId || debugUserId;
+
+  if (!effectiveUserId) {
     return (
       <Alert>
         <AlertTitle>Not logged in</AlertTitle>
@@ -45,7 +53,8 @@ export const QuizDebugger = () => {
     <Card className="p-4">
       <h2 className="text-xl font-bold mb-4">Quiz Debugger</h2>
       <div className="mb-4">
-        <p><strong>User ID:</strong> {userId}</p>
+        <p><strong>User ID:</strong> {effectiveUserId}</p>
+        {authStatus && <p><strong>Auth Status:</strong> {authStatus}</p>}
       </div>
 
       <div className="flex space-x-2 mb-4">

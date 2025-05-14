@@ -790,6 +790,13 @@ const SegmentedQuiz = () => {
                             {entry.timestamp.toLocaleTimeString()} - 
                           </span>
                           <span className="ml-1">{entry.message}</span>
+                          {entry.data && (
+                            <pre className="text-xs overflow-auto max-w-full">
+                              {typeof entry.data === 'object' ? 
+                                JSON.stringify(entry.data, null, 2) : 
+                                String(entry.data)}
+                            </pre>
+                          )}
                         </div>
                       ))}
                     </div>
