@@ -35,6 +35,7 @@ export const useRecommendations = (modules: Module[]) => {
   const generateRecommendations = async (userId: string) => {
     try {
       setIsLoading(true);
+      console.log("useRecommendations - Generating recommendations");
       
       // Use the EXACT SAME mock major recommendations as in QuizContext
       const mockMajorRecommendations: MajorRecommendationsType = {
@@ -55,7 +56,7 @@ export const useRecommendations = (modules: Module[]) => {
         throw new Error("No module recommendations found");
       }
       
-      console.log(`Generated ${moduleRecs.length} module recommendations`);
+      console.log(`Generated ${moduleRecs.length} module recommendations in useRecommendations`);
       
       // Convert to the format expected by the UI with consistent IDs
       const formattedRecs: Recommendation[] = moduleRecs.map(module => ({
@@ -75,6 +76,7 @@ export const useRecommendations = (modules: Module[]) => {
         }
       }));
       
+      console.log("useRecommendations - Formatted recommendations:", formattedRecs.length);
       setRecommendations(formattedRecs);
       
       // Also load user feedback (ratings)
@@ -119,6 +121,7 @@ export const useRecommendations = (modules: Module[]) => {
   const loadRecommendations = async (userId: string) => {
     try {
       setIsLoading(true);
+      console.log("useRecommendations - Loading recommendations");
       
       // Use the EXACT SAME mock major recommendations as in QuizContext
       const mockMajorRecommendations: MajorRecommendationsType = {
@@ -135,7 +138,7 @@ export const useRecommendations = (modules: Module[]) => {
       // Get all matching modules without limiting
       const moduleRecs = await fetchModuleRecommendations(mockMajorRecommendations, 0);
       
-      console.log(`Loaded ${moduleRecs.length} module recommendations`);
+      console.log(`useRecommendations - Loaded ${moduleRecs.length} module recommendations`);
       
       // Convert to the format expected by the UI with consistent IDs
       const formattedRecs: Recommendation[] = moduleRecs.map(module => ({
@@ -155,6 +158,7 @@ export const useRecommendations = (modules: Module[]) => {
         }
       }));
       
+      console.log("useRecommendations - Setting recommendations:", formattedRecs.length);
       setRecommendations(formattedRecs);
       
       // Also load user feedback (ratings)

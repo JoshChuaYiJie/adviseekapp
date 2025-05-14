@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { Module } from '@/integrations/supabase/client';
 import { QuizContextType } from './types';
@@ -194,12 +193,24 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
     }
   };
 
-  // Refine recommendations - ensure we use EXACTLY the same approach as in AboutMe
+  // Generate consistent module IDs based on modulecode - For consistency
+  const getModuleId = (code: string) => {
+    let hash = 0;
+    for (let i = 0; i < code.length; i++) {
+      const char = code.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Convert to 32bit integer
+    }
+    return Math.abs(hash);
+  };
+  
+  // Refine recommendations - ensure we use EXACTLY the same approach consistently
   const refineRecommendations = async (selectedModuleIds: number[] = []): Promise<void> => {
     try {
       setIsLoading(true);
+      console.log("QuizContext - Starting refineRecommendations");
       
-      // Define the EXACT SAME major recommendations for consistency with AboutMe
+      // Define the EXACT SAME major recommendations for consistency
       const mockRecommendations: MajorRecommendationsType = {
         exactMatches: ["Computer Science at NUS", "Information Systems at NUS"],
         permutationMatches: [],
@@ -216,18 +227,7 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
       
       console.log(`QuizContext - Total matched modules found: ${moduleRecs.length}`);
       
-      // Generate consistent module IDs based on modulecode - EXACTLY as in AboutMe
-      const getModuleId = (code: string) => {
-        let hash = 0;
-        for (let i = 0; i < code.length; i++) {
-          const char = code.charCodeAt(i);
-          hash = ((hash << 5) - hash) + char;
-          hash = hash & hash; // Convert to 32bit integer
-        }
-        return Math.abs(hash);
-      };
-      
-      // Convert modules to the format expected - EXACTLY as in AboutMe
+      // Convert modules to the format expected - EXACTLY consistent
       const formattedRecs = moduleRecs.map(module => ({
         module_id: getModuleId(module.modulecode),
         user_id: userId || '',
@@ -245,6 +245,7 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
         reasoning: ["Based on your recommended majors"]
       }));
       
+      console.log(`QuizContext - Setting ${formattedRecs.length} recommendations`);
       setRecommendations(formattedRecs);
       setIsLoading(false);
     } catch (err) {

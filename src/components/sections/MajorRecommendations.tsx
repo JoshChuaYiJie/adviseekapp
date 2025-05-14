@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
@@ -93,12 +94,11 @@ export const MajorRecommendations: React.FC<MajorRecommendationsProps> = ({
                 Complete this quiz to explore specific questions about your chosen major.
               </p>
               <Button 
-                onClick={prepareQuestionsForRecommendedMajors} 
+                onClick={() => navigate('/open-ended')} 
                 size="lg" 
                 className="px-8 py-2"
-                disabled={loadingQuestions}
               >
-                {loadingQuestions ? "Loading Questions..." : "Load Questions"}
+                Take Quiz
               </Button>
             </div>
           ) : recommendations && (

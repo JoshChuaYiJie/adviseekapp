@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -30,6 +31,7 @@ const Recommendations = () => {
   useEffect(() => {
     const loadRecommendations = async () => {
       if (!recommendations || recommendations.length === 0) {
+        console.log("Loading recommendations from /recommendations page");
         await refineRecommendations([]);
       }
     };
@@ -152,6 +154,7 @@ const Recommendations = () => {
     );
   }
 
+  console.log('Recommendations in /recommendations page:', recommendations);
   const currentModule = recommendations[currentIndex];
 
   return (
@@ -265,5 +268,3 @@ const Recommendations = () => {
 };
 
 export default Recommendations;
-
-// NOTE: This file is now 218+ lines. Consider refactoring into smaller, focused components for maintainability.
