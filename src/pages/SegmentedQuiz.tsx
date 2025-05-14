@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -18,7 +19,7 @@ import {
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Card } from "@/components/ui/card";
 
-// Import debugging helper
+// Import debugging helper with the correct function
 import { validateUserResponsesTable, testInsertResponse } from "@/contexts/quiz/utils/databaseHelpers";
 
 // Define question type locally instead of importing from quizQuestions

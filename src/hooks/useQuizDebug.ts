@@ -3,12 +3,13 @@ import { useState, useCallback } from 'react';
 import { inspectResponses } from '@/contexts/quiz/utils/databaseHelpers';
 import { useToast } from './use-toast';
 
+// Update the type to match the function implementation
 export function useQuizDebug() {
   const [isLoading, setIsLoading] = useState(false);
   const [responses, setResponses] = useState<any[]>([]);
   const { toast } = useToast();
   
-  const fetchUserResponses = useCallback(async (userId: string | null, pattern?: string) => {
+  const fetchUserResponses = useCallback(async (userId: string | null, pattern?: 'RIASEC' | 'WorkValues' | 'All') => {
     if (!userId) {
       toast({
         title: "Debug error",
