@@ -7,6 +7,7 @@ import { processWorkValuesData } from '@/components/sections/WorkValuesChart';
 import { fetchModuleRecommendations } from '@/utils/recommendation/moduleRecommendationUtils';
 import { Module } from '@/utils/recommendation/types';
 import { MajorRecommendationsType } from '@/components/sections/majors/types';
+import { useToast } from '@/hooks/use-toast';
 
 // Define the context type
 interface GlobalProfileContextType {
@@ -50,6 +51,7 @@ export const GlobalProfileProvider: React.FC<{children: React.ReactNode}> = ({ c
   // State
   const [riasecCode, setRiasecCode] = useState<string>('');
   const [workValueCode, setWorkValueCode] = useState<string>('');
+  const { toast } = useToast();
   const [recommendedMajors, setRecommendedMajors] = useState<{
     exactMatches: string[];
     permutationMatches: string[];
@@ -67,7 +69,7 @@ export const GlobalProfileProvider: React.FC<{children: React.ReactNode}> = ({ c
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   
-  // Load profile data function - this preserves the existing calculation logic
+  // Load profile data function
   const loadProfileData = async () => {
     try {
       setIsLoading(true);
@@ -83,55 +85,128 @@ export const GlobalProfileProvider: React.FC<{children: React.ReactNode}> = ({ c
       }
       console.log(`Loading user profile data for ${userId}`);
 
-      // Get RIASEC data from chart processing function - keeping existing logic
-      const riasecChartData = await processRiasecData(userId);
-
-      // Get Work Values data from chart processing function - keeping existing logic
-      const workValuesChartData = await processWorkValuesData(userId);
-      console.log("RIASEC data:", riasecChartData);
-      console.log("Work Value data:", workValuesChartData);
+      // RIASEC code generation
+      let generatedRiasecCode = "RSI"; // Default fallback
       
-      let generatedRiasecCode = "";
-      let generatedWorkValueCode = "";
-
-      // Generate RIASEC code if data exists - same logic as before
-      if (riasecChartData && riasecChartData.length > 0) {
-        // Format data for code generation
-        const formattedRiasecData = riasecChartData.map(item => ({
-          component: item.name,
-          average: 0,
-          score: item.value
-        }));
-        generatedRiasecCode = formCode(formattedRiasecData, mapRiasecToCode);
-        setRiasecCode(generatedRiasecCode || "RSI");
-      } else {
-        // Fallback if no data
-        generatedRiasecCode = "RSI";
-        setRiasecCode("RSI");
+      // Try to get RIASEC data directly from user_responses table
+      const { data: riasecResponses, error: riasecError } = await supabase
+        .from('user_responses')
+        .select('component, score')
+        .eq('user_id', userId)
+        .in('quiz_type', ['interest-part 1', 'interest-part 2', 'competence'])
+        .not('component', 'is', null);
+        
+      if (riasecError) {
+        console.error('Error fetching RIASEC responses:', riasecError);
+      } 
+      else if (riasecResponses && riasecResponses.length > 0) {
+        console.log("RIASEC responses:", riasecResponses);
+        
+        // Group responses by component and sum scores
+        const componentScores: Record<string, number> = {};
+        riasecResponses.forEach(response => {
+          if (response.component) {
+            componentScores[response.component] = (componentScores[response.component] || 0) + (response.score || 0);
+          }
+        });
+        
+        // Convert to array and sort by score
+        const sortedComponents = Object.entries(componentScores)
+          .map(([component, score]) => ({ component, score, average: 0 }))
+          .sort((a, b) => b.score - a.score);
+          
+        console.log("Sorted RIASEC components:", sortedComponents);
+        
+        if (sortedComponents.length > 0) {
+          generatedRiasecCode = formCode(sortedComponents, mapRiasecToCode);
+          console.log(`Generated RIASEC code from responses: ${generatedRiasecCode}`);
+        }
+        
+        setRiasecCode(generatedRiasecCode);
+      } 
+      else {
+        // Fallback to process function
+        const riasecChartData = await processRiasecData(userId);
+        if (riasecChartData && riasecChartData.length > 0) {
+          const formattedRiasecData = riasecChartData.map(item => ({
+            component: item.name,
+            average: 0,
+            score: item.value
+          }));
+          generatedRiasecCode = formCode(formattedRiasecData, mapRiasecToCode);
+          setRiasecCode(generatedRiasecCode);
+        } else {
+          setRiasecCode("RSI"); // Default fallback
+        }
       }
 
-      // Generate Work Values code if data exists - same logic as before
-      if (workValuesChartData && workValuesChartData.length > 0) {
-        // Format data for code generation
-        const formattedWorkValuesData = workValuesChartData.map(item => ({
-          component: item.name,
-          average: 0,
-          score: item.value
-        }));
-        generatedWorkValueCode = formCode(formattedWorkValuesData, mapWorkValueToCode);
-        setWorkValueCode(generatedWorkValueCode || "ARS");
-      } else {
-        generatedWorkValueCode = "ARS";
-        setWorkValueCode("ARS");
+      // Work Values code generation
+      let generatedWorkValueCode = "ARS"; // Default fallback
+      
+      // Try to get Work Values data directly from user_responses table
+      const { data: workValueResponses, error: workValueError } = await supabase
+        .from('user_responses')
+        .select('component, score')
+        .eq('user_id', userId)
+        .eq('quiz_type', 'work-values')
+        .not('component', 'is', null);
+        
+      if (workValueError) {
+        console.error('Error fetching Work Value responses:', workValueError);
+      } 
+      else if (workValueResponses && workValueResponses.length > 0) {
+        console.log("Work Value responses:", workValueResponses);
+        
+        // Group responses by component and sum scores
+        const componentScores: Record<string, number> = {};
+        workValueResponses.forEach(response => {
+          if (response.component) {
+            componentScores[response.component] = (componentScores[response.component] || 0) + (response.score || 0);
+          }
+        });
+        
+        // Convert to array and sort by score
+        const sortedComponents = Object.entries(componentScores)
+          .map(([component, score]) => ({ component, score, average: 0 }))
+          .sort((a, b) => b.score - a.score);
+          
+        console.log("Sorted Work Value components:", sortedComponents);
+        
+        if (sortedComponents.length > 0) {
+          generatedWorkValueCode = formCode(sortedComponents, mapWorkValueToCode);
+          console.log(`Generated Work Value code from responses: ${generatedWorkValueCode}`);
+        }
+        
+        setWorkValueCode(generatedWorkValueCode);
+      } 
+      else {
+        // Fallback to process function
+        const workValuesChartData = await processWorkValuesData(userId);
+        if (workValuesChartData && workValuesChartData.length > 0) {
+          const formattedWorkValuesData = workValuesChartData.map(item => ({
+            component: item.name,
+            average: 0,
+            score: item.value
+          }));
+          generatedWorkValueCode = formCode(formattedWorkValuesData, mapWorkValueToCode);
+          setWorkValueCode(generatedWorkValueCode);
+        } else {
+          setWorkValueCode("ARS"); // Default fallback
+        }
       }
 
-      // Fetch recommended majors based on the profile codes - same logic as before
-      if (generatedRiasecCode && generatedWorkValueCode) {
+      console.log("Final codes for recommendations:", {
+        riasec: generatedRiasecCode,
+        workValue: generatedWorkValueCode
+      });
+
+      // Fetch recommended majors based on the profile codes
+      try {
         const majorRecommendations = await getMatchingMajors(generatedRiasecCode, generatedWorkValueCode);
         console.log("Recommended majors:", majorRecommendations);
         setRecommendedMajors(majorRecommendations);
         
-        // Fetch module recommendations based on the recommended majors - same logic as before
+        // Fetch module recommendations based on the recommended majors
         try {
           const modules = await fetchModuleRecommendations(majorRecommendations);
           console.log("Recommended modules in global context:", modules.length);
@@ -139,11 +214,29 @@ export const GlobalProfileProvider: React.FC<{children: React.ReactNode}> = ({ c
         } catch (error) {
           console.error("Error fetching module recommendations:", error);
           setError("Failed to fetch module recommendations");
+          toast({
+            title: "Error",
+            description: "Failed to fetch module recommendations",
+            variant: "destructive"
+          });
         }
+      } catch (error) {
+        console.error("Error fetching major recommendations:", error);
+        setError("Failed to fetch major recommendations");
+        toast({
+          title: "Error",
+          description: "Failed to fetch major recommendations",
+          variant: "destructive"
+        });
       }
     } catch (error) {
       console.error("Error loading profile data:", error);
       setError("Failed to load profile data");
+      toast({
+        title: "Error",
+        description: "Failed to load profile data",
+        variant: "destructive"
+      });
     } finally {
       setIsLoading(false);
     }

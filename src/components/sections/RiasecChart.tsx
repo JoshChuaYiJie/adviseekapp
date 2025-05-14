@@ -5,12 +5,19 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recha
 import { calculateRiasecProfile, getUserId, inspectResponses } from '@/contexts/quiz/utils/databaseHelpers';
 import { Button } from '@/components/ui/button';
 import { Bug } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 // Expose this data for other components to use
 export const processRiasecData = async (userId: string) => {
   try {
     const profile = await calculateRiasecProfile(userId);
     console.log('Raw RIASEC Profile:', profile);
+    
+    // Skip empty profiles
+    if (Object.keys(profile).length === 0) {
+      console.log("Empty RIASEC profile, returning empty array");
+      return [];
+    }
     
     // Calculate total for percentages
     const totalValue = Object.values(profile).reduce((sum, val) => sum + val, 0);
@@ -33,6 +40,7 @@ export const processRiasecData = async (userId: string) => {
 };
 
 export const RiasecChart = () => {
+  const { toast } = useToast();
   const [riasecData, setRiasecData] = useState<Array<{name: string, value: number}>>([]);
   const [loading, setLoading] = useState(true);
   const [showAnimation, setShowAnimation] = useState(false);
@@ -53,16 +61,19 @@ export const RiasecChart = () => {
           console.log("Got user ID for RIASEC chart:", userId);
           
           // For debugging, inspect responses directly
-          if (process.env.NODE_ENV !== 'production') {
-            const responses = await inspectResponses(userId, 'RIASEC');
-            console.log("RIASEC-related responses:", responses);
-          }
+          const responses = await inspectResponses(userId, 'RIASEC');
+          console.log("RIASEC-related responses:", responses);
           
           const chartData = await processRiasecData(userId);
           setRiasecData(chartData);
           
           if (chartData.length === 0) {
             setError("No RIASEC data available. Please complete the interest and competence quizzes.");
+            toast({
+              title: "No RIASEC Data",
+              description: "Please complete the interest and competence quizzes to see your RIASEC profile.",
+              variant: "default"
+            });
           } else {
             // Add slight delay for animation
             setTimeout(() => setShowAnimation(true), 100);
@@ -74,13 +85,18 @@ export const RiasecChart = () => {
       } catch (error) {
         console.error("Error loading RIASEC profile:", error);
         setError("Failed to load RIASEC profile. Please try again later.");
+        toast({
+          title: "Error",
+          description: "Failed to load RIASEC profile data",
+          variant: "destructive"
+        });
       } finally {
         setLoading(false);
       }
     };
 
     loadRiasecProfile();
-  }, []);
+  }, [toast]);
 
   const toggleDebugMode = () => {
     setDebugMode(!debugMode);
@@ -104,12 +120,10 @@ export const RiasecChart = () => {
           <p className="text-gray-500 text-center mb-4">
             {error || "Complete interest and competence quizzes to see your RIASEC profile."}
           </p>
-          {process.env.NODE_ENV !== 'production' && (
-            <Button variant="outline" size="sm" onClick={toggleDebugMode}>
-              <Bug className="h-3 w-3 mr-1" />
-              Debug Info
-            </Button>
-          )}
+          <Button variant="outline" size="sm" onClick={toggleDebugMode}>
+            <Bug className="h-3 w-3 mr-1" />
+            Debug Info
+          </Button>
           {debugMode && (
             <div className="w-full mt-4 p-4 bg-gray-50 dark:bg-gray-800 rounded text-xs font-mono overflow-auto">
               <p>Make sure you've completed these quizzes:</p>
