@@ -685,8 +685,8 @@ const OpenEndedQuiz = () => {
       // Filter out skipped responses and empty responses
       const validResponses = responsesToSubmit.filter(r => 
         r !== undefined && 
-        !responses[r.question_id]?.skipped &&
-        responses[r.question_id]?.response.trim() !== ''
+        !responses[r.question]?.skipped &&
+        responses[r.question]?.response.trim() !== ''
       );
       
       console.log("Submitting responses to open_ended_responses table:", validResponses);
