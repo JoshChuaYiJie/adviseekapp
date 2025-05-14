@@ -193,51 +193,12 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
     }
   };
 
-  // Refine recommendations - modified to show all matching modules
+  // Refine recommendations - modified to use the same approach consistently
   const refineRecommendations = async (selectedModuleIds: number[] = []): Promise<void> => {
     try {
       setIsLoading(true);
       
-      // Get user's profile - simplified approach
-      const { data: riasecData } = await supabase
-        .from('user_responses')
-        .select('component, score')
-        .eq('user_id', userId || '')
-        .in('quiz_type', ['interest-part 1', 'interest-part 2', 'competence']);
-      
-      const { data: workValueData } = await supabase
-        .from('user_responses')
-        .select('component, score')
-        .eq('user_id', userId || '')
-        .eq('quiz_type', 'work-values');
-      
-      // Process the data to get top components
-      const riasecScores: Record<string, number> = {};
-      riasecData?.forEach(item => {
-        if (item.component) {
-          riasecScores[item.component] = (riasecScores[item.component] || 0) + (item.score || 0);
-        }
-      });
-      
-      const workValueScores: Record<string, number> = {};
-      workValueData?.forEach(item => {
-        if (item.component) {
-          workValueScores[item.component] = (workValueScores[item.component] || 0) + (item.score || 0);
-        }
-      });
-      
-      // Convert to array and sort by score
-      const topRiasec = Object.entries(riasecScores)
-        .map(([component, score]) => ({ component, score, average: score }))
-        .sort((a, b) => b.score - a.score)
-        .slice(0, 3);
-      
-      const topWorkValues = Object.entries(workValueScores)
-        .map(([component, score]) => ({ component, score, average: score }))
-        .sort((a, b) => b.score - a.score)
-        .slice(0, 3);
-      
-      // Get major recommendations
+      // Define consistent major recommendations for all parts of the app
       const mockRecommendations: MajorRecommendationsType = {
         exactMatches: ["Computer Science at NUS", "Information Systems at NUS"],
         permutationMatches: [],
@@ -249,17 +210,30 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
         matchType: 'exact'
       };
       
-      // Get module recommendations based on these majors - no longer limited
+      // Get all module recommendations without limiting
       const moduleRecs = await fetchModuleRecommendations(mockRecommendations);
       
       console.log(`Total matched modules found: ${moduleRecs.length}`);
       
-      // Convert modules to the format expected by the UI
+      // Generate consistent module IDs based on modulecode to ensure they're the same
+      // across different parts of the application
+      const getModuleId = (code: string) => {
+        // Simple hash function to generate consistent IDs
+        let hash = 0;
+        for (let i = 0; i < code.length; i++) {
+          const char = code.charCodeAt(i);
+          hash = ((hash << 5) - hash) + char;
+          hash = hash & hash; // Convert to 32bit integer
+        }
+        return Math.abs(hash);
+      };
+      
+      // Convert modules to the format expected by the UI with consistent IDs
       const formattedRecs = moduleRecs.map(module => ({
-        module_id: Math.floor(Math.random() * 10000),
+        module_id: getModuleId(module.modulecode),
         user_id: userId || '',
         module: {
-          id: Math.floor(Math.random() * 10000),
+          id: getModuleId(module.modulecode),
           university: module.institution,
           course_code: module.modulecode,
           title: module.title,

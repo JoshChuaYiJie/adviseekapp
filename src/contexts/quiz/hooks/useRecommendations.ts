@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Module } from '@/integrations/supabase/client';
 import { getUserId } from '../utils/databaseHelpers';
@@ -18,13 +19,23 @@ export const useRecommendations = (modules: Module[]) => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
+  // Generate consistent module IDs based on modulecode
+  const getModuleId = (code: string) => {
+    let hash = 0;
+    for (let i = 0; i < code.length; i++) {
+      const char = code.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Convert to 32bit integer
+    }
+    return Math.abs(hash);
+  };
+
   // Generate recommendations
   const generateRecommendations = async (userId: string) => {
     try {
       setIsLoading(true);
       
-      // Mock major recommendations for demonstration
-      // In a real implementation, you would get this from the user's profile
+      // Use the same mock major recommendations as in QuizContext
       const mockMajorRecommendations: MajorRecommendationsType = {
         exactMatches: ["Computer Science at NUS", "Information Systems at NUS"],
         permutationMatches: [],
@@ -45,15 +56,15 @@ export const useRecommendations = (modules: Module[]) => {
       
       console.log(`Generated ${moduleRecs.length} module recommendations`);
       
-      // Convert to the format expected by the UI
+      // Convert to the format expected by the UI with consistent IDs
       const formattedRecs: Recommendation[] = moduleRecs.map(module => ({
         id: Math.floor(Math.random() * 10000),
         user_id: userId,
-        module_id: Math.floor(Math.random() * 10000),
+        module_id: getModuleId(module.modulecode),
         reason: "Recommended based on your major preferences",
         created_at: new Date().toISOString(),
         module: {
-          id: Math.floor(Math.random() * 10000),
+          id: getModuleId(module.modulecode),
           university: module.institution as "NUS" | "NTU" | "SMU",
           course_code: module.modulecode,
           title: module.title,
@@ -101,38 +112,37 @@ export const useRecommendations = (modules: Module[]) => {
     }
   };
 
-  // Load recommendations - now shows all matching modules
+  // Load recommendations - now uses the same approach as in QuizContext
   const loadRecommendations = async (userId: string) => {
     try {
       setIsLoading(true);
       
-      // Use the fetchModuleRecommendations function
-      // This is a simplified version - in a real app, you'd get the major recommendations from the user's profile
+      // Use the same mock major recommendations as in QuizContext
       const mockMajorRecommendations: MajorRecommendationsType = {
-        exactMatches: ["Computer Science at NUS", "Business at NUS"],
+        exactMatches: ["Computer Science at NUS", "Information Systems at NUS"],
         permutationMatches: [],
-        riasecMatches: ["Information Systems at NTU", "Data Science at SMU"],
+        riasecMatches: ["Software Engineering at NTU", "Data Science at SMU"],
         workValueMatches: ["Computer Engineering at NTU"],
         questionFiles: [],
-        riasecCode: "RIA",
-        workValueCode: "ARC",
-        matchType: 'riasec'
+        riasecCode: "RIC",
+        workValueCode: "ARS",
+        matchType: 'exact'
       };
       
-      // Get all matching modules without limiting per major
+      // Get all matching modules
       const moduleRecs = await fetchModuleRecommendations(mockMajorRecommendations);
       
       console.log(`Loaded ${moduleRecs.length} module recommendations`);
       
-      // Convert to the format expected by the UI
+      // Convert to the format expected by the UI with consistent IDs
       const formattedRecs: Recommendation[] = moduleRecs.map(module => ({
         id: Math.floor(Math.random() * 10000),
         user_id: userId,
-        module_id: Math.floor(Math.random() * 10000),
+        module_id: getModuleId(module.modulecode),
         reason: "Recommended based on your major preferences",
         created_at: new Date().toISOString(),
         module: {
-          id: Math.floor(Math.random() * 10000),
+          id: getModuleId(module.modulecode),
           university: module.institution as "NUS" | "NTU" | "SMU",
           course_code: module.modulecode,
           title: module.title,

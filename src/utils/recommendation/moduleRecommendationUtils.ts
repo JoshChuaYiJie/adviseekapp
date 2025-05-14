@@ -1,5 +1,4 @@
 
-
 import { MajorRecommendationsType } from '@/components/sections/majors/types';
 
 export interface Module {
@@ -13,13 +12,11 @@ export interface Module {
  * Fetches module recommendations based on the top recommended majors
  * @param recommendations The major recommendations object
  * @param limit The maximum number of majors to use (default: 5)
- * @param modulesPerMajor The maximum number of modules per major (default: 3)
  * @returns A promise that resolves to an array of recommended modules
  */
 export const fetchModuleRecommendations = async (
   recommendations: MajorRecommendationsType,
-  limit = 5,
-  modulesPerMajor = 3
+  limit = 5
 ): Promise<Module[]> => {
   try {
     // Get the combined list of all recommended majors
@@ -33,8 +30,8 @@ export const fetchModuleRecommendations = async (
     // Take only unique majors by creating a Set and converting back to array
     const uniqueMajors = [...new Set(allMajors)];
     
-    // Limit to the top N majors
-    const topMajors = uniqueMajors.slice(0, limit);
+    // Limit to the top N majors if specified
+    const topMajors = limit > 0 ? uniqueMajors.slice(0, limit) : uniqueMajors;
     
     if (topMajors.length === 0) {
       console.log('No recommended majors found');
@@ -108,7 +105,6 @@ export const fetchModuleRecommendations = async (
         console.log(`Found ${matchingModules.length} matching modules for ${majorName}`);
         
         // Add all matching modules for this major to our recommendations
-        // No more limiting to modulesPerMajor
         const majorModules = matchingModules.map((module: any) => ({
           ...module,
           institution: school // Ensure the institution property is correctly typed
@@ -121,7 +117,13 @@ export const fetchModuleRecommendations = async (
       }
     }
     
-    return recommendedModules;
+    // Deduplicate modules based on modulecode
+    const uniqueModules = [...new Map(recommendedModules.map(module => 
+      [module.modulecode, module]
+    )).values()];
+    
+    console.log(`Total unique modules found: ${uniqueModules.length}`);
+    return uniqueModules;
   } catch (error) {
     console.error('Error fetching module recommendations:', error);
     return [];
@@ -149,4 +151,3 @@ const findPrefixesForMajor = (
   
   return prefixes;
 };
-
