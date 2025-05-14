@@ -39,6 +39,45 @@ export type Database = {
         }
         Relationships: []
       }
+      applied_programs: {
+        Row: {
+          college: string | null
+          created_at: string
+          degree: string | null
+          extras: string | null
+          id: string
+          logo_path: string | null
+          major: string
+          school: string
+          university: string
+          user_id: string
+        }
+        Insert: {
+          college?: string | null
+          created_at?: string
+          degree?: string | null
+          extras?: string | null
+          id?: string
+          logo_path?: string | null
+          major: string
+          school: string
+          university: string
+          user_id: string
+        }
+        Update: {
+          college?: string | null
+          created_at?: string
+          degree?: string | null
+          extras?: string | null
+          id?: string
+          logo_path?: string | null
+          major?: string
+          school?: string
+          university?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       community_comments: {
         Row: {
           content: string
