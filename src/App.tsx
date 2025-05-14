@@ -20,33 +20,36 @@ import Achievements from "./pages/Achievements";
 import QuizDebugPage from "./pages/QuizDebugPage";
 import BasicResume from "./pages/BasicResume";
 import { GlobalProfileProvider } from "./contexts/GlobalProfileContext";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 function App() {
   return (
     <ThemeProvider>
       <GlobalProfileProvider>
         <QuizProvider>
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/quiz" element={<SegmentedQuiz />} />
-              <Route path="/open-ended" element={<OpenEndedQuiz />} />
-              <Route path="/university-selection" element={<UniversitySelection />} />
-              <Route path="/recommendations" element={<Recommendations />} />
-              <Route path="/resumebuilder" element={<ResumeBuilder />} />
-              <Route path="/basicresume" element={<BasicResume />} />
-              <Route path="/privacy" element={<PrivacyPolicy />} />
-              <Route path="/terms" element={<TermsOfService />} />
-              <Route path="/pricing" element={<Pricing />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/dashboard" element={<Index />} />
-              <Route path="/community" element={<Community />} />
-              <Route path="/achievements" element={<Achievements />} />
-              <Route path="/debug" element={<QuizDebugPage />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-          <Toaster />
+          <TooltipProvider>
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/quiz" element={<SegmentedQuiz />} />
+                <Route path="/open-ended" element={<OpenEndedQuiz />} />
+                <Route path="/university-selection" element={<UniversitySelection />} />
+                <Route path="/recommendations" element={<Recommendations />} />
+                <Route path="/resumebuilder" element={<ResumeBuilder />} />
+                <Route path="/basicresume" element={<BasicResume />} />
+                <Route path="/privacy" element={<PrivacyPolicy />} />
+                <Route path="/terms" element={<TermsOfService />} />
+                <Route path="/pricing" element={<Pricing />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/dashboard" element={<Index />} />
+                <Route path="/community" element={<Community />} />
+                <Route path="/achievements" element={<Achievements />} />
+                <Route path="/debug" element={<QuizDebugPage />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrowserRouter>
+            <Toaster />
+          </TooltipProvider>
         </QuizProvider>
       </GlobalProfileProvider>
     </ThemeProvider>
