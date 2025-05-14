@@ -72,36 +72,32 @@ export const ResumeTable: React.FC<ResumeTableProps> = ({
                   <TableCell>{resume.template_type}</TableCell>
                   <TableCell>{resume.updated_at}</TableCell>
                   <TableCell className="text-right">
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="mr-1"
-                            onClick={() => onViewResume(resume.id, resume.template_type)}
-                          >
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>{t('View')}</TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="mr-1"
+                          onClick={() => onViewResume(resume.id, resume.template_type)}
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>{t('View')}</TooltipContent>
+                    </Tooltip>
                     
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => onEditResume(resume.id, resume.template_type)}
-                          >
-                            <Pencil className="h-4 w-4" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>{t('Edit')}</TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => onEditResume(resume.id, resume.template_type)}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>{t('Edit')}</TooltipContent>
+                    </Tooltip>
                   </TableCell>
                 </TableRow>
               ))}
@@ -111,20 +107,18 @@ export const ResumeTable: React.FC<ResumeTableProps> = ({
                   <TableCell>PDF Upload</TableCell>
                   <TableCell>Just now</TableCell>
                   <TableCell className="text-right">
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button 
-                            variant="ghost" 
-                            size="icon"
-                            onClick={() => onEditPDF(index)}
-                          >
-                            <FileEdit className="h-4 w-4" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>{t('Edit')}</TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button 
+                          variant="ghost" 
+                          size="icon"
+                          onClick={() => onEditPDF(index)}
+                        >
+                          <FileEdit className="h-4 w-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>{t('Edit')}</TooltipContent>
+                    </Tooltip>
                   </TableCell>
                 </TableRow>
               ))}

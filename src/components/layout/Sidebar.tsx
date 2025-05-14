@@ -15,7 +15,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { supabase } from "@/integrations/supabase/client";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/sonner";
@@ -112,26 +112,28 @@ export const AppSidebar = ({ selectedSection, setSelectedSection, user, onReplay
             <SidebarMenu>
               {navItems.map((item) => (
                 <SidebarMenuItem key={item.id}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <SidebarMenuButton
-                        onClick={() => {
-                          setSelectedSection(item.id);
-                          if (item.id === "community") {
-                            navigate("/community");
-                          } else if (item.id === "achievements") {
-                            navigate("/achievements");
-                          }
-                        }}
-                        isActive={selectedSection === item.id}
-                        data-id={item.id}
-                      >
-                        <item.icon className="h-5 w-5" />
-                        <span>{item.label}</span>
-                      </SidebarMenuButton>
-                    </TooltipTrigger>
-                    <TooltipContent side="right">{item.tooltip}</TooltipContent>
-                  </Tooltip>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <SidebarMenuButton
+                          onClick={() => {
+                            setSelectedSection(item.id);
+                            if (item.id === "community") {
+                              navigate("/community");
+                            } else if (item.id === "achievements") {
+                              navigate("/achievements");
+                            }
+                          }}
+                          isActive={selectedSection === item.id}
+                          data-id={item.id}
+                        >
+                          <item.icon className="h-5 w-5" />
+                          <span>{item.label}</span>
+                        </SidebarMenuButton>
+                      </TooltipTrigger>
+                      <TooltipContent side="right">{item.tooltip}</TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
