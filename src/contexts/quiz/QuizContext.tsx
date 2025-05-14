@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { Module } from '@/integrations/supabase/client';
 import { QuizContextType } from './types';
@@ -56,6 +55,9 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
     loadingModules, 
     refetchRecommendations 
   } = useModuleRecommendations();
+  
+  // Add console log for debugging
+  console.log("QuizContext using recommendedModules:", recommendedModules.length);
   
   // Custom hooks
   const { modules, error: modulesError } = useModules();
