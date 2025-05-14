@@ -11,37 +11,25 @@ import { MyResume } from "./MyResume";
 import { useTheme } from "@/contexts/ThemeContext";
 import { supabase } from "@/integrations/supabase/client";
 import { UserProfileDisplay } from "./majors/UserProfileDisplay";
-import { mapRiasecToCode, mapWorkValueToCode, formCode, getMatchingMajors } from '@/utils/recommendation';
-import { processRiasecData } from '@/components/sections/RiasecChart';
-import { processWorkValuesData } from '@/components/sections/WorkValuesChart';
 import { Badge } from "@/components/ui/badge";
-import { fetchModuleRecommendations, Module } from '@/utils/recommendation/moduleRecommendationUtils';
 import { ModuleRatingCard } from '@/components/ModuleRatingCard';
+import { useGlobalProfile } from "@/contexts/GlobalProfileContext";
 
 export const AboutMe = () => {
   const [activeTab, setActiveTab] = useState<"quiz" | "profile" | "resume">("quiz");
-  const [riasecCode, setRiasecCode] = useState<string>("");
-  const [workValueCode, setWorkValueCode] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [recommendedMajors, setRecommendedMajors] = useState<{
-    exactMatches: string[];
-    permutationMatches: string[];
-    riasecMatches: string[];
-    workValueMatches: string[];
-    matchType: string;
-  }>({
-    exactMatches: [],
-    permutationMatches: [],
-    riasecMatches: [],
-    workValueMatches: [],
-    matchType: 'none'
-  });
-  const [recommendedModules, setRecommendedModules] = useState<Module[]>([]);
-  const [loadingModules, setLoadingModules] = useState<boolean>(false);
   const navigate = useNavigate();
-  const {
-    isCurrentlyDark
-  } = useTheme();
+  const { isCurrentlyDark } = useTheme();
+  
+  // Use the global profile context instead of local state
+  const { 
+    riasecCode, 
+    workValueCode, 
+    recommendedMajors, 
+    recommendedModules, 
+    isLoading: profileLoading, 
+    error 
+  } = useGlobalProfile();
   
   // Enhanced state for dynamic profile information
   const [profileInfo, setProfileInfo] = useState({
@@ -57,62 +45,19 @@ export const AboutMe = () => {
         setIsLoading(true);
 
         // Get current user
-        const {
-          data: {
-            session
-          }
-        } = await supabase.auth.getSession();
+        const { data: { session } } = await supabase.auth.getSession();
         const userId = session?.user?.id;
         if (!userId) {
           console.log("No user ID found");
           setIsLoading(false);
           return;
         }
-        console.log(`Loading user profiles for ${userId}`);
-
-        // Get RIASEC data from chart processing function
-        const riasecChartData = await processRiasecData(userId);
-
-        // Get Work Values data from chart processing function
-        const workValuesChartData = await processWorkValuesData(userId);
-        console.log("RIASEC data:", riasecChartData);
-        console.log("Work Value data:", workValuesChartData);
-        let generatedRiasecCode = "";
-        let generatedWorkValueCode = "";
-
-        // Generate RIASEC code if data exists
-        if (riasecChartData && riasecChartData.length > 0) {
-          // Format data for code generation
-          const formattedRiasecData = riasecChartData.map(item => ({
-            component: item.name,
-            average: 0,
-            score: item.value
-          }));
-          generatedRiasecCode = formCode(formattedRiasecData, mapRiasecToCode);
-          setRiasecCode(generatedRiasecCode || "RSI");
-        } else {
-          // Fallback if no data
-          generatedRiasecCode = "RSI";
-          setRiasecCode("RSI");
-        }
-
-        // Generate Work Values code if data exists
-        if (workValuesChartData && workValuesChartData.length > 0) {
-          // Format data for code generation
-          const formattedWorkValuesData = workValuesChartData.map(item => ({
-            component: item.name,
-            average: 0,
-            score: item.value
-          }));
-          generatedWorkValueCode = formCode(formattedWorkValuesData, mapWorkValueToCode);
-          setWorkValueCode(generatedWorkValueCode || "ARS");
-        }
-
+        
         // Generate dynamic profile information based on RIASEC and Work Values
-        const dynamicStrengths = generateStrengthsFromRIASEC(generatedRiasecCode);
-        const dynamicWorkPreferences = generateWorkPreferencesFromWorkValues(generatedWorkValueCode);
-        const dynamicLikes = generateLikesFromRIASEC(generatedRiasecCode);
-        const dynamicDislikes = generateDislikesFromRIASEC(generatedRiasecCode);
+        const dynamicStrengths = generateStrengthsFromRIASEC(riasecCode);
+        const dynamicWorkPreferences = generateWorkPreferencesFromWorkValues(workValueCode);
+        const dynamicLikes = generateLikesFromRIASEC(riasecCode);
+        const dynamicDislikes = generateDislikesFromRIASEC(riasecCode);
         
         setProfileInfo({
           strengths: dynamicStrengths,
@@ -120,35 +65,16 @@ export const AboutMe = () => {
           likes: dynamicLikes,
           dislikes: dynamicDislikes
         });
-        console.log("Final RIASEC profile state:", riasecChartData);
-        console.log("Final Work Value profile state:", workValuesChartData);
 
         // Get completed quiz segments from database
-        const {
-          data: completions
-        } = await supabase.from('quiz_completion').select('quiz_type').eq('user_id', userId);
+        const { data: completions } = await supabase
+          .from('quiz_completion')
+          .select('quiz_type')
+          .eq('user_id', userId);
+        
         if (completions) {
           const completedSegments = completions.map(c => c.quiz_type);
-          console.log("Completed quiz segments from database:", completedSegments);
-        }
-
-        // Fetch recommended majors based on the profile codes
-        if (generatedRiasecCode && generatedWorkValueCode) {
-          const majorRecommendations = await getMatchingMajors(generatedRiasecCode, generatedWorkValueCode);
-          console.log("Recommended majors:", majorRecommendations);
-          setRecommendedMajors(majorRecommendations);
-          
-          // Fetch module recommendations based on the recommended majors
-          setLoadingModules(true);
-          try {
-            const modules = await fetchModuleRecommendations(majorRecommendations);
-            console.log("Recommended modules:", modules);
-            setRecommendedModules(modules);
-          } catch (error) {
-            console.error("Error fetching module recommendations:", error);
-          } finally {
-            setLoadingModules(false);
-          }
+          console.log("Fetched completed quiz segments:", completedSegments);
         }
       } catch (error) {
         console.error("Error loading user profiles:", error);
@@ -156,8 +82,9 @@ export const AboutMe = () => {
         setIsLoading(false);
       }
     };
+    
     loadUserProfiles();
-  }, []);
+  }, [riasecCode, workValueCode]);
 
   const generateStrengthsFromRIASEC = (code: string): string[] => {
     const traits: Record<string, string[]> = {
@@ -347,7 +274,7 @@ const generateWorkPreferencesFromWorkValues = (code: string): string[] => {
           <Button variant={activeTab === "profile" ? "default" : "outline"} onClick={() => setActiveTab("profile")}>
             My Profile
           </Button>
-          <Button variant={activeTab === "resume" ? "default" : "outline"} onClick={() => setActiveTab("resume")}>
+          <Button variant={activeTab === "resume" ? "default" : "outline"} onClick={()={() => setActiveTab("resume")}>
             <FileText className="mr-2 h-4 w-4" />
             My Resume
           </Button>
@@ -364,7 +291,7 @@ const generateWorkPreferencesFromWorkValues = (code: string): string[] => {
               <CardDescription>Based on your quiz responses</CardDescription>
             </CardHeader>
             <CardContent>
-              {isLoading ? <div className="flex justify-center py-8">
+              {isLoading || profileLoading ? <div className="flex justify-center py-8">
                   <div className="animate-spin h-8 w-8 border-t-2 border-b-2 border-purple-500 rounded-full"></div>
                 </div> : <>
                   {/* Display profile codes */}
@@ -457,12 +384,12 @@ const generateWorkPreferencesFromWorkValues = (code: string): string[] => {
                   </div>
                   
                   {/* New Module Recommendations Section */}
-                  {(recommendedModules.length > 0 || loadingModules) && (
+                  {(recommendedModules.length > 0 || profileLoading) && (
                     <div className="mt-8 mb-6">
                       <h3 className="text-lg font-semibold mb-3">Recommended Courses</h3>
                       <p className="mb-4">Based on your recommended majors, these courses might interest you:</p>
                       
-                      {loadingModules ? (
+                      {profileLoading ? (
                         <div className="flex justify-center py-4">
                           <div className="animate-spin h-8 w-8 border-t-2 border-b-2 border-purple-500 rounded-full"></div>
                         </div>
@@ -484,8 +411,6 @@ const generateWorkPreferencesFromWorkValues = (code: string): string[] => {
                               </p>
                               {module.description.length > 200 && (
                                 <Button variant="link" className="p-0 h-auto text-sm mt-1" onClick={() => {
-                                  // You could implement a modal or expand functionality here
-                                  // For now we'll just show an alert with the full description
                                   alert(module.description);
                                 }}>
                                   Read more

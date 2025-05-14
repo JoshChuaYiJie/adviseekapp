@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { Module } from '@/integrations/supabase/client';
 import { QuizContextType } from './types';
@@ -6,7 +7,7 @@ import { useModules } from './hooks/useModules';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { McqQuestion } from '@/utils/quizQuestions';
-import { useModuleRecommendations } from '@/hooks/useModuleRecommendations';
+import { useGlobalProfile } from '@/contexts/GlobalProfileContext';
 
 // Create the context with default values
 const QuizContext = createContext<QuizContextType>({
@@ -49,15 +50,15 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
   const [isLoading, setIsLoading] = useState(false);
   const [debugInfo, setDebugInfo] = useState<any>(null);
   
-  // Use our new module recommendations hook
+  // Use the global profile context for recommendations
   const { 
     recommendedModules, 
-    loadingModules, 
-    refetchRecommendations 
-  } = useModuleRecommendations();
+    isLoading: profileLoading, 
+    refreshProfileData
+  } = useGlobalProfile();
   
   // Add console log for debugging
-  console.log("QuizContext using recommendedModules:", recommendedModules.length);
+  console.log("QuizContext using recommendedModules from global context:", recommendedModules.length);
   
   // Custom hooks
   const { modules, error: modulesError } = useModules();
@@ -201,11 +202,11 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
     }
   };
   
-  // Refine recommendations by refetching them using the hook
+  // Refine recommendations by refetching them using the global refresh function
   const refineRecommendations = async (selectedModuleIds: number[] = []): Promise<void> => {
     try {
       setIsLoading(true);
-      await refetchRecommendations(); // Use the hook's refetch function
+      await refreshProfileData(); // Use the global refresh function
       setIsLoading(false);
     } catch (err) {
       console.error("Error refining recommendations:", err);
@@ -219,14 +220,36 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
     }
   };
 
+  // Generate consistent module IDs - same as in other places
+  function getModuleId(code: string): number {
+    let hash = 0;
+    for (let i = 0; i < code.length; i++) {
+      const char = code.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Convert to 32bit integer
+    }
+    return Math.abs(hash);
+  }
+
+  // Convert global modules to the format expected by this context
+  const formattedModules = recommendedModules.map(module => ({
+    id: getModuleId(module.modulecode),
+    university: module.institution,
+    course_code: module.modulecode,
+    title: module.title,
+    description: module.description || "No description available.",
+    aus_cus: 4,
+    semester: "1"
+  }));
+
   // Get final selections
   const getFinalSelections = async () => {
     try {
-      // Map recommendedModules to match the expected format
-      const recommendations = recommendedModules.map(rec => ({
-        module: rec.module,
-        module_id: rec.module.id,
-        reason: rec.reasoning[0] || "Recommended based on your major preferences"
+      // Create the recommendations array from formatted modules
+      const recommendations = formattedModules.map(module => ({
+        module,
+        module_id: module.id,
+        reason: "Recommended based on your major preferences"
       }));
       
       // Filter to highly rated modules (7+)
@@ -258,13 +281,13 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
   };
   
   // Format recommendations to match the expected format in the context
-  const recommendations = recommendedModules.map(rec => ({
-    module_id: rec.module.id,
+  const recommendations = formattedModules.map(module => ({
+    module_id: module.id,
     user_id: userId || '',
-    module: rec.module,
+    module,
     reason: "Recommended based on your major preferences",
     created_at: new Date().toISOString(),
-    reasoning: rec.reasoning
+    reasoning: ["Based on your recommended majors"]
   }));
   
   // Memoize the context value to prevent unnecessary rerenders
@@ -272,7 +295,7 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
     currentStep,
     responses,
     questions,
-    isLoading: isLoading || loadingModules,
+    isLoading: isLoading || profileLoading,
     isSubmitting,
     error: error || null,
     recommendations,
@@ -293,7 +316,7 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
     responses, 
     questions, 
     isLoading, 
-    loadingModules,
+    profileLoading,
     isSubmitting, 
     error,
     recommendedModules,

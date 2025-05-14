@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Module } from '@/integrations/supabase/client';
 import { getUserId } from '../utils/databaseHelpers';
@@ -6,7 +5,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Recommendation, ModuleSelection } from '../types/recommendationTypes';
 import { supabase } from '@/integrations/supabase/client';
 import { rateModuleUtil, getFinalSelectionsUtil } from '@/utils/recommendationUtils';
-import { useModuleRecommendations } from '@/hooks/useModuleRecommendations';
+import { useGlobalProfile } from '@/contexts/GlobalProfileContext';
 
 // Fix: Changed 'export { Recommendation }' to 'export type { Recommendation }'
 export type { Recommendation } from '../types/recommendationTypes';
@@ -16,26 +15,45 @@ export const useRecommendations = () => {
   const [finalSelections, setFinalSelections] = useState<ModuleSelection[]>([]);
   const { toast } = useToast();
 
-  // Use our centralized module recommendations hook
+  // Use our global profile context
   const { 
     recommendedModules, 
-    loadingModules: isLoading, 
+    isLoading, 
     error, 
-    refetchRecommendations
-  } = useModuleRecommendations();
+    refreshProfileData
+  } = useGlobalProfile();
+
+  // Generate consistent module IDs - same as in other places
+  function getModuleId(code: string): number {
+    let hash = 0;
+    for (let i = 0; i < code.length; i++) {
+      const char = code.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Convert to 32bit integer
+    }
+    return Math.abs(hash);
+  }
 
   // Convert recommendedModules to the Recommendation[] format expected by other components
-  const recommendations = recommendedModules.map(rec => ({
+  const recommendations: Recommendation[] = recommendedModules.map(rec => ({
     id: Math.floor(Math.random() * 10000),
     user_id: '',
-    module_id: rec.module.id,
-    reason: rec.reasoning[0] || "Recommended based on your major preferences",
+    module_id: getModuleId(rec.modulecode),
+    reason: "Recommended based on your major preferences",
     created_at: new Date().toISOString(),
-    module: rec.module
+    module: {
+      id: getModuleId(rec.modulecode),
+      university: rec.institution,
+      course_code: rec.modulecode,
+      title: rec.title,
+      description: rec.description || "No description available.",
+      aus_cus: 4,
+      semester: "1"
+    }
   }));
 
   // Log the recommendations for debugging
-  console.log("Recommendations in useRecommendations:", recommendations.length);
+  console.log("Recommendations in useRecommendations (from global context):", recommendations.length);
 
   // Load user feedback (ratings)
   const loadUserFeedback = async (userId: string) => {
@@ -63,12 +81,9 @@ export const useRecommendations = () => {
     }
   };
 
-  // Load recommendations
+  // Load recommendations - now just returns the global recommendations
   const loadRecommendations = async (userId: string) => {
     try {
-      // Use our centralized refetchRecommendations function
-      await refetchRecommendations();
-      
       // Also load user feedback (ratings)
       await loadUserFeedback(userId);
       
@@ -79,12 +94,9 @@ export const useRecommendations = () => {
     }
   };
 
-  // Generate recommendations
+  // Generate recommendations - now just returns the global recommendations
   const generateRecommendations = async (userId: string) => {
     try {
-      // Use our centralized refetchRecommendations function
-      await refetchRecommendations();
-      
       // Also load user feedback (ratings)
       await loadUserFeedback(userId);
       
@@ -123,7 +135,7 @@ export const useRecommendations = () => {
     }
   };
 
-  // Refine recommendations - now just uses refetchRecommendations
+  // Refine recommendations - now uses the global refresh function
   const refineRecommendations = async (selectedModuleIds: number[] = []) => {
     try {
       const userId = await getUserId();
@@ -131,8 +143,8 @@ export const useRecommendations = () => {
         throw new Error("You must be logged in to refine recommendations");
       }
       
-      // Use centralized refetchRecommendations function
-      await refetchRecommendations();
+      // Use global refresh function
+      await refreshProfileData();
       
       toast({
         title: "Recommendations Refined",
@@ -191,7 +203,7 @@ export const useRecommendations = () => {
     finalSelections,
     isLoading,
     error,
-    setIsLoading: (loading: boolean) => null, // This is now handled by the useModuleRecommendations hook
+    setIsLoading: (loading: boolean) => null, // This is now handled by the global context
     generateRecommendations,
     loadRecommendations,
     rateModule,

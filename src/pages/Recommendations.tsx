@@ -5,7 +5,7 @@ import { Slider } from "@/components/ui/slider";
 import { useToast } from "@/hooks/use-toast";
 import { useQuiz } from "@/contexts/QuizContext";
 import { ModuleRatingCard } from "@/components/ModuleRatingCard";
-import { useModuleRecommendations } from "@/hooks/useModuleRecommendations";
+import { useGlobalProfile } from "@/contexts/GlobalProfileContext";
 
 const Recommendations = () => {
   const navigate = useNavigate();
@@ -15,24 +15,43 @@ const Recommendations = () => {
     userFeedback
   } = useQuiz();
   
-  // Use our new hook for recommendations
+  // Use the global profile context instead of the useModuleRecommendations hook
   const { 
     recommendedModules, 
-    loadingModules: isLoading, 
-    error 
-  } = useModuleRecommendations();
+    isLoading, 
+    error
+  } = useGlobalProfile();
 
   // Log immediately for debugging
   console.log("Recommendations in /recommendations page:", recommendedModules.length);
 
-  // Convert recommendedModules to the same format as recommendations
+  // Convert modules to the format expected by this component
   const recommendations = recommendedModules.map((rec) => ({
-    module: rec.module,
-    module_id: rec.module.id,
+    module: {
+      id: getModuleId(rec.modulecode),
+      university: rec.institution,
+      course_code: rec.modulecode,
+      title: rec.title,
+      description: rec.description || "No description available.",
+      aus_cus: 4,
+      semester: "1" 
+    },
+    module_id: getModuleId(rec.modulecode),
     user_id: "",
-    reason: rec.reasoning[0] || "Recommended based on your major preferences",
+    reason: "Recommended based on your major preferences",
     created_at: new Date().toISOString()
   }));
+
+  // Generate consistent module IDs - same as in other places
+  function getModuleId(code: string): number {
+    let hash = 0;
+    for (let i = 0; i < code.length; i++) {
+      const char = code.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Convert to 32bit integer
+    }
+    return Math.abs(hash);
+  }
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [rating, setRating] = useState(5);
