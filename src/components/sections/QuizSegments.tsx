@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -12,6 +11,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { RecommendationDisclaimer } from "@/components/CourseQuiz/RecommendationDisclaimer";
 import { useQuiz } from "@/contexts/QuizContext";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 type QuizSegment = {
   id: string;

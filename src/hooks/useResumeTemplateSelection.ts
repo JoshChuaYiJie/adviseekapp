@@ -26,6 +26,6 @@ export const useResumeTemplateSelection = () => {
     selectedTemplate,
     showFullTemplate,
     handleSelectTemplate,
-    handleCloseTemplate,
+    handleCloseTemplate
   };
 };
