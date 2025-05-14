@@ -6,7 +6,7 @@ import { McqQuestion } from "@/utils/quizQuestions";
 export interface QuizContextType {
   currentStep: number;
   responses: Record<string | number, string | string[]>;
-  questions: McqQuestion[]; // Changed from QuizQuestion[] to McqQuestion[]
+  questions: McqQuestion[];
   isLoading: boolean;
   isSubmitting: boolean;
   error: string | null;
@@ -15,7 +15,9 @@ export interface QuizContextType {
   modules: Module[];
   finalSelections: Module[];
   completedQuizzes: string[];
-  debugInfo?: any; // Added debugInfo as an optional property
+  debugInfo?: any;
+  
+  // Added missing properties
   setCurrentStep: (step: number) => void;
   handleResponse: (questionId: string | number, answer: string | string[]) => void;
   submitResponses: (quizType?: string) => Promise<void>;

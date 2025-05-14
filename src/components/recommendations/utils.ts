@@ -1,5 +1,9 @@
 
-// Helper function to generate a consistent module ID from a code
+/**
+ * Generate consistent module IDs from course codes
+ * @param code The course code to generate an ID for
+ * @returns A numeric ID based on the code
+ */
 export function getModuleId(code: string): number {
   let hash = 0;
   for (let i = 0; i < code.length; i++) {
