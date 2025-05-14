@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "@/components/ui/sonner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useTheme } from "@/contexts/ThemeContext";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 // Resume template thumbnails
 const templates = [
@@ -158,53 +159,55 @@ const ResumeBuilder = () => {
   };
   
   return (
-    <div className="container mx-auto py-10 max-w-7xl">
-      <div className="flex items-center mb-6">
-        <Button variant="ghost" size="icon" onClick={() => navigate('/dashboard')} className="mr-2">
-          <ArrowLeft className="h-5 w-5" />
-        </Button>
-        <h1 className="text-2xl font-bold">Resume Builder</h1>
+    <TooltipProvider>
+      <div className="container mx-auto py-10 max-w-7xl">
+        <div className="flex items-center mb-6">
+          <Button variant="ghost" size="icon" onClick={() => navigate('/dashboard')} className="mr-2">
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <h1 className="text-2xl font-bold">Resume Builder</h1>
+        </div>
+        
+        <div className="mb-8">
+          <h2 className="text-xl font-medium mb-2">Choose a Template</h2>
+          <p className="text-muted-foreground">
+            Select a resume template tailored to your field of study or career path.
+          </p>
+        </div>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {templates.map((template) => (
+            <Card 
+              key={template.id} 
+              className={`overflow-hidden transition-all hover:shadow-lg ${selectedTemplate === template.id ? 'ring-2 ring-blue-500' : ''}`}
+            >
+              <div className={`h-2 ${template.color}`}></div>
+              <CardHeader>
+                <CardTitle>{template.name}</CardTitle>
+                <CardDescription>{template.description}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-hidden rounded-md border">
+                  <img 
+                    src={template.thumbnail} 
+                    alt={`${template.name} template preview`}
+                    className="w-full h-auto object-cover aspect-[3/4] transition-transform hover:scale-105"
+                  />
+                </div>
+              </CardContent>
+              <CardFooter>
+                <Button 
+                  className="w-full" 
+                  onClick={() => handleSelectTemplate(template.id)}
+                >
+                  Use This Template
+                </Button>
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
       </div>
-      
-      <div className="mb-8">
-        <h2 className="text-xl font-medium mb-2">Choose a Template</h2>
-        <p className="text-muted-foreground">
-          Select a resume template tailored to your field of study or career path.
-        </p>
-      </div>
-      
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {templates.map((template) => (
-          <Card 
-            key={template.id} 
-            className={`overflow-hidden transition-all hover:shadow-lg ${selectedTemplate === template.id ? 'ring-2 ring-blue-500' : ''}`}
-          >
-            <div className={`h-2 ${template.color}`}></div>
-            <CardHeader>
-              <CardTitle>{template.name}</CardTitle>
-              <CardDescription>{template.description}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="overflow-hidden rounded-md border">
-                <img 
-                  src={template.thumbnail} 
-                  alt={`${template.name} template preview`}
-                  className="w-full h-auto object-cover aspect-[3/4] transition-transform hover:scale-105"
-                />
-              </div>
-            </CardContent>
-            <CardFooter>
-              <Button 
-                className="w-full" 
-                onClick={() => handleSelectTemplate(template.id)}
-              >
-                Use This Template
-              </Button>
-            </CardFooter>
-          </Card>
-        ))}
-      </div>
-    </div>
+    </TooltipProvider>
   );
 };
 
