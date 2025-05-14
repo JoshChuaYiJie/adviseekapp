@@ -1,4 +1,5 @@
 
+
 import { MajorRecommendationsType } from '@/components/sections/majors/types';
 
 export interface Module {
@@ -12,13 +13,13 @@ export interface Module {
  * Fetches module recommendations based on the top recommended majors
  * @param recommendations The major recommendations object
  * @param limit The maximum number of majors to use (default: 5)
- * @param modulesPerMajor The maximum number of modules per major (default: 2)
+ * @param modulesPerMajor The maximum number of modules per major (default: 3)
  * @returns A promise that resolves to an array of recommended modules
  */
 export const fetchModuleRecommendations = async (
   recommendations: MajorRecommendationsType,
   limit = 5,
-  modulesPerMajor = 2
+  modulesPerMajor = 3
 ): Promise<Module[]> => {
   try {
     // Get the combined list of all recommended majors
@@ -106,8 +107,9 @@ export const fetchModuleRecommendations = async (
         
         console.log(`Found ${matchingModules.length} matching modules for ${majorName}`);
         
-        // Add the top X modules for this major to our recommendations
-        const majorModules = matchingModules.slice(0, modulesPerMajor).map((module: any) => ({
+        // Add all matching modules for this major to our recommendations
+        // No more limiting to modulesPerMajor
+        const majorModules = matchingModules.map((module: any) => ({
           ...module,
           institution: school // Ensure the institution property is correctly typed
         }));
@@ -147,3 +149,4 @@ const findPrefixesForMajor = (
   
   return prefixes;
 };
+

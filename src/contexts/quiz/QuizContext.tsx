@@ -193,16 +193,12 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
     }
   };
 
-  // Refine recommendations
+  // Refine recommendations - modified to show all matching modules
   const refineRecommendations = async (selectedModuleIds: number[] = []): Promise<void> => {
     try {
       setIsLoading(true);
       
-      // Get user's profile from RecommendationLogic
-      // This is a simplified approach - in production, you'd want to get this data from the database
-      // Since we don't have direct access to RecommendationLogic state here, we'll simulate this
-      
-      // This would typically involve calling the backend to get recommendations based on user profile
+      // Get user's profile - simplified approach
       const { data: riasecData } = await supabase
         .from('user_responses')
         .select('component, score')
@@ -241,25 +237,26 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
         .sort((a, b) => b.score - a.score)
         .slice(0, 3);
       
-      // Get major recommendations - we need to simulate this using our utility
-      // For simplicity, we'll use mock data here, but in a real implementation you would use the actual data
+      // Get major recommendations
       const mockRecommendations: MajorRecommendationsType = {
         exactMatches: ["Computer Science at NUS", "Information Systems at NUS"],
         permutationMatches: [],
         riasecMatches: ["Software Engineering at NTU", "Data Science at SMU"],
         workValueMatches: ["Computer Engineering at NTU"],
-        questionFiles: [], // Added missing required property
-        riasecCode: "RIC", // Added missing required property
-        workValueCode: "ARS", // Added missing required property
-        matchType: 'exact' // Added missing required property with a valid value
+        questionFiles: [],
+        riasecCode: "RIC",
+        workValueCode: "ARS",
+        matchType: 'exact'
       };
       
-      // Get module recommendations based on these majors
+      // Get module recommendations based on these majors - no longer limited
       const moduleRecs = await fetchModuleRecommendations(mockRecommendations);
+      
+      console.log(`Total matched modules found: ${moduleRecs.length}`);
       
       // Convert modules to the format expected by the UI
       const formattedRecs = moduleRecs.map(module => ({
-        module_id: Math.floor(Math.random() * 10000),  // Generate a random ID for now
+        module_id: Math.floor(Math.random() * 10000),
         user_id: userId || '',
         module: {
           id: Math.floor(Math.random() * 10000),
@@ -324,7 +321,7 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
   const contextValue = useMemo<QuizContextType>(() => ({
     currentStep,
     responses,
-    questions, // This is now correctly typed as McqQuestion[]
+    questions,
     isLoading,
     isSubmitting,
     error: error || null,
@@ -333,7 +330,7 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
     modules,
     finalSelections,
     completedQuizzes,
-    debugInfo, // Added debugInfo to the context value
+    debugInfo,
     setCurrentStep,
     handleResponse,
     submitResponses,
@@ -353,7 +350,7 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
     modules,
     finalSelections,
     completedQuizzes,
-    debugInfo // Added to dependency array
+    debugInfo
   ]);
   
   return (

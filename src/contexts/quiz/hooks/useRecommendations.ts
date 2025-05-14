@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Module } from '@/integrations/supabase/client';
 import { getUserId } from '../utils/databaseHelpers';
@@ -31,18 +30,20 @@ export const useRecommendations = (modules: Module[]) => {
         permutationMatches: [],
         riasecMatches: ["Software Engineering at NTU", "Data Science at SMU"],
         workValueMatches: ["Computer Engineering at NTU"],
-        questionFiles: [], // Added missing property
-        riasecCode: "RSI", // Added missing property
-        workValueCode: "ACR", // Added missing property
-        matchType: 'exact' // Added missing property with valid value
+        questionFiles: [], 
+        riasecCode: "RSI", 
+        workValueCode: "ACR", 
+        matchType: 'exact' 
       };
       
-      // Get module recommendations based on these majors
+      // Get module recommendations based on these majors - no longer limiting the results
       const moduleRecs = await fetchModuleRecommendations(mockMajorRecommendations);
       
       if (!moduleRecs || moduleRecs.length === 0) {
         throw new Error("No module recommendations found");
       }
+      
+      console.log(`Generated ${moduleRecs.length} module recommendations`);
       
       // Convert to the format expected by the UI
       const formattedRecs: Recommendation[] = moduleRecs.map(module => ({
@@ -53,7 +54,7 @@ export const useRecommendations = (modules: Module[]) => {
         created_at: new Date().toISOString(),
         module: {
           id: Math.floor(Math.random() * 10000),
-          university: module.institution as "NUS" | "NTU" | "SMU", // Type cast to match the expected type
+          university: module.institution as "NUS" | "NTU" | "SMU",
           course_code: module.modulecode,
           title: module.title,
           description: module.description || "No description available.",
@@ -100,25 +101,28 @@ export const useRecommendations = (modules: Module[]) => {
     }
   };
 
-  // Load recommendations
+  // Load recommendations - now shows all matching modules
   const loadRecommendations = async (userId: string) => {
     try {
       setIsLoading(true);
       
-      // Use the new fetchModuleRecommendations function
+      // Use the fetchModuleRecommendations function
       // This is a simplified version - in a real app, you'd get the major recommendations from the user's profile
       const mockMajorRecommendations: MajorRecommendationsType = {
         exactMatches: ["Computer Science at NUS", "Business at NUS"],
         permutationMatches: [],
         riasecMatches: ["Information Systems at NTU", "Data Science at SMU"],
         workValueMatches: ["Computer Engineering at NTU"],
-        questionFiles: [], // Added missing property
-        riasecCode: "RIA", // Added missing property
-        workValueCode: "ARC", // Added missing property
-        matchType: 'riasec' // Added missing property with valid value
+        questionFiles: [],
+        riasecCode: "RIA",
+        workValueCode: "ARC",
+        matchType: 'riasec'
       };
       
+      // Get all matching modules without limiting per major
       const moduleRecs = await fetchModuleRecommendations(mockMajorRecommendations);
+      
+      console.log(`Loaded ${moduleRecs.length} module recommendations`);
       
       // Convert to the format expected by the UI
       const formattedRecs: Recommendation[] = moduleRecs.map(module => ({
@@ -129,12 +133,12 @@ export const useRecommendations = (modules: Module[]) => {
         created_at: new Date().toISOString(),
         module: {
           id: Math.floor(Math.random() * 10000),
-          university: module.institution as "NUS" | "NTU" | "SMU", // Type cast to match the expected type
+          university: module.institution as "NUS" | "NTU" | "SMU",
           course_code: module.modulecode,
           title: module.title,
           description: module.description || "No description available.",
-          aus_cus: 4, // Default value
-          semester: "1" // Default value
+          aus_cus: 4,
+          semester: "1"
         }
       }));
       
