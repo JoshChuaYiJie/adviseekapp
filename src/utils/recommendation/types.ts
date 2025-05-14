@@ -18,6 +18,15 @@ export interface MajorRecommendations {
   matchType: 'exact' | 'riasec' | 'workValue' | 'none';
 }
 
+// Export Module type that includes the id property
+export interface Module {
+  id?: number;
+  modulecode: string;
+  title: string;
+  institution: "NUS" | "NTU" | "SMU";
+  description: string;
+}
+
 // Export other types that might be needed
 export interface RecommendationResponse {
   majors: string[];

@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { Module } from '@/integrations/supabase/client';
+import { Module } from '@/utils/recommendation/types';
 import { useGlobalProfile } from '@/contexts/GlobalProfileContext';
 
 export interface RecommendedModule {

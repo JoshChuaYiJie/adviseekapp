@@ -4,3 +4,4 @@ export * from './codeMatchingUtils';
 export * from './majorMatching';
 export * from './matchingHelpers';
 export * from './moduleRecommendationUtils';
+export * from './types'; // Make sure to export types too
