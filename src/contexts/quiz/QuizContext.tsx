@@ -1,335 +1,244 @@
 
-import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
-import { Module } from '@/integrations/supabase/client';
-import { QuizContextType } from './types';
-import { useResponses } from './hooks/useResponses';
-import { useModules } from './hooks/useModules';
-import { useToast } from '@/hooks/use-toast';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 import { McqQuestion } from '@/utils/quizQuestions';
-import { useGlobalProfile } from '@/contexts/GlobalProfileContext';
 
-// Create the context with default values
-const QuizContext = createContext<QuizContextType>({
-  currentStep: 1,
-  responses: {},
-  questions: [],
-  isLoading: true,
-  isSubmitting: false,
-  error: null,
-  recommendations: [],
-  userFeedback: {},
-  modules: [],
-  finalSelections: [],
-  completedQuizzes: [],
-  debugInfo: null,
-  setCurrentStep: () => {},
-  handleResponse: () => {},
-  submitResponses: async () => {},
-  rateModule: async () => Promise.resolve(),
-  refineRecommendations: async () => Promise.resolve(),
-  getFinalSelections: async () => [],
-  resetQuiz: () => {},
-});
+interface QuizContextType {
+  currentStep: number;
+  responses: Record<string | number, string | string[]>;
+  questions: McqQuestion[];
+  isLoading: boolean;
+  isSubmitting: boolean;
+  error: string | null;
+  handleResponse: (questionId: string | number, value: string | string[]) => void;
+  submitResponses: (quizType?: string) => Promise<void>;
+  resetQuiz: () => void;
+}
 
-// Hook to use the Quiz context
-export const useQuiz = () => useContext(QuizContext);
+const QuizContext = createContext<QuizContextType | undefined>(undefined);
 
-// Provider component
-export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }) => {
-  const { toast } = useToast();
-  
-  // State
-  const [currentStep, setCurrentStep] = useState(1);
-  const [error, setError] = useState<string | null>(null);
-  const [userId, setUserId] = useState<string | null>(null);
-  const [completedQuizzes, setCompletedQuizzes] = useState<string[]>([]);
-  const [userFeedback, setUserFeedback] = useState<Record<number, number>>({});
-  const [finalSelections, setFinalSelections] = useState<Module[]>([]);
+export const useQuiz = () => {
+  const context = useContext(QuizContext);
+  if (context === undefined) {
+    throw new Error("useQuiz must be used within a QuizProvider");
+  }
+  return context;
+};
+
+export const QuizProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [currentStep, setCurrentStep] = useState<number>(1); // Default to step 1
+  const [responses, setResponses] = useState<Record<string | number, string | string[]>>({});
   const [questions, setQuestions] = useState<McqQuestion[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [debugInfo, setDebugInfo] = useState<any>(null);
-  
-  // Use the global profile context for recommendations
-  const { 
-    recommendedModules, 
-    isLoading: profileLoading, 
-    refreshProfileData
-  } = useGlobalProfile();
-  
-  // Add console log for debugging
-  console.log("QuizContext using recommendedModules from global context:", recommendedModules.length);
-  
-  // Custom hooks
-  const { modules, error: modulesError } = useModules();
-  const { 
-    responses, 
-    isSubmitting, 
-    handleResponse, 
-    submitResponses: submitUserResponses,
-    loadResponses
-  } = useResponses();
-  
-  // Combine errors
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Parse currentStep from the URL path
   useEffect(() => {
-    const combinedError = modulesError;
-    setError(combinedError);
-  }, [modulesError]);
-  
-  // Check for authenticated user and load their data
+    const path = location.pathname;
+    if (path.startsWith('/quiz/interest-part')) {
+      const step = parseInt(path.split(' ')[1], 10);
+      if (!isNaN(step)) {
+        setCurrentStep(step);
+      }
+    }
+  }, [location.pathname]);
+
+  // Load questions from JSON and user responses from DB
   useEffect(() => {
-    const checkAuth = async () => {
+    const loadQuestionsAndResponses = async () => {
+      setIsLoading(true);
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-        const currentUserId = session?.user?.id || null;
-        setUserId(currentUserId);
-        
-        if (currentUserId) {
-          // Load user's responses
-          await loadResponses();
+        // Load questions based on current step
+        let questionsJsonPath = '';
+        if (currentStep === 1) {
+          questionsJsonPath = '/quiz_refer/Mcq_questions/RIASEC_interest_questions_pt1.json';
+        } else if (currentStep === 2) {
+          questionsJsonPath = '/quiz_refer/Mcq_questions/RIASEC_interest_questions_pt2.json';
+        } else if (currentStep === 3) {
+          questionsJsonPath = '/quiz_refer/Mcq_questions/RIASEC_competence_questions.json';
+        } else if (currentStep === 4) {
+          questionsJsonPath = '/quiz_refer/Mcq_questions/Work_value_questions.json';
+        }
+
+        if (questionsJsonPath) {
+          const response = await fetch(questionsJsonPath);
+          const loadedQuestions: McqQuestion[] = await response.json();
           
-          // Load completed quizzes
-          const { data: completions, error: completionsError } = await supabase
-            .from('quiz_completion')
-            .select('quiz_type')
-            .eq('user_id', currentUserId);
-            
-          if (completionsError) {
-            console.error('Error loading quiz completions:', completionsError);
-          } else if (completions) {
-            const completed = completions.map(c => c.quiz_type);
-            setCompletedQuizzes(completed);
-            
-            // Update localStorage for compatibility
-            localStorage.setItem('completed_quiz_segments', JSON.stringify(completed));
-          }
+          // Add category property based on the current step if it doesn't exist
+          const questionsWithCategory = loadedQuestions.map(q => ({
+            ...q,
+            category: q.category || `interest-part ${currentStep}`
+          }));
+          
+          setQuestions(questionsWithCategory);
         }
-      } catch (err) {
-        console.error('Error checking authentication:', err);
+
+        // Load user responses if logged in
+        await loadUserResponses();
+      } catch (error) {
+        console.error("Failed to load questions:", error);
+        setError("Failed to load quiz questions. Please try again later.");
+      } finally {
+        setIsLoading(false);
       }
     };
-    
-    checkAuth();
-    
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      const newUserId = session?.user?.id || null;
-      
-      if (newUserId !== userId) {
-        setUserId(newUserId);
-        
-        if (newUserId) {
-          // If user just logged in, load their data
-          loadResponses();
-        }
-      }
-    });
-    
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
-  
-  // Submit responses
-  const submitResponses = async (quizType?: string) => {
+
+    loadQuestionsAndResponses();
+  }, [currentStep]);
+
+  // Load user responses from the database
+  const loadUserResponses = async () => {
     try {
-      // Submit user responses and get user ID
-      const currentUserId = await submitUserResponses(quizType, questions);
-      if (!currentUserId) {
-        throw new Error("You must be logged in to submit responses");
-      }
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) return; // Not logged in
+
+      console.log("Loading responses for user:", session.user.id);
       
-      // Save quiz completion status
-      if (quizType && currentUserId) {
-        // Update local state
-        setCompletedQuizzes(prev => {
-          if (!prev.includes(quizType)) {
-            return [...prev, quizType];
+      const { data, error } = await supabase
+        .from('user_responses')
+        .select('question_id, response, response_array')
+        .eq('user_id', session.user.id);
+      
+      if (error) {
+        throw error;
+      }
+
+      if (data && data.length > 0) {
+        console.log("Loaded", data.length, "responses from database");
+        console.log("Sample of loaded responses:", data.slice(0, 3));
+        
+        const loadedResponses: Record<string | number, string | string[]> = {};
+        data.forEach(item => {
+          // Handle both string responses and array responses
+          if (item.response_array) {
+            loadedResponses[item.question_id] = item.response_array;
+          } else if (item.response) {
+            loadedResponses[item.question_id] = item.response;
           }
-          return prev;
         });
         
-        // Update localStorage for compatibility
-        const localCompletions = JSON.parse(localStorage.getItem('completed_quiz_segments') || '[]');
-        if (!localCompletions.includes(quizType)) {
-          localCompletions.push(quizType);
-          localStorage.setItem("completed_quiz_segments", JSON.stringify(localCompletions));
-        }
+        setResponses(loadedResponses);
       }
-    } catch (err) {
-      console.error("Error submitting responses:", err);
-      setError(err instanceof Error ? err.message : "Failed to submit responses");
-      toast({
-        title: "Error",
-        description: "Failed to submit your responses. Please try again.",
-        variant: "destructive",
-      });
+    } catch (error) {
+      console.error("Failed to load user responses:", error);
     }
   };
-  
-  // Rate module
-  const rateModule = async (moduleId: number, rating: number): Promise<void> => {
+
+  // Update responses
+  const handleResponse = (questionId: string | number, value: string | string[]) => {
+    setResponses(prev => ({
+      ...prev,
+      [questionId]: value
+    }));
+  };
+
+  // Submit responses to the database
+  const submitResponses = async (quizType: string = '') => {
+    setIsSubmitting(true);
     try {
-      // Update local state for immediate feedback
-      setUserFeedback(prev => ({
-        ...prev,
-        [moduleId]: rating
-      }));
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) {
+        toast.error("You must be logged in to save your responses");
+        return;
+      }
+
+      // Determine quiz type from current step if not provided
+      const effectiveQuizType = quizType || `interest-part ${currentStep}`;
       
-      // Store in database if user is logged in
-      if (userId) {
-        const { error: ratingError } = await supabase
-          .from('user_feedback')
-          .upsert({
-            user_id: userId,
-            module_id: moduleId,
-            rating
-          }, {
-            onConflict: 'user_id,module_id'
+      // Prepare responses for submission
+      const responsesToSubmit = [];
+      for (const [questionId, response] of Object.entries(responses)) {
+        // Skip questions not in the current batch
+        const question = questions.find(q => String(q.id) === String(questionId));
+        if (!question) continue;
+
+        // Prepare data based on whether it's an array or string
+        const isArrayResponse = Array.isArray(response);
+        
+        responsesToSubmit.push({
+          user_id: session.user.id,
+          question_id: questionId,
+          response: isArrayResponse ? null : String(response),
+          response_array: isArrayResponse ? response : null,
+          quiz_type: effectiveQuizType,
+          component: question.component || ''
+        });
+      }
+
+      // Use upsert to handle both new and existing responses
+      if (responsesToSubmit.length > 0) {
+        const { error: upsertError } = await supabase
+          .from('user_responses')
+          .upsert(responsesToSubmit, {
+            onConflict: 'user_id,question_id',
+            ignoreDuplicates: false
           });
-          
-        if (ratingError) {
-          throw new Error(`Failed to save rating: ${ratingError.message}`);
+
+        if (upsertError) {
+          throw upsertError;
         }
       }
-    } catch (err) {
-      console.error("Error rating module:", err);
-      toast({
-        title: "Error",
-        description: "Failed to save your rating. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
-  
-  // Refine recommendations by refetching them using the global refresh function
-  const refineRecommendations = async (selectedModuleIds: number[] = []): Promise<void> => {
-    try {
-      setIsLoading(true);
-      await refreshProfileData(); // Use the global refresh function
-      setIsLoading(false);
-    } catch (err) {
-      console.error("Error refining recommendations:", err);
-      setError("Failed to load recommendations. Please try again.");
-      setIsLoading(false);
-      toast({
-        title: "Error",
-        description: "Failed to refine recommendations. Please try again later.",
-        variant: "destructive",
-      });
+
+      // Mark quiz segment as completed
+      const { error: completionError } = await supabase
+        .from('quiz_completion')
+        .upsert(
+          { 
+            user_id: session.user.id, 
+            quiz_type: effectiveQuizType,
+            completed_at: new Date().toISOString()
+          },
+          {
+            onConflict: 'user_id,quiz_type',
+            ignoreDuplicates: false
+          }
+        );
+
+      if (completionError) {
+        throw completionError;
+      }
+
+      // Update local storage for offline users
+      const existingCompletions = localStorage.getItem('completed_quiz_segments');
+      const completions = existingCompletions ? JSON.parse(existingCompletions) : [];
+      if (!completions.includes(effectiveQuizType)) {
+        completions.push(effectiveQuizType);
+        localStorage.setItem('completed_quiz_segments', JSON.stringify(completions));
+      }
+      
+      toast.success("Responses saved successfully!");
+    } catch (error) {
+      console.error("Failed to submit responses:", error);
+      toast.error("Failed to save your responses. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  // Generate consistent module IDs - same as in other places
-  function getModuleId(code: string): number {
-    let hash = 0;
-    for (let i = 0; i < code.length; i++) {
-      const char = code.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
-      hash = hash & hash; // Convert to 32bit integer
-    }
-    return Math.abs(hash);
-  }
-
-  // Convert global modules to the format expected by this context
-  const formattedModules = recommendedModules.map(module => ({
-    id: getModuleId(module.modulecode),
-    university: module.institution,
-    course_code: module.modulecode,
-    title: module.title,
-    description: module.description || "No description available.",
-    aus_cus: 4,
-    semester: "1"
-  }));
-
-  // Get final selections
-  const getFinalSelections = async () => {
-    try {
-      // Create the recommendations array from formatted modules
-      const recommendations = formattedModules.map(module => ({
-        module,
-        module_id: module.id,
-        reason: "Recommended based on your major preferences"
-      }));
-      
-      // Filter to highly rated modules (7+)
-      const highlyRated = recommendations.filter(rec => 
-        userFeedback[rec.module_id] >= 7
-      );
-      
-      // Sort by rating (highest first)
-      highlyRated.sort((a, b) => 
-        (userFeedback[b.module_id] || 0) - (userFeedback[a.module_id] || 0)
-      );
-      
-      // Take top 5 or fewer
-      return highlyRated.slice(0, 5).map(rec => rec.module);
-    } catch (err) {
-      console.error("Error getting final selections:", err);
-      toast({
-        title: "Error",
-        description: "Failed to generate course selections. Please try again.",
-        variant: "destructive",
-      });
-      return [];
-    }
-  };
-  
-  // Reset quiz
+  // Reset quiz state
   const resetQuiz = () => {
-    setCurrentStep(1);
+    setResponses({});
   };
-  
-  // Format recommendations to match the expected format in the context
-  const recommendations = formattedModules.map(module => ({
-    module_id: module.id,
-    user_id: userId || '',
-    module,
-    reason: "Recommended based on your major preferences",
-    created_at: new Date().toISOString(),
-    reasoning: ["Based on your recommended majors"]
-  }));
-  
-  // Memoize the context value to prevent unnecessary rerenders
-  const contextValue = useMemo<QuizContextType>(() => ({
-    currentStep,
-    responses,
-    questions,
-    isLoading: isLoading || profileLoading,
-    isSubmitting,
-    error: error || null,
-    recommendations,
-    userFeedback,
-    modules,
-    finalSelections,
-    completedQuizzes,
-    debugInfo,
-    setCurrentStep,
-    handleResponse,
-    submitResponses,
-    rateModule,
-    refineRecommendations,
-    getFinalSelections,
-    resetQuiz,
-  }), [
-    currentStep, 
-    responses, 
-    questions, 
-    isLoading, 
-    profileLoading,
-    isSubmitting, 
-    error,
-    recommendedModules,
-    recommendations,
-    userFeedback,
-    modules,
-    finalSelections,
-    completedQuizzes,
-    debugInfo
-  ]);
-  
+
   return (
-    <QuizContext.Provider value={contextValue}>
+    <QuizContext.Provider
+      value={{
+        currentStep,
+        responses,
+        questions,
+        isLoading,
+        isSubmitting,
+        error,
+        handleResponse,
+        submitResponses,
+        resetQuiz
+      }}
+    >
       {children}
     </QuizContext.Provider>
   );

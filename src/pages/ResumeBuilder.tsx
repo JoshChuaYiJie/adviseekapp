@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "@/components/ui/sonner";
+import { toast } from "sonner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useTheme } from "@/contexts/ThemeContext";
 import { TooltipProvider } from "@/components/ui/tooltip";

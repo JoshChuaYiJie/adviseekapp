@@ -7,6 +7,7 @@ import { MyResume } from "./MyResume";
 import { useGlobalProfile } from "@/contexts/GlobalProfileContext";
 import { ProfileTabs } from "./about/ProfileTabs";
 import { ProfileContent } from "./about/ProfileContent";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 export const AboutMe = () => {
   const [activeTab, setActiveTab] = useState<"quiz" | "profile" | "resume">("quiz");
@@ -58,24 +59,26 @@ export const AboutMe = () => {
   };
   
   return (
-    <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight">About Me</h2>
-          <p className="text-muted-foreground">
-            Complete quizzes to learn more about your interests and strengths
-          </p>
+    <TooltipProvider>
+      <div className="space-y-8">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-3xl font-bold tracking-tight">About Me</h2>
+            <p className="text-muted-foreground">
+              Complete quizzes to learn more about your interests and strengths
+            </p>
+          </div>
+          <ProfileTabs activeTab={activeTab} setActiveTab={setActiveTab} />
         </div>
-        <ProfileTabs activeTab={activeTab} setActiveTab={setActiveTab} />
-      </div>
 
-      {activeTab === "quiz" ? (
-        <QuizSegments />
-      ) : activeTab === "profile" ? (
-        <ProfileContent setActiveTab={setActiveTab} isLoading={isLoading} />
-      ) : (
-        <MyResume />
-      )}
-    </div>
+        {activeTab === "quiz" ? (
+          <QuizSegments />
+        ) : activeTab === "profile" ? (
+          <ProfileContent setActiveTab={setActiveTab} isLoading={isLoading} />
+        ) : (
+          <MyResume />
+        )}
+      </div>
+    </TooltipProvider>
   );
 };

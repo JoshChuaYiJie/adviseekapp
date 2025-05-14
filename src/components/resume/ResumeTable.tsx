@@ -52,84 +52,86 @@ export const ResumeTable: React.FC<ResumeTableProps> = ({
   }
 
   return (
-    <div>
-      <h3 className="text-lg font-medium mb-4">{t('Your Resumes')}</h3>
-      <div className="border rounded-md">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>{t('Name')}</TableHead>
-              <TableHead>{t('Type')}</TableHead>
-              <TableHead>{t('Last Updated')}</TableHead>
-              <TableHead className="text-right">{t('Actions')}</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {savedResumes.map((resume) => (
-              <TableRow key={resume.id}>
-                <TableCell className="font-medium">{resume.name}</TableCell>
-                <TableCell>{resume.template_type}</TableCell>
-                <TableCell>{resume.updated_at}</TableCell>
-                <TableCell className="text-right">
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="mr-1"
-                          onClick={() => onViewResume(resume.id, resume.template_type)}
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>{t('View')}</TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                  
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => onEditResume(resume.id, resume.template_type)}
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>{t('Edit')}</TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </TableCell>
+    <TooltipProvider>
+      <div>
+        <h3 className="text-lg font-medium mb-4">{t('Your Resumes')}</h3>
+        <div className="border rounded-md">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>{t('Name')}</TableHead>
+                <TableHead>{t('Type')}</TableHead>
+                <TableHead>{t('Last Updated')}</TableHead>
+                <TableHead className="text-right">{t('Actions')}</TableHead>
               </TableRow>
-            ))}
-            {resumeFiles.map((file, index) => (
-              <TableRow key={`file-${index}`}>
-                <TableCell className="font-medium">{file.name}</TableCell>
-                <TableCell>PDF Upload</TableCell>
-                <TableCell>Just now</TableCell>
-                <TableCell className="text-right">
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button 
-                          variant="ghost" 
-                          size="icon"
-                          onClick={() => onEditPDF(index)}
-                        >
-                          <FileEdit className="h-4 w-4" />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>{t('Edit')}</TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {savedResumes.map((resume) => (
+                <TableRow key={resume.id}>
+                  <TableCell className="font-medium">{resume.name}</TableCell>
+                  <TableCell>{resume.template_type}</TableCell>
+                  <TableCell>{resume.updated_at}</TableCell>
+                  <TableCell className="text-right">
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="mr-1"
+                            onClick={() => onViewResume(resume.id, resume.template_type)}
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>{t('View')}</TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                    
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => onEditResume(resume.id, resume.template_type)}
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>{t('Edit')}</TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </TableCell>
+                </TableRow>
+              ))}
+              {resumeFiles.map((file, index) => (
+                <TableRow key={`file-${index}`}>
+                  <TableCell className="font-medium">{file.name}</TableCell>
+                  <TableCell>PDF Upload</TableCell>
+                  <TableCell>Just now</TableCell>
+                  <TableCell className="text-right">
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button 
+                            variant="ghost" 
+                            size="icon"
+                            onClick={() => onEditPDF(index)}
+                          >
+                            <FileEdit className="h-4 w-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>{t('Edit')}</TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       </div>
-    </div>
+    </TooltipProvider>
   );
 };

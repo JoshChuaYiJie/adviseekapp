@@ -27,7 +27,8 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion"
+} from "@/components/ui/accordion";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 interface QuizDebuggerProps {
   userId: string;
@@ -113,14 +114,15 @@ const SegmentedQuiz = () => {
         toast({
           title: "Error",
           description: "Failed to retrieve user information.",
-        })
+          variant: "destructive"
+        });
       } finally {
         setLoading(false);
       }
     };
 
     fetchUserId();
-  }, []);
+  }, [toast]);
 
   // Load progress based on current step
   useEffect(() => {
@@ -153,8 +155,6 @@ const SegmentedQuiz = () => {
     }
 
     // Filter questions for current step
-    // Instead of using 'section' which doesn't exist, we'll use the question category
-    // and match it with the current route which should be like 'interest-part 1'
     const currentQuizType = `interest-part ${currentStep}`;
     const questionsForStep = questions.filter(q => q.category === currentQuizType);
 
@@ -165,8 +165,7 @@ const SegmentedQuiz = () => {
     return questionsForStep.map((question) => {
       const response = responses[question.id] || null;
 
-      // Use category instead of type to determine the question type
-      // We'll infer the type from whether the question allows multiple selections
+      // Infer question type based on response data
       const questionType = Array.isArray(response) ? "multi-select" : "single-select";
 
       switch (questionType) {
@@ -178,10 +177,18 @@ const SegmentedQuiz = () => {
                 <CardDescription>Choose one option</CardDescription>
               </CardHeader>
               <CardContent>
-                <RadioGroup defaultValue={response ? String(response) : ""} onValueChange={(value) => handleAnswerChange(question.id, value)} className="flex flex-col space-y-2">
+                <RadioGroup 
+                  defaultValue={response ? String(response) : ""} 
+                  onValueChange={(value) => handleAnswerChange(question.id, value)} 
+                  className="flex flex-col space-y-2"
+                >
                   {question.options?.map((option, index) => (
                     <div key={index} className="flex items-center space-x-2">
-                      <RadioGroupItem value={option} id={`r${question.id}-${index}`} className={isCurrentlyDark ? 'ring-offset-gray-800' : ''} />
+                      <RadioGroupItem 
+                        value={option} 
+                        id={`r${question.id}-${index}`} 
+                        className={isCurrentlyDark ? 'ring-offset-gray-800' : ''} 
+                      />
                       <Label htmlFor={`r${question.id}-${index}`}>{option}</Label>
                     </div>
                   ))}
@@ -259,7 +266,8 @@ const SegmentedQuiz = () => {
   };
 
   const handleQuizCompletion = async () => {
-    await submitResponses(`interest-part ${currentStep}`);
+    const quizType = `interest-part ${currentStep}`;
+    await submitResponses(quizType);
     navigate('/recommendations');
   };
 
@@ -277,56 +285,58 @@ const SegmentedQuiz = () => {
   };
 
   return (
-    <div className="container mx-auto py-10">
-      <h1 className="text-3xl font-bold text-center mb-8">{t("quiz.title", "Quiz")}</h1>
+    <TooltipProvider>
+      <div className="container mx-auto py-10">
+        <h1 className="text-3xl font-bold text-center mb-8">{t("quiz.title", "Quiz")}</h1>
 
-      {currentStep !== undefined && (
-        <h2 className="text-xl font-semibold text-center mb-4">
-          {t("quiz.section." + String(currentStep), `Section ${currentStep}`)}
-        </h2>
-      )}
+        {currentStep !== undefined && (
+          <h2 className="text-xl font-semibold text-center mb-4">
+            {t(`quiz.section.${currentStep}`, `Section ${currentStep}`)}
+          </h2>
+        )}
 
-      <Progress value={quizProgress} className="mb-4" />
+        <Progress value={quizProgress} className="mb-4" />
 
-      {renderQuestion()}
+        {renderQuestion()}
 
-      <div className="flex justify-between">
-        <Button variant="outline" onClick={goToPreviousStep} disabled={currentStep === 1}>
-          {t("quiz.previous", "Previous")}
-        </Button>
-        <Button onClick={handleNext}>
-          {isLastStep ? t("quiz.complete", "Complete") : t("quiz.next", "Next")}
-        </Button>
+        <div className="flex justify-between">
+          <Button variant="outline" onClick={goToPreviousStep} disabled={currentStep === 1}>
+            {t("quiz.previous", "Previous")}
+          </Button>
+          <Button onClick={handleNext} disabled={isSubmitting}>
+            {isLastStep ? t("quiz.complete", "Complete") : t("quiz.next", "Next")}
+          </Button>
+        </div>
+
+        <div className="flex justify-center mt-4">
+          <Button variant="secondary" onClick={resetQuiz}>
+            {t("quiz.reset", "Reset Quiz")}
+          </Button>
+        </div>
+
+        {/* Conditionally render the QuizDebugger */}
+        {showDebugger && (
+          <QuizDebugger
+            userId={userId || ""}
+            responses={responses}
+            quizType={String(currentStep) || ""}
+            debugData={{
+              questions,
+              currentStep,
+              responses: String(JSON.stringify(responses)),
+              quizProgress,
+            }}
+          />
+        )}
+
+        {/* Button to toggle the debugger */}
+        <div className="flex justify-center mt-4">
+          <Button variant="ghost" onClick={toggleDebugger}>
+            {showDebugger ? "Hide Debugger" : "Show Debugger"}
+          </Button>
+        </div>
       </div>
-
-      <div className="flex justify-center mt-4">
-        <Button variant="secondary" onClick={resetQuiz}>
-          {t("quiz.reset", "Reset Quiz")}
-        </Button>
-      </div>
-
-      {/* Conditionally render the QuizDebugger */}
-      {showDebugger && (
-        <QuizDebugger
-          userId={userId || ""}
-          responses={responses}
-          quizType={String(currentStep) || ""}
-          debugData={{
-            questions,
-            currentStep,
-            responses: String(JSON.stringify(responses)),
-            quizProgress,
-          }}
-        />
-      )}
-
-      {/* Button to toggle the debugger */}
-      <div className="flex justify-center mt-4">
-        <Button variant="ghost" onClick={toggleDebugger}>
-          {showDebugger ? "Hide Debugger" : "Show Debugger"}
-        </Button>
-      </div>
-    </div>
+    </TooltipProvider>
   );
 };
 

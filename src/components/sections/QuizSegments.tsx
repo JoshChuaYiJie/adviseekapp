@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -10,6 +11,7 @@ import { MajorRecommendations } from "./MajorRecommendations";
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { RecommendationDisclaimer } from "@/components/CourseQuiz/RecommendationDisclaimer";
+import { useQuiz } from "@/contexts/QuizContext";
 
 type QuizSegment = {
   id: string;
@@ -23,6 +25,7 @@ export const QuizSegments = () => {
   const { isCurrentlyDark } = useTheme();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { resetQuiz } = useQuiz(); // Import resetQuiz from QuizContext
   const [activeTab, setActiveTab] = useState("interest-part 1");
   const [userId, setUserId] = useState<string | null>(null);
   const [completedSegments, setCompletedSegments] = useState<string[]>([]);
@@ -33,11 +36,14 @@ export const QuizSegments = () => {
   
   // State to show the recommendation disclaimer dialog
   const [showDisclaimer, setShowDisclaimer] = useState(false);
+  // State to track if data is being refreshed when retaking quizzes
+  const [refreshing, setRefreshing] = useState(false);
   
-  // Function to load user profiles
+  // Function to load user profiles with improved error handling
   const loadUserProfiles = async (userId: string) => {
     try {
       console.log("Loading user profiles for", userId);
+      setRefreshing(true);
       
       // Fetch RIASEC profile from user_responses table
       const { data: riasecData, error: riasecError } = await supabase
@@ -48,6 +54,11 @@ export const QuizSegments = () => {
       
       if (riasecError) {
         console.error('Error fetching RIASEC profile:', riasecError);
+        toast({
+          title: "Error loading profile data",
+          description: "Failed to load your RIASEC profile data",
+          variant: "destructive"
+        });
       } else {
         console.log("RIASEC data:", riasecData);
         if (riasecData && riasecData.length > 0) {
@@ -75,6 +86,11 @@ export const QuizSegments = () => {
       
       if (workValueError) {
         console.error('Error fetching Work Value profile:', workValueError);
+        toast({
+          title: "Error loading profile data",
+          description: "Failed to load your Work Value profile data",
+          variant: "destructive"
+        });
       } else {
         console.log("Work Value data:", workValueData);
         if (workValueData && workValueData.length > 0) {
@@ -98,6 +114,13 @@ export const QuizSegments = () => {
       console.log("Final Work Value profile state:", workValueProfile);
     } catch (error) {
       console.error('Error loading user profiles:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load user profile data",
+        variant: "destructive"
+      });
+    } finally {
+      setRefreshing(false);
     }
   };
   
@@ -130,7 +153,7 @@ export const QuizSegments = () => {
             completed = getCompletedSegmentsFromLocalStorage();
           } else if (data) {
             completed = data.map(item => item.quiz_type);
-            console.log("Completed quiz segments from database:", completed);
+            console.log("Fetched completed quiz segments:", completed);
             // Update localStorage for consistency
             localStorage.setItem('completed_quiz_segments', JSON.stringify(completed));
           }
@@ -238,6 +261,7 @@ export const QuizSegments = () => {
     }
   ];
   
+  // Enhanced function to handle quiz start/retake with appropriate state reset
   const handleStartQuiz = (segmentId: string) => {
     if (!userId) {
       toast({
@@ -246,6 +270,9 @@ export const QuizSegments = () => {
         variant: "default"
       });
     }
+    
+    // Reset the quiz state when starting/retaking a quiz
+    resetQuiz();
     
     // Fixed redirection for open-ended quiz - directly navigate without disclaimer
     if (segmentId === "open-ended") {
@@ -266,101 +293,105 @@ export const QuizSegments = () => {
   }
   
   return (
-    <div className="space-y-6">
-      <Tabs 
-        defaultValue={activeTab} 
-        onValueChange={(newTab) => {
-          setActiveTab(newTab);
-        }}
-        className="w-full"
-      >
-        <TabsList className="mb-4 flex flex-wrap">
-          {quizSegments.map(segment => (
-            <TabsTrigger 
-              key={segment.id} 
-              value={segment.id}
-              className={segment.completed ? "text-green-500" : ""}
-            >
-              {segment.title}
-              {segment.completed && <span className="ml-2">✓</span>}
+    <TooltipProvider>
+      <div className="space-y-6">
+        <Tabs 
+          defaultValue={activeTab} 
+          onValueChange={(newTab) => {
+            setActiveTab(newTab);
+          }}
+          className="w-full"
+        >
+          <TabsList className="mb-4 flex flex-wrap">
+            {quizSegments.map(segment => (
+              <TabsTrigger 
+                key={segment.id} 
+                value={segment.id}
+                className={segment.completed ? "text-green-500" : ""}
+              >
+                {segment.title}
+                {segment.completed && <span className="ml-2">✓</span>}
+              </TabsTrigger>
+            ))}
+            <TabsTrigger value="explore">
+              Questions Explorer
             </TabsTrigger>
-          ))}
-          <TabsTrigger value="explore">
-            Questions Explorer
-          </TabsTrigger>
-        </TabsList>
-        
-        {quizSegments.map(segment => (
-          <TabsContent key={segment.id} value={segment.id} className="space-y-6">
-            <div className={`p-6 ${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg shadow`}>
-              <div className="flex flex-col items-center justify-center py-12 space-y-6 text-center">
-                <h2 className="text-2xl font-medium">{segment.title}</h2>
-                <p className="text-gray-500 dark:text-gray-400 max-w-lg">
-                  {segment.description}
-                </p>
-                
-                {segment.locked ? (
-                  <div className="flex flex-col items-center space-y-4">
-                    <div className="w-16 h-16 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                      <LockIcon size={24} className="text-gray-500 dark:text-gray-400" />
-                    </div>
-                    <Alert className={`${isCurrentlyDark ? 'bg-gray-700' : 'bg-gray-100'} max-w-md`}>
-                      <AlertTitle>This section is locked</AlertTitle>
-                      <AlertDescription>
-                        Complete all previous quiz segments to unlock open-ended questions.
-                      </AlertDescription>
-                    </Alert>
-                  </div>
-                ) : (
-                  <>
-                    {segment.completed ? (
-                      <div className="flex flex-col items-center space-y-4">
-                        <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center">
-                          <span className="text-green-600 dark:text-green-400 text-3xl">✓</span>
-                        </div>
-                        <p className="text-green-600 dark:text-green-400">You've completed this section!</p>
-                        <Button 
-                          variant="outline" 
-                          onClick={() => handleStartQuiz(segment.id)}
-                        >
-                          Retake Quiz
-                        </Button>
+          </TabsList>
+          
+          {quizSegments.map(segment => (
+            <TabsContent key={segment.id} value={segment.id} className="space-y-6">
+              <div className={`p-6 ${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg shadow`}>
+                <div className="flex flex-col items-center justify-center py-12 space-y-6 text-center">
+                  <h2 className="text-2xl font-medium">{segment.title}</h2>
+                  <p className="text-gray-500 dark:text-gray-400 max-w-lg">
+                    {segment.description}
+                  </p>
+                  
+                  {segment.locked ? (
+                    <div className="flex flex-col items-center space-y-4">
+                      <div className="w-16 h-16 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                        <LockIcon size={24} className="text-gray-500 dark:text-gray-400" />
                       </div>
-                    ) : (
-                      <Button 
-                        size="lg" 
-                        onClick={() => handleStartQuiz(segment.id)}
-                        className="px-8"
-                      >
-                        Start Quiz
-                      </Button>
-                    )}
-                  </>
-                )}
+                      <Alert className={`${isCurrentlyDark ? 'bg-gray-700' : 'bg-gray-100'} max-w-md`}>
+                        <AlertTitle>This section is locked</AlertTitle>
+                        <AlertDescription>
+                          Complete all previous quiz segments to unlock open-ended questions.
+                        </AlertDescription>
+                      </Alert>
+                    </div>
+                  ) : (
+                    <>
+                      {segment.completed ? (
+                        <div className="flex flex-col items-center space-y-4">
+                          <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center">
+                            <span className="text-green-600 dark:text-green-400 text-3xl">✓</span>
+                          </div>
+                          <p className="text-green-600 dark:text-green-400">You've completed this section!</p>
+                          <Button 
+                            variant="outline" 
+                            onClick={() => handleStartQuiz(segment.id)}
+                            disabled={refreshing}
+                          >
+                            {refreshing ? "Preparing..." : "Retake Quiz"}
+                          </Button>
+                        </div>
+                      ) : (
+                        <Button 
+                          size="lg" 
+                          onClick={() => handleStartQuiz(segment.id)}
+                          className="px-8"
+                          disabled={refreshing}
+                        >
+                          {refreshing ? "Preparing..." : "Start Quiz"}
+                        </Button>
+                      )}
+                    </>
+                  )}
+                </div>
               </div>
-            </div>
-          </TabsContent>
-        ))}
+            </TabsContent>
+          ))}
 
-        <TabsContent value="explore" className="space-y-6">
-          <McqQuestionsDisplay />
-        </TabsContent>
-      </Tabs>
-      
-      {!userId && (
-        <Alert className="bg-amber-50 text-amber-800 dark:bg-amber-900 dark:text-amber-200 border-amber-200">
-          <AlertTitle>Not signed in</AlertTitle>
-          <AlertDescription>
-            Sign in to save your quiz progress across devices.
-          </AlertDescription>
-        </Alert>
-      )}
-      
-      {/* Add the Recommendation Disclaimer Dialog */}
-      <RecommendationDisclaimer 
-        isOpen={showDisclaimer} 
-        onClose={() => setShowDisclaimer(false)} 
-      />
-    </div>
+          <TabsContent value="explore" className="space-y-6">
+            <McqQuestionsDisplay />
+          </TabsContent>
+        </Tabs>
+        
+        {!userId && (
+          <Alert className="bg-amber-50 text-amber-800 dark:bg-amber-900 dark:text-amber-200 border-amber-200">
+            <AlertTitle>Not signed in</AlertTitle>
+            <AlertDescription>
+              Sign in to save your quiz progress across devices.
+            </AlertDescription>
+          </Alert>
+        )}
+        
+        {/* Add the Recommendation Disclaimer Dialog */}
+        <RecommendationDisclaimer 
+          isOpen={showDisclaimer} 
+          onClose={() => setShowDisclaimer(false)} 
+        />
+      </div>
+    </TooltipProvider>
   );
 };
