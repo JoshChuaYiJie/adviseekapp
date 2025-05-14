@@ -1,30 +1,25 @@
 
-import { Module, Recommendation } from "@/integrations/supabase/client";
-
-// Interface for occupation major mappings
+// Types for major recommendations
 export interface OccupationMajorMapping {
   occupation: string;
-  RIASEC_code: string;
-  work_value_code: string;
+  RIASEC_code: string | null;
+  work_value_code: string | null;
   majors: string[];
 }
 
-// Define interface for matched majors by category
 export interface MajorRecommendations {
   exactMatches: string[];
   permutationMatches: string[];
   riasecMatches: string[];
   workValueMatches: string[];
-  questionFiles: string[]; // For sanitized filenames
+  questionFiles: string[];
   riasecCode: string;
   workValueCode: string;
-  matchType: 'exact' | 'permutation' | 'riasec' | 'workValue' | 'none';
+  matchType: 'exact' | 'riasec' | 'workValue' | 'none';
 }
 
-// Define interface for module objects from the recommendations
-export interface RecommendationModule {
-  modulecode: string;
-  title: string;
-  institution: "NUS" | "NTU" | "SMU";
-  description: string;
+// Export other types that might be needed
+export interface RecommendationResponse {
+  majors: string[];
+  files: string[];
 }
