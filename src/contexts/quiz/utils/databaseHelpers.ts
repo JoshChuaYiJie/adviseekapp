@@ -1,5 +1,4 @@
 
-
 import { supabase } from "@/integrations/supabase/client";
 
 // Get current user ID
@@ -17,6 +16,85 @@ export const getUserId = async (): Promise<string | null> => {
   } catch (error) {
     console.error("Error getting user ID:", error);
     return null;
+  }
+};
+
+// Validate the database configuration for user responses table
+export const validateUserResponsesTable = async () => {
+  try {
+    // Check if the user_responses table has RLS enabled
+    const { data: rlsData, error: rlsError } = await supabase.rpc('check_rls_enabled', { table_name: 'user_responses' });
+    if (rlsError) {
+      console.error("Error checking RLS:", rlsError);
+      return { 
+        success: false, 
+        hasRlsEnabled: false,
+        hasUniqueConstraint: false,
+        hasCorrectPolicy: false,
+        details: `Error checking RLS: ${rlsError.message}`
+      };
+    }
+    
+    // Check if user_responses table has a unique constraint on user_id,question_id
+    const { data: uniqueConstraint, error: uniqueError } = await supabase.rpc(
+      'check_unique_constraint', 
+      { 
+        table_name: 'user_responses',
+        column_names: ['user_id', 'question_id']
+      }
+    );
+    
+    if (uniqueError) {
+      console.error("Error checking unique constraint:", uniqueError);
+      return {
+        success: false,
+        hasRlsEnabled: rlsData,
+        hasUniqueConstraint: false,
+        hasCorrectPolicy: false,
+        details: `Error checking unique constraint: ${uniqueError.message}`
+      };
+    }
+    
+    // Check if the user_responses table has the correct RLS policy
+    const { data: policyExists, error: policyError } = await supabase.rpc(
+      'check_policy_exists',
+      {
+        table_name: 'user_responses',
+        policy_name: 'Users can view their own responses'
+      }
+    );
+    
+    if (policyError) {
+      console.error("Error checking policy:", policyError);
+      return {
+        success: false,
+        hasRlsEnabled: rlsData,
+        hasUniqueConstraint: uniqueConstraint,
+        hasCorrectPolicy: false,
+        details: `Error checking policy: ${policyError.message}`
+      };
+    }
+    
+    const success = rlsData && uniqueConstraint && policyExists;
+    
+    return {
+      success,
+      hasRlsEnabled: rlsData,
+      hasUniqueConstraint: uniqueConstraint,
+      hasCorrectPolicy: policyExists,
+      details: success 
+        ? "Database configuration is valid" 
+        : "Database configuration needs adjustment. Please check RLS, constraints, and policies."
+    };
+  } catch (error) {
+    console.error("Error validating database configuration:", error);
+    return {
+      success: false,
+      hasRlsEnabled: false,
+      hasUniqueConstraint: false,
+      hasCorrectPolicy: false,
+      details: `Exception during validation: ${error instanceof Error ? error.message : String(error)}`
+    };
   }
 };
 
@@ -111,19 +189,19 @@ export const calculateRiasecProfile = async (userId: string): Promise<Record<str
   }
 };
 
-// For Work Values profile computation
+// For Work Values profile computation - completing the previously incomplete function
 export const calculateWorkValuesProfile = async (userId: string): Promise<Record<string, number>> => {
   try {
-    // Get work values responses
+    // Get all work values responses
     const { data: workValueResponses, error: workValueError } = await supabase
       .from('user_responses')
       .select('component, score')
       .eq('user_id', userId)
       .eq('quiz_type', 'work-values')
       .not('component', 'is', null);
-    
+      
     if (workValueError) {
-      console.error('Error fetching Work Values responses:', workValueError);
+      console.error('Error fetching work values responses:', workValueError);
       return {};
     }
     
@@ -155,92 +233,8 @@ export const calculateWorkValuesProfile = async (userId: string): Promise<Record
   }
 };
 
-// Add the missing validateUserResponsesTable function
-export const validateUserResponsesTable = async () => {
-  try {
-    // Check if RLS is enabled
-    const { data: rlsData, error: rlsError } = await supabase.rpc(
-      'check_rls_enabled', 
-      { table_name: 'user_responses' }
-    );
-    
-    if (rlsError) {
-      console.error('Error checking RLS:', rlsError);
-      return {
-        success: false,
-        hasRlsEnabled: false,
-        hasUniqueConstraint: false,
-        hasCorrectPolicy: false,
-        details: `Error checking RLS: ${rlsError.message}`
-      };
-    }
-    
-    // Check if unique constraint exists
-    const { data: uniqueData, error: uniqueError } = await supabase.rpc(
-      'check_unique_constraint',
-      { 
-        table_name: 'user_responses',
-        column_names: ['user_id', 'question_id'] 
-      }
-    );
-    
-    if (uniqueError) {
-      console.error('Error checking unique constraint:', uniqueError);
-      return {
-        success: false,
-        hasRlsEnabled: rlsData,
-        hasUniqueConstraint: false,
-        hasCorrectPolicy: false,
-        details: `Error checking unique constraint: ${uniqueError.message}`
-      };
-    }
-    
-    // Check if user_id policy exists
-    const { data: policyData, error: policyError } = await supabase.rpc(
-      'check_policy_exists',
-      {
-        table_name: 'user_responses',
-        policy_name: 'Users can select their own responses'
-      }
-    );
-    
-    if (policyError) {
-      console.error('Error checking policy:', policyError);
-      return {
-        success: false,
-        hasRlsEnabled: rlsData,
-        hasUniqueConstraint: uniqueData,
-        hasCorrectPolicy: false,
-        details: `Error checking policy: ${policyError.message}`
-      };
-    }
-    
-    // Return combined results
-    const allValid = rlsData && uniqueData && policyData;
-    
-    return {
-      success: allValid,
-      hasRlsEnabled: rlsData,
-      hasUniqueConstraint: uniqueData,
-      hasCorrectPolicy: policyData,
-      details: allValid 
-        ? 'Database configuration appears correct' 
-        : 'One or more configuration issues detected'
-    };
-  } catch (error) {
-    console.error('Error validating database configuration:', error);
-    return {
-      success: false,
-      hasRlsEnabled: false,
-      hasUniqueConstraint: false,
-      hasCorrectPolicy: false,
-      details: `Exception: ${error instanceof Error ? error.message : String(error)}`
-    };
-  }
-};
-
-// Debugging tool to inspect responses for a user
-export const inspectResponses = async (userId: string, pattern?: string) => {
+// Function to inspect responses for debugging
+export const inspectResponses = async (userId: string, pattern?: 'RIASEC' | 'WorkValues' | 'All'): Promise<any[]> => {
   try {
     let query = supabase
       .from('user_responses')
@@ -256,13 +250,13 @@ export const inspectResponses = async (userId: string, pattern?: string) => {
     const { data, error } = await query;
     
     if (error) {
-      console.error(`Error inspecting ${pattern} responses:`, error);
+      console.error('Error inspecting responses:', error);
       return [];
     }
     
-    return data;
+    return data || [];
   } catch (error) {
-    console.error(`Error inspecting ${pattern} responses:`, error);
+    console.error('Error in inspectResponses:', error);
     return [];
   }
 };

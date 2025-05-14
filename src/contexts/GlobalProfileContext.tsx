@@ -88,7 +88,8 @@ export const GlobalProfileProvider: React.FC<{children: React.ReactNode}> = ({ c
       // RIASEC code generation
       let generatedRiasecCode = "RSI"; // Default fallback
       
-      // Try to get RIASEC data directly from user_responses table
+      console.log("Attempting to fetch RIASEC data directly from user_responses");
+      // Try to get RIASEC data directly from user_responses table with component information
       const { data: riasecResponses, error: riasecError } = await supabase
         .from('user_responses')
         .select('component, score')
@@ -98,6 +99,11 @@ export const GlobalProfileProvider: React.FC<{children: React.ReactNode}> = ({ c
         
       if (riasecError) {
         console.error('Error fetching RIASEC responses:', riasecError);
+        toast({
+          title: "Error",
+          description: "Failed to load RIASEC profile data",
+          variant: "destructive"
+        });
       } 
       else if (riasecResponses && riasecResponses.length > 0) {
         console.log("RIASEC responses:", riasecResponses);
@@ -120,13 +126,17 @@ export const GlobalProfileProvider: React.FC<{children: React.ReactNode}> = ({ c
         if (sortedComponents.length > 0) {
           generatedRiasecCode = formCode(sortedComponents, mapRiasecToCode);
           console.log(`Generated RIASEC code from responses: ${generatedRiasecCode}`);
+          setRiasecCode(generatedRiasecCode);
+        } else {
+          console.log("No valid RIASEC components found in responses");
         }
-        
-        setRiasecCode(generatedRiasecCode);
       } 
       else {
+        console.log("No RIASEC responses with components found, trying processRiasecData");
         // Fallback to process function
         const riasecChartData = await processRiasecData(userId);
+        console.log("RIASEC chart data:", riasecChartData);
+        
         if (riasecChartData && riasecChartData.length > 0) {
           const formattedRiasecData = riasecChartData.map(item => ({
             component: item.name,
@@ -134,8 +144,10 @@ export const GlobalProfileProvider: React.FC<{children: React.ReactNode}> = ({ c
             score: item.value
           }));
           generatedRiasecCode = formCode(formattedRiasecData, mapRiasecToCode);
+          console.log(`Generated RIASEC code from chart data: ${generatedRiasecCode}`);
           setRiasecCode(generatedRiasecCode);
         } else {
+          console.log("Using default RIASEC code RSI");
           setRiasecCode("RSI"); // Default fallback
         }
       }
@@ -143,6 +155,7 @@ export const GlobalProfileProvider: React.FC<{children: React.ReactNode}> = ({ c
       // Work Values code generation
       let generatedWorkValueCode = "ARS"; // Default fallback
       
+      console.log("Attempting to fetch Work Values data directly from user_responses");
       // Try to get Work Values data directly from user_responses table
       const { data: workValueResponses, error: workValueError } = await supabase
         .from('user_responses')
@@ -153,6 +166,11 @@ export const GlobalProfileProvider: React.FC<{children: React.ReactNode}> = ({ c
         
       if (workValueError) {
         console.error('Error fetching Work Value responses:', workValueError);
+        toast({
+          title: "Error",
+          description: "Failed to load Work Values profile data",
+          variant: "destructive"
+        });
       } 
       else if (workValueResponses && workValueResponses.length > 0) {
         console.log("Work Value responses:", workValueResponses);
@@ -175,13 +193,17 @@ export const GlobalProfileProvider: React.FC<{children: React.ReactNode}> = ({ c
         if (sortedComponents.length > 0) {
           generatedWorkValueCode = formCode(sortedComponents, mapWorkValueToCode);
           console.log(`Generated Work Value code from responses: ${generatedWorkValueCode}`);
+          setWorkValueCode(generatedWorkValueCode);
+        } else {
+          console.log("No valid Work Value components found in responses");
         }
-        
-        setWorkValueCode(generatedWorkValueCode);
       } 
       else {
+        console.log("No Work Value responses with components found, trying processWorkValuesData");
         // Fallback to process function
         const workValuesChartData = await processWorkValuesData(userId);
+        console.log("Work Values chart data:", workValuesChartData);
+        
         if (workValuesChartData && workValuesChartData.length > 0) {
           const formattedWorkValuesData = workValuesChartData.map(item => ({
             component: item.name,
@@ -189,8 +211,10 @@ export const GlobalProfileProvider: React.FC<{children: React.ReactNode}> = ({ c
             score: item.value
           }));
           generatedWorkValueCode = formCode(formattedWorkValuesData, mapWorkValueToCode);
+          console.log(`Generated Work Value code from chart data: ${generatedWorkValueCode}`);
           setWorkValueCode(generatedWorkValueCode);
         } else {
+          console.log("Using default Work Value code ARS");
           setWorkValueCode("ARS"); // Default fallback
         }
       }
