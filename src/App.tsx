@@ -24,9 +24,9 @@ import { GlobalProfileProvider } from "./contexts/GlobalProfileContext";
 function App() {
   return (
     <ThemeProvider>
-      <GlobalProfileProvider>
-        <QuizProvider>
-          <BrowserRouter>
+      <BrowserRouter>
+        <GlobalProfileProvider>
+          <QuizProvider>
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/quiz" element={<SegmentedQuiz />} />
@@ -45,10 +45,10 @@ function App() {
               <Route path="/debug" element={<QuizDebugPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
-          </BrowserRouter>
-          <Toaster />
-        </QuizProvider>
-      </GlobalProfileProvider>
+            <Toaster />
+          </QuizProvider>
+        </GlobalProfileProvider>
+      </BrowserRouter>
     </ThemeProvider>
   );
 }

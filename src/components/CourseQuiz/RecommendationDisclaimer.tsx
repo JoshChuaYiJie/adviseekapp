@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
   Dialog,
   DialogContent,
@@ -10,6 +9,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from '@/components/ui/button';
+import { useQuiz } from '@/contexts/QuizContext';
 
 interface RecommendationDisclaimerProps {
   isOpen: boolean;
@@ -20,12 +20,12 @@ export const RecommendationDisclaimer: React.FC<RecommendationDisclaimerProps> =
   isOpen, 
   onClose 
 }) => {
-  const navigate = useNavigate();
+  const { navigateToPath } = useQuiz();
 
   const handleProceed = () => {
     onClose();
-    // Navigate to the recommendations page
-    navigate('/recommendations');
+    // Navigate to the recommendations page using the context method
+    navigateToPath('/recommendations');
   };
 
   return (

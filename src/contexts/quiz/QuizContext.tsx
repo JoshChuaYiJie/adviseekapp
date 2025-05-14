@@ -1,11 +1,13 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { McqQuestion } from '@/utils/quizQuestions';
 import { QuizContextType } from './types';
 import { Module } from '@/integrations/supabase/client';
+
+// Remove the useNavigate import since we'll handle navigation differently
 
 // Create the context with undefined as initial value
 const QuizContext = createContext<QuizContextType | undefined>(undefined);
@@ -19,7 +21,7 @@ export const useQuiz = () => {
 };
 
 export const QuizProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const navigate = useNavigate();
+  // Remove the navigate constant - we'll use window.location for necessary redirects
   const location = useLocation();
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [responses, setResponses] = useState<Record<string | number, string | string[]>>({});
@@ -303,6 +305,11 @@ export const QuizProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setFinalSelections([]);
   };
 
+  // A navigation function that doesn't rely on useNavigate
+  const navigateToPath = (path: string) => {
+    window.location.href = path;
+  };
+
   return (
     <QuizContext.Provider
       value={{
@@ -324,7 +331,8 @@ export const QuizProvider: React.FC<{ children: React.ReactNode }> = ({ children
         rateModule,
         refineRecommendations,
         getFinalSelections,
-        resetQuiz
+        resetQuiz,
+        navigateToPath // Add this new method instead of using navigate directly
       }}
     >
       {children}

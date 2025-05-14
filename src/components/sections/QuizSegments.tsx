@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -23,9 +22,8 @@ type QuizSegment = {
 
 export const QuizSegments = () => {
   const { isCurrentlyDark } = useTheme();
-  const navigate = useNavigate();
   const { toast } = useToast();
-  const { resetQuiz } = useQuiz(); // Import resetQuiz from QuizContext
+  const { resetQuiz, navigateToPath } = useQuiz(); // Use navigateToPath instead of useNavigate
   const [activeTab, setActiveTab] = useState("interest-part 1");
   const [userId, setUserId] = useState<string | null>(null);
   const [completedSegments, setCompletedSegments] = useState<string[]>([]);
@@ -276,9 +274,9 @@ export const QuizSegments = () => {
     
     // Fixed redirection for open-ended quiz - directly navigate without disclaimer
     if (segmentId === "open-ended") {
-      navigate(`/open-ended`);
+      navigateToPath(`/open-ended`);
     } else {
-      navigate(`/quiz/${segmentId}`);
+      navigateToPath(`/quiz/${segmentId}`);
     }
   };
 
