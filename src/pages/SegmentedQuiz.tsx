@@ -83,7 +83,7 @@ const QuizDebugger: React.FC<QuizDebuggerProps> = ({ userId, responses, quizType
 const SegmentedQuiz = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { toast } = useToast()
+  const { toast } = useToast();
   const { isCurrentlyDark } = useTheme();
   const {
     currentStep,
@@ -153,7 +153,10 @@ const SegmentedQuiz = () => {
     }
 
     // Filter questions for current step
-    const questionsForStep = questions.filter(q => q.section === currentStep);
+    // Instead of using 'section' which doesn't exist, we'll use the question category
+    // and match it with the current route which should be like 'interest-part 1'
+    const currentQuizType = `interest-part ${currentStep}`;
+    const questionsForStep = questions.filter(q => q.category === currentQuizType);
 
     if (questionsForStep.length === 0) {
       return <p>No questions for this section.</p>;
@@ -162,7 +165,11 @@ const SegmentedQuiz = () => {
     return questionsForStep.map((question) => {
       const response = responses[question.id] || null;
 
-      switch (question.type) {
+      // Use category instead of type to determine the question type
+      // We'll infer the type from whether the question allows multiple selections
+      const questionType = Array.isArray(response) ? "multi-select" : "single-select";
+
+      switch (questionType) {
         case "single-select":
           return (
             <Card key={question.id} className={`mb-4 ${isCurrentlyDark ? 'bg-gray-800 text-white' : ''}`}>
@@ -217,7 +224,7 @@ const SegmentedQuiz = () => {
               </CardContent>
             </Card>
           );
-        case "text":
+        default:
           return (
             <Card key={question.id} className={`mb-4 ${isCurrentlyDark ? 'bg-gray-800 text-white' : ''}`}>
               <CardHeader>
@@ -235,8 +242,6 @@ const SegmentedQuiz = () => {
               </CardContent>
             </Card>
           );
-        default:
-          return <Card key={question.id}>Unknown question type</Card>;
       }
     });
   }, [currentStep, questions, responses, handleAnswerChange, loading, isLoading, isCurrentlyDark]);
@@ -277,7 +282,7 @@ const SegmentedQuiz = () => {
 
       {currentStep !== undefined && (
         <h2 className="text-xl font-semibold text-center mb-4">
-          {t(`quiz.section.${String(currentStep)}`, `Section ${currentStep}`)}
+          {t("quiz.section." + String(currentStep), `Section ${currentStep}`)}
         </h2>
       )}
 
