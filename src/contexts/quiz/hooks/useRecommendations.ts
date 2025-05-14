@@ -1,79 +1,38 @@
+
 import { useState } from 'react';
 import { Module } from '@/integrations/supabase/client';
 import { getUserId } from '../utils/databaseHelpers';
 import { useToast } from '@/hooks/use-toast';
 import { Recommendation, ModuleSelection } from '../types/recommendationTypes';
-import { fetchModuleRecommendations } from '@/utils/recommendationUtils';
-import { MajorRecommendationsType } from '@/components/sections/majors/types';
 import { supabase } from '@/integrations/supabase/client';
 import { rateModuleUtil, getFinalSelectionsUtil } from '@/utils/recommendationUtils';
+import { useModuleRecommendations } from '@/hooks/useModuleRecommendations';
 
 // Fix: Changed 'export { Recommendation }' to 'export type { Recommendation }'
 export type { Recommendation } from '../types/recommendationTypes';
 
-export const useRecommendations = (modules: Module[]) => {
-  const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
+export const useRecommendations = () => {
   const [userFeedback, setUserFeedback] = useState<Record<number, number>>({});
   const [finalSelections, setFinalSelections] = useState<ModuleSelection[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  // Generate recommendations
-  const generateRecommendations = async (userId: string) => {
-    try {
-      setIsLoading(true);
-      
-      // Mock major recommendations for demonstration
-      // In a real implementation, you would get this from the user's profile
-      const mockMajorRecommendations: MajorRecommendationsType = {
-        exactMatches: ["Computer Science at NUS", "Information Systems at NUS"],
-        permutationMatches: [],
-        riasecMatches: ["Software Engineering at NTU", "Data Science at SMU"],
-        workValueMatches: ["Computer Engineering at NTU"],
-        questionFiles: [], 
-        riasecCode: "RSI", 
-        workValueCode: "ACR", 
-        matchType: 'exact' 
-      };
-      
-      // Get module recommendations based on these majors - no longer limiting the results
-      const moduleRecs = await fetchModuleRecommendations(mockMajorRecommendations);
-      
-      if (!moduleRecs || moduleRecs.length === 0) {
-        throw new Error("No module recommendations found");
-      }
-      
-      console.log(`Generated ${moduleRecs.length} module recommendations`);
-      
-      // Convert to the format expected by the UI
-      const formattedRecs: Recommendation[] = moduleRecs.map(module => ({
-        id: Math.floor(Math.random() * 10000),
-        user_id: userId,
-        module_id: Math.floor(Math.random() * 10000),
-        reason: "Recommended based on your major preferences",
-        created_at: new Date().toISOString(),
-        module: {
-          id: Math.floor(Math.random() * 10000),
-          university: module.institution as "NUS" | "NTU" | "SMU",
-          course_code: module.modulecode,
-          title: module.title,
-          description: module.description || "No description available.",
-          aus_cus: 4, // Default value
-          semester: "1" // Default value
-        }
-      }));
-      
-      setRecommendations(formattedRecs);
-      
-      // Also load user feedback (ratings)
-      await loadUserFeedback(userId);
-      setIsLoading(false);
-    } catch (err) {
-      console.error("Error generating recommendations:", err);
-      setIsLoading(false);
-      throw err;
-    }
-  };
+  // Use our centralized module recommendations hook
+  const { 
+    recommendedModules, 
+    loadingModules: isLoading, 
+    error, 
+    refetchRecommendations
+  } = useModuleRecommendations();
+
+  // Convert recommendedModules to the Recommendation[] format expected by other components
+  const recommendations = recommendedModules.map(rec => ({
+    id: Math.floor(Math.random() * 10000),
+    user_id: '',
+    module_id: rec.module.id,
+    reason: rec.reasoning[0] || "Recommended based on your major preferences",
+    created_at: new Date().toISOString(),
+    module: rec.module
+  }));
 
   // Load user feedback (ratings)
   const loadUserFeedback = async (userId: string) => {
@@ -101,57 +60,34 @@ export const useRecommendations = (modules: Module[]) => {
     }
   };
 
-  // Load recommendations - now shows all matching modules
+  // Load recommendations
   const loadRecommendations = async (userId: string) => {
     try {
-      setIsLoading(true);
-      
-      // Use the fetchModuleRecommendations function
-      // This is a simplified version - in a real app, you'd get the major recommendations from the user's profile
-      const mockMajorRecommendations: MajorRecommendationsType = {
-        exactMatches: ["Computer Science at NUS", "Business at NUS"],
-        permutationMatches: [],
-        riasecMatches: ["Information Systems at NTU", "Data Science at SMU"],
-        workValueMatches: ["Computer Engineering at NTU"],
-        questionFiles: [],
-        riasecCode: "RIA",
-        workValueCode: "ARC",
-        matchType: 'riasec'
-      };
-      
-      // Get all matching modules without limiting per major
-      const moduleRecs = await fetchModuleRecommendations(mockMajorRecommendations);
-      
-      console.log(`Loaded ${moduleRecs.length} module recommendations`);
-      
-      // Convert to the format expected by the UI
-      const formattedRecs: Recommendation[] = moduleRecs.map(module => ({
-        id: Math.floor(Math.random() * 10000),
-        user_id: userId,
-        module_id: Math.floor(Math.random() * 10000),
-        reason: "Recommended based on your major preferences",
-        created_at: new Date().toISOString(),
-        module: {
-          id: Math.floor(Math.random() * 10000),
-          university: module.institution as "NUS" | "NTU" | "SMU",
-          course_code: module.modulecode,
-          title: module.title,
-          description: module.description || "No description available.",
-          aus_cus: 4,
-          semester: "1"
-        }
-      }));
-      
-      setRecommendations(formattedRecs);
+      // Use our centralized refetchRecommendations function
+      await refetchRecommendations();
       
       // Also load user feedback (ratings)
       await loadUserFeedback(userId);
       
-      setIsLoading(false);
-      return formattedRecs;
+      return recommendations;
     } catch (err) {
       console.error("Error loading recommendations:", err);
-      setIsLoading(false);
+      throw err;
+    }
+  };
+
+  // Generate recommendations
+  const generateRecommendations = async (userId: string) => {
+    try {
+      // Use our centralized refetchRecommendations function
+      await refetchRecommendations();
+      
+      // Also load user feedback (ratings)
+      await loadUserFeedback(userId);
+      
+      return recommendations;
+    } catch (err) {
+      console.error("Error generating recommendations:", err);
       throw err;
     }
   };
@@ -184,18 +120,16 @@ export const useRecommendations = (modules: Module[]) => {
     }
   };
 
-  // Refine recommendations based on user feedback
+  // Refine recommendations - now just uses refetchRecommendations
   const refineRecommendations = async (selectedModuleIds: number[] = []) => {
     try {
-      setIsLoading(true);
-      
       const userId = await getUserId();
       if (!userId) {
         throw new Error("You must be logged in to refine recommendations");
       }
       
-      // Load the updated recommendations using the new approach
-      await loadRecommendations(userId);
+      // Use centralized refetchRecommendations function
+      await refetchRecommendations();
       
       toast({
         title: "Recommendations Refined",
@@ -208,8 +142,6 @@ export const useRecommendations = (modules: Module[]) => {
         description: "Failed to refine recommendations. Please try again.",
         variant: "destructive",
       });
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -255,7 +187,8 @@ export const useRecommendations = (modules: Module[]) => {
     userFeedback,
     finalSelections,
     isLoading,
-    setIsLoading,
+    error,
+    setIsLoading: (loading: boolean) => null, // This is now handled by the useModuleRecommendations hook
     generateRecommendations,
     loadRecommendations,
     rateModule,

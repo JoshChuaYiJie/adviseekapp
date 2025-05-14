@@ -247,25 +247,9 @@ export const QuizSegments = () => {
       });
     }
     
+    // Fixed redirection for open-ended quiz - directly navigate without disclaimer
     if (segmentId === "open-ended") {
-      console.log("Open-ended quiz requested. Profiles:", {
-        riasecProfile: riasecProfile,
-        workValueProfile: workValueProfile,
-        allSegmentsCompleted
-      });
-      
-      // Allow access to open-ended quiz as long as all segments are completed
-      if (!allSegmentsCompleted) {
-        toast({
-          title: "Profile Not Complete",
-          description: "Please complete the other quiz segments first to generate your profile.",
-          variant: "default" 
-        });
-        return;
-      }
-      
-      // Show disclaimer instead of navigating directly
-      setShowDisclaimer(true);
+      navigate(`/open-ended`);
     } else {
       navigate(`/quiz/${segmentId}`);
     }

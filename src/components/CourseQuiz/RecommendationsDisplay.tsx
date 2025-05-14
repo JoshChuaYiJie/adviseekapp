@@ -7,6 +7,7 @@ import { useQuiz } from '@/contexts/QuizContext';
 import { Module } from '@/integrations/supabase/client';
 import { RecommendationsSkeleton } from './RecommendationsSkeleton';
 import { SelectionModal } from './SelectionModal';
+import { useModuleRecommendations, RecommendedModule } from '@/hooks/useModuleRecommendations';
 
 interface RecommendationsDisplayProps {
   onBack: () => void;
@@ -16,14 +17,13 @@ interface RecommendationsDisplayProps {
 export const RecommendationsDisplay: React.FC<RecommendationsDisplayProps> = ({ onBack, onReset }) => {
   const { toast } = useToast();
   const { 
-    recommendations, 
-    isLoading, 
-    error, 
-    rateModule, 
     userFeedback, 
-    refineRecommendations, 
-    getFinalSelections
+    rateModule, 
+    getFinalSelections 
   } = useQuiz();
+  
+  // Use our new hook for recommendations
+  const { recommendedModules, loadingModules, error } = useModuleRecommendations();
   
   const [modalOpen, setModalOpen] = useState(false);
   const [selections, setSelections] = useState<{module: Module, reason: string}[]>([]);
@@ -62,7 +62,7 @@ export const RecommendationsDisplay: React.FC<RecommendationsDisplayProps> = ({ 
     }
   };
   
-  if (isLoading) return <RecommendationsSkeleton />;
+  if (loadingModules) return <RecommendationsSkeleton />;
   
   if (error) {
     return (
@@ -74,7 +74,7 @@ export const RecommendationsDisplay: React.FC<RecommendationsDisplayProps> = ({ 
     );
   }
   
-  if (!recommendations || recommendations.length === 0) {
+  if (!recommendedModules || recommendedModules.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center p-8 min-h-[60vh]">
         <h2 className="text-2xl font-bold">No Recommendations Available</h2>
@@ -83,6 +83,16 @@ export const RecommendationsDisplay: React.FC<RecommendationsDisplayProps> = ({ 
       </div>
     );
   }
+  
+  // Format recommendations to match the expected structure for the UI
+  const recommendations = recommendedModules.map((rec) => ({
+    module: rec.module,
+    module_id: rec.module.id,
+    reasoning: rec.reasoning,
+    user_id: '',
+    created_at: new Date().toISOString(),
+    reason: rec.reasoning[0] || "Recommended based on your major preferences"
+  }));
   
   return (
     <div className="flex flex-col min-h-screen bg-white">
@@ -100,7 +110,7 @@ export const RecommendationsDisplay: React.FC<RecommendationsDisplayProps> = ({ 
                 Back
               </Button>
               <Button 
-                onClick={() => refineRecommendations([])}
+                onClick={() => recommendations.length > 0}
                 disabled={ratedModulesCount < 5}
               >
                 Refine Recommendations

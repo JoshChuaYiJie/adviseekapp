@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { Module } from '@/integrations/supabase/client';
 import { QuizContextType } from './types';
@@ -6,8 +7,7 @@ import { useModules } from './hooks/useModules';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { McqQuestion } from '@/utils/quizQuestions';
-import { fetchModuleRecommendations } from '@/utils/recommendationUtils';
-import { MajorRecommendationsType } from '@/components/sections/majors/types';
+import { useModuleRecommendations } from '@/hooks/useModuleRecommendations';
 
 // Create the context with default values
 const QuizContext = createContext<QuizContextType>({
@@ -44,12 +44,18 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
   const [error, setError] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [completedQuizzes, setCompletedQuizzes] = useState<string[]>([]);
-  const [recommendations, setRecommendations] = useState<any[]>([]);
   const [userFeedback, setUserFeedback] = useState<Record<number, number>>({});
   const [finalSelections, setFinalSelections] = useState<Module[]>([]);
   const [questions, setQuestions] = useState<McqQuestion[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [debugInfo, setDebugInfo] = useState<any>(null);
+  
+  // Use our new module recommendations hook
+  const { 
+    recommendedModules, 
+    loadingModules, 
+    refetchRecommendations 
+  } = useModuleRecommendations();
   
   // Custom hooks
   const { modules, error: modulesError } = useModules();
@@ -192,87 +198,12 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
       });
     }
   };
-
-  // Refine recommendations - modified to show all matching modules
+  
+  // Refine recommendations by refetching them using the hook
   const refineRecommendations = async (selectedModuleIds: number[] = []): Promise<void> => {
     try {
       setIsLoading(true);
-      
-      // Get user's profile - simplified approach
-      const { data: riasecData } = await supabase
-        .from('user_responses')
-        .select('component, score')
-        .eq('user_id', userId || '')
-        .in('quiz_type', ['interest-part 1', 'interest-part 2', 'competence']);
-      
-      const { data: workValueData } = await supabase
-        .from('user_responses')
-        .select('component, score')
-        .eq('user_id', userId || '')
-        .eq('quiz_type', 'work-values');
-      
-      // Process the data to get top components
-      const riasecScores: Record<string, number> = {};
-      riasecData?.forEach(item => {
-        if (item.component) {
-          riasecScores[item.component] = (riasecScores[item.component] || 0) + (item.score || 0);
-        }
-      });
-      
-      const workValueScores: Record<string, number> = {};
-      workValueData?.forEach(item => {
-        if (item.component) {
-          workValueScores[item.component] = (workValueScores[item.component] || 0) + (item.score || 0);
-        }
-      });
-      
-      // Convert to array and sort by score
-      const topRiasec = Object.entries(riasecScores)
-        .map(([component, score]) => ({ component, score, average: score }))
-        .sort((a, b) => b.score - a.score)
-        .slice(0, 3);
-      
-      const topWorkValues = Object.entries(workValueScores)
-        .map(([component, score]) => ({ component, score, average: score }))
-        .sort((a, b) => b.score - a.score)
-        .slice(0, 3);
-      
-      // Get major recommendations
-      const mockRecommendations: MajorRecommendationsType = {
-        exactMatches: ["Computer Science at NUS", "Information Systems at NUS"],
-        permutationMatches: [],
-        riasecMatches: ["Software Engineering at NTU", "Data Science at SMU"],
-        workValueMatches: ["Computer Engineering at NTU"],
-        questionFiles: [],
-        riasecCode: "RIC",
-        workValueCode: "ARS",
-        matchType: 'exact'
-      };
-      
-      // Get module recommendations based on these majors - no longer limited
-      const moduleRecs = await fetchModuleRecommendations(mockRecommendations);
-      
-      console.log(`Total matched modules found: ${moduleRecs.length}`);
-      
-      // Convert modules to the format expected by the UI
-      const formattedRecs = moduleRecs.map(module => ({
-        module_id: Math.floor(Math.random() * 10000),
-        user_id: userId || '',
-        module: {
-          id: Math.floor(Math.random() * 10000),
-          university: module.institution,
-          course_code: module.modulecode,
-          title: module.title,
-          description: module.description,
-          aus_cus: 4, // Default value
-          semester: "1", // Default value
-        },
-        reason: "Recommended based on your major preferences",
-        created_at: new Date().toISOString(),
-        reasoning: ["Based on your recommended majors"]
-      }));
-      
-      setRecommendations(formattedRecs);
+      await refetchRecommendations(); // Use the hook's refetch function
       setIsLoading(false);
     } catch (err) {
       console.error("Error refining recommendations:", err);
@@ -289,6 +220,13 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
   // Get final selections
   const getFinalSelections = async () => {
     try {
+      // Map recommendedModules to match the expected format
+      const recommendations = recommendedModules.map(rec => ({
+        module: rec.module,
+        module_id: rec.module.id,
+        reason: rec.reasoning[0] || "Recommended based on your major preferences"
+      }));
+      
       // Filter to highly rated modules (7+)
       const highlyRated = recommendations.filter(rec => 
         userFeedback[rec.module_id] >= 7
@@ -317,12 +255,22 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
     setCurrentStep(1);
   };
   
+  // Format recommendations to match the expected format in the context
+  const recommendations = recommendedModules.map(rec => ({
+    module_id: rec.module.id,
+    user_id: userId || '',
+    module: rec.module,
+    reason: "Recommended based on your major preferences",
+    created_at: new Date().toISOString(),
+    reasoning: rec.reasoning
+  }));
+  
   // Memoize the context value to prevent unnecessary rerenders
   const contextValue = useMemo<QuizContextType>(() => ({
     currentStep,
     responses,
     questions,
-    isLoading,
+    isLoading: isLoading || loadingModules,
     isSubmitting,
     error: error || null,
     recommendations,
@@ -343,8 +291,10 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
     responses, 
     questions, 
     isLoading, 
+    loadingModules,
     isSubmitting, 
     error,
+    recommendedModules,
     recommendations,
     userFeedback,
     modules,
