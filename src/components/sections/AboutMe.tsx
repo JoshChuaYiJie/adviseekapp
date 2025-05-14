@@ -106,10 +106,6 @@ export const AboutMe = () => {
           }));
           generatedWorkValueCode = formCode(formattedWorkValuesData, mapWorkValueToCode);
           setWorkValueCode(generatedWorkValueCode || "ARS");
-        } else {
-          // Fallback if no data
-          generatedWorkValueCode = "ARS";
-          setWorkValueCode("ARS");
         }
 
         // Generate dynamic profile information based on RIASEC and Work Values
