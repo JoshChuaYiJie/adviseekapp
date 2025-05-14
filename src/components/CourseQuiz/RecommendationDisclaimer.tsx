@@ -24,6 +24,7 @@ export const RecommendationDisclaimer: React.FC<RecommendationDisclaimerProps> =
 
   const handleProceed = () => {
     onClose();
+    // Navigate to the recommendations page
     navigate('/recommendations');
   };
 

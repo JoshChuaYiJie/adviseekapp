@@ -47,9 +47,15 @@ const Recommendations = () => {
     }
   }, [userFeedback]);
   
-  // New effect to handle redirect after rating all modules
+  // Effect to handle redirect after rating all modules
   useEffect(() => {
     if (allModulesRated) {
+      // Show completion message and redirect after a delay
+      toast({
+        title: "All modules rated",
+        description: "Thank you for rating all the modules. Redirecting to dashboard...",
+      });
+      
       // Use a timeout to allow the user to see the completion message
       const redirectTimer = setTimeout(() => {
         navigate('/dashboard');
@@ -57,7 +63,7 @@ const Recommendations = () => {
       
       return () => clearTimeout(redirectTimer);
     }
-  }, [allModulesRated, navigate]);
+  }, [allModulesRated, navigate, toast]);
 
   const handleRate = async () => {
     const currentModule = recommendations[currentIndex];
@@ -73,13 +79,7 @@ const Recommendations = () => {
         setRating(5);
         setShowAnimation(true);
       } else {
-        // All modules have been rated
-        toast({
-          title: "All modules rated",
-          description: "Thank you for rating all the modules. Redirecting to dashboard...",
-        });
-        
-        // Set a flag to trigger the redirect
+        // All modules have been rated - set flag to trigger the redirect
         setAllModulesRated(true);
         
         // Pass an empty array as the argument to refineRecommendations
