@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -20,7 +21,7 @@ import { toast } from "sonner";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useQuiz } from "@/contexts/QuizContext";
 import { supabase } from "@/integrations/supabase/client";
-import { QuizQuestion } from "@/integrations/supabase/client";
+import { McqQuestion } from "@/utils/quizQuestions";
 import {
   Accordion,
   AccordionContent,
@@ -86,21 +87,21 @@ const SegmentedQuiz = () => {
   const { isCurrentlyDark } = useTheme();
   const {
     currentStep,
-    quizQuestions,
     responses,
-    setResponse,
-    goToNextStep,
-    goToPreviousStep,
-    isLastStep,
-    handleQuizCompletion,
-    resetQuiz,
-    quizProgress,
-    setQuizProgress,
+    questions,
+    isLoading,
+    isSubmitting,
+    error,
+    handleResponse,
+    submitResponses,
+    resetQuiz
   } = useQuiz();
 
   const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [showDebugger, setShowDebugger] = useState(false);
+  const [quizProgress, setQuizProgress] = useState(0);
+  const [isLastStep, setIsLastStep] = useState(false);
 
   useEffect(() => {
     const fetchUserId = async () => {
@@ -121,54 +122,38 @@ const SegmentedQuiz = () => {
     fetchUserId();
   }, []);
 
+  // Load progress based on current step
   useEffect(() => {
-    // Load quiz questions from Supabase when the component mounts
-    const loadQuizQuestions = async () => {
-      setLoading(true);
-      try {
-        const { data, error } = await supabase
-          .from('quiz_questions')
-          .select('*')
-          .order('id', { ascending: true });
+    if (currentStep) {
+      // Map step to progress percentage
+      const stepToProgress: Record<number, number> = {
+        1: 25,
+        2: 50,
+        3: 75,
+        4: 100
+      };
+      setQuizProgress(stepToProgress[currentStep] || 0);
+      
+      // Set if this is the last step
+      setIsLastStep(currentStep === 4); // Assuming 4 is the last step
+    }
+  }, [currentStep]);
 
-        if (error) {
-          console.error("Error fetching quiz questions:", error);
-          toast({
-            title: "Error",
-            description: "Failed to load quiz questions.",
-          })
-        } else {
-          // Dispatch the loaded questions to the QuizContext
-          // setQuizQuestions(data);
-        }
-      } catch (error) {
-        console.error("Error loading quiz questions:", error);
-        toast({
-          title: "Error",
-          description: "An unexpected error occurred while loading quiz questions.",
-        })
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadQuizQuestions();
-  }, []);
-
-  const handleAnswerChange = useCallback((questionId: number, value: string | string[] | null) => {
-    setResponse(currentStep || "", questionId, value);
-  }, [currentStep, setResponse]);
+  const handleAnswerChange = useCallback((questionId: string | number, value: string | string[] | null) => {
+    handleResponse(questionId, value as string | string[]);
+  }, [handleResponse]);
 
   const renderQuestion = useCallback(() => {
-    if (loading) {
+    if (loading || isLoading) {
       return <p>Loading questions...</p>;
     }
 
-    if (!currentStep || !quizQuestions) {
+    if (!currentStep || !questions) {
       return <p>No questions available.</p>;
     }
 
-    const questionsForStep = quizQuestions.filter(q => q.section === currentStep);
+    // Filter questions for current step
+    const questionsForStep = questions.filter(q => q.section === currentStep);
 
     if (questionsForStep.length === 0) {
       return <p>No questions for this section.</p>;
@@ -177,12 +162,12 @@ const SegmentedQuiz = () => {
     return questionsForStep.map((question) => {
       const response = responses[question.id] || null;
 
-      switch (question.question_type) {
+      switch (question.type) {
         case "single-select":
           return (
             <Card key={question.id} className={`mb-4 ${isCurrentlyDark ? 'bg-gray-800 text-white' : ''}`}>
               <CardHeader>
-                <CardTitle>{question.question_text}</CardTitle>
+                <CardTitle>{question.question}</CardTitle>
                 <CardDescription>Choose one option</CardDescription>
               </CardHeader>
               <CardContent>
@@ -201,7 +186,7 @@ const SegmentedQuiz = () => {
           return (
             <Card key={question.id} className={`mb-4 ${isCurrentlyDark ? 'bg-gray-800 text-white' : ''}`}>
               <CardHeader>
-                <CardTitle>{question.question_text}</CardTitle>
+                <CardTitle>{question.question}</CardTitle>
                 <CardDescription>Choose all that apply</CardDescription>
               </CardHeader>
               <CardContent>
@@ -236,7 +221,7 @@ const SegmentedQuiz = () => {
           return (
             <Card key={question.id} className={`mb-4 ${isCurrentlyDark ? 'bg-gray-800 text-white' : ''}`}>
               <CardHeader>
-                <CardTitle>{question.question_text}</CardTitle>
+                <CardTitle>{question.question}</CardTitle>
                 <CardDescription>Enter your response</CardDescription>
               </CardHeader>
               <CardContent>
@@ -254,13 +239,29 @@ const SegmentedQuiz = () => {
           return <Card key={question.id}>Unknown question type</Card>;
       }
     });
-  }, [currentStep, quizQuestions, responses, handleAnswerChange, loading, isCurrentlyDark]);
+  }, [currentStep, questions, responses, handleAnswerChange, loading, isLoading, isCurrentlyDark]);
+
+  const goToNextStep = () => {
+    if (currentStep < 4) { // Assuming maximum 4 steps
+      navigate(`/quiz/interest-part ${currentStep + 1}`);
+    }
+  };
+
+  const goToPreviousStep = () => {
+    if (currentStep > 1) {
+      navigate(`/quiz/interest-part ${currentStep - 1}`);
+    }
+  };
+
+  const handleQuizCompletion = async () => {
+    await submitResponses(`interest-part ${currentStep}`);
+    navigate('/recommendations');
+  };
 
   const handleNext = async () => {
     if (isLastStep) {
       // Handle quiz completion and save responses
       await handleQuizCompletion();
-      navigate('/recommendations'); // Redirect to recommendations page
     } else {
       goToNextStep();
     }
@@ -274,9 +275,9 @@ const SegmentedQuiz = () => {
     <div className="container mx-auto py-10">
       <h1 className="text-3xl font-bold text-center mb-8">{t("quiz.title", "Quiz")}</h1>
 
-      {currentStep && (
+      {currentStep !== undefined && (
         <h2 className="text-xl font-semibold text-center mb-4">
-          {t(`quiz.section.${currentStep}`, currentStep)}
+          {t(`quiz.section.${String(currentStep)}`, `Section ${currentStep}`)}
         </h2>
       )}
 
@@ -285,7 +286,7 @@ const SegmentedQuiz = () => {
       {renderQuestion()}
 
       <div className="flex justify-between">
-        <Button variant="outline" onClick={goToPreviousStep} disabled={currentStep === "Interest"}>
+        <Button variant="outline" onClick={goToPreviousStep} disabled={currentStep === 1}>
           {t("quiz.previous", "Previous")}
         </Button>
         <Button onClick={handleNext}>
@@ -304,9 +305,9 @@ const SegmentedQuiz = () => {
         <QuizDebugger
           userId={userId || ""}
           responses={responses}
-          quizType={currentStep || ""}
+          quizType={String(currentStep) || ""}
           debugData={{
-            quizQuestions,
+            questions,
             currentStep,
             responses: String(JSON.stringify(responses)),
             quizProgress,
