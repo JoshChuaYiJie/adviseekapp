@@ -73,10 +73,11 @@ export const QuizProvider: React.FC<{ children: React.ReactNode }> = ({ children
           console.log(`Loaded ${loadedQuestions.length} questions from ${questionsJsonPath}`);
           
           // Add category property based on the current step if it doesn't exist
+          // Fixed: Use id instead of question_number since question_number doesn't exist on McqQuestion
           const questionsWithCategory = loadedQuestions.map(q => ({
             ...q,
             category: q.category || `interest-part ${currentStep}`,
-            id: q.question_number || q.id || String(Math.random())
+            id: q.id || String(Math.random())
           }));
           
           setQuestions(questionsWithCategory);
@@ -158,7 +159,8 @@ export const QuizProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const responsesToSubmit = [];
       for (const [questionId, response] of Object.entries(responses)) {
         // Skip questions not in the current batch
-        const question = questions.find(q => String(q.id) === String(questionId) || String(q.question_number) === String(questionId));
+        // Fixed: Use id instead of question_number since question_number doesn't exist on McqQuestion
+        const question = questions.find(q => String(q.id) === String(questionId));
         if (!question) continue;
 
         // Prepare data based on whether it's an array or string
