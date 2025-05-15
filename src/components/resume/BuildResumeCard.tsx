@@ -6,10 +6,19 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 
 export const BuildResumeCard: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
+
+  const handleCreateResume = () => {
+    // Navigate to the resume builder page with a basic template
+    navigate('/resumebuilder/basic');
+    
+    // For debugging purposes, show a toast to track navigation
+    console.log("Navigating to resume builder page with basic template");
+  };
 
   return (
     <TooltipProvider>
@@ -25,7 +34,7 @@ export const BuildResumeCard: React.FC = () => {
         </CardHeader>
         <CardContent>
           <Button 
-            onClick={() => navigate('/resumebuilder')}
+            onClick={handleCreateResume}
             className="w-full"
           >
             {t('Create Resume')}

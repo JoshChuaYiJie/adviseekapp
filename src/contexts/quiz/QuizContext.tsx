@@ -7,8 +7,6 @@ import { McqQuestion } from '@/utils/quizQuestions';
 import { QuizContextType } from './types';
 import { Module } from '@/integrations/supabase/client';
 
-// Remove the useNavigate import since we'll handle navigation differently
-
 // Create the context with undefined as initial value
 const QuizContext = createContext<QuizContextType | undefined>(undefined);
 
@@ -66,12 +64,19 @@ export const QuizProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         if (questionsJsonPath) {
           const response = await fetch(questionsJsonPath);
+          
+          if (!response.ok) {
+            throw new Error(`Failed to fetch questions: ${response.status} ${response.statusText}`);
+          }
+          
           const loadedQuestions: McqQuestion[] = await response.json();
+          console.log(`Loaded ${loadedQuestions.length} questions from ${questionsJsonPath}`);
           
           // Add category property based on the current step if it doesn't exist
           const questionsWithCategory = loadedQuestions.map(q => ({
             ...q,
-            category: q.category || `interest-part ${currentStep}`
+            category: q.category || `interest-part ${currentStep}`,
+            id: q.question_number || q.id || String(Math.random())
           }));
           
           setQuestions(questionsWithCategory);
@@ -153,7 +158,7 @@ export const QuizProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const responsesToSubmit = [];
       for (const [questionId, response] of Object.entries(responses)) {
         // Skip questions not in the current batch
-        const question = questions.find(q => String(q.id) === String(questionId));
+        const question = questions.find(q => String(q.id) === String(questionId) || String(q.question_number) === String(questionId));
         if (!question) continue;
 
         // Prepare data based on whether it's an array or string
@@ -303,6 +308,9 @@ export const QuizProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setCurrentStep(1);
     setRecommendations([]);
     setFinalSelections([]);
+    
+    // Clear the error state as well when resetting
+    setError(null);
   };
 
   // A navigation function that doesn't rely on useNavigate
