@@ -1,5 +1,4 @@
-
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { Module } from '@/integrations/supabase/client';
 import { MajorRecommendationsType } from '@/components/sections/majors/types';
 import { 
@@ -44,10 +43,13 @@ export const RecommendationProvider: React.FC<{children: React.ReactNode}> = ({ 
   const [moduleRecommendations, setModuleRecommendations] = useState<Module[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [codesLoaded, setCodesLoaded] = useState<boolean>(false);
 
-  // Load RIASEC and Work Value codes from localStorage
+  // Load RIASEC and Work Value codes from localStorage only once
   useEffect(() => {
-    const loadCodes = async () => {
+    if (codesLoaded) return;
+    
+    const loadCodes = () => {
       try {
         // Get RIASEC components
         const riasecComponents = JSON.parse(localStorage.getItem('top_riasec') || '[]');
@@ -80,24 +82,27 @@ export const RecommendationProvider: React.FC<{children: React.ReactNode}> = ({ 
           setWorkValueCode(defaultWorkValueCode);
           console.log("Using default Work Values code:", defaultWorkValueCode);
         }
+        
+        setCodesLoaded(true);
       } catch (error) {
         console.error("Error loading codes from localStorage:", error);
         // Use default fallbacks
         setRiasecCode('SAE');
         setWorkValueCode('ARS');
+        setCodesLoaded(true);
       } finally {
         setIsLoading(false);
       }
     };
 
     loadCodes();
-  }, []);
+  }, [codesLoaded]);
 
   // Load major recommendations whenever codes change
   useEffect(() => {
+    if (!riasecCode || !workValueCode) return;
+    
     const loadMajorRecommendations = async () => {
-      if (!riasecCode || !workValueCode) return;
-      
       try {
         setIsLoading(true);
         console.log("Fetching major recommendations with codes:", riasecCode, workValueCode);
@@ -117,45 +122,47 @@ export const RecommendationProvider: React.FC<{children: React.ReactNode}> = ({ 
     loadMajorRecommendations();
   }, [riasecCode, workValueCode]);
 
-  // Load module recommendations whenever major recommendations change
-  useEffect(() => {
-    const loadModuleRecommendations = async () => {
-      if (!majorRecommendations) return;
-      
-      try {
-        setIsLoading(true);
-        setError(null);
-        
-        console.log("Fetching module recommendations based on majors:", majorRecommendations);
-        
-        // Use the fetchModuleRecommendations utility
-        const modules = await fetchModuleRecommendations(majorRecommendations, 0);
-        
-        console.log("Raw modules from fetchModuleRecommendations:", modules.length);
-        
-        // Generate consistent module IDs - keeping the same logic
-        const modulesWithIds = modules.map(module => ({
-          id: getModuleId(module.modulecode),
-          university: module.institution,
-          course_code: module.modulecode,
-          title: module.title,
-          description: module.description || "No description available.",
-          aus_cus: 4, // Default value
-          semester: "1" // Default value
-        }));
-        
-        console.log("Loaded module recommendations:", modulesWithIds.length);
-        setModuleRecommendations(modulesWithIds);
-      } catch (error) {
-        console.error("Error loading module recommendations:", error);
-        setError("Failed to load module recommendations");
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  // Load module recommendations whenever major recommendations change - using memo to prevent excessive recalculation
+  const loadModuleRecommendations = useCallback(async () => {
+    if (!majorRecommendations) return;
     
-    loadModuleRecommendations();
+    try {
+      setIsLoading(true);
+      setError(null);
+      
+      console.log("Fetching module recommendations based on majors:", majorRecommendations);
+      
+      // Use the fetchModuleRecommendations utility
+      const modules = await fetchModuleRecommendations(majorRecommendations, 0);
+      
+      console.log("Raw modules from fetchModuleRecommendations:", modules.length);
+      
+      // Generate consistent module IDs - keeping the same logic
+      const modulesWithIds = modules.map(module => ({
+        id: getModuleId(module.modulecode),
+        university: module.institution,
+        course_code: module.modulecode,
+        title: module.title,
+        description: module.description || "No description available.",
+        aus_cus: 4, // Default value
+        semester: "1" // Default value
+      }));
+      
+      console.log("Loaded module recommendations:", modulesWithIds.length);
+      setModuleRecommendations(modulesWithIds);
+    } catch (error) {
+      console.error("Error loading module recommendations:", error);
+      setError("Failed to load module recommendations");
+    } finally {
+      setIsLoading(false);
+    }
   }, [majorRecommendations]);
+  
+  useEffect(() => {
+    if (majorRecommendations) {
+      loadModuleRecommendations();
+    }
+  }, [majorRecommendations, loadModuleRecommendations]);
 
   // Generate consistent module IDs based on modulecode - EXACTLY as in existing code
   const getModuleId = (code: string) => {
@@ -169,13 +176,13 @@ export const RecommendationProvider: React.FC<{children: React.ReactNode}> = ({ 
   };
 
   // Function to update module recommendations directly (for use in AboutMe.tsx)
-  const updateModuleRecommendations = (modules: Module[]) => {
+  const updateModuleRecommendations = useCallback((modules: Module[]) => {
     console.log("Updating global module recommendations:", modules.length);
     setModuleRecommendations(modules);
-  };
+  }, []);
 
-  // Refresh all recommendations
-  const refreshRecommendations = async () => {
+  // Refresh all recommendations - but avoid unnecessary recalculations
+  const refreshRecommendations = useCallback(async () => {
     try {
       console.log("Refreshing all recommendations...");
       setIsLoading(true);
@@ -201,21 +208,31 @@ export const RecommendationProvider: React.FC<{children: React.ReactNode}> = ({ 
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
+
+  // Memoize the context value to prevent unnecessary rerenders
+  const contextValue = useMemo(() => ({
+    riasecCode,
+    workValueCode,
+    majorRecommendations,
+    moduleRecommendations,
+    isLoading,
+    error,
+    refreshRecommendations,
+    updateModuleRecommendations
+  }), [
+    riasecCode, 
+    workValueCode, 
+    majorRecommendations, 
+    moduleRecommendations, 
+    isLoading, 
+    error, 
+    refreshRecommendations, 
+    updateModuleRecommendations
+  ]);
 
   return (
-    <RecommendationContext.Provider 
-      value={{
-        riasecCode,
-        workValueCode,
-        majorRecommendations,
-        moduleRecommendations,
-        isLoading,
-        error,
-        refreshRecommendations,
-        updateModuleRecommendations
-      }}
-    >
+    <RecommendationContext.Provider value={contextValue}>
       {children}
     </RecommendationContext.Provider>
   );

@@ -86,16 +86,6 @@ export const MajorQuestionDisplay = ({
       }
     };
     
-    const handleSkip = () => {
-      if (currentQuestion) {
-        setAnswers({
-          ...answers,
-          [currentQuestion.id]: { ...currentAnswer, skipped: true }
-        });
-      }
-      handleNextQuestion();
-    };
-    
     const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
       if (currentQuestion) {
         setAnswers({
@@ -163,9 +153,6 @@ export const MajorQuestionDisplay = ({
             </Button>
           </div>
           <div className="space-x-2">
-            <Button variant="secondary" onClick={handleSkip}>
-              Skip
-            </Button>
             {currentIndex < openEndedQuestions.length - 1 ? (
               <Button onClick={handleNextQuestion}>
                 Next

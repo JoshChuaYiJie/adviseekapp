@@ -47,20 +47,6 @@ export const QuestionHandler = ({ questions, majorName }: QuestionHandlerProps) 
     }
   };
 
-  const handleSkip = () => {
-    setSkipped({
-      ...skipped,
-      [currentQuestionIndex]: true
-    });
-    
-    // Go to next question
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
-    } else {
-      handleFinish();
-    }
-  };
-
   const handleNext = () => {
     // Move to the next question if available
     if (currentQuestionIndex < questions.length - 1) {
@@ -205,13 +191,6 @@ export const QuestionHandler = ({ questions, majorName }: QuestionHandlerProps) 
         </Button>
         
         <div className="space-x-2">
-          <Button 
-            onClick={handleSkip} 
-            variant="secondary"
-          >
-            Skip
-          </Button>
-          
           {!isLastQuestion ? (
             <Button 
               onClick={handleNext}
