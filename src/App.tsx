@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -22,47 +23,44 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import Achievements from "./pages/Achievements";
 import QuizDebugPage from "./pages/QuizDebugPage";
 import OpenEndedQuiz from "./pages/OpenEndedQuiz";
-import { RecommendationProvider } from './contexts/RecommendationContext';
 
 const queryClient = new QueryClient();
 
-function App() {
+const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider defaultTheme={theme} storageKey="ui-theme">
-        <RecommendationProvider>
-          <BrowserRouter>
-            <TooltipProvider>
-              <QuizProvider>
-                <Toaster />
-                <Sonner position="top-right" />
-                <FeedbackForm />
-                <ChatWithAI />
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/dashboard" element={<Index />} />
-                  <Route path="/university-selection" element={<UniversitySelection />} />
-                  <Route path="/quiz/:segmentId" element={<SegmentedQuiz />} />
-                  <Route path="/open-ended" element={<OpenEndedQuiz />} />
-                  <Route path="/recommendations" element={<Recommendations />} />
-                  <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-                  <Route path="/terms-of-service" element={<TermsOfService />} />
-                  <Route path="/pricing" element={<Pricing />} />
-                  <Route path="/settings" element={<Settings />} />
-                  <Route path="/resumebuilder" element={<ResumeBuilder />} />
-                  <Route path="/resumebuilder/basic" element={<BasicResume />} />
-                  <Route path="/community" element={<Community />} />
-                  <Route path="/achievements" element={<Achievements />} />
-                  <Route path="/debug/quiz" element={<QuizDebugPage />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </QuizProvider>
-            </TooltipProvider>
-          </BrowserRouter>
-        </RecommendationProvider>
+      <ThemeProvider>
+        <BrowserRouter>
+          <TooltipProvider>
+            <QuizProvider>
+              <Toaster />
+              <Sonner position="top-right" />
+              <FeedbackForm />
+              <ChatWithAI />
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/dashboard" element={<Index />} />
+                <Route path="/university-selection" element={<UniversitySelection />} />
+                <Route path="/quiz/:segmentId" element={<SegmentedQuiz />} />
+                <Route path="/open-ended" element={<OpenEndedQuiz />} />
+                <Route path="/recommendations" element={<Recommendations />} />
+                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                <Route path="/terms-of-service" element={<TermsOfService />} />
+                <Route path="/pricing" element={<Pricing />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/resumebuilder" element={<ResumeBuilder />} />
+                <Route path="/resumebuilder/basic" element={<BasicResume />} />
+                <Route path="/community" element={<Community />} />
+                <Route path="/achievements" element={<Achievements />} />
+                <Route path="/debug/quiz" element={<QuizDebugPage />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </QuizProvider>
+          </TooltipProvider>
+        </BrowserRouter>
       </ThemeProvider>
     </QueryClientProvider>
   );
-}
+};
 
 export default App;
