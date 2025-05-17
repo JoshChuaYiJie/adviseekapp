@@ -15,8 +15,6 @@ export interface QuizContextType {
   finalSelections: Module[];
   completedQuizzes: string[];
   debugInfo: any;
-  
-  // Methods
   setCurrentStep: (step: number) => void;
   handleResponse: (questionId: string | number, value: string | string[]) => void;
   submitResponses: (quizType?: string) => Promise<void>;
@@ -24,7 +22,5 @@ export interface QuizContextType {
   refineRecommendations: (selectedModuleIds?: number[]) => Promise<void>;
   getFinalSelections: () => Promise<Module[]>;
   resetQuiz: () => void;
-  navigateToPath: (path: string) => void; // New navigation method
+  navigateToPath: (path: string) => void;
 }
-
-// Add any other quiz-related types here

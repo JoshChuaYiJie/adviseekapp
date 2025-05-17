@@ -10,7 +10,7 @@ export interface SubmitResponsesOptions {
 }
 
 // Submit responses to the database
-export const submitResponses = async (options: SubmitResponsesOptions) => {
+export const submitResponses = async (options: SubmitResponsesOptions): Promise<boolean> => {
   const { responses, questions, quizType } = options;
   
   try {
@@ -89,4 +89,3 @@ export const submitResponses = async (options: SubmitResponsesOptions) => {
     return false;
   }
 };
-

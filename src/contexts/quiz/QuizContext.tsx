@@ -49,22 +49,20 @@ export const QuizProvider: React.FC<{ children: React.ReactNode }> = ({ children
   } = moduleManagement;
 
   // Submit responses to the database
-  const handleSubmitResponses = async (quizType: string = '') => {
+  const handleSubmitResponses = async (quizType: string = ''): Promise<void> => {
     setIsSubmitting(true);
     try {
       // Determine quiz type from current step if not provided
       const effectiveQuizType = quizType || `interest-part ${currentStep}`;
       
-      const success = await submitResponses({
+      await submitResponses({
         responses,
         questions,
         quizType: effectiveQuizType
       });
       
-      return success;
     } catch (error) {
       console.error("Error submitting responses:", error);
-      return false;
     } finally {
       setIsSubmitting(false);
     }
@@ -97,7 +95,7 @@ export const QuizProvider: React.FC<{ children: React.ReactNode }> = ({ children
         refineRecommendations,
         getFinalSelections,
         resetQuiz,
-        navigateToPath // Add this new method instead of using navigate directly
+        navigateToPath
       }}
     >
       {children}
