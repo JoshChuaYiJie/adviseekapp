@@ -9,11 +9,11 @@ import { Badge } from '@/components/ui/badge';
 import { useTheme } from '@/contexts/ThemeContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Skeleton } from '@/components/ui/skeleton';
 import { ArrowLeft, ArrowRight, SkipForward } from 'lucide-react';
 import { getMatchingMajors, mapRiasecToCode, mapWorkValueToCode, formCode } from '@/utils/recommendation';
 import { formatMajorForFile } from '@/components/sections/majors/MajorUtils';
 import { useRecommendationContext } from '@/contexts/RecommendationContext';
+import { Module } from '@/integrations/supabase/client';
 
 interface QuizQuestion {
   major: string;

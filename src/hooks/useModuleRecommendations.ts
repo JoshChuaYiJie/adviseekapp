@@ -24,7 +24,10 @@ export const useModuleRecommendations = () => {
     
     if (moduleRecommendations.length > 0) {
       const formattedModules: RecommendedModule[] = moduleRecommendations.map(module => ({
-        module,
+        module: {
+          ...module,
+          university: module.university as "NUS" | "NTU" | "SMU" 
+        },
         reasoning: ["Based on your recommended majors"]
       }));
       

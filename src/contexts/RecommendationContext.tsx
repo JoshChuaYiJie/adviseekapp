@@ -20,6 +20,7 @@ interface RecommendationContextType {
   error: string | null;
   refreshRecommendations: () => Promise<void>;
   updateModuleRecommendations: (modules: Module[]) => void;
+  updateMajorRecommendations: (recommendations: MajorRecommendationsType) => void;
 }
 
 const defaultContext: RecommendationContextType = {
@@ -31,6 +32,7 @@ const defaultContext: RecommendationContextType = {
   error: null,
   refreshRecommendations: async () => {},
   updateModuleRecommendations: () => {},
+  updateMajorRecommendations: () => {},
 };
 
 const RecommendationContext = createContext<RecommendationContextType>(defaultContext);
@@ -222,6 +224,12 @@ export const RecommendationProvider: React.FC<{children: React.ReactNode}> = ({ 
     console.log("Updating global module recommendations:", modules.length);
     setModuleRecommendations(modules);
   }, []);
+  
+  // New function to update major recommendations directly
+  const updateMajorRecommendations = useCallback((recommendations: MajorRecommendationsType) => {
+    console.log("Updating global major recommendations:", recommendations);
+    setMajorRecommendations(recommendations);
+  }, []);
 
   // Refresh all recommendations - but avoid unnecessary recalculations
   const refreshRecommendations = useCallback(async () => {
@@ -268,7 +276,8 @@ export const RecommendationProvider: React.FC<{children: React.ReactNode}> = ({ 
     isLoading,
     error,
     refreshRecommendations,
-    updateModuleRecommendations
+    updateModuleRecommendations,
+    updateMajorRecommendations
   }), [
     riasecCode, 
     workValueCode, 
@@ -277,7 +286,8 @@ export const RecommendationProvider: React.FC<{children: React.ReactNode}> = ({ 
     isLoading, 
     error, 
     refreshRecommendations, 
-    updateModuleRecommendations
+    updateModuleRecommendations,
+    updateMajorRecommendations
   ]);
 
   return (
