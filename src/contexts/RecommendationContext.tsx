@@ -46,6 +46,44 @@ export const RecommendationProvider: React.FC<{children: React.ReactNode}> = ({ 
   const [error, setError] = useState<string | null>(null);
   const [codesLoaded, setCodesLoaded] = useState<boolean>(false);
 
+  // Limit modules to max 10 per prefix, with total max 100
+  const limitModulesPerPrefix = useCallback((modules: Module[]): Module[] => {
+    const prefixModuleMap: Record<string, Module[]> = {};
+    const MAX_PER_PREFIX = 10;
+    const MAX_TOTAL_MODULES = 100;
+    
+    // Group modules by their prefix
+    modules.forEach(module => {
+      // Extract prefix from course code (usually first 2-3 characters before numbers)
+      const match = module.course_code.match(/^[A-Z]+/);
+      const prefix = match ? match[0] : 'OTHER';
+      
+      if (!prefixModuleMap[prefix]) {
+        prefixModuleMap[prefix] = [];
+      }
+      
+      prefixModuleMap[prefix].push(module);
+    });
+    
+    // For each prefix, randomly select up to MAX_PER_PREFIX modules
+    const limitedModules: Module[] = [];
+    
+    Object.keys(prefixModuleMap).forEach(prefix => {
+      const modulesForPrefix = prefixModuleMap[prefix];
+      
+      // Randomize module selection for this prefix
+      const shuffled = [...modulesForPrefix].sort(() => 0.5 - Math.random());
+      const selected = shuffled.slice(0, MAX_PER_PREFIX);
+      
+      limitedModules.push(...selected);
+    });
+    
+    // Limit to MAX_TOTAL_MODULES and randomize the final selection
+    return limitedModules
+      .sort(() => 0.5 - Math.random())
+      .slice(0, MAX_TOTAL_MODULES);
+  }, []);
+
   // Load RIASEC and Work Value codes from localStorage only once
   useEffect(() => {
     if (codesLoaded) return;
@@ -123,44 +161,6 @@ export const RecommendationProvider: React.FC<{children: React.ReactNode}> = ({ 
     loadMajorRecommendations();
   }, [riasecCode, workValueCode]);
 
-  // Limit modules to max 10 per prefix, with total max 100
-  const limitModulesPerPrefix = useCallback((modules: Module[]): Module[] => {
-    const prefixModuleMap: Record<string, Module[]> = {};
-    const MAX_PER_PREFIX = 10;
-    const MAX_TOTAL_MODULES = 100;
-    
-    // Group modules by their prefix
-    modules.forEach(module => {
-      // Extract prefix from course code (usually first 2-3 characters before numbers)
-      const match = module.course_code.match(/^[A-Z]+/);
-      const prefix = match ? match[0] : 'OTHER';
-      
-      if (!prefixModuleMap[prefix]) {
-        prefixModuleMap[prefix] = [];
-      }
-      
-      prefixModuleMap[prefix].push(module);
-    });
-    
-    // For each prefix, randomly select up to MAX_PER_PREFIX modules
-    const limitedModules: Module[] = [];
-    
-    Object.keys(prefixModuleMap).forEach(prefix => {
-      const modulesForPrefix = prefixModuleMap[prefix];
-      
-      // Randomize module selection for this prefix
-      const shuffled = [...modulesForPrefix].sort(() => 0.5 - Math.random());
-      const selected = shuffled.slice(0, MAX_PER_PREFIX);
-      
-      limitedModules.push(...selected);
-    });
-    
-    // Limit to MAX_TOTAL_MODULES and randomize the final selection
-    return limitedModules
-      .sort(() => 0.5 - Math.random())
-      .slice(0, MAX_TOTAL_MODULES);
-  }, []);
-
   // Load module recommendations whenever major recommendations change
   const loadModuleRecommendations = useCallback(async () => {
     if (!majorRecommendations) return;
@@ -200,7 +200,7 @@ export const RecommendationProvider: React.FC<{children: React.ReactNode}> = ({ 
     }
   }, [majorRecommendations, limitModulesPerPrefix]);
   
-  // Generate consistent module IDs based on modulecode - EXACTLY as in existing code
+  // Generate consistent module IDs based on modulecode
   const getModuleId = (code: string) => {
     let hash = 0;
     for (let i = 0; i < code.length; i++) {
@@ -245,6 +245,13 @@ export const RecommendationProvider: React.FC<{children: React.ReactNode}> = ({ 
       setIsLoading(false);
     }
   }, []);
+
+  // Ensure module recommendations are loaded whenever majorRecommendations changes
+  useEffect(() => {
+    if (majorRecommendations) {
+      loadModuleRecommendations();
+    }
+  }, [majorRecommendations, loadModuleRecommendations]);
 
   // Memoize the context value to prevent unnecessary rerenders
   const contextValue = useMemo(() => ({
