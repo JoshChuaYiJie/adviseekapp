@@ -6,7 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useQuiz } from "@/contexts/QuizContext";
 import { ModuleRatingCard } from "@/components/ModuleRatingCard";
 import { useModuleRecommendations } from "@/hooks/useModuleRecommendations";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase, Module } from "@/integrations/supabase/client";
 
 interface ModuleRatingResult {
   prefix: string;
