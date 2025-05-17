@@ -295,8 +295,8 @@ const OpenEndedQuiz = () => {
     schoolName: string | undefined, 
     quizQuestions: QuizQuestion[]
   ) => {
-    // Format the major name for file lookup
-    const formattedMajor = formatMajorForFile(majorName);
+    // Format the major name for file lookup - fixed the function call to match the expected parameters
+    const formattedMajor = formatMajorForFile(majorName, schoolName || '');
     
     // Determine which schools to try
     const schools = schoolName ? [schoolName] : ['NTU', 'NUS', 'SMU'];
