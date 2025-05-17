@@ -11,10 +11,8 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft, ArrowRight, SkipForward } from 'lucide-react';
-import { getMatchingMajors, mapRiasecToCode, mapWorkValueToCode, formCode } from '@/utils/recommendation';
 import { formatMajorForFile } from '@/components/sections/majors/MajorUtils';
 import { useRecommendationContext } from '@/contexts/RecommendationContext';
-import { Module } from '@/integrations/supabase/client';
 
 interface QuizQuestion {
   major: string;
@@ -39,10 +37,6 @@ const OpenEndedQuiz = () => {
   
   // Use context to get recommended majors
   const { majorRecommendations } = useRecommendationContext();
-  
-  // Profile data
-  const [riasecProfile, setRiasecProfile] = useState<Array<{ component: string; average: number; score: number }>>([]);
-  const [workValueProfile, setWorkValueProfile] = useState<Array<{ component: string; average: number; score: number }>>([]);
   
   // Debug state
   const [debugInfo, setDebugInfo] = useState<{
@@ -84,8 +78,6 @@ const OpenEndedQuiz = () => {
           return;
         }
         
-        // Load user profiles for RIASEC and Work Values
-        await loadUserProfiles(currentUserId);
         setDebugInfo(prev => ({ ...prev, profilesLoaded: true }));
         
         // Check if prerequisites are completed
@@ -187,7 +179,7 @@ const OpenEndedQuiz = () => {
       }));
       
       if (allCompleted) {
-        // All requirements met, prepare the quiz
+        // All requirements met, prepare the quiz using global majors
         prepareQuizQuestionsFromRecommendations();
       } else {
         handlePrerequisitesNotMet();
@@ -222,115 +214,6 @@ const OpenEndedQuiz = () => {
     checkAuthAndLoadData();
   }, []);
   
-  // Load user profiles
-  const loadUserProfiles = async (userId: string) => {
-    try {
-      console.log("Loading user profiles for", userId);
-      
-      // Fetch RIASEC profile
-      const { data: riasecData, error: riasecError } = await supabase
-        .from('user_responses')
-        .select('component, score')
-        .eq('user_id', userId)
-        .eq('quiz_type', 'riasec');
-      
-      if (riasecError) {
-        console.error('Error fetching RIASEC profile:', riasecError);
-      } else if (riasecData && riasecData.length > 0) {
-        const transformedData = riasecData
-          .map(item => ({
-            component: item.component,
-            score: item.score,
-            average: item.score
-          }))
-          .sort((a, b) => b.score - a.score);
-          
-        setRiasecProfile(transformedData);
-      }
-      
-      // Fetch Work Value profile
-      const { data: workValueData, error: workValueError } = await supabase
-        .from('user_responses')
-        .select('component, score')
-        .eq('user_id', userId)
-        .eq('quiz_type', 'work_value');
-      
-      if (workValueError) {
-        console.error('Error fetching Work Value profile:', workValueError);
-      } else if (workValueData && workValueData.length > 0) {
-        const transformedData = workValueData
-          .map(item => ({
-            component: item.component,
-            score: item.score,
-            average: item.score
-          }))
-          .sort((a, b) => b.score - a.score);
-          
-        setWorkValueProfile(transformedData);
-      }
-      
-      // Also try to fetch from different quiz types as fallback
-      if ((!riasecData || riasecData.length === 0)) {
-        const { data: fallbackRiasecData, error: fallbackError } = await supabase
-          .from('user_responses')
-          .select('component, score')
-          .eq('user_id', userId)
-          .in('quiz_type', ['interest-part 1', 'interest-part 2', 'competence'])
-          .not('component', 'is', null);
-          
-        if (!fallbackError && fallbackRiasecData && fallbackRiasecData.length > 0) {
-          console.log("Using fallback RIASEC data:", fallbackRiasecData);
-          
-          // Group responses by component and sum scores
-          const componentScores: Record<string, number> = {};
-          fallbackRiasecData.forEach(response => {
-            if (response.component) {
-              componentScores[response.component] = (componentScores[response.component] || 0) + (response.score || 0);
-            }
-          });
-          
-          // Convert to array and sort by score
-          const sortedComponents = Object.entries(componentScores)
-            .map(([component, score]) => ({ component, score, average: score }))
-            .sort((a, b) => b.score - a.score);
-            
-          setRiasecProfile(sortedComponents);
-        }
-      }
-      
-      if ((!workValueData || workValueData.length === 0)) {
-        const { data: fallbackWorkValueData, error: fallbackError } = await supabase
-          .from('user_responses')
-          .select('component, score')
-          .eq('user_id', userId)
-          .eq('quiz_type', 'work-values')
-          .not('component', 'is', null);
-          
-        if (!fallbackError && fallbackWorkValueData && fallbackWorkValueData.length > 0) {
-          console.log("Using fallback Work Value data:", fallbackWorkValueData);
-          
-          // Group responses by component and sum scores
-          const componentScores: Record<string, number> = {};
-          fallbackWorkValueData.forEach(response => {
-            if (response.component) {
-              componentScores[response.component] = (componentScores[response.component] || 0) + (response.score || 0);
-            }
-          });
-          
-          // Convert to array and sort by score
-          const sortedComponents = Object.entries(componentScores)
-            .map(([component, score]) => ({ component, score, average: score }))
-            .sort((a, b) => b.score - a.score);
-            
-          setWorkValueProfile(sortedComponents);
-        }
-      }
-      
-    } catch (error) {
-      console.error('Error loading user profiles:', error);
-    }
-  };
-  
   // New function: Prepare questions using recommended majors from context
   const prepareQuizQuestionsFromRecommendations = async () => {
     try {
@@ -354,10 +237,15 @@ const OpenEndedQuiz = () => {
         
         console.log("Using recommended majors from context:", recommendedMajors);
       } else {
-        console.log("No recommendations found in context, falling back to profile-based recommendations");
+        console.log("No recommendations found in context");
         
-        // Fallback to generate recommendations based on profile
-        await prepareQuizQuestions();
+        toast({
+          title: "No Recommendations",
+          description: "We couldn't find any major recommendations. Please complete the other quizzes first.",
+          variant: "destructive"
+        });
+        
+        navigate('/');
         return;
       }
       
@@ -390,20 +278,32 @@ const OpenEndedQuiz = () => {
         setQuestions(shuffledQuestions);
         
         if (shuffledQuestions.length === 0) {
-          console.log("No questions found for recommended majors, falling back to random selection");
-          // Fall back to existing random major selection
-          loadRandomMajorQuestions();
+          console.log("No questions found for recommended majors");
+          toast({
+            title: "No Questions Available",
+            description: "Could not load questions for the recommended majors. Please try again later.",
+            variant: "destructive"
+          });
+          navigate('/');
         }
       } else {
-        console.log("No recommended majors found, falling back to random selection");
-        // Fall back to existing random major selection
-        loadRandomMajorQuestions();
+        console.log("No recommended majors found");
+        toast({
+          title: "No Recommendations",
+          description: "No recommended majors were found. Please complete the other quizzes first.",
+          variant: "destructive"
+        });
+        navigate('/');
       }
       
     } catch (error) {
       console.error('Error preparing quiz questions from recommendations:', error);
-      // Fall back to existing random major selection
-      loadRandomMajorQuestions();
+      toast({
+        title: "Error",
+        description: "Failed to prepare quiz questions. Please try again later.",
+        variant: "destructive"
+      });
+      navigate('/');
     } finally {
       setLoading(false);
     }
@@ -474,230 +374,6 @@ const OpenEndedQuiz = () => {
     } catch (error) {
       console.error(`Error in loadQuestionsWithSchoolSuffix for ${major}:`, error);
       return false;
-    }
-  };
-  
-  // Fallback function to load questions from random majors
-  const loadRandomMajorQuestions = async () => {
-    try {
-      // Fetch all majors from the standardized weights files
-      const [ntuMajors, nusMajors, smuMajors] = await Promise.all([
-        fetch('/school-data/Standardized weights/standardized_ntu_majors.json').then(r => r.json()),
-        fetch('/school-data/Standardized weights/standardized_nus_majors.json').then(r => r.json()),
-        fetch('/school-data/Standardized weights/standardized_smu_majors.json').then(r => r.json())
-      ]);
-      
-      // Get unique majors from all schools
-      const allPrograms = [
-        ...ntuMajors.programs, 
-        ...nusMajors.programs,
-        ...smuMajors.programs
-      ];
-      
-      console.log(`Found ${allPrograms.length} total programs across all schools`);
-      
-      // Randomly select majors for the quiz
-      const selectedMajors = [];
-      const majorCount = Math.min(5, allPrograms.length);
-      
-      for (let i = 0; i < majorCount; i++) {
-        const randomIndex = Math.floor(Math.random() * allPrograms.length);
-        selectedMajors.push(allPrograms[randomIndex].major);
-        allPrograms.splice(randomIndex, 1);
-      }
-      
-      console.log("Selected random majors for quiz:", selectedMajors);
-      
-      // For each selected major, load and select questions
-      const quizQuestions: QuizQuestion[] = [];
-      
-      for (const major of selectedMajors) {
-        try {
-          // Try to formalize the filename format
-          const formattedMajor = major.replace(/ /g, '_').replace(/[\/&,]/g, '_');
-          const schools = ['NTU', 'NUS', 'SMU'];
-          
-          // Try each school suffix until we find one that works
-          let foundQuestions = false;
-          for (const school of schools) {
-            if (foundQuestions) continue;
-            
-            try {
-              const response = await fetch(`/quiz_refer/Open_ended_quiz_questions/${formattedMajor}_${school}.json`);
-              
-              if (response.ok) {
-                const allQuestions = await response.json();
-                console.log(`Found ${allQuestions.length} questions for ${major} at ${school}`);
-                
-                // Categorize questions
-                const interestQuestions = allQuestions.filter(q => 
-                  q.criterion.toLowerCase().includes('interest')
-                );
-                const skillQuestions = allQuestions.filter(q => 
-                  q.criterion.toLowerCase().includes('skill')
-                );
-                const experienceQuestions = allQuestions.filter(q => 
-                  q.criterion.toLowerCase().includes('experience') || 
-                  q.criterion.toLowerCase().includes('background')
-                );
-                
-                console.log(`Questions by category for ${major} at ${school}:`, {
-                  interests: interestQuestions.length,
-                  skills: skillQuestions.length,
-                  experience: experienceQuestions.length
-                });
-                
-                // Select one random question from each category if available
-                const categories = [
-                  { name: 'interests', questions: interestQuestions },
-                  { name: 'skills', questions: skillQuestions },
-                  { name: 'experience', questions: experienceQuestions }
-                ];
-                
-                for (const category of categories) {
-                  if (category.questions.length > 0) {
-                    const randomIndex = Math.floor(Math.random() * category.questions.length);
-                    const question = category.questions[randomIndex];
-                    
-                    quizQuestions.push({
-                      major: `${major} at ${school}`,
-                      question: {
-                        ...question,
-                        category: category.name
-                      }
-                    });
-                  }
-                }
-                
-                foundQuestions = true;
-                break;
-              }
-            } catch (error) {
-              console.error(`Error loading questions for ${major} at ${school}:`, error);
-              // Continue to next school
-            }
-          }
-          
-          if (!foundQuestions) {
-            console.log(`No questions found for ${major} at any school`);
-          }
-        } catch (error) {
-          console.error(`Could not load questions for ${major}:`, error);
-        }
-      }
-      
-      // Shuffle the questions for variety
-      const shuffledQuestions = quizQuestions.sort(() => Math.random() - 0.5);
-      console.log(`Final quiz generated with ${shuffledQuestions.length} questions`);
-      setQuestions(shuffledQuestions);
-      
-      if (shuffledQuestions.length === 0) {
-        toast({
-          title: "No Questions Available",
-          description: "Could not load questions for any majors. Please try again later.",
-          variant: "destructive"
-        });
-        navigate('/');
-      }
-      
-    } catch (error) {
-      console.error('Error loading random major questions:', error);
-      toast({
-        title: "Error",
-        description: "Failed to prepare quiz questions. Please try again later.",
-        variant: "destructive"
-      });
-      setLoading(false);
-      navigate('/');
-    }
-  };
-
-  // Original prepare quiz function
-  const prepareQuizQuestions = async () => {
-    try {
-      // Get top RIASEC components
-      const topRiasec = riasecProfile.slice(0, 3);
-      
-      // Get top Work Values components
-      const topWorkValues = workValueProfile.slice(0, 3);
-      
-      // Log the data for debugging
-      console.log("Top RIASEC components for quiz generation:", topRiasec);
-      console.log("Top Work Values components for quiz generation:", topWorkValues);
-      
-      // If profiles are empty, use hardcoded default values for testing
-      const useTopRiasec = topRiasec.length > 0 ? topRiasec : [
-        { component: "R", score: 5, average: 5 },
-        { component: "S", score: 4, average: 4 },
-        { component: "A", score: 3, average: 3 }
-      ];
-      
-      const useTopWorkValues = topWorkValues.length > 0 ? topWorkValues : [
-        { component: "Recognition", score: 5, average: 5 },
-        { component: "Achievement", score: 4, average: 4 },
-        { component: "Independence", score: 3, average: 3 }
-      ];
-      
-      // Generate codes for recommendation
-      const generatedRiasecCode = formCode(useTopRiasec, mapRiasecToCode) || "RSI";
-      const generatedWorkValueCode = formCode(useTopWorkValues, mapWorkValueToCode) || "ARS";
-      
-      console.log("Generated codes for quiz:", {
-        riasec: generatedRiasecCode,
-        workValues: generatedWorkValueCode
-      });
-      
-      // Get recommended majors based on profile codes
-      const majorRecommendations = await getMatchingMajors(generatedRiasecCode, generatedWorkValueCode);
-      
-      // Combine all recommended majors in priority order
-      const recommendedMajors = [
-        ...majorRecommendations.exactMatches,
-        ...majorRecommendations.riasecMatches,
-        ...majorRecommendations.workValueMatches
-      ];
-      
-      // Remove duplicates
-      const uniqueRecommendedMajors = [...new Set(recommendedMajors)];
-      
-      console.log("Recommended majors for quiz questions:", uniqueRecommendedMajors);
-      
-      // If we have recommended majors, use them for questions
-      if (uniqueRecommendedMajors.length > 0) {
-        // Select up to 5 majors
-        const selectedMajors = uniqueRecommendedMajors.slice(0, 5);
-        
-        console.log("Selected majors for quiz:", selectedMajors);
-        
-        // For each selected major, load and select questions
-        const quizQuestions: QuizQuestion[] = [];
-        
-        for (const major of selectedMajors) {
-          await loadQuestionsWithSchoolSuffix(major, quizQuestions);
-        }
-        
-        // Shuffle the questions for variety
-        const shuffledQuestions = quizQuestions.sort(() => Math.random() - 0.5);
-        console.log(`Final quiz generated with ${shuffledQuestions.length} questions from recommended majors`);
-        setQuestions(shuffledQuestions);
-        
-        if (shuffledQuestions.length === 0) {
-          console.log("No questions found for recommended majors, falling back to random selection");
-          // Fall back to existing random major selection
-          loadRandomMajorQuestions();
-        }
-      } else {
-        console.log("No recommended majors found, falling back to random selection");
-        // Fall back to existing random major selection
-        loadRandomMajorQuestions();
-      }
-      
-    } catch (error) {
-      console.error('Error preparing quiz questions based on profile:', error);
-      // Fall back to existing random major selection
-      loadRandomMajorQuestions();
-    } finally {
-      setLoading(false);
     }
   };
   
@@ -1096,10 +772,6 @@ const OpenEndedQuiz = () => {
             {JSON.stringify({
               ...debugInfo,
               currentUserId: userId,
-              profiles: {
-                riasec: riasecProfile.length,
-                workValues: workValueProfile.length
-              },
               questionsLoaded: questions.length,
               currentQuestion: currentQuestionIndex + 1,
               answeredQuestions: Object.keys(responses).length
