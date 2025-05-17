@@ -41,9 +41,19 @@ export const QuizSegmentsList = ({
     
     // Fixed redirection for open-ended quiz - directly navigate without disclaimer
     if (segmentId === "open-ended") {
+      console.log("Starting open-ended quiz");
       navigateToPath(`/open-ended`);
     } else {
-      navigateToPath(`/quiz/${segmentId}`);
+      console.log("Starting quiz segment:", segmentId);
+      // Extract step number from segmentId (e.g., "interest-part 1" -> 1)
+      const stepMatch = segmentId.match(/interest-part\s+(\d+)/);
+      if (stepMatch && stepMatch[1]) {
+        const stepNumber = stepMatch[1];
+        navigateToPath(`/quiz/interest-part/${stepNumber}`);
+      } else {
+        console.error("Invalid segment ID format:", segmentId);
+        navigateToPath(`/quiz`);
+      }
     }
   };
   

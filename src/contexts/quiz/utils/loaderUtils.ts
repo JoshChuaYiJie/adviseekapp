@@ -22,14 +22,16 @@ export const loadQuizQuestions = async (currentStep: number): Promise<McqQuestio
       throw new Error(`Invalid quiz step: ${currentStep}`);
     }
 
+    console.log(`Attempting to fetch questions from: ${questionsJsonPath}`);
     const response = await fetch(questionsJsonPath);
     
     if (!response.ok) {
+      console.error(`Failed to fetch questions: ${response.status} ${response.statusText}`);
       throw new Error(`Failed to fetch questions: ${response.status} ${response.statusText}`);
     }
     
     const loadedQuestions: McqQuestion[] = await response.json();
-    console.log(`Loaded ${loadedQuestions.length} questions from ${questionsJsonPath}`);
+    console.log(`Successfully loaded ${loadedQuestions.length} questions from ${questionsJsonPath}`);
     
     // Add category property based on the current step if it doesn't exist
     const questionsWithCategory = loadedQuestions.map(q => ({
@@ -45,11 +47,20 @@ export const loadQuizQuestions = async (currentStep: number): Promise<McqQuestio
   }
 };
 
-// Load user responses from the database
-export const loadUserResponses = async () => {
+// Load user responses from the database (temporarily disabled)
+export const loadUserResponses = async (loadFromSupabase: boolean = false) => {
+  if (!loadFromSupabase) {
+    console.log("Loading user responses disabled - returning empty responses");
+    return {};
+  }
+  
   try {
+    console.log("Attempting to load user responses from Supabase");
     const { data: { session } } = await supabase.auth.getSession();
-    if (!session?.user) return {}; // Not logged in
+    if (!session?.user) {
+      console.log("No active session - user not logged in");
+      return {}; // Not logged in
+    }
 
     console.log("Loading responses for user:", session.user.id);
     
@@ -59,6 +70,7 @@ export const loadUserResponses = async () => {
       .eq('user_id', session.user.id);
     
     if (error) {
+      console.error("Supabase error when loading responses:", error);
       throw error;
     }
 
@@ -79,10 +91,10 @@ export const loadUserResponses = async () => {
       return loadedResponses;
     }
     
+    console.log("No existing responses found in database");
     return {};
   } catch (error) {
     console.error("Failed to load user responses:", error);
     return {};
   }
 };
-

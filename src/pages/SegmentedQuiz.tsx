@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useToast } from "@/components/ui/use-toast";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -15,6 +15,7 @@ import QuizDebugger from "@/components/quiz/QuizDebugger";
 
 const SegmentedQuiz = () => {
   const navigate = useNavigate();
+  const params = useParams();
   const { toast } = useToast();
   const { isCurrentlyDark } = useTheme();
   const {
@@ -35,12 +36,19 @@ const SegmentedQuiz = () => {
   const [quizProgress, setQuizProgress] = useState(0);
   const [isLastStep, setIsLastStep] = useState(false);
 
+  useEffect(() => {
+    console.log("SegmentedQuiz component mounted");
+    console.log("URL params:", params);
+    console.log("Current step from context:", currentStep);
+  }, [params, currentStep]);
+
   // Fetch user ID
   useEffect(() => {
     const fetchUserId = async () => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
         setUserId(user?.id || null);
+        console.log("User ID fetched:", user?.id || "not logged in");
       } catch (error) {
         console.error("Error fetching user ID:", error);
         toast({
@@ -67,6 +75,7 @@ const SegmentedQuiz = () => {
         4: 100
       };
       setQuizProgress(stepToProgress[currentStep] || 0);
+      console.log("Quiz progress updated to:", stepToProgress[currentStep] || 0);
       
       // Set if this is the last step
       setIsLastStep(currentStep === 4); // Assuming 4 is the last step
@@ -81,17 +90,22 @@ const SegmentedQuiz = () => {
   // Navigation functions
   const goToNextStep = () => {
     if (currentStep < 4) {
-      navigate(`/quiz/interest-part/${currentStep + 1}`);
+      const nextStep = currentStep + 1;
+      console.log("Navigating to next step:", nextStep);
+      navigate(`/quiz/interest-part/${nextStep}`);
     }
   };
 
   const goToPreviousStep = () => {
     if (currentStep > 1) {
-      navigate(`/quiz/interest-part/${currentStep - 1}`);
+      const prevStep = currentStep - 1;
+      console.log("Navigating to previous step:", prevStep);
+      navigate(`/quiz/interest-part/${prevStep}`);
     }
   };
 
   const handleQuizCompletion = async () => {
+    console.log("Completing quiz for step:", currentStep);
     const quizType = `interest-part ${currentStep}`;
     await submitResponses(quizType);
     navigate('/recommendations');
@@ -147,6 +161,8 @@ const SegmentedQuiz = () => {
               currentStep,
               responses: String(JSON.stringify(responses)),
               quizProgress,
+              params: JSON.stringify(params),
+              path: location.pathname
             }}
           />
         )}
