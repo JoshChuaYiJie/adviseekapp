@@ -18,18 +18,17 @@ interface QuestionHandlerProps {
 export const QuestionHandler = ({ questions, majorName }: QuestionHandlerProps) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [responses, setResponses] = useState<Record<number, string>>({});
-  const [skipped, setSkipped] = useState<Record<number, boolean>>({});
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  // Initialize skipped state for all questions
+  // Initialize responses state for all questions
   useEffect(() => {
-    const initialSkipped: Record<number, boolean> = {};
+    const initialResponses: Record<number, string> = {};
     questions.forEach((_, index) => {
-      initialSkipped[index] = false;
+      initialResponses[index] = '';
     });
-    setSkipped(initialSkipped);
+    setResponses(initialResponses);
   }, [questions]);
 
   const handleResponseChange = (response: string) => {
@@ -37,14 +36,6 @@ export const QuestionHandler = ({ questions, majorName }: QuestionHandlerProps) 
       ...responses,
       [currentQuestionIndex]: response
     });
-    
-    // If user enters a response, mark as not skipped
-    if (response.trim() !== '') {
-      setSkipped({
-        ...skipped,
-        [currentQuestionIndex]: false
-      });
-    }
   };
 
   const handleNext = () => {
@@ -80,12 +71,9 @@ export const QuestionHandler = ({ questions, majorName }: QuestionHandlerProps) 
     }
     
     try {
-      // Filter out empty responses and skipped questions
+      // Filter out empty responses
       const responsesToSave = Object.entries(responses)
-        .filter(([index, response]) => {
-          const questionIndex = parseInt(index, 10);
-          return response.trim() !== '' && !skipped[questionIndex];
-        })
+        .filter(([_, response]) => response.trim() !== '')
         .map(([index, response]) => {
           const questionIndex = parseInt(index, 10);
           return {
@@ -163,10 +151,9 @@ export const QuestionHandler = ({ questions, majorName }: QuestionHandlerProps) 
         {questions.map((_, index) => (
           <div 
             key={index} 
-            className={`w-6 h-6 rounded-full flex items-center justify-center text-xs cursor-pointer transition-colors
-              ${index === currentQuestionIndex ? 'ring-2 ring-offset-2' : ''}
-              ${skipped[index] ? 'bg-yellow-500 text-white' : 
-                responses[index] ? 'bg-green-500 text-white' : 'bg-gray-200 dark:bg-gray-700'}`}
+            className={`w-6 h-6 rounded-full flex items-center justify-center text-xs cursor-pointer
+              ${index === currentQuestionIndex ? 'ring-2 ring-offset-2 ring-blue-500' : ''}
+              ${responses[index] && responses[index].trim() !== '' ? 'bg-green-500 text-white' : 'bg-gray-200 dark:bg-gray-700'}`}
             onClick={() => setCurrentQuestionIndex(index)}
           >
             {index + 1}
@@ -178,7 +165,6 @@ export const QuestionHandler = ({ questions, majorName }: QuestionHandlerProps) 
         question={currentQuestion.question}
         response={responses[currentQuestionIndex] || ''}
         onResponseChange={handleResponseChange}
-        isSkipped={skipped[currentQuestionIndex]}
       />
       
       <div className="flex justify-between pt-4">

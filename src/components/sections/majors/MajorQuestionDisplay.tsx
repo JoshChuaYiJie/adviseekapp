@@ -42,12 +42,7 @@ export const MajorQuestionDisplay = ({
     };
 
     return (
-      <div className={`p-6 rounded-lg ${
-        isSkipped ? 'bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800' :
-        response ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800' :
-        isFocused ? 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800' :
-        'bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700'
-      } transition-colors duration-200`}>
+      <div className="p-6 rounded-lg border border-gray-200 dark:border-gray-700">
         <h3 className="text-lg font-medium mb-4">{question}</h3>
         <Textarea
           value={response}
@@ -58,11 +53,6 @@ export const MajorQuestionDisplay = ({
           className="min-h-[120px] resize-y"
           disabled={isSkipped}
         />
-        {isSkipped && (
-          <p className="text-sm text-yellow-600 dark:text-yellow-400 mt-2">
-            This question was skipped. Click on it in the question navigator to answer it.
-          </p>
-        )}
       </div>
     );
   }
@@ -105,16 +95,14 @@ export const MajorQuestionDisplay = ({
           {openEndedQuestions.map((_, idx) => {
             const q = openEndedQuestions[idx];
             const ans = q ? answers[q.id] : undefined;
-            const isSkipped = ans?.skipped || false;
-            const isAnswered = ans?.text && !isSkipped;
+            const hasAnswer = ans?.text && ans.text.trim().length > 0;
             
             return (
               <div 
                 key={idx} 
-                className={`w-6 h-6 rounded-full flex items-center justify-center text-xs cursor-pointer transition-colors
-                  ${idx === currentIndex ? 'ring-2 ring-offset-2' : ''}
-                  ${isSkipped ? 'bg-yellow-500 text-white' : 
-                    isAnswered ? 'bg-green-500 text-white' : 'bg-gray-200 dark:bg-gray-700'}`}
+                className={`w-6 h-6 rounded-full flex items-center justify-center text-xs cursor-pointer
+                  ${idx === currentIndex ? 'ring-2 ring-offset-2 ring-blue-500' : ''}
+                  ${hasAnswer ? 'bg-green-500 text-white' : 'bg-gray-200 dark:bg-gray-700'}`}
                 onClick={() => setCurrentIndex(idx)}
               >
                 {idx + 1}
@@ -123,24 +111,14 @@ export const MajorQuestionDisplay = ({
           })}
         </div>
         
-        <div className={`p-6 rounded-lg ${
-          currentAnswer.skipped ? 'bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800' :
-          currentAnswer.text ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800' :
-          'bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700'
-        }`}>
+        <div className="p-6 rounded-lg border border-gray-200 dark:border-gray-700">
           <h3 className="text-lg font-medium mb-4">{currentQuestion.question}</h3>
           <Textarea
             value={currentAnswer.text}
             onChange={handleChange}
             placeholder="Type your answer here..."
             className="min-h-[120px] resize-y"
-            disabled={currentAnswer.skipped}
           />
-          {currentAnswer.skipped && (
-            <p className="text-sm text-yellow-600 dark:text-yellow-400 mt-2">
-              This question was skipped. You can still answer it by typing above.
-            </p>
-          )}
         </div>
         
         <div className="flex justify-between">
@@ -152,7 +130,7 @@ export const MajorQuestionDisplay = ({
               Previous
             </Button>
           </div>
-          <div className="space-x-2">
+          <div>
             {currentIndex < openEndedQuestions.length - 1 ? (
               <Button onClick={handleNextQuestion}>
                 Next
