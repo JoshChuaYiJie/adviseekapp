@@ -296,7 +296,7 @@ const OpenEndedQuiz = () => {
     quizQuestions: QuizQuestion[]
   ) => {
     // Format the major name for file lookup
-    const formattedMajor = majorName.replace(/ /g, '_').replace(/[\/&,]/g, '_');
+    const formattedMajor = formatMajorForFile(majorName);
     
     // Determine which schools to try
     const schools = schoolName ? [schoolName] : ['NTU', 'NUS', 'SMU'];
@@ -350,6 +350,8 @@ const OpenEndedQuiz = () => {
           
           // We found questions for this major/school, no need to try other schools
           break;
+        } else {
+          console.log(`No questions found for ${majorName} at ${school}`);
         }
       } catch (error) {
         console.error(`Error loading questions for ${majorName} at ${school}:`, error);
@@ -619,13 +621,6 @@ const OpenEndedQuiz = () => {
     setVisibleCount(prev => prev + 1);
   };
 
-  // Handle intersection for active question tracking
-  const handleIntersect = (isIntersecting: boolean, index: number) => {
-    if (isIntersecting) {
-      setCurrentQuestionIndex(index);
-    }
-  };
-
   // QuestionDisplay component similar to QuizQuestion in SegmentedQuiz
   const QuestionDisplay = ({ 
     question, 
@@ -727,6 +722,10 @@ const OpenEndedQuiz = () => {
     );
   }
 
+  console.log("Rendering questions:", questions.length);
+  console.log("Current question index:", currentQuestionIndex);
+  
+  // Display a single question at a time (current question only)
   return (
     <div className={`min-h-screen ${isCurrentlyDark ? 'bg-gray-900 text-white' : 'bg-gradient-to-br from-[#f8fafc] via-[#ede9fe] to-[#f3e8ff]'}`}>
       <div className="container mx-auto">
@@ -766,13 +765,14 @@ const OpenEndedQuiz = () => {
         )}
         
         <div ref={questionsRef} className="pb-24">
-          {questions.map((question, index) => (
+          {/* Only render the current question */}
+          {questions.length > 0 && currentQuestionIndex < questions.length && (
             <QuestionDisplay
-              key={question.question.id}
-              question={question}
-              index={index}
+              key={questions[currentQuestionIndex].question.id}
+              question={questions[currentQuestionIndex]}
+              index={currentQuestionIndex}
             />
-          ))}
+          )}
         </div>
         
         <div className="fixed bottom-8 flex flex-col items-center w-full z-40">
