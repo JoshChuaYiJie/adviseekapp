@@ -1,6 +1,5 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom'; // <-- import useParams
 import { useTranslation } from 'react-i18next';
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -84,10 +83,12 @@ const QuizDebugger: React.FC<QuizDebuggerProps> = ({ userId, responses, quizType
 const SegmentedQuiz = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { step } = useParams(); // <-- get step param from url
   const { toast } = useToast();
   const { isCurrentlyDark } = useTheme();
   const {
     currentStep,
+    setCurrentStep, // <-- make sure you have setCurrentStep in your context
     responses,
     questions,
     isLoading,
@@ -103,6 +104,16 @@ const SegmentedQuiz = () => {
   const [showDebugger, setShowDebugger] = useState(false);
   const [quizProgress, setQuizProgress] = useState(0);
   const [isLastStep, setIsLastStep] = useState(false);
+
+  // Sync currentStep with URL param
+  useEffect(() => {
+    if (step) {
+      const parsed = Number(step);
+      if (!isNaN(parsed)) {
+        setCurrentStep(parsed);
+      }
+    }
+  }, [step, setCurrentStep]);
 
   useEffect(() => {
     const fetchUserId = async () => {
@@ -135,7 +146,7 @@ const SegmentedQuiz = () => {
         4: 100
       };
       setQuizProgress(stepToProgress[currentStep] || 0);
-      
+
       // Set if this is the last step
       setIsLastStep(currentStep === 4); // Assuming 4 is the last step
     }
