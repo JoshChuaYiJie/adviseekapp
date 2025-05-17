@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -23,7 +24,7 @@ const Recommendations = () => {
     refetchRecommendations 
   } = useModuleRecommendations();
 
-  // Log immediately for debugging
+  // Log recommendations for debugging
   console.log("Recommendations in /recommendations page:", recommendedModules.length);
 
   // Convert recommendedModules to the same format as recommendations
@@ -45,6 +46,7 @@ const Recommendations = () => {
 
   // Ensure recommendations are loaded when the page loads
   useEffect(() => {
+    console.log("Trying to fetch recommendations...");
     refetchRecommendations();
   }, [refetchRecommendations]);
 
@@ -130,6 +132,7 @@ const Recommendations = () => {
     setShowProgramme(false);
   };
 
+  // Show loading state while fetching recommendations
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#f8fafc] via-[#ede9fe] to-[#f3e8ff] text-gray-900 flex flex-col items-center justify-center p-8 font-open-sans">
@@ -139,6 +142,7 @@ const Recommendations = () => {
     );
   }
 
+  // Show error state if there's an error
   if (error) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#f8fafc] via-[#ede9fe] to-[#f3e8ff] text-gray-900 flex flex-col items-center justify-center p-8 font-open-sans">
@@ -149,6 +153,7 @@ const Recommendations = () => {
     );
   }
 
+  // Show empty state if there are no recommendations
   if (!recommendations || recommendations.length === 0) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#f8fafc] via-[#ede9fe] to-[#f3e8ff] text-gray-900 flex flex-col items-center justify-center p-8 font-open-sans">
@@ -159,6 +164,7 @@ const Recommendations = () => {
     );
   }
 
+  // Log the final recommendations and current module
   console.log('Final recommendations in /recommendations page:', recommendations);
   const currentModule = recommendations[currentIndex];
 

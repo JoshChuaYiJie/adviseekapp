@@ -17,6 +17,7 @@ import { processWorkValuesData } from '@/components/sections/WorkValuesChart';
 import { Badge } from "@/components/ui/badge";
 import { fetchModuleRecommendations, Module } from '@/utils/recommendation/moduleRecommendationUtils';
 import { ModuleRatingCard } from '@/components/ModuleRatingCard';
+import { useRecommendationContext } from '@/contexts/RecommendationContext';
 
 export const AboutMe = () => {
   const [activeTab, setActiveTab] = useState<"quiz" | "profile" | "resume">("quiz");
@@ -42,6 +43,9 @@ export const AboutMe = () => {
   const {
     isCurrentlyDark
   } = useTheme();
+  
+  // Use the global recommendation context
+  const { updateModuleRecommendations } = useRecommendationContext();
   
   // Enhanced state for dynamic profile information
   const [profileInfo, setProfileInfo] = useState({
@@ -148,6 +152,18 @@ export const AboutMe = () => {
             const modules = await fetchModuleRecommendations(majorRecommendations);
             console.log("Recommended modules:", modules);
             setRecommendedModules(modules);
+            
+            // Update the global module recommendations with the fetched modules
+            updateModuleRecommendations(modules.map(module => ({
+              id: getModuleId(module.modulecode),
+              university: module.institution,
+              course_code: module.modulecode,
+              title: module.title,
+              description: module.description || "No description available.",
+              aus_cus: 4,
+              semester: "1"
+            })));
+            
           } catch (error) {
             console.error("Error fetching module recommendations:", error);
           } finally {
@@ -161,7 +177,18 @@ export const AboutMe = () => {
       }
     };
     loadUserProfiles();
-  }, []);
+  }, [updateModuleRecommendations]);
+
+  // Helper function to generate consistent module IDs
+  const getModuleId = (code: string) => {
+    let hash = 0;
+    for (let i = 0; i < code.length; i++) {
+      const char = code.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Convert to 32bit integer
+    }
+    return Math.abs(hash);
+  };
 
   const generateStrengthsFromRIASEC = (code: string): string[] => {
     const traits: Record<string, string[]> = {

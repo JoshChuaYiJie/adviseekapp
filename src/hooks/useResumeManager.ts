@@ -47,6 +47,7 @@ export const useResumeManager = () => {
             description: "There was a problem loading your saved resumes.",
             variant: "destructive",
           });
+          setLoading(false);
           return;
         }
         
@@ -101,18 +102,58 @@ export const useResumeManager = () => {
     }
   };
 
-  const handleViewResume = (resumeId: string, templateType: string) => {
-    navigate(`/resumebuilder/${templateType}?id=${resumeId}&mode=view`);
+  const handleViewResume = async (resumeId: string, templateType: string) => {
+    try {
+      // Make sure to log the navigation attempt
+      console.log(`Navigating to view resume: ${resumeId} with template: ${templateType}`);
+      
+      // Navigation with proper query parameters
+      navigate(`/resumebuilder/${templateType}?id=${resumeId}&mode=view`);
+    } catch (error) {
+      console.error("Navigation error:", error);
+      toast({
+        title: "Navigation Error",
+        description: "There was a problem viewing this resume.",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleEditResume = (resumeId: string, templateType: string) => {
-    navigate(`/resumebuilder/${templateType}?id=${resumeId}&mode=edit`);
+  const handleEditResume = async (resumeId: string, templateType: string) => {
+    try {
+      // Make sure to log the navigation attempt
+      console.log(`Navigating to edit resume: ${resumeId} with template: ${templateType}`);
+      
+      // Navigation with proper query parameters
+      navigate(`/resumebuilder/${templateType}?id=${resumeId}&mode=edit`);
+    } catch (error) {
+      console.error("Navigation error:", error);
+      toast({
+        title: "Navigation Error",
+        description: "There was a problem editing this resume.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleEditPDF = (index: number) => {
-    // Store the selected PDF in local storage for access in the resume builder
-    localStorage.setItem('uploadedPDF', resumeFiles[index].name);
-    navigate('/resumebuilder/basic?source=pdf');
+    try {
+      // Store the selected PDF in local storage for access in the resume builder
+      const file = resumeFiles[index];
+      if (!file) {
+        throw new Error("Selected file not found");
+      }
+      
+      localStorage.setItem('uploadedPDF', file.name);
+      navigate('/resumebuilder/basic?source=pdf');
+    } catch (error) {
+      console.error("Navigation error:", error);
+      toast({
+        title: "Navigation Error",
+        description: "There was a problem editing this PDF.",
+        variant: "destructive",
+      });
+    }
   };
 
   return {

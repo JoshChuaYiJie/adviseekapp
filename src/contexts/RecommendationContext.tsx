@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Module } from '@/integrations/supabase/client';
 import { MajorRecommendationsType } from '@/components/sections/majors/types';
@@ -7,6 +8,7 @@ import {
   formCode,
   getMatchingMajors
 } from '@/utils/recommendation';
+import { fetchModuleRecommendations } from '@/utils/recommendation/moduleRecommendationUtils';
 
 interface RecommendationContextType {
   riasecCode: string;
@@ -16,6 +18,7 @@ interface RecommendationContextType {
   isLoading: boolean;
   error: string | null;
   refreshRecommendations: () => Promise<void>;
+  updateModuleRecommendations: (modules: Module[]) => void;
 }
 
 const defaultContext: RecommendationContextType = {
@@ -26,6 +29,7 @@ const defaultContext: RecommendationContextType = {
   isLoading: true,
   error: null,
   refreshRecommendations: async () => {},
+  updateModuleRecommendations: () => {},
 };
 
 const RecommendationContext = createContext<RecommendationContextType>(defaultContext);
@@ -81,6 +85,8 @@ export const RecommendationProvider: React.FC<{children: React.ReactNode}> = ({ 
         // Use default fallbacks
         setRiasecCode('SAE');
         setWorkValueCode('ARS');
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -93,6 +99,7 @@ export const RecommendationProvider: React.FC<{children: React.ReactNode}> = ({ 
       if (!riasecCode || !workValueCode) return;
       
       try {
+        setIsLoading(true);
         console.log("Fetching major recommendations with codes:", riasecCode, workValueCode);
         const majors = await getMatchingMajors(riasecCode, workValueCode);
         console.log("Loaded major recommendations:", majors);
@@ -100,8 +107,10 @@ export const RecommendationProvider: React.FC<{children: React.ReactNode}> = ({ 
         
         // Store in localStorage for persistence
         localStorage.setItem('major_recommendations', JSON.stringify(majors));
+        setIsLoading(false);
       } catch (error) {
         console.error("Error loading major recommendations:", error);
+        setIsLoading(false);
       }
     };
     
@@ -117,12 +126,9 @@ export const RecommendationProvider: React.FC<{children: React.ReactNode}> = ({ 
         setIsLoading(true);
         setError(null);
         
-        // Use the actual major recommendations from the global state
-        // Instead of the mock data that was previously used
         console.log("Fetching module recommendations based on majors:", majorRecommendations);
         
-        // Import and use the existing module recommendation utility
-        const { fetchModuleRecommendations } = await import('@/utils/recommendation/moduleRecommendationUtils');
+        // Use the fetchModuleRecommendations utility
         const modules = await fetchModuleRecommendations(majorRecommendations, 0);
         
         console.log("Raw modules from fetchModuleRecommendations:", modules.length);
@@ -140,10 +146,10 @@ export const RecommendationProvider: React.FC<{children: React.ReactNode}> = ({ 
         
         console.log("Loaded module recommendations:", modulesWithIds.length);
         setModuleRecommendations(modulesWithIds);
-        setIsLoading(false);
       } catch (error) {
         console.error("Error loading module recommendations:", error);
         setError("Failed to load module recommendations");
+      } finally {
         setIsLoading(false);
       }
     };
@@ -160,6 +166,12 @@ export const RecommendationProvider: React.FC<{children: React.ReactNode}> = ({ 
       hash = hash & hash; // Convert to 32bit integer
     }
     return Math.abs(hash);
+  };
+
+  // Function to update module recommendations directly (for use in AboutMe.tsx)
+  const updateModuleRecommendations = (modules: Module[]) => {
+    console.log("Updating global module recommendations:", modules.length);
+    setModuleRecommendations(modules);
   };
 
   // Refresh all recommendations
@@ -186,6 +198,7 @@ export const RecommendationProvider: React.FC<{children: React.ReactNode}> = ({ 
     } catch (error) {
       console.error("Error refreshing recommendations:", error);
       setError("Failed to refresh recommendations");
+    } finally {
       setIsLoading(false);
     }
   };
@@ -199,7 +212,8 @@ export const RecommendationProvider: React.FC<{children: React.ReactNode}> = ({ 
         moduleRecommendations,
         isLoading,
         error,
-        refreshRecommendations
+        refreshRecommendations,
+        updateModuleRecommendations
       }}
     >
       {children}

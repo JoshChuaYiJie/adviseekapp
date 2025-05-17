@@ -22,13 +22,18 @@ export const useModuleRecommendations = () => {
   useEffect(() => {
     console.log("useModuleRecommendations: Converting global modules, count:", moduleRecommendations.length);
     
-    const formattedModules: RecommendedModule[] = moduleRecommendations.map(module => ({
-      module,
-      reasoning: ["Based on your recommended majors"]
-    }));
-    
-    setRecommendedModules(formattedModules);
-    console.log("useModuleRecommendations: Formatted modules count:", formattedModules.length);
+    if (moduleRecommendations.length > 0) {
+      const formattedModules: RecommendedModule[] = moduleRecommendations.map(module => ({
+        module,
+        reasoning: ["Based on your recommended majors"]
+      }));
+      
+      setRecommendedModules(formattedModules);
+      console.log("useModuleRecommendations: Formatted modules count:", formattedModules.length);
+    } else {
+      console.log("No modules available in global context");
+      setRecommendedModules([]);
+    }
   }, [moduleRecommendations]);
 
   return { 
