@@ -136,7 +136,7 @@ export const QuizForm: React.FC<QuizFormProps> = ({ onSubmit, onCancel, quizType
     return (
       <div className="flex items-center justify-center p-8 min-h-[60vh]">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#1E90FF] mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500 mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading quiz questions...</p>
         </div>
       </div>
@@ -198,7 +198,9 @@ export const QuizForm: React.FC<QuizFormProps> = ({ onSubmit, onCancel, quizType
           <span className="text-sm font-medium">Step {currentStep} of {totalSteps}</span>
           <span className="text-sm font-medium">{Math.round(progressPercentage)}% complete</span>
         </div>
-        <Progress value={progressPercentage} className="h-2" />
+        <Progress value={progressPercentage} className="h-2">
+          <div className="h-full bg-purple-500 rounded-full" style={{ width: `${progressPercentage}%` }}></div>
+        </Progress>
       </div>
       
       {/* Current step questions */}
@@ -231,14 +233,14 @@ export const QuizForm: React.FC<QuizFormProps> = ({ onSubmit, onCancel, quizType
           {currentStep < totalSteps ? (
             <Button
               onClick={handleNext}
-              className="w-24 bg-[#1E90FF] hover:bg-[#1E90FF]/90"
+              className="w-24 bg-purple-500 hover:bg-purple-600"
             >
               Next
             </Button>
           ) : (
             <Button
               onClick={handleSubmit}
-              className="w-24 bg-[#1E90FF] hover:bg-[#1E90FF]/90"
+              className="w-24 bg-purple-500 hover:bg-purple-600"
               disabled={isSubmitting}
             >
               {isSubmitting ? (

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -607,6 +606,21 @@ const OpenEndedQuiz = () => {
     }
   };
   
+  // Clear responses when changing questions
+  useEffect(() => {
+    // When current question index changes, clear the text area
+    const questionId = questions[currentQuestionIndex]?.question?.id;
+    if (!questionId) return;
+    
+    // Only initialize if not already in responses to prevent erasing saved answers
+    if (!responses[questionId]) {
+      setResponses(prev => ({
+        ...prev,
+        [questionId]: { response: '', skipped: false }
+      }));
+    }
+  }, [currentQuestionIndex, questions]);
+  
   // Handle response changes
   const handleResponseChange = (value: string) => {
     if (currentQuestionIndex >= questions.length) return;
@@ -820,16 +834,26 @@ const OpenEndedQuiz = () => {
         <Progress value={progress} className="h-2" />
       </div>
       
-      <Card className={`p-6 transition-all duration-300 animate-fade-in ${isCurrentlyDark ? 'bg-gray-800' : 'bg-white'}`}>
+      <Card className={`p-6 transition-all duration-300 animate-fade-in shadow-lg border-2 ${
+        isCurrentlyDark 
+          ? 'bg-gray-800 border-purple-700/40' 
+          : 'bg-white border-purple-200'
+      }`}>
         <div className="mb-4">
-          <Badge className="mb-2 capitalize">{currentQuestion.question.category || currentQuestion.question.criterion}</Badge>
-          <h3 className="text-xl font-medium mb-1">Major: {currentQuestion.major}</h3>
-          <p className="text-lg mb-6">{currentQuestion.question.question}</p>
+          <Badge className="mb-2 capitalize bg-purple-500 hover:bg-purple-600">
+            {currentQuestion?.question?.category || currentQuestion?.question?.criterion}
+          </Badge>
+          <h3 className="text-xl font-medium mb-1">Major: {currentQuestion?.major}</h3>
+          <p className="text-lg mb-6">{currentQuestion?.question?.question}</p>
           
           <Textarea
-            className="min-h-[150px]"
+            className={`min-h-[150px] transition-colors ${
+              isCurrentlyDark
+                ? 'bg-gray-700 border-gray-600 focus:border-purple-500'
+                : 'bg-gray-50 border-gray-200 focus:border-purple-400'
+            }`}
             placeholder="Type your answer here..."
-            value={currentResponse.response}
+            value={currentResponse?.response || ''}
             onChange={(e) => handleResponseChange(e.target.value)}
           />
         </div>
@@ -869,7 +893,7 @@ const OpenEndedQuiz = () => {
         </div>
       </Card>
       
-      {/* Skipped questions summary */}
+      {/* Skipped questions summary - update styling for better visibility */}
       <div className="mt-6">
         <h3 className="font-medium mb-2">Question Status:</h3>
         <div className="grid grid-cols-5 gap-2">
@@ -889,11 +913,13 @@ const OpenEndedQuiz = () => {
               <div 
                 key={q.question.id} 
                 className={`w-full p-2 flex items-center justify-center rounded-md text-xs cursor-pointer ${
-                  idx === currentQuestionIndex ? 'ring-2 ring-blue-500' : ''
+                  idx === currentQuestionIndex ? 'ring-2 ring-offset-2 ring-purple-500' : ''
                 } ${
-                  status === 'answered' ? 'bg-green-500 text-white' :
+                  status === 'answered' ? 'bg-purple-500 text-white' :
                   status === 'skipped' ? 'bg-amber-500 text-white' :
-                  'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
+                  isCurrentlyDark 
+                    ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' 
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                 }`}
                 onClick={() => setCurrentQuestionIndex(idx)}
               >

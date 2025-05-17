@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -39,6 +38,20 @@ const MajorOpenEndedQuiz: React.FC<MajorOpenEndedQuizProps> = ({ major }) => {
     loadingRecommendations,
     prepareQuestionsForRecommendedMajors
   } = useQuestionHandler({ userId });
+
+  // Initialize empty response for new questions
+  useEffect(() => {
+    if (questions.length > 0 && currentQuestionIndex < questions.length) {
+      const questionId = questions[currentQuestionIndex].id;
+      // Only initialize if not already answered
+      if (!answeredQuestions[questionId]) {
+        setAnsweredQuestions(prev => ({
+          ...prev,
+          [questionId]: { response: '', skipped: false }
+        }));
+      }
+    }
+  }, [currentQuestionIndex, questions]);
 
   // Load user ID on mount
   useEffect(() => {
@@ -185,24 +198,28 @@ const MajorOpenEndedQuiz: React.FC<MajorOpenEndedQuizProps> = ({ major }) => {
   }
 
   const currentQuestion = questions[currentQuestionIndex];
-  const questionId = currentQuestion.id;
+  const questionId = currentQuestion?.id;
   const currentResponse = answeredQuestions[questionId] || { response: '', skipped: false };
   
   return (
     <div className="w-full">
-      <Card className={`w-full transition-all duration-300 ${isCurrentlyDark ? 'bg-gray-800' : 'bg-white'}`}>
+      <Card className={`w-full transition-all duration-300 shadow-lg ${
+        isCurrentlyDark 
+          ? 'bg-gray-800 border-purple-700/30' 
+          : 'bg-white border-purple-100'
+      }`}>
         <CardHeader>
           <div className="flex justify-between items-center">
             <div>
               <CardTitle>
-                {currentQuestion.majorName || major || 'Quiz Question'}
+                {currentQuestion?.majorName || major || 'Quiz Question'}
               </CardTitle>
               <CardDescription>
                 Question {currentQuestionIndex + 1} of {questions.length}
               </CardDescription>
             </div>
-            <Badge variant="outline" className="capitalize">
-              {currentQuestion.category || currentQuestion.criterion}
+            <Badge variant="outline" className="capitalize bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300">
+              {currentQuestion?.category || currentQuestion?.criterion}
             </Badge>
           </div>
           <div className="space-y-2">
@@ -210,17 +227,23 @@ const MajorOpenEndedQuiz: React.FC<MajorOpenEndedQuizProps> = ({ major }) => {
               <span>{Math.round(progress)}% Complete</span>
               <span>{currentQuestionIndex + 1} of {questions.length}</span>
             </div>
-            <Progress value={progress} className="h-2" />
+            <Progress value={progress} className="h-2 bg-gray-200 dark:bg-gray-700">
+              <div className="h-full bg-purple-500 rounded-full" style={{ width: `${progress}%` }}></div>
+            </Progress>
           </div>
         </CardHeader>
         
         <CardContent>
           <div className="space-y-4">
-            <p className="text-lg">{currentQuestion.question}</p>
+            <p className="text-lg">{currentQuestion?.question}</p>
             
             <Textarea
               placeholder="Type your answer here..."
-              className="min-h-[150px]"
+              className={`min-h-[150px] transition-colors ${
+                isCurrentlyDark
+                  ? 'bg-gray-700 border-gray-600 focus:border-purple-500'
+                  : 'bg-gray-50 border-gray-200 focus:border-purple-400'
+              }`}
               value={currentResponse.response}
               onChange={(e) => handleResponseChange(e.target.value)}
               disabled={submitting || currentResponse.skipped}
@@ -248,11 +271,13 @@ const MajorOpenEndedQuiz: React.FC<MajorOpenEndedQuizProps> = ({ major }) => {
                 <div 
                   key={q.id} 
                   className={`w-8 h-8 flex items-center justify-center rounded-full text-xs cursor-pointer ${
-                    idx === currentQuestionIndex ? 'ring-2 ring-blue-500' : ''
+                    idx === currentQuestionIndex ? 'ring-2 ring-purple-500 ring-offset-2' : ''
                   } ${
-                    status === 'answered' ? 'bg-green-500 text-white' :
+                    status === 'answered' ? 'bg-purple-500 text-white' :
                     status === 'skipped' ? 'bg-amber-500 text-white' :
-                    'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
+                    isCurrentlyDark 
+                      ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' 
+                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                   }`}
                   onClick={() => handleQuestionClick(idx)}
                 >
@@ -287,6 +312,7 @@ const MajorOpenEndedQuiz: React.FC<MajorOpenEndedQuizProps> = ({ major }) => {
             <Button 
               onClick={handleNext}
               disabled={submitting}
+              className="bg-purple-500 hover:bg-purple-600"
             >
               Next <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
