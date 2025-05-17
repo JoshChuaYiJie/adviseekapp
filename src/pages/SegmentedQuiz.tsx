@@ -1,88 +1,19 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Checkbox } from "@/components/ui/checkbox"
-import { useToast } from "@/components/ui/use-toast"
-import { toast } from "sonner";
+import { useToast } from "@/components/ui/use-toast";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useQuiz } from "@/contexts/QuizContext";
 import { supabase } from "@/integrations/supabase/client";
-import { McqQuestion } from "@/utils/quizQuestions";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { TooltipProvider } from "@/components/ui/tooltip";
 
-interface QuizDebuggerProps {
-  userId: string;
-  responses: any;
-  quizType: string;
-  debugData?: any;
-}
-
-const QuizDebugger: React.FC<QuizDebuggerProps> = ({ userId, responses, quizType, debugData }) => {
-  const [showAll, setShowAll] = useState(false);
-
-  return (
-    <Accordion type="single" collapsible className="w-full">
-      <AccordionItem value="debug">
-        <AccordionTrigger>Debug Info</AccordionTrigger>
-        <AccordionContent>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <p className="font-bold">User ID:</p>
-              <p>{userId}</p>
-            </div>
-            <div>
-              <p className="font-bold">Quiz Type:</p>
-              <p>{quizType}</p>
-            </div>
-          </div>
-          <div className="mt-4">
-            <p className="font-bold">Responses:</p>
-            {showAll ? (
-              <pre>{JSON.stringify(responses, null, 2)}</pre>
-            ) : (
-              <pre>{JSON.stringify(Object.entries(responses).slice(0, 5).reduce((obj, [key, value]) => {
-                obj[key] = value;
-                return obj;
-              }, {}), null, 2)}</pre>
-            )}
-            {!showAll && Object.keys(responses).length > 5 && (
-              <Button variant="link" onClick={() => setShowAll(true)}>Show All</Button>
-            )}
-          </div>
-          {debugData && (
-            <div className="mt-4">
-              <p className="font-bold">Debug Data:</p>
-              <pre>{JSON.stringify(debugData, null, 2)}</pre>
-            </div>
-          )}
-        </AccordionContent>
-      </AccordionItem>
-    </Accordion>
-  );
-};
+// Import our new components
+import QuizHeader from "@/components/quiz/QuizHeader";
+import QuizQuestionRenderer from "@/components/quiz/QuizQuestionRenderer";
+import QuizNavigation from "@/components/quiz/QuizNavigation";
+import QuizDebugger from "@/components/quiz/QuizDebugger";
 
 const SegmentedQuiz = () => {
-  const { t } = useTranslation();
   const navigate = useNavigate();
   const { toast } = useToast();
   const { isCurrentlyDark } = useTheme();
@@ -104,6 +35,7 @@ const SegmentedQuiz = () => {
   const [quizProgress, setQuizProgress] = useState(0);
   const [isLastStep, setIsLastStep] = useState(false);
 
+  // Fetch user ID
   useEffect(() => {
     const fetchUserId = async () => {
       try {
@@ -124,7 +56,7 @@ const SegmentedQuiz = () => {
     fetchUserId();
   }, [toast]);
 
-  // Load progress based on current step
+  // Update progress based on current step
   useEffect(() => {
     if (currentStep) {
       // Map step to progress percentage
@@ -141,127 +73,21 @@ const SegmentedQuiz = () => {
     }
   }, [currentStep]);
 
+  // Handle answer changes
   const handleAnswerChange = useCallback((questionId: string | number, value: string | string[] | null) => {
     handleResponse(questionId, value as string | string[]);
   }, [handleResponse]);
 
-  const renderQuestion = useCallback(() => {
-    if (loading || isLoading) {
-      return <p>Loading questions...</p>;
-    }
-
-    if (!currentStep || !questions) {
-      return <p>No questions available.</p>;
-    }
-
-    // Filter questions for current step
-    const currentQuizType = `interest-part ${currentStep}`;
-    const questionsForStep = questions.filter(q => q.category === currentQuizType);
-
-    if (questionsForStep.length === 0) {
-      return <p>No questions for this section.</p>;
-    }
-
-    return questionsForStep.map((question) => {
-      const response = responses[question.id] || null;
-
-      // Infer question type based on response data
-      const questionType = Array.isArray(response) ? "multi-select" : "single-select";
-
-      switch (questionType) {
-        case "single-select":
-          return (
-            <Card key={question.id} className={`mb-4 ${isCurrentlyDark ? 'bg-gray-800 text-white' : ''}`}>
-              <CardHeader>
-                <CardTitle>{question.question}</CardTitle>
-                <CardDescription>Choose one option</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <RadioGroup 
-                  defaultValue={response ? String(response) : ""} 
-                  onValueChange={(value) => handleAnswerChange(question.id, value)} 
-                  className="flex flex-col space-y-2"
-                >
-                  {question.options?.map((option, index) => (
-                    <div key={index} className="flex items-center space-x-2">
-                      <RadioGroupItem 
-                        value={option} 
-                        id={`r${question.id}-${index}`} 
-                        className={isCurrentlyDark ? 'ring-offset-gray-800' : ''} 
-                      />
-                      <Label htmlFor={`r${question.id}-${index}`}>{option}</Label>
-                    </div>
-                  ))}
-                </RadioGroup>
-              </CardContent>
-            </Card>
-          );
-        case "multi-select":
-          return (
-            <Card key={question.id} className={`mb-4 ${isCurrentlyDark ? 'bg-gray-800 text-white' : ''}`}>
-              <CardHeader>
-                <CardTitle>{question.question}</CardTitle>
-                <CardDescription>Choose all that apply</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-col space-y-2">
-                  {question.options?.map((option, index) => {
-                    const isChecked = Array.isArray(response) ? response.includes(option) : false;
-                    return (
-                      <div key={index} className="flex items-center space-x-2">
-                        <Checkbox
-                          id={`c${question.id}-${index}`}
-                          checked={isChecked}
-                          onCheckedChange={(checked) => {
-                            let newValues: string[];
-                            if (checked) {
-                              newValues = Array.isArray(response) ? [...response, option] : [option];
-                            } else {
-                              newValues = Array.isArray(response) ? response.filter(item => item !== option) : [];
-                            }
-                            handleAnswerChange(question.id, newValues);
-                          }}
-                          className={isCurrentlyDark ? 'ring-offset-gray-800' : ''}
-                        />
-                        <Label htmlFor={`c${question.id}-${index}`}>{option}</Label>
-                      </div>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
-          );
-        default:
-          return (
-            <Card key={question.id} className={`mb-4 ${isCurrentlyDark ? 'bg-gray-800 text-white' : ''}`}>
-              <CardHeader>
-                <CardTitle>{question.question}</CardTitle>
-                <CardDescription>Enter your response</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Input
-                  type="text"
-                  id={`t${question.id}`}
-                  value={response ? String(response) : ""}
-                  onChange={(e) => handleAnswerChange(question.id, e.target.value)}
-                  className={isCurrentlyDark ? 'bg-gray-700 text-white' : ''}
-                />
-              </CardContent>
-            </Card>
-          );
-      }
-    });
-  }, [currentStep, questions, responses, handleAnswerChange, loading, isLoading, isCurrentlyDark]);
-
+  // Navigation functions
   const goToNextStep = () => {
-    if (currentStep < 4) { // Assuming maximum 4 steps
-      navigate(`/quiz/interest-part ${currentStep + 1}`);
+    if (currentStep < 4) {
+      navigate(`/quiz/interest-part/${currentStep + 1}`);
     }
   };
 
   const goToPreviousStep = () => {
     if (currentStep > 1) {
-      navigate(`/quiz/interest-part ${currentStep - 1}`);
+      navigate(`/quiz/interest-part/${currentStep - 1}`);
     }
   };
 
@@ -273,7 +99,6 @@ const SegmentedQuiz = () => {
 
   const handleNext = async () => {
     if (isLastStep) {
-      // Handle quiz completion and save responses
       await handleQuizCompletion();
     } else {
       goToNextStep();
@@ -287,34 +112,31 @@ const SegmentedQuiz = () => {
   return (
     <TooltipProvider>
       <div className="container mx-auto py-10">
-        <h1 className="text-3xl font-bold text-center mb-8">{t("quiz.title", "Quiz")}</h1>
+        <QuizHeader 
+          currentStep={currentStep} 
+          quizProgress={quizProgress} 
+        />
 
-        {currentStep !== undefined && (
-          <h2 className="text-xl font-semibold text-center mb-4">
-            {t(`quiz.section.${currentStep}`, `Section ${currentStep}`)}
-          </h2>
-        )}
+        <QuizQuestionRenderer
+          currentStep={currentStep}
+          questions={questions}
+          responses={responses}
+          handleAnswerChange={handleAnswerChange}
+          loading={loading}
+          isLoading={isLoading}
+        />
 
-        <Progress value={quizProgress} className="mb-4" />
+        <QuizNavigation
+          currentStep={currentStep || 1}
+          isLastStep={isLastStep}
+          isSubmitting={isSubmitting}
+          goToPreviousStep={goToPreviousStep}
+          handleNext={handleNext}
+          resetQuiz={resetQuiz}
+          toggleDebugger={toggleDebugger}
+          showDebugger={showDebugger}
+        />
 
-        {renderQuestion()}
-
-        <div className="flex justify-between">
-          <Button variant="outline" onClick={goToPreviousStep} disabled={currentStep === 1}>
-            {t("quiz.previous", "Previous")}
-          </Button>
-          <Button onClick={handleNext} disabled={isSubmitting}>
-            {isLastStep ? t("quiz.complete", "Complete") : t("quiz.next", "Next")}
-          </Button>
-        </div>
-
-        <div className="flex justify-center mt-4">
-          <Button variant="secondary" onClick={resetQuiz}>
-            {t("quiz.reset", "Reset Quiz")}
-          </Button>
-        </div>
-
-        {/* Conditionally render the QuizDebugger */}
         {showDebugger && (
           <QuizDebugger
             userId={userId || ""}
@@ -328,13 +150,6 @@ const SegmentedQuiz = () => {
             }}
           />
         )}
-
-        {/* Button to toggle the debugger */}
-        <div className="flex justify-center mt-4">
-          <Button variant="ghost" onClick={toggleDebugger}>
-            {showDebugger ? "Hide Debugger" : "Show Debugger"}
-          </Button>
-        </div>
       </div>
     </TooltipProvider>
   );
