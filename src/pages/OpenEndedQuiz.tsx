@@ -22,7 +22,6 @@ import {
   Bug
 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { formatMajorForFile } from '@/components/sections/majors/MajorUtils';
 import { useRecommendationContext } from '@/contexts/RecommendationContext';
 
 interface QuizQuestion {
@@ -295,8 +294,8 @@ const OpenEndedQuiz = () => {
     schoolName: string | undefined, 
     quizQuestions: QuizQuestion[]
   ) => {
-    // Format the major name for file lookup - fixed the function call to match the expected parameters
-    const formattedMajor = formatMajorForFile(majorName, schoolName || '');
+    // Format the major name for file lookup
+    const formattedMajor =majorName.replace(/ /g, '_').replace(/[\/&,]/g, '_');;
     
     // Determine which schools to try
     const schools = schoolName ? [schoolName] : ['NTU', 'NUS', 'SMU'];
