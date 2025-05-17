@@ -23,13 +23,8 @@ export const useModuleRecommendations = () => {
     console.log("useModuleRecommendations: Converting global modules, count:", moduleRecommendations.length);
     
     if (moduleRecommendations.length > 0) {
-      // Cast university to the correct type when needed
-      const formattedModules = moduleRecommendations.map(module => ({
-        module: {
-          ...module,
-          // Ensure university is properly typed as a union type
-          university: module.university as "NUS" | "NTU" | "SMU"
-        } as Module,
+      const formattedModules: RecommendedModule[] = moduleRecommendations.map(module => ({
+        module,
         reasoning: ["Based on your recommended majors"]
       }));
       

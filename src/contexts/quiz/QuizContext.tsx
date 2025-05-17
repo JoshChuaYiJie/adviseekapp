@@ -220,14 +220,11 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
   };
 
   // Get final selections
-  const getFinalSelections = async (): Promise<Module[]> => {
+  const getFinalSelections = async () => {
     try {
       // Map recommendedModules to match the expected format
       const recommendations = recommendedModules.map(rec => ({
-        module: {
-          ...rec.module,
-          university: rec.module.university as "NUS" | "NTU" | "SMU"
-        } as Module,
+        module: rec.module,
         module_id: rec.module.id,
         reason: rec.reasoning[0] || "Recommended based on your major preferences"
       }));
@@ -242,8 +239,8 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
         (userFeedback[b.module_id] || 0) - (userFeedback[a.module_id] || 0)
       );
       
-      // Take top 5 or fewer and ensure proper typing
-      return highlyRated.slice(0, 5).map(rec => rec.module) as Module[];
+      // Take top 5 or fewer
+      return highlyRated.slice(0, 5).map(rec => rec.module);
     } catch (err) {
       console.error("Error getting final selections:", err);
       toast({
@@ -264,10 +261,7 @@ export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }
   const recommendations = recommendedModules.map(rec => ({
     module_id: rec.module.id,
     user_id: userId || '',
-    module: {
-      ...rec.module,
-      university: rec.module.university as "NUS" | "NTU" | "SMU" 
-    } as Module,
+    module: rec.module,
     reason: "Recommended based on your major preferences",
     created_at: new Date().toISOString(),
     reasoning: rec.reasoning
