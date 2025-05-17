@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { OpenEndedQuestion } from './types';
@@ -32,12 +32,23 @@ export const MajorQuestionDisplay = ({
   const [isFocused, setIsFocused] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, { text: string; skipped: boolean }>>({});
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   
   console.log("MajorQuestionDisplay props:", { 
     question, 
     response, 
     isSkipped
   });
+
+  // Focus management for textarea
+  useEffect(() => {
+    if (textareaRef.current && !isSkipped) {
+      // Small timeout to ensure DOM has updated
+      setTimeout(() => {
+        textareaRef.current?.focus();
+      }, 0);
+    }
+  }, [currentIndex, isSkipped, question]);
 
   // Handle standalone question mode
   if (question) {
@@ -51,6 +62,7 @@ export const MajorQuestionDisplay = ({
       <div className="p-6 rounded-lg border border-gray-200 dark:border-gray-700">
         <h3 className="text-lg font-medium mb-4">{question}</h3>
         <Textarea
+          ref={textareaRef}
           value={response}
           onChange={handleTextareaChange}
           onFocus={() => setIsFocused(true)}
@@ -130,6 +142,7 @@ export const MajorQuestionDisplay = ({
         <div className="p-6 rounded-lg border border-gray-200 dark:border-gray-700">
           <h3 className="text-lg font-medium mb-4">{currentQuestion.question}</h3>
           <Textarea
+            ref={textareaRef}
             value={currentAnswer.text}
             onChange={handleChange}
             placeholder=""

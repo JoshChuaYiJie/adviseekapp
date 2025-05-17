@@ -1,4 +1,5 @@
-import { useState, useEffect, useMemo } from 'react';
+
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
@@ -25,6 +26,7 @@ const MajorOpenEndedQuiz: React.FC<MajorOpenEndedQuizProps> = ({ major }) => {
   const { isCurrentlyDark } = useTheme();
   const { toast } = useToast();
   const { majorRecommendations } = useRecommendationContext();
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const {
     questions,
@@ -81,24 +83,43 @@ const MajorOpenEndedQuiz: React.FC<MajorOpenEndedQuizProps> = ({ major }) => {
     }
   }, [userId, major, majorRecommendations, recommendedMajors, loadQuestions, prepareQuestionsForRecommendedMajors]);
 
+  // Restore focus to textarea when changing questions
+  useEffect(() => {
+    if (textareaRef.current) {
+      // Use a small delay to ensure the DOM has updated
+      setTimeout(() => {
+        textareaRef.current?.focus();
+      }, 0);
+    }
+  }, [currentQuestionIndex]);
+
   // Progress calculation
   const progress = useMemo(() => {
     if (questions.length === 0) return 0;
     return Math.round(((currentQuestionIndex + 1) / questions.length) * 100);
   }, [currentQuestionIndex, questions.length]);
 
-  // Handle response change for current question
+  // Handle response change for current question - extract to separate function to prevent re-renders
   const handleResponseChange = (value: string) => {
     if (questions.length === 0 || currentQuestionIndex >= questions.length) return;
     
     const questionId = questions[currentQuestionIndex].id;
-    setAnsweredQuestions(prev => ({
-      ...prev,
-      [questionId]: {
-        response: value,
-        skipped: false
+    
+    // Update the state using functional update to prevent unnecessary re-renders
+    setAnsweredQuestions(prev => {
+      // Only update if the value has actually changed
+      if (prev[questionId]?.response === value) {
+        return prev;
       }
-    }));
+      
+      return {
+        ...prev,
+        [questionId]: {
+          response: value,
+          skipped: false
+        }
+      };
+    });
   };
 
   // Navigate to next question
@@ -234,6 +255,7 @@ const MajorOpenEndedQuiz: React.FC<MajorOpenEndedQuizProps> = ({ major }) => {
             <p className="text-lg">{currentQuestion.question}</p>
             
             <Textarea
+              ref={textareaRef}
               placeholder="Type your answer here..."
               className="min-h-[150px]"
               value={currentResponse.response}
