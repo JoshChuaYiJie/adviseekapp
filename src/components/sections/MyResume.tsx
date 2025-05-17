@@ -53,7 +53,7 @@ export const MyResume = () => {
   return (
     <div className="w-full h-full space-y-6">
       {!isUserAuthenticated && (
-        <Alert variant="warning">
+        <Alert variant="destructive">
           <AlertDescription>
             Log in to save your resumes and access them from any device.
           </AlertDescription>
