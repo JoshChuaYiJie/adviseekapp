@@ -16,6 +16,16 @@ import { formatMajorForFile } from '@/components/sections/majors/MajorUtils';
 import { useQuestionHandler } from '@/components/sections/majors/useQuestionHandler';
 import { useRecommendationContext } from '@/contexts/RecommendationContext';
 
+// Enhanced question interface 
+interface EnhancedQuestion {
+  id: string;
+  question: string;
+  criterion: string;
+  majorName: string;
+  category?: string;
+  school?: string;
+}
+
 const OpenEndedQuiz = () => {
   const navigate = useNavigate();
   const [userId, setUserId] = useState<string | null>(null);
@@ -24,19 +34,12 @@ const OpenEndedQuiz = () => {
   const { toast } = useToast();
   const { majorRecommendations } = useRecommendationContext();
 
-  const {
-    questions,
-    loadingQuestions,
-    answeredQuestions,
-    setAnsweredQuestions,
-    submitting,
-    completed,
-    loadQuestions,
-    handleSubmitResponses,
-    recommendedMajors,
-    loadingRecommendations,
-    prepareQuestionsForRecommendedMajors
-  } = useQuestionHandler({ userId });
+  const [questions, setQuestions] = useState<EnhancedQuestion[]>([]);
+  const [answeredQuestions, setAnsweredQuestions] = useState<Record<string, { response: string; skipped: boolean }>>({});
+  const [submitting, setSubmitting] = useState(false);
+  const [completed, setCompleted] = useState(false);
+  const [loadingQuestions, setLoadingQuestions] = useState(true);
+  const [availableMajors, setAvailableMajors] = useState<string[]>([]);
 
   // Load user ID on mount
   useEffect(() => {
@@ -47,35 +50,135 @@ const OpenEndedQuiz = () => {
 
       if (!id) {
         navigate('/');
+      } else {
+        // Load available majors from the repeated_majors.json file
+        try {
+          const response = await fetch('/school-data/Standardized weights/repeated_majors.json');
+          if (response.ok) {
+            const data = await response.json();
+            // Extract major names from the data
+            const majors = data.map((item: any) => item.major);
+            setAvailableMajors(majors);
+          } else {
+            console.error('Failed to load majors data');
+          }
+        } catch (error) {
+          console.error('Error loading majors data:', error);
+        }
       }
     };
 
     checkAuth();
   }, [navigate]);
 
-  // Load questions when using recommended majors
+  // Load questions with categorization
   useEffect(() => {
-    if (userId) {
-      if (majorRecommendations) {
-        // If no specific major is provided, use recommended majors from context
-        const allRecommendedMajors = [
-          ...(majorRecommendations.exactMatches || []),
-          ...(majorRecommendations.riasecMatches || []),
-          ...(majorRecommendations.workValueMatches || [])
-        ];
+    const loadQuestionsForQuiz = async () => {
+      if (!userId || availableMajors.length === 0) return;
+      
+      setLoadingQuestions(true);
+      
+      try {
+        // Step 1: Randomly select majors (up to 5)
+        const selectedMajors: string[] = [];
+        const majorsToSelect = Math.min(5, availableMajors.length);
+        const tempMajors = [...availableMajors]; // Create a copy to avoid modifying original
         
-        if (allRecommendedMajors.length > 0) {
-          prepareQuestionsForRecommendedMajors(allRecommendedMajors);
-        } else {
-          // Fallback if no recommended majors are available
-          prepareQuestionsForRecommendedMajors();
+        for (let i = 0; i < majorsToSelect; i++) {
+          if (tempMajors.length === 0) break;
+          const randomIndex = Math.floor(Math.random() * tempMajors.length);
+          selectedMajors.push(tempMajors[randomIndex]);
+          tempMajors.splice(randomIndex, 1); // Remove to avoid duplicates
         }
-      } else if (recommendedMajors.length > 0) {
-        // Fallback to any recommended majors from the hook
-        prepareQuestionsForRecommendedMajors();
+        
+        console.log('Selected majors:', selectedMajors);
+        
+        // Step 2: Load questions for each major
+        const quizQuestions: EnhancedQuestion[] = [];
+        
+        for (const major of selectedMajors) {
+          // Format the major name for the filename
+          const formattedMajor = major.replace(/ /g, '_').replace(/[\/&,]/g, '_');
+          const schools = ['NTU', 'NUS', 'SMU'];
+          
+          for (const school of schools) {
+            try {
+              const response = await fetch(`/quiz_refer/Open_ended_quiz_questions/${formattedMajor}_${school}.json`);
+              
+              if (response.ok) {
+                const allQuestions = await response.json();
+                console.log(`Found ${allQuestions.length} questions for ${major} at ${school}`);
+                
+                // Step 3: Categorize questions
+                const interestQuestions = allQuestions.filter((q: any) => 
+                  q.criterion.toLowerCase().includes('interest') || 
+                  q.criterion.toLowerCase().includes('motivation'));
+                
+                const skillQuestions = allQuestions.filter((q: any) => 
+                  q.criterion.toLowerCase().includes('skill') || 
+                  q.criterion.toLowerCase().includes('technical'));
+                
+                const experienceQuestions = allQuestions.filter((q: any) => 
+                  q.criterion.toLowerCase().includes('experience') || 
+                  q.criterion.toLowerCase().includes('background'));
+                
+                // Any questions that don't fit into the categories above
+                const otherQuestions = allQuestions.filter((q: any) => 
+                  !interestQuestions.includes(q) && 
+                  !skillQuestions.includes(q) && 
+                  !experienceQuestions.includes(q));
+                
+                const categories = [
+                  { name: 'interests', questions: interestQuestions },
+                  { name: 'skills', questions: skillQuestions },
+                  { name: 'experience', questions: experienceQuestions },
+                  { name: 'general', questions: otherQuestions }
+                ];
+                
+                // Select one question from each category if available
+                for (const category of categories) {
+                  if (category.questions.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * category.questions.length);
+                    const question = category.questions[randomIndex];
+                    
+                    quizQuestions.push({
+                      ...question,
+                      majorName: `${major} at ${school}`,
+                      category: category.name,
+                      school: school
+                    });
+                  }
+                }
+                
+                // We found questions for this major, move to the next major
+                break;
+              }
+            } catch (error) {
+              console.error(`Error loading questions for ${major} at ${school}:`, error);
+              // Continue to next school
+            }
+          }
+        }
+        
+        // Step 4: Shuffle questions for randomness
+        const shuffledQuestions = quizQuestions.sort(() => Math.random() - 0.5);
+        console.log('Loaded and shuffled questions:', shuffledQuestions.length);
+        setQuestions(shuffledQuestions);
+        
+      } catch (error) {
+        console.error('Error preparing questions:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load quiz questions. Please try again.",
+          variant: "destructive"
+        });
+      } finally {
+        setLoadingQuestions(false);
       }
-    }
-  }, [userId, majorRecommendations, recommendedMajors, prepareQuestionsForRecommendedMajors]);
+    };
+    
+    loadQuestionsForQuiz();
+  }, [userId, availableMajors, toast]);
 
   // Progress calculation
   const progress = useMemo(() => {
@@ -130,8 +233,84 @@ const OpenEndedQuiz = () => {
   };
 
   // Submit all responses
-  const handleSubmit = () => {
-    handleSubmitResponses(null); // null indicates we're not using a specific major
+  const handleSubmit = async () => {
+    if (!userId) {
+      toast({
+        title: "Not logged in",
+        description: "Please log in to save your responses.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    setSubmitting(true);
+    
+    try {
+      // Filter out skipped questions
+      const responsesToSave = Object.entries(answeredQuestions)
+        .filter(([_, response]) => !response.skipped)
+        .map(([questionId, response]) => {
+          const questionInfo = questions.find(q => q.id === questionId);
+          
+          return {
+            user_id: userId,
+            question: questionInfo?.question || '',
+            response: response.response,
+            major: questionInfo?.majorName || ''
+          };
+        });
+      
+      if (responsesToSave.length > 0) {
+        // Save valid responses to database
+        const { error } = await supabase
+          .from('open_ended_responses')
+          .insert(responsesToSave);
+          
+        if (error) {
+          console.error("Error saving responses:", error);
+          toast({
+            title: "Error saving responses",
+            description: error.message,
+            variant: "destructive"
+          });
+        } else {
+          toast({
+            title: "Responses saved successfully",
+            description: `Saved ${responsesToSave.length} response(s)`,
+          });
+          
+          // Update quiz completion status
+          const { error: completionError } = await supabase
+            .from('quiz_completion')
+            .upsert({
+              user_id: userId,
+              quiz_type: 'open-ended'
+            }, {
+              onConflict: 'user_id, quiz_type'
+            });
+            
+          if (completionError) {
+            console.error('Error updating quiz completion:', completionError);
+          }
+          
+          setCompleted(true);
+        }
+      } else {
+        toast({
+          title: "No responses to save",
+          description: "You didn't provide any responses to save.",
+        });
+      }
+    } catch (error) {
+      console.error("Error in handleSubmit:", error);
+      toast({
+        title: "Something went wrong",
+        description: "Failed to save responses. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   // Handle clicking on a question dot
@@ -139,7 +318,7 @@ const OpenEndedQuiz = () => {
     setCurrentQuestionIndex(index);
   };
 
-  if (loadingQuestions || loadingRecommendations) {
+  if (loadingQuestions) {
     return (
       <Card className="w-full">
         <CardHeader>
