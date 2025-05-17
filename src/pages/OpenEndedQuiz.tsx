@@ -239,6 +239,12 @@ const OpenEndedQuiz = () => {
     loadUserAndPrepareQuiz();
   }, [navigate, toast, majorRecommendations]);
   
+  // Helper function to format major name for file lookup
+  const formatMajorForFile = (majorName: string, schoolName: string | undefined) => {
+    const formattedMajor = majorName.replace(/ /g, '_').replace(/[\/&,]/g, '_');
+    return schoolName ? `${formattedMajor}_${schoolName}` : formattedMajor;
+  };
+  
   // Function to prepare quiz questions from the list of majors
   const prepareQuizQuestions = async (majors: string[]) => {
     try {
@@ -295,7 +301,7 @@ const OpenEndedQuiz = () => {
     quizQuestions: QuizQuestion[]
   ) => {
     // Format the major name for file lookup
-    const formattedMajor =majorName.replace(/ /g, '_').replace(/[\/&,]/g, '_');;
+    const formattedMajor = formatMajorForFile(majorName, schoolName);
     
     // Determine which schools to try
     const schools = schoolName ? [schoolName] : ['NTU', 'NUS', 'SMU'];
@@ -303,9 +309,10 @@ const OpenEndedQuiz = () => {
     // Try each school
     for (const school of schools) {
       try {
-        console.log(`Trying to load questions for ${formattedMajor}_${school}.json`);
+        const formattedFileName = formatMajorForFile(majorName, school);
+        console.log(`Trying to load questions for ${formattedFileName}.json`);
         
-        const response = await fetch(`/quiz_refer/Open_ended_quiz_questions/${formattedMajor}_${school}.json`);
+        const response = await fetch(`/quiz_refer/Open_ended_quiz_questions/${formattedFileName}.json`);
         
         if (response.ok) {
           const allQuestions = await response.json();
@@ -630,7 +637,7 @@ const OpenEndedQuiz = () => {
   }) => {
     const { isCurrentlyDark } = useTheme();
     const ref = useRef<HTMLDivElement>(null);
-    const [isVisible, setIsVisible] = useState(false);
+    const [isVisible, setIsVisible] = useState(true); // Changed to true by default
     const questionId = question.question.id;
     const currentResponse = responses[questionId] || { response: '', skipped: false };
     
@@ -688,6 +695,11 @@ const OpenEndedQuiz = () => {
     );
   };
   
+  // Debug logging
+  console.log("Rendering questions:", questions.length);
+  console.log("Current question index:", currentQuestionIndex);
+  console.log("Current question available:", questions[currentQuestionIndex]);
+  
   if (loading) {
     return (
       <div className={`min-h-screen ${isCurrentlyDark ? 'bg-gray-900 text-white' : 'bg-gradient-to-br from-[#f8fafc] via-[#ede9fe] to-[#f3e8ff]'}`}>
@@ -720,9 +732,6 @@ const OpenEndedQuiz = () => {
       </div>
     );
   }
-
-  console.log("Rendering questions:", questions.length);
-  console.log("Current question index:", currentQuestionIndex);
   
   // Display a single question at a time (current question only)
   return (
@@ -875,6 +884,7 @@ const OpenEndedQuiz = () => {
                   responseCount: Object.keys(responses).length,
                   progress,
                   userId,
+                  currentQuestion: questions[currentQuestionIndex],
                   ...debugInfo
                 }, null, 2)}
               </pre>
