@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -6,10 +7,21 @@ import { Progress } from '@/components/ui/progress';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { useTheme } from '@/contexts/ThemeContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, ArrowRight, SkipForward } from 'lucide-react';
+import { 
+  ArrowLeft, 
+  ArrowRight, 
+  SkipForward,
+  AlertCircle, 
+  CheckCircle2, 
+  XCircle,
+  AlertTriangle,
+  Bug
+} from 'lucide-react';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { formatMajorForFile } from '@/components/sections/majors/MajorUtils';
 import { useRecommendationContext } from '@/contexts/RecommendationContext';
 
@@ -32,6 +44,11 @@ const OpenEndedQuiz = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [visibleCount, setVisibleCount] = useState(0);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [submissionError, setSubmissionError] = useState<string | null>(null);
+  const questionsRef = useRef<HTMLDivElement>(null);
+  const currentQuestionRef = useRef<HTMLDivElement>(null);
   
   // Add cached responses state management
   const [responses, setResponses] = useState<Record<string, { response: string; skipped: boolean }>>({});
@@ -341,6 +358,23 @@ const OpenEndedQuiz = () => {
     }
   };
   
+  // Scroll handling for progress bar
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!questionsRef.current) return;
+      
+      const windowHeight = window.innerHeight;
+      const documentHeight = questionsRef.current.scrollHeight;
+      const scrolled = window.scrollY;
+      
+      const progress = Math.min(100, Math.round((scrolled / (documentHeight - windowHeight)) * 100));
+      setScrollProgress(progress);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+  
   // Handle response changes
   const handleResponseChange = (value: string) => {
     if (currentQuestionIndex >= questions.length) return;
@@ -390,12 +424,6 @@ const OpenEndedQuiz = () => {
       
       // Move to next question
       setCurrentQuestionIndex(currentQuestionIndex + 1);
-      
-      // Clear textarea when moving to next question
-      const textareaElement = document.querySelector('textarea');
-      if (textareaElement) {
-        textareaElement.value = responses[questions[currentQuestionIndex + 1].question.id]?.response || '';
-      }
     } else {
       handleSubmit();
     }
@@ -421,15 +449,6 @@ const OpenEndedQuiz = () => {
       
       // Move to previous question
       setCurrentQuestionIndex(currentQuestionIndex - 1);
-      
-      // Load the previous response into textarea
-      const previousQuestionId = questions[currentQuestionIndex - 1].question.id;
-      const previousResponse = responses[previousQuestionId]?.response || '';
-      
-      const textareaElement = document.querySelector('textarea');
-      if (textareaElement) {
-        textareaElement.value = previousResponse;
-      }
     }
   };
 
@@ -461,12 +480,6 @@ const OpenEndedQuiz = () => {
     // Move to next question or submit if this is the last one
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
-      
-      // Clear textarea when skipping to next question
-      const textareaElement = document.querySelector('textarea');
-      if (textareaElement) {
-        textareaElement.value = responses[questions[currentQuestionIndex + 1].question.id]?.response || '';
-      }
     } else {
       handleSubmit();
     }
@@ -484,6 +497,8 @@ const OpenEndedQuiz = () => {
     }
     
     setSubmitting(true);
+    setSubmissionError(null);
+    
     try {
       // Prepare responses for database - now using the updated open_ended_responses table
       const responsesToSubmit = Object.entries(responses).map(([questionId, responseData]) => {
@@ -560,6 +575,7 @@ const OpenEndedQuiz = () => {
       navigate('/');
     } catch (error) {
       console.error('Error submitting responses:', error);
+      setSubmissionError(error instanceof Error ? error.message : 'An unknown error occurred');
       toast({
         title: "Submission Failed",
         description: "There was an error submitting your responses. Please try again.",
@@ -575,7 +591,7 @@ const OpenEndedQuiz = () => {
     // Save current response before switching
     if (questions.length > 0 && currentQuestionIndex < questions.length) {
       const currentQuestionId = questions[currentQuestionIndex].question.id;
-      const currentResponseText = document.querySelector('textarea')?.value || '';
+      const currentResponseText = responses[currentQuestionId]?.response || '';
       
       if (currentResponseText.trim() !== '') {
         // If response isn't empty, save as answered
@@ -590,17 +606,6 @@ const OpenEndedQuiz = () => {
       
       // Set new current question index
       setCurrentQuestionIndex(index);
-      
-      // Load the selected question's response into textarea
-      if (index < questions.length) {
-        const selectedQuestionId = questions[index].question.id;
-        const selectedResponse = responses[selectedQuestionId]?.response || '';
-        
-        const textareaElement = document.querySelector('textarea');
-        if (textareaElement) {
-          textareaElement.value = selectedResponse;
-        }
-      }
     }
   };
   
@@ -608,80 +613,70 @@ const OpenEndedQuiz = () => {
   const progress = questions.length > 0 
     ? Math.round(((currentQuestionIndex + 1) / questions.length) * 100) 
     : 0;
-  
-  if (loading) {
+
+  // Handle question visibility for animations
+  const handleQuestionVisible = () => {
+    setVisibleCount(prev => prev + 1);
+  };
+
+  // Handle intersection for active question tracking
+  const handleIntersect = (isIntersecting: boolean, index: number) => {
+    if (isIntersecting) {
+      setCurrentQuestionIndex(index);
+    }
+  };
+
+  // QuestionDisplay component similar to QuizQuestion in SegmentedQuiz
+  const QuestionDisplay = ({ 
+    question, 
+    index 
+  }: { 
+    question: QuizQuestion, 
+    index: number 
+  }) => {
+    const { isCurrentlyDark } = useTheme();
+    const ref = useRef<HTMLDivElement>(null);
+    const [isVisible, setIsVisible] = useState(false);
+    const questionId = question.question.id;
+    const currentResponse = responses[questionId] || { response: '', skipped: false };
+    
+    useEffect(() => {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting && !isVisible) {
+              setIsVisible(true);
+              handleQuestionVisible();
+            }
+          });
+        },
+        { threshold: 0.3 }
+      );
+
+      if (ref.current) {
+        observer.observe(ref.current);
+      }
+
+      return () => {
+        if (ref.current) {
+          observer.unobserve(ref.current);
+        }
+      };
+    }, [isVisible]);
+    
     return (
-      <div className="max-w-4xl mx-auto p-6">
-        <h1 className="text-3xl font-bold mb-6">Open-ended Quiz</h1>
-        <div className="space-y-8">
-          <Skeleton className="h-8 w-full" />
-          <Skeleton className="h-4 w-3/4" />
-          <Skeleton className="h-64 w-full" />
-          <div className="flex justify-between">
-            <Skeleton className="h-10 w-24" />
-            <Skeleton className="h-10 w-24" />
+      <div 
+        ref={ref}
+        id={`question-${questionId}`}
+        className={`min-h-[85vh] flex flex-col justify-center p-8 md:p-16 transition-all duration-700
+          ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-20"}`}
+      >
+        <h2 className="text-3xl font-bold mb-4">{question.major}</h2>
+        <div className={`max-w-3xl ${isCurrentlyDark ? 'bg-gray-800' : 'bg-white/5'} backdrop-blur-md p-8 rounded-lg border ${isCurrentlyDark ? 'border-gray-700' : 'border-white/10'} shadow-xl`}>
+          <div className="mb-4">
+            <Badge className="mb-2 capitalize">{question.question.category || question.question.criterion}</Badge>
+            <h3 className="text-2xl font-semibold mb-6">{question.question.question}</h3>
           </div>
-        </div>
-        
-        {/* Debug information panel */}
-        {import.meta.env.DEV && (
-          <div className="mt-8 p-4 border border-gray-300 rounded-md">
-            <h3 className="font-semibold mb-2">Debug Information</h3>
-            <pre className="text-xs overflow-auto bg-gray-100 dark:bg-gray-800 p-2 rounded">
-              {JSON.stringify(debugInfo, null, 2)}
-            </pre>
-          </div>
-        )}
-      </div>
-    );
-  }
-  
-  if (questions.length === 0) {
-    return (
-      <div className="max-w-4xl mx-auto p-6 text-center">
-        <h1 className="text-3xl font-bold mb-6">Open-ended Quiz</h1>
-        <Card className="p-8">
-          <p className="mb-6">No questions are available at this time. Please try again later.</p>
-          <Button onClick={() => navigate('/')}>Return Home</Button>
-        </Card>
-        
-        {/* Debug information panel */}
-        {import.meta.env.DEV && (
-          <div className="mt-8 p-4 border border-gray-300 rounded-md">
-            <h3 className="font-semibold mb-2">Debug Information</h3>
-            <pre className="text-xs overflow-auto bg-gray-100 dark:bg-gray-800 p-2 rounded">
-              {JSON.stringify(debugInfo, null, 2)}
-            </pre>
-          </div>
-        )}
-      </div>
-    );
-  }
-  
-  const currentQuestion = questions[currentQuestionIndex];
-  const questionId = currentQuestion?.question?.id;
-  const currentResponse = responses[questionId] || { response: '', skipped: false };
-  
-  return (
-    <div className="max-w-4xl mx-auto p-6">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold">Open-ended Quiz</h1>
-        <Button variant="outline" onClick={() => navigate('/')}>Exit Quiz</Button>
-      </div>
-      
-      <div className="mb-8">
-        <div className="flex justify-between items-center mb-2">
-          <span className="text-sm font-medium">Progress</span>
-          <span className="text-sm font-medium">{currentQuestionIndex + 1} of {questions.length}</span>
-        </div>
-        <Progress value={progress} className="h-2" />
-      </div>
-      
-      <Card className={`p-6 transition-all duration-300 animate-fade-in ${isCurrentlyDark ? 'bg-gray-800' : 'bg-white'}`}>
-        <div className="mb-4">
-          <Badge className="mb-2 capitalize">{currentQuestion.question.category || currentQuestion.question.criterion}</Badge>
-          <h3 className="text-xl font-medium mb-1">Major: {currentQuestion.major}</h3>
-          <p className="text-lg mb-6">{currentQuestion.question.question}</p>
           
           <Textarea
             className="min-h-[150px]"
@@ -695,13 +690,131 @@ const OpenEndedQuiz = () => {
             <p className="text-amber-500 italic text-sm mt-2">This question has been skipped</p>
           )}
         </div>
+      </div>
+    );
+  };
+  
+  if (loading) {
+    return (
+      <div className={`min-h-screen ${isCurrentlyDark ? 'bg-gray-900 text-white' : 'bg-gradient-to-br from-[#f8fafc] via-[#ede9fe] to-[#f3e8ff]'}`}>
+        <div className="container mx-auto p-6">
+          <h1 className="text-3xl font-bold mb-6">Open-ended Quiz</h1>
+          <div className="space-y-8">
+            <Skeleton className="h-8 w-full" />
+            <Skeleton className="h-4 w-3/4" />
+            <Skeleton className="h-64 w-full" />
+            <div className="flex justify-between">
+              <Skeleton className="h-10 w-24" />
+              <Skeleton className="h-10 w-24" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
+  if (questions.length === 0) {
+    return (
+      <div className={`min-h-screen ${isCurrentlyDark ? 'bg-gray-900 text-white' : 'bg-gradient-to-br from-[#f8fafc] via-[#ede9fe] to-[#f3e8ff]'}`}>
+        <div className="container mx-auto p-6 text-center">
+          <h1 className="text-3xl font-bold mb-6">Open-ended Quiz</h1>
+          <Card className="p-8">
+            <p className="mb-6">No questions are available at this time. Please try again later.</p>
+            <Button onClick={() => navigate('/')}>Return Home</Button>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={`min-h-screen ${isCurrentlyDark ? 'bg-gray-900 text-white' : 'bg-gradient-to-br from-[#f8fafc] via-[#ede9fe] to-[#f3e8ff]'}`}>
+      <div className="container mx-auto">
+        <div className="sticky top-0 z-50 bg-white/70 dark:bg-gray-800/70 backdrop-blur-md border-b border-purple-100 dark:border-gray-700 p-4 shadow-sm">
+          <div className="mb-2 flex justify-between items-center">
+            <h1 className="text-2xl font-extrabold text-purple-700 dark:text-purple-400 font-sans drop-shadow-sm">
+              Open-ended Quiz
+            </h1>
+            <span className="text-lg font-medium text-purple-400">
+              {progress}% Complete
+            </span>
+          </div>
+          <Progress value={progress} className="h-2 bg-purple-100 dark:bg-purple-900" />
+          
+          {/* Authentication status indicator */}
+          <div className="mt-2">
+            {userId ? (
+              <div className="flex items-center text-xs text-green-600">
+                <CheckCircle2 className="h-3 w-3 mr-1" />
+                <span>Logged in as {userId.substring(0, 8)}...</span>
+              </div>
+            ) : (
+              <div className="flex items-center text-xs text-amber-600">
+                <AlertTriangle className="h-3 w-3 mr-1" />
+                <span>Not logged in - responses won't be saved</span>
+              </div>
+            )}
+          </div>
+        </div>
         
-        <div className="flex justify-between mt-6">
+        {submissionError && (
+          <Alert className="mt-4 mx-4 bg-red-50 dark:bg-red-900/20 border-red-200">
+            <XCircle className="h-4 w-4 text-red-500" />
+            <AlertTitle>Error saving responses</AlertTitle>
+            <AlertDescription>{submissionError}</AlertDescription>
+          </Alert>
+        )}
+        
+        <div ref={questionsRef} className="pb-24">
+          {questions.map((question, index) => (
+            <QuestionDisplay
+              key={question.question.id}
+              question={question}
+              index={index}
+            />
+          ))}
+        </div>
+        
+        <div className="fixed bottom-8 flex flex-col items-center w-full z-40">
+          {/* Question navigation dots */}
+          <div className="mb-4 flex flex-wrap justify-center gap-2 max-w-md mx-auto px-4">
+            {questions.map((q, idx) => {
+              const response = responses[q.question.id];
+              let status = "not-answered";
+              
+              if (response) {
+                if (response.skipped) {
+                  status = "skipped";
+                } else if (response.response.trim()) {
+                  status = "answered";
+                }
+              }
+              
+              return (
+                <div 
+                  key={q.question.id} 
+                  className={`w-6 h-6 flex items-center justify-center rounded-full text-xs cursor-pointer ${
+                    idx === currentQuestionIndex ? 'ring-2 ring-offset-2 ring-blue-500' : ''
+                  } ${
+                    status === 'answered' ? 'bg-green-500 text-white' :
+                    status === 'skipped' ? 'bg-amber-500 text-white' :
+                    'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
+                  }`}
+                  onClick={() => handleQuestionClick(idx)}
+                >
+                  {idx + 1}
+                </div>
+              );
+            })}
+          </div>
+          
+          {/* Navigation buttons */}
           <div className="flex space-x-2">
             <Button 
               variant="outline" 
               onClick={handlePrevious}
-              disabled={currentQuestionIndex === 0}
+              disabled={currentQuestionIndex === 0 || submitting}
+              className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md"
             >
               <ArrowLeft className="mr-2 h-4 w-4" /> Previous
             </Button>
@@ -709,76 +822,65 @@ const OpenEndedQuiz = () => {
             <Button
               variant="outline"
               onClick={handleSkip}
-              className="text-amber-500 border-amber-500 hover:bg-amber-500/10"
+              className="text-amber-500 border-amber-500 hover:bg-amber-500/10 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md"
+              disabled={submitting}
             >
               <SkipForward className="mr-2 h-4 w-4" /> Skip
             </Button>
-          </div>
-          
-          {currentQuestionIndex < questions.length - 1 ? (
-            <Button onClick={handleNext}>
-              Next <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          ) : (
-            <Button 
-              onClick={handleSubmit}
-              disabled={submitting}
-              className="bg-green-600 hover:bg-green-700"
-            >
-              {submitting ? 'Submitting...' : 'Submit Quiz'}
-            </Button>
-          )}
-        </div>
-      </Card>
-      
-      {/* Question status indicators */}
-      <div className="mt-6">
-        <h3 className="font-medium mb-2">Question Status:</h3>
-        <div className="grid grid-cols-5 gap-2">
-          {questions.map((q, idx) => {
-            const qResponse = responses[q.question.id];
-            let status = "not-answered";
             
-            if (qResponse) {
-              if (qResponse.skipped) {
-                status = "skipped";
-              } else if (qResponse.response.trim()) {
-                status = "answered";
-              }
-            }
-            
-            return (
-              <div 
-                key={q.question.id} 
-                className={`w-full p-2 flex items-center justify-center rounded-md text-xs cursor-pointer ${
-                  idx === currentQuestionIndex ? 'ring-2 ring-blue-500' : ''
-                } ${
-                  status === 'answered' ? 'bg-green-500 text-white' :
-                  status === 'skipped' ? 'bg-amber-500 text-white' :
-                  'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
-                }`}
-                onClick={() => handleQuestionClick(idx)}
+            {currentQuestionIndex < questions.length - 1 ? (
+              <Button 
+                onClick={handleNext}
+                disabled={submitting}
+                className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md"
               >
-                {idx + 1}
-              </div>
-            );
-          })}
+                Next <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            ) : (
+              <Button 
+                onClick={handleSubmit}
+                disabled={submitting}
+                className="bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white"
+              >
+                {submitting ? (
+                  <>
+                    <span className="animate-spin mr-2">↻</span> Submitting...
+                  </>
+                ) : (
+                  'Submit Quiz'
+                )}
+              </Button>
+            )}
+          </div>
         </div>
       </div>
       
       {/* Debug information panel (only visible in development) */}
       {import.meta.env.DEV && (
-        <div className="mt-8 p-4 border border-gray-300 rounded-md">
-          <h3 className="font-semibold mb-2">Debug Information</h3>
-          <pre className="text-xs overflow-auto bg-gray-100 dark:bg-gray-800 p-2 rounded">
-            {JSON.stringify({
-              ...debugInfo,
-              currentUserId: userId,
-              questionsLoaded: questions.length,
-              currentQuestion: currentQuestionIndex + 1,
-              answeredQuestions: Object.keys(responses).length
-            }, null, 2)}
-          </pre>
+        <div className="fixed bottom-0 left-0 p-2">
+          <Button 
+            size="sm" 
+            variant="outline" 
+            className="text-xs" 
+            onClick={() => document.getElementById('debugPanel')?.classList.toggle('hidden')}
+          >
+            <Bug className="h-3 w-3 mr-1" /> Debug
+          </Button>
+          
+          <Card id="debugPanel" className="hidden absolute bottom-10 left-0 w-80 max-h-80 overflow-auto bg-white/90 dark:bg-gray-800/90 text-xs p-2 shadow-lg">
+            <ScrollArea className="h-72">
+              <pre className="whitespace-pre-wrap">
+                {JSON.stringify({
+                  currentIndex: currentQuestionIndex,
+                  questionsCount: questions.length,
+                  responseCount: Object.keys(responses).length,
+                  progress,
+                  userId,
+                  ...debugInfo
+                }, null, 2)}
+              </pre>
+            </ScrollArea>
+          </Card>
         </div>
       )}
     </div>
