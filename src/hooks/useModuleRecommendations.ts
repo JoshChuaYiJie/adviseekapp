@@ -1,7 +1,17 @@
 
 import { useState, useEffect } from 'react';
 import { useRecommendationContext } from '@/contexts/RecommendationContext';
-import { Module } from '@/integrations/supabase/client';
+
+// Define the Module interface matching what's in RecommendationContext
+interface Module {
+  id: number;
+  university: string; // This will be cast to proper type when needed
+  course_code: string;
+  title: string;
+  description: string;
+  aus_cus: number;
+  semester: string;
+}
 
 export interface RecommendedModule {
   module: Module;
@@ -23,8 +33,13 @@ export const useModuleRecommendations = () => {
     console.log("useModuleRecommendations: Converting global modules, count:", moduleRecommendations.length);
     
     if (moduleRecommendations.length > 0) {
-      const formattedModules: RecommendedModule[] = moduleRecommendations.map(module => ({
-        module,
+      // Cast university to the correct type when needed
+      const formattedModules = moduleRecommendations.map(module => ({
+        module: {
+          ...module,
+          // Ensure university is one of the allowed values
+          university: module.university as "NUS" | "NTU" | "SMU"
+        },
         reasoning: ["Based on your recommended majors"]
       }));
       

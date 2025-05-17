@@ -25,6 +25,9 @@ interface RecommendationContextType {
   updateMajorRecommendations: (recommendations: MajorRecommendations) => void;
   moduleRecommendations: Module[];
   updateModuleRecommendations: (modules: Module[]) => void;
+  isLoading: boolean;
+  error: Error | null;
+  refreshRecommendations: () => Promise<void>;
 }
 
 // Create the context with default values
@@ -33,6 +36,9 @@ const RecommendationContext = createContext<RecommendationContextType>({
   updateMajorRecommendations: () => {},
   moduleRecommendations: [],
   updateModuleRecommendations: () => {},
+  isLoading: false,
+  error: null,
+  refreshRecommendations: async () => {}
 });
 
 // Custom hook to use the context
@@ -42,6 +48,8 @@ export const useRecommendationContext = () => useContext(RecommendationContext);
 export const RecommendationProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [majorRecommendations, setMajorRecommendations] = useState<MajorRecommendations | null>(null);
   const [moduleRecommendations, setModuleRecommendations] = useState<Module[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<Error | null>(null);
 
   const updateMajorRecommendations = (recommendations: MajorRecommendations) => {
     setMajorRecommendations(recommendations);
@@ -50,6 +58,23 @@ export const RecommendationProvider: React.FC<{ children: ReactNode }> = ({ chil
   const updateModuleRecommendations = (modules: Module[]) => {
     setModuleRecommendations(modules);
   };
+  
+  const refreshRecommendations = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      // This would normally fetch recommendations from an API
+      // Currently this is just a placeholder since we're updating recommendations
+      // via the updateModuleRecommendations and updateMajorRecommendations methods
+      console.log("Refreshing recommendations...");
+      // Add actual implementation if needed in the future
+    } catch (err: any) {
+      console.error("Error refreshing recommendations:", err);
+      setError(err instanceof Error ? err : new Error(err?.message || "Unknown error"));
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <RecommendationContext.Provider 
@@ -57,7 +82,10 @@ export const RecommendationProvider: React.FC<{ children: ReactNode }> = ({ chil
         majorRecommendations, 
         updateMajorRecommendations,
         moduleRecommendations,
-        updateModuleRecommendations
+        updateModuleRecommendations,
+        isLoading,
+        error,
+        refreshRecommendations
       }}
     >
       {children}
