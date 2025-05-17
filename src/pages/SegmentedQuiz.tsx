@@ -1,5 +1,6 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -83,12 +84,10 @@ const QuizDebugger: React.FC<QuizDebuggerProps> = ({ userId, responses, quizType
 const SegmentedQuiz = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { step } = useParams(); // Get step from URL params
   const { toast } = useToast();
   const { isCurrentlyDark } = useTheme();
   const {
     currentStep,
-    setCurrentStep,
     responses,
     questions,
     isLoading,
@@ -104,17 +103,6 @@ const SegmentedQuiz = () => {
   const [showDebugger, setShowDebugger] = useState(false);
   const [quizProgress, setQuizProgress] = useState(0);
   const [isLastStep, setIsLastStep] = useState(false);
-
-  // Sync currentStep with URL param
-  useEffect(() => {
-    if (step) {
-      const parsed = Number(step);
-      if (!isNaN(parsed)) {
-        console.log(`Setting current step to ${parsed} from URL param`);
-        setCurrentStep(parsed);
-      }
-    }
-  }, [step, setCurrentStep]);
 
   useEffect(() => {
     const fetchUserId = async () => {
@@ -147,7 +135,7 @@ const SegmentedQuiz = () => {
         4: 100
       };
       setQuizProgress(stepToProgress[currentStep] || 0);
-
+      
       // Set if this is the last step
       setIsLastStep(currentStep === 4); // Assuming 4 is the last step
     }
@@ -267,21 +255,18 @@ const SegmentedQuiz = () => {
 
   const goToNextStep = () => {
     if (currentStep < 4) { // Assuming maximum 4 steps
-      navigate(`/quiz/interest-part/${currentStep + 1}`);
+      navigate(`/quiz/interest-part ${currentStep + 1}`);
     }
   };
 
   const goToPreviousStep = () => {
     if (currentStep > 1) {
-      navigate(`/quiz/interest-part/${currentStep - 1}`);
+      navigate(`/quiz/interest-part ${currentStep - 1}`);
     }
   };
 
   const handleQuizCompletion = async () => {
-    // Fix quiz type format for consistency
-    const quizType = currentStep === 3 ? "competence" : 
-                     currentStep === 4 ? "work-values" : 
-                     `interest-part ${currentStep}`;
+    const quizType = `interest-part ${currentStep}`;
     await submitResponses(quizType);
     navigate('/recommendations');
   };

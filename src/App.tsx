@@ -30,8 +30,6 @@ function App() {
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/quiz" element={<SegmentedQuiz />} />
-              {/* Step parameter route - ensure no space in the URL */}
-              <Route path="/quiz/interest-part/:step" element={<SegmentedQuiz />} />
               <Route path="/open-ended" element={<OpenEndedQuiz />} />
               <Route path="/university-selection" element={<UniversitySelection />} />
               <Route path="/recommendations" element={<Recommendations />} />
