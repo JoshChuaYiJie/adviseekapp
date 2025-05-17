@@ -117,23 +117,15 @@ export const RecommendationProvider: React.FC<{children: React.ReactNode}> = ({ 
         setIsLoading(true);
         setError(null);
         
-        // Use the same mock major recommendations as in the existing code
-        const mockMajorRecommendations: MajorRecommendationsType = {
-          exactMatches: ["Computer Science at NUS", "Information Systems at NUS"],
-          permutationMatches: [],
-          riasecMatches: ["Software Engineering at NTU", "Data Science at SMU"],
-          workValueMatches: ["Computer Engineering at NTU"],
-          questionFiles: [],
-          riasecCode: riasecCode, 
-          workValueCode: workValueCode, 
-          matchType: 'exact'
-        };
-        
-        console.log("Fetching module recommendations based on majors:", mockMajorRecommendations);
+        // Use the actual major recommendations from the global state
+        // Instead of the mock data that was previously used
+        console.log("Fetching module recommendations based on majors:", majorRecommendations);
         
         // Import and use the existing module recommendation utility
         const { fetchModuleRecommendations } = await import('@/utils/recommendation/moduleRecommendationUtils');
-        const modules = await fetchModuleRecommendations(mockMajorRecommendations, 0);
+        const modules = await fetchModuleRecommendations(majorRecommendations, 0);
+        
+        console.log("Raw modules from fetchModuleRecommendations:", modules.length);
         
         // Generate consistent module IDs - keeping the same logic
         const modulesWithIds = modules.map(module => ({
@@ -157,7 +149,7 @@ export const RecommendationProvider: React.FC<{children: React.ReactNode}> = ({ 
     };
     
     loadModuleRecommendations();
-  }, [majorRecommendations, riasecCode, workValueCode]);
+  }, [majorRecommendations]);
 
   // Generate consistent module IDs based on modulecode - EXACTLY as in existing code
   const getModuleId = (code: string) => {

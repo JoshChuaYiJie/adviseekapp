@@ -1,99 +1,115 @@
 
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "@/components/ui/sonner";
+import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
-import { SavedResume } from "@/components/resume/ResumeTable";
-import { formatTemplateType } from "@/utils/resumeHelpers";
+import { supabase } from "@/integrations/supabase/client";
+
+export interface SavedResume {
+  id: string;
+  name: string | null;
+  template_type: string;
+  updated_at: string;
+}
 
 export const useResumeManager = () => {
   const [resumeFiles, setResumeFiles] = useState<File[]>([]);
   const [savedResumes, setSavedResumes] = useState<SavedResume[]>([]);
   const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
   const navigate = useNavigate();
 
-  // Fetch saved resumes from Supabase
+  // Load saved resumes from Supabase
   useEffect(() => {
-    fetchSavedResumes();
-  }, []);
-
-  const fetchSavedResumes = async () => {
-    try {
-      const { data: session } = await supabase.auth.getSession();
-      if (session?.session?.user) {
+    const loadSavedResumes = async () => {
+      try {
+        setLoading(true);
+        
+        // Get the current user session
+        const { data: sessionData } = await supabase.auth.getSession();
+        
+        if (!sessionData.session?.user) {
+          console.log("No user session found");
+          setLoading(false);
+          return;
+        }
+        
+        // Load resumes from Supabase
         const { data, error } = await supabase
           .from('resumes')
           .select('id, name, template_type, updated_at')
-          .eq('user_id', session.session.user.id)
+          .eq('user_id', sessionData.session.user.id)
           .order('updated_at', { ascending: false });
-        
-        if (error) throw error;
+          
+        if (error) {
+          console.error("Error loading resumes:", error);
+          toast({
+            title: "Error Loading Resumes",
+            description: "There was a problem loading your saved resumes.",
+            variant: "destructive",
+          });
+          return;
+        }
         
         if (data) {
-          // Format the data for display
+          // Format the date for display
           const formattedResumes = data.map(resume => ({
-            id: resume.id,
-            name: resume.name || 'Untitled',
-            template_type: formatTemplateType(resume.template_type),
+            ...resume,
             updated_at: new Date(resume.updated_at).toLocaleDateString()
           }));
           
+          console.log(`Loaded ${formattedResumes.length} resumes from Supabase`);
           setSavedResumes(formattedResumes);
         }
+      } catch (error) {
+        console.error("Error loading resumes:", error);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error('Error fetching saved resumes:', error);
-      toast.error('Failed to load your saved resumes.');
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
+    
+    loadSavedResumes();
+  }, [toast]);
 
-  const handleFileUpload = async (files: File[]) => {
+  const handleFileUpload = (file: File) => {
     try {
-      const { data: session } = await supabase.auth.getSession();
-      const userId = session?.session?.user?.id;
-      
-      if (!userId) {
-        setResumeFiles(prev => [...prev, ...files]);
-        toast.success(`${files.length} resume${files.length > 1 ? 's' : ''} uploaded successfully!`);
-        
-        // For uploaded PDFs, we'll send to the basic resume editor with source=pdf param
-        if (files.length === 1) {
-          navigate("/resumebuilder/basic?source=pdf");
-        }
+      // Validate file type
+      if (!file.type.includes('pdf')) {
+        toast({
+          title: "Invalid File Type",
+          description: "Please upload a PDF file.",
+          variant: "destructive",
+        });
         return;
       }
       
-      // Upload to Supabase Storage (this would need a bucket setup)
-      // For now, we'll just add the files to the state
-      setResumeFiles(prev => [...prev, ...files]);
-      toast.success(`${files.length} resume${files.length > 1 ? 's' : ''} uploaded successfully!`);
+      setResumeFiles([file, ...resumeFiles]);
       
-      // For uploaded PDFs, we'll send to the basic resume editor with source=pdf param
-      if (files.length === 1) {
-        navigate("/resumebuilder/basic?source=pdf");
-      }
-
+      toast({
+        title: "Resume Uploaded",
+        description: "Your resume has been uploaded successfully.",
+      });
     } catch (error) {
-      console.error('Error uploading files:', error);
-      toast.error('Failed to upload resume files.');
+      console.error("Error uploading file:", error);
+      toast({
+        title: "Upload Error",
+        description: "There was a problem uploading your resume.",
+        variant: "destructive",
+      });
     }
   };
 
   const handleViewResume = (resumeId: string, templateType: string) => {
-    // For view functionality, navigate to the resume builder with the specific ID
-    navigate(`/resumebuilder/${templateType.toLowerCase().replace(' resume', '')}?id=${resumeId}&mode=view`);
+    navigate(`/resumebuilder/${templateType}?id=${resumeId}&mode=view`);
   };
 
   const handleEditResume = (resumeId: string, templateType: string) => {
-    // Navigate to the specific resume builder with the ID to edit
-    navigate(`/resumebuilder/${templateType.toLowerCase().replace(' resume', '')}?id=${resumeId}`);
+    navigate(`/resumebuilder/${templateType}?id=${resumeId}&mode=edit`);
   };
 
   const handleEditPDF = (index: number) => {
-    // For PDF uploads, navigate to the basic resume editor with source=pdf param
-    navigate("/resumebuilder/basic?source=pdf");
+    // Store the selected PDF in local storage for access in the resume builder
+    localStorage.setItem('uploadedPDF', resumeFiles[index].name);
+    navigate('/resumebuilder/basic?source=pdf');
   };
 
   return {
@@ -103,6 +119,6 @@ export const useResumeManager = () => {
     handleFileUpload,
     handleViewResume,
     handleEditResume,
-    handleEditPDF
+    handleEditPDF,
   };
 };

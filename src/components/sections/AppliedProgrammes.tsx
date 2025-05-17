@@ -7,6 +7,7 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@
 import { useTheme } from "@/contexts/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import { 
   loadUniversityData, 
   getDegrees, 
@@ -24,6 +25,7 @@ interface Programme {
   major?: string;
   college?: string;
   extras?: string;
+  id?: string;
 }
 
 export const AppliedProgrammes = () => {
@@ -36,9 +38,60 @@ export const AppliedProgrammes = () => {
   const [availableDegrees, setAvailableDegrees] = useState<string[]>([]);
   const [availableMajors, setAvailableMajors] = useState<Major[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingPrograms, setIsLoadingPrograms] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { isCurrentlyDark } = useTheme();
   const { t } = useTranslation();
+
+  // Load applied programmes from Supabase when component mounts
+  useEffect(() => {
+    const loadAppliedProgrammes = async () => {
+      try {
+        setIsLoadingPrograms(true);
+        
+        const { data: session } = await supabase.auth.getSession();
+        if (!session.session?.user) {
+          setIsLoadingPrograms(false);
+          return;
+        }
+        
+        const { data, error } = await supabase
+          .from('applied_programs')
+          .select('*')
+          .order('created_at', { ascending: false });
+          
+        if (error) {
+          console.error("Error loading applied programmes:", error);
+          toast.error("Failed to load your applied programmes");
+          setIsLoadingPrograms(false);
+          return;
+        }
+        
+        if (data) {
+          const formattedPrograms: Programme[] = data.map(program => ({
+            id: program.id,
+            logo: program.logo_path || `/school-logos/${program.school}.png`,
+            school: program.school,
+            university: program.university,
+            course: program.major,
+            degree: program.degree,
+            major: program.major,
+            college: program.college,
+            extras: program.extras || `${program.degree} - ${program.college || ''}`
+          }));
+          
+          console.log("Loaded applied programmes:", formattedPrograms);
+          setAppliedProgrammes(formattedPrograms);
+        }
+      } catch (error) {
+        console.error("Error in loadAppliedProgrammes:", error);
+      } finally {
+        setIsLoadingPrograms(false);
+      }
+    };
+
+    loadAppliedProgrammes();
+  }, []);
 
   // Load university data when university changes
   useEffect(() => {
@@ -121,27 +174,62 @@ export const AppliedProgrammes = () => {
     setSelectedMajor(value);
   };
 
-  const handleAddUniversity = () => {
+  const handleAddUniversity = async () => {
     if (!selectedUniversity || !selectedDegree || !selectedMajor) return;
     
     const shortName = getUniversityShortName(selectedUniversity);
     const selectedMajorObj = availableMajors.find(m => m.major === selectedMajor);
     
     const newProgramme = {
-      logo: `/school-logos/${shortName}.png`,
+      logo_path: `/school-logos/${shortName}.png`,
       school: shortName,
-      course: selectedMajor,
-      degree: selectedDegree,
+      university: selectedUniversity,
       major: selectedMajor,
+      degree: selectedDegree,
       college: selectedMajorObj?.college,
       extras: `${selectedDegree} - ${selectedMajorObj?.college || ''}`
     };
     
-    setAppliedProgrammes([...appliedProgrammes, newProgramme]);
-    toast.success("Program added successfully");
-    setSelectedUniversity("");
-    setSelectedDegree("");
-    setSelectedMajor("");
+    try {
+      const { data: session } = await supabase.auth.getSession();
+      if (!session.session?.user) {
+        toast.error("You must be logged in to add a programme");
+        return;
+      }
+
+      // Store in Supabase
+      const { data, error } = await supabase
+        .from('applied_programs')
+        .insert({
+          ...newProgramme,
+          user_id: session.session.user.id
+        })
+        .select();
+        
+      if (error) {
+        console.error("Error adding programme:", error);
+        toast.error("Failed to save programme");
+        return;
+      }
+      
+      if (data && data.length > 0) {
+        // Add the new programme with its ID to the local state
+        const programmeWithId: Programme = {
+          ...newProgramme,
+          id: data[0].id,
+          course: selectedMajor
+        };
+        
+        setAppliedProgrammes([programmeWithId, ...appliedProgrammes]);
+        toast.success("Program added successfully");
+        setSelectedUniversity("");
+        setSelectedDegree("");
+        setSelectedMajor("");
+      }
+    } catch (error) {
+      console.error("Error in handleAddUniversity:", error);
+      toast.error("An error occurred while saving the programme");
+    }
   };
 
   return (
@@ -217,7 +305,11 @@ export const AppliedProgrammes = () => {
         </Button>
       </div>
 
-      {appliedProgrammes.length > 0 && (
+      {isLoadingPrograms ? (
+        <div className={`p-6 ${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg shadow w-full flex justify-center`}>
+          <div className="animate-spin h-8 w-8 border-t-2 border-b-2 border-purple-500 rounded-full"></div>
+        </div>
+      ) : appliedProgrammes.length > 0 ? (
         <div className={`p-6 ${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg shadow w-full`}>
           <Table>
             <TableHeader>
@@ -231,7 +323,7 @@ export const AppliedProgrammes = () => {
             </TableHeader>
             <TableBody>
               {appliedProgrammes.map((prog, idx) => (
-                <TableRow key={idx}>
+                <TableRow key={prog.id || idx}>
                   <TableCell>
                     <img src={prog.logo} alt={prog.school} className="h-12 w-12 object-contain" />
                   </TableCell>
@@ -243,6 +335,10 @@ export const AppliedProgrammes = () => {
               ))}
             </TableBody>
           </Table>
+        </div>
+      ) : (
+        <div className={`p-6 ${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg shadow w-full text-center`}>
+          <p>No programmes applied yet. Add a university programme above.</p>
         </div>
       )}
     </div>
