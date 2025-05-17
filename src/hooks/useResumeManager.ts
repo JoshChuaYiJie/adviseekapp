@@ -37,7 +37,7 @@ export const useResumeManager = () => {
         // Load resumes from Supabase
         const { data, error } = await supabase
           .from('resumes')
-          .select('id, name, template_type, updated_at')
+          .select('id, name, resume_name, template_type, updated_at')
           .eq('user_id', sessionData.session.user.id)
           .order('updated_at', { ascending: false });
           
@@ -49,9 +49,10 @@ export const useResumeManager = () => {
             variant: "destructive",
           });
         } else if (data) {
-          // Format the date for display
+          // Format the date for display and handle resume_name/name compatibility
           const formattedResumes = data.map(resume => ({
             ...resume,
+            name: resume.resume_name || resume.name, // Use resume_name if available, fall back to name
             updated_at: new Date(resume.updated_at).toLocaleDateString()
           }));
           

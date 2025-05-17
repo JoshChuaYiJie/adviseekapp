@@ -112,17 +112,38 @@ export const QuestionHandler = ({ questions, majorName }: QuestionHandlerProps) 
             user_id: userId,
             question: questionObj?.question || `Question ${questionIndex}`,
             response: response,
-            major: majorName
+            major: majorName,
+            question_id: String(questionIndex), // Add question_id
+            skipped: false // Not skipped since we're filtering out empty responses
           };
         });
       
-      console.log("Saving responses to database:", responsesToSave);
+      // Add skipped questions
+      const skippedResponsesToSave = Object.entries(skippedQuestions)
+        .filter(([_, isSkipped]) => isSkipped)
+        .map(([index]) => {
+          const questionIndex = parseInt(index, 10);
+          const questionObj = questions.find(q => q.id === questionIndex);
+          return {
+            user_id: userId,
+            question: questionObj?.question || `Question ${questionIndex}`,
+            response: '', // Empty response for skipped questions
+            major: majorName,
+            question_id: String(questionIndex), // Add question_id
+            skipped: true // Explicitly marked as skipped
+          };
+        });
       
-      if (responsesToSave.length > 0) {
-        // Save valid responses to database
+      // Combine both regular and skipped responses
+      const allResponsesToSave = [...responsesToSave, ...skippedResponsesToSave];
+      
+      console.log("Saving responses to database:", allResponsesToSave);
+      
+      if (allResponsesToSave.length > 0) {
+        // Save all responses to database
         const { error } = await supabase
           .from('open_ended_responses')
-          .insert(responsesToSave);
+          .insert(allResponsesToSave);
           
         if (error) {
           console.error("Error saving responses:", error);
@@ -134,7 +155,7 @@ export const QuestionHandler = ({ questions, majorName }: QuestionHandlerProps) 
         } else {
           toast({
             title: "Responses saved successfully",
-            description: `Saved ${responsesToSave.length} response(s)`,
+            description: `Saved ${allResponsesToSave.length} response(s)`,
           });
         }
       } else {
