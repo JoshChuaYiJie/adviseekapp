@@ -15,11 +15,12 @@ const Recommendations = () => {
     userFeedback
   } = useQuiz();
   
-  // Use our new hook for recommendations
+  // Use our hook for recommendations
   const { 
     recommendedModules, 
     loadingModules: isLoading, 
-    error 
+    error,
+    refetchRecommendations 
   } = useModuleRecommendations();
 
   // Log immediately for debugging
@@ -41,6 +42,11 @@ const Recommendations = () => {
   const [showProgramme, setShowProgramme] = useState(false);
   const [ratedModulesCount, setRatedModulesCount] = useState(0);
   const [allModulesRated, setAllModulesRated] = useState(false);
+
+  // Ensure recommendations are loaded when the page loads
+  useEffect(() => {
+    refetchRecommendations();
+  }, [refetchRecommendations]);
 
   useEffect(() => {
     setShowAnimation(true);

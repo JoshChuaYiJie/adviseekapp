@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
@@ -7,7 +6,7 @@ import { useQuiz } from '@/contexts/QuizContext';
 import { Module } from '@/integrations/supabase/client';
 import { RecommendationsSkeleton } from './RecommendationsSkeleton';
 import { SelectionModal } from './SelectionModal';
-import { useModuleRecommendations, RecommendedModule } from '@/hooks/useModuleRecommendations';
+import { useModuleRecommendations } from '@/hooks/useModuleRecommendations';
 
 interface RecommendationsDisplayProps {
   onBack: () => void;
@@ -22,7 +21,7 @@ export const RecommendationsDisplay: React.FC<RecommendationsDisplayProps> = ({ 
     getFinalSelections 
   } = useQuiz();
   
-  // Use our new hook for recommendations
+  // Use our hook for recommendations
   const { recommendedModules, loadingModules, error } = useModuleRecommendations();
   
   const [modalOpen, setModalOpen] = useState(false);
