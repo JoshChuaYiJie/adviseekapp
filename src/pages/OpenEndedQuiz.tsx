@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -395,7 +394,7 @@ const OpenEndedQuiz = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
   
-  // Handle response changes
+  // Handle response changes - ensure multiple words can be typed
   const handleResponseChange = (value: string) => {
     if (currentQuestionIndex >= questions.length) return;
     
@@ -406,7 +405,7 @@ const OpenEndedQuiz = () => {
     setResponses(prev => ({
       ...prev,
       [questionId]: { 
-        response: value,
+        response: value, // Store the full text value without modification
         skipped: false 
       }
     }));
@@ -416,7 +415,7 @@ const OpenEndedQuiz = () => {
       const updatedResponses = {
         ...responses,
         [questionId]: {
-          response: value,
+          response: value, // Store the full text value without modification
           skipped: false
         }
       };
@@ -427,7 +426,7 @@ const OpenEndedQuiz = () => {
     }
   };
   
-  // Navigate to next question
+  // Navigate to next question - now properly handling empty responses
   const handleNext = () => {
     if (currentQuestionIndex < questions.length - 1) {
       // Save current response
@@ -435,15 +434,30 @@ const OpenEndedQuiz = () => {
       const currentQuestionId = currentQuestion.uniqueId || currentQuestion.question.id;
       const currentResponseText = responses[currentQuestionId]?.response || '';
       
-      if (currentResponseText.trim() !== '') {
-        // If response isn't empty, save as answered
+      // Check if response is empty and mark as skipped if it is
+      if (currentResponseText.trim() === '') {
         setResponses(prev => ({
           ...prev,
           [currentQuestionId]: { 
-            response: currentResponseText,
-            skipped: false 
+            response: '',
+            skipped: true 
           }
         }));
+        
+        // Cache the skipped status immediately
+        try {
+          const updatedResponses = {
+            ...responses,
+            [currentQuestionId]: {
+              response: '',
+              skipped: true
+            }
+          };
+          localStorage.setItem('openEndedQuizResponses', JSON.stringify(updatedResponses));
+          console.log(`Cached skipped status for empty response for question ${currentQuestionId}`);
+        } catch (error) {
+          console.error("Error caching skipped status:", error);
+        }
       }
       
       // Move to next question
@@ -511,7 +525,7 @@ const OpenEndedQuiz = () => {
     }
   };
   
-  // Submit all responses
+  // Submit all responses - ensure empty responses are saved as skipped
   const handleSubmit = async () => {
     if (!userId) {
       toast({
@@ -526,6 +540,23 @@ const OpenEndedQuiz = () => {
     setSubmissionError(null);
     
     try {
+      // Check for any unanswered questions in the final screen and mark as skipped
+      const currentQuestion = questions[currentQuestionIndex];
+      if (currentQuestion) {
+        const currentQuestionId = currentQuestion.uniqueId || currentQuestion.question.id;
+        const currentResponseText = responses[currentQuestionId]?.response || '';
+        
+        if (currentResponseText.trim() === '') {
+          setResponses(prev => ({
+            ...prev,
+            [currentQuestionId]: { 
+              response: '',
+              skipped: true 
+            }
+          }));
+        }
+      }
+      
       // Prepare responses for database - now using the updated open_ended_responses table
       const responsesToSubmit = Object.entries(responses).map(([questionId, responseData]) => {
         // Find the question based on uniqueId or fallback to question.id
@@ -538,11 +569,14 @@ const OpenEndedQuiz = () => {
           return null;
         }
         
+        // Always save empty responses with skipped=true
+        const isSkipped = responseData.skipped || responseData.response.trim() === '';
+        
         const dataToSave = {
           user_id: userId,
           question_id: questionInfo.question.id, // Use the original question ID for DB storage
           response: responseData.response,
-          skipped: responseData.skipped,
+          skipped: isSkipped, // Set skipped to true for empty responses
           major: questionInfo?.major || '',
           question: questionInfo?.question?.question || ''
         };
