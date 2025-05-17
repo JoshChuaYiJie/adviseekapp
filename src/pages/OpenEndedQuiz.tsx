@@ -32,6 +32,7 @@ interface QuizQuestion {
     criterion: string;
     question: string;
   };
+  uniqueId?: string; // Add uniqueId field
 }
 
 const OpenEndedQuiz = () => {
@@ -98,6 +99,11 @@ const OpenEndedQuiz = () => {
     prerequisitesMet: false,
     majorsList: [],
   });
+  
+  // Generate a unique ID for a question
+  const generateUniqueId = (question: QuizQuestion, index: number): string => {
+    return `${question.major.replace(/ /g, '_')}_${question.question.id}_${index}`;
+  };
   
   // Load user data and prepare quiz - simplified to focus on using global majors
   useEffect(() => {
@@ -271,9 +277,15 @@ const OpenEndedQuiz = () => {
       // Shuffle the questions
       const shuffledQuestions = quizQuestions.sort(() => Math.random() - 0.5);
       
-      console.log(`Generated ${shuffledQuestions.length} questions for the quiz`);
+      // Add unique IDs to each question
+      const questionsWithIds = shuffledQuestions.map((question, index) => ({
+        ...question,
+        uniqueId: generateUniqueId(question, index)
+      }));
       
-      if (shuffledQuestions.length === 0) {
+      console.log(`Generated ${questionsWithIds.length} questions for the quiz`);
+      
+      if (questionsWithIds.length === 0) {
         toast({
           title: "No Questions Available",
           description: "We couldn't find any questions for your recommended majors.",
@@ -283,7 +295,7 @@ const OpenEndedQuiz = () => {
         return;
       }
       
-      setQuestions(shuffledQuestions);
+      setQuestions(questionsWithIds);
     } catch (error) {
       console.error("Error preparing quiz questions:", error);
       toast({
@@ -387,7 +399,10 @@ const OpenEndedQuiz = () => {
   const handleResponseChange = (value: string) => {
     if (currentQuestionIndex >= questions.length) return;
     
-    const questionId = questions[currentQuestionIndex].question.id;
+    // Use uniqueId if available, fallback to question.id
+    const currentQuestion = questions[currentQuestionIndex];
+    const questionId = currentQuestion.uniqueId || currentQuestion.question.id;
+    
     setResponses(prev => ({
       ...prev,
       [questionId]: { 
@@ -416,7 +431,8 @@ const OpenEndedQuiz = () => {
   const handleNext = () => {
     if (currentQuestionIndex < questions.length - 1) {
       // Save current response
-      const currentQuestionId = questions[currentQuestionIndex].question.id;
+      const currentQuestion = questions[currentQuestionIndex];
+      const currentQuestionId = currentQuestion.uniqueId || currentQuestion.question.id;
       const currentResponseText = responses[currentQuestionId]?.response || '';
       
       if (currentResponseText.trim() !== '') {
@@ -441,7 +457,8 @@ const OpenEndedQuiz = () => {
   const handlePrevious = () => {
     if (currentQuestionIndex > 0) {
       // Save current response
-      const currentQuestionId = questions[currentQuestionIndex].question.id;
+      const currentQuestion = questions[currentQuestionIndex];
+      const currentQuestionId = currentQuestion.uniqueId || currentQuestion.question.id;
       const currentResponseText = responses[currentQuestionId]?.response || '';
       
       if (currentResponseText.trim() !== '') {
@@ -464,7 +481,8 @@ const OpenEndedQuiz = () => {
   const handleSkip = () => {
     if (currentQuestionIndex >= questions.length) return;
 
-    const questionId = questions[currentQuestionIndex].question.id;
+    const currentQuestion = questions[currentQuestionIndex];
+    const questionId = currentQuestion.uniqueId || currentQuestion.question.id;
     
     // Mark question as skipped
     const updatedResponses = {
@@ -510,11 +528,19 @@ const OpenEndedQuiz = () => {
     try {
       // Prepare responses for database - now using the updated open_ended_responses table
       const responsesToSubmit = Object.entries(responses).map(([questionId, responseData]) => {
-        const questionInfo = questions.find(q => q.question.id === questionId);
+        // Find the question based on uniqueId or fallback to question.id
+        const questionInfo = questions.find(q => 
+          (q.uniqueId && q.uniqueId === questionId) || q.question.id === questionId
+        );
+        
+        if (!questionInfo) {
+          console.log(`Question not found for ID: ${questionId}`);
+          return null;
+        }
         
         const dataToSave = {
           user_id: userId,
-          question_id: questionId,
+          question_id: questionInfo.question.id, // Use the original question ID for DB storage
           response: responseData.response,
           skipped: responseData.skipped,
           major: questionInfo?.major || '',
@@ -523,7 +549,7 @@ const OpenEndedQuiz = () => {
         
         console.log(`Preparing to submit response for ${questionId}:`, dataToSave);
         return dataToSave;
-      });
+      }).filter(item => item !== null) as any[]; // Filter out null entries
       
       // Filter out any undefined responses (shouldn't happen but just in case)
       const validResponses = responsesToSubmit.filter(r => r !== undefined);
@@ -598,7 +624,8 @@ const OpenEndedQuiz = () => {
   const handleQuestionClick = (index: number) => {
     // Save current response before switching
     if (questions.length > 0 && currentQuestionIndex < questions.length) {
-      const currentQuestionId = questions[currentQuestionIndex].question.id;
+      const currentQuestion = questions[currentQuestionIndex];
+      const currentQuestionId = currentQuestion.uniqueId || currentQuestion.question.id;
       const currentResponseText = responses[currentQuestionId]?.response || '';
       
       if (currentResponseText.trim() !== '') {
@@ -638,7 +665,9 @@ const OpenEndedQuiz = () => {
     const { isCurrentlyDark } = useTheme();
     const ref = useRef<HTMLDivElement>(null);
     const [isVisible, setIsVisible] = useState(true); // Changed to true by default
-    const questionId = question.question.id;
+    
+    // Use uniqueId if available, or fallback to original question.id
+    const questionId = question.uniqueId || question.question.id;
     const currentResponse = responses[questionId] || { response: '', skipped: false };
     
     useEffect(() => {
@@ -699,6 +728,7 @@ const OpenEndedQuiz = () => {
   console.log("Rendering questions:", questions.length);
   console.log("Current question index:", currentQuestionIndex);
   console.log("Current question available:", questions[currentQuestionIndex]);
+  console.log("Questions with uniqueIds:", questions.map(q => q.uniqueId || "no-id"));
   
   if (loading) {
     return (
@@ -776,7 +806,7 @@ const OpenEndedQuiz = () => {
           {/* Only render the current question */}
           {questions.length > 0 && currentQuestionIndex < questions.length && (
             <QuestionDisplay
-              key={questions[currentQuestionIndex].question.id}
+              key={questions[currentQuestionIndex].uniqueId || questions[currentQuestionIndex].question.id}
               question={questions[currentQuestionIndex]}
               index={currentQuestionIndex}
             />
@@ -787,7 +817,9 @@ const OpenEndedQuiz = () => {
           {/* Question navigation dots */}
           <div className="mb-4 flex flex-wrap justify-center gap-2 max-w-md mx-auto px-4">
             {questions.map((q, idx) => {
-              const response = responses[q.question.id];
+              // Use uniqueId if available, otherwise fall back to question.id
+              const questionId = q.uniqueId || q.question.id;
+              const response = responses[questionId];
               let status = "not-answered";
               
               if (response) {
@@ -800,7 +832,7 @@ const OpenEndedQuiz = () => {
               
               return (
                 <div 
-                  key={q.question.id} 
+                  key={questionId}
                   className={`w-6 h-6 flex items-center justify-center rounded-full text-xs cursor-pointer ${
                     idx === currentQuestionIndex ? 'ring-2 ring-offset-2 ring-blue-500' : ''
                   } ${
@@ -885,6 +917,11 @@ const OpenEndedQuiz = () => {
                   progress,
                   userId,
                   currentQuestion: questions[currentQuestionIndex],
+                  questionsWithIDs: questions.map(q => ({
+                    uniqueId: q.uniqueId,
+                    questionId: q.question.id,
+                    major: q.major
+                  })),
                   ...debugInfo
                 }, null, 2)}
               </pre>
