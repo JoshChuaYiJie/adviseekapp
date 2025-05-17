@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { OpenEndedQuestion } from './types';
+import { formatMajorForFile } from './MajorUtils';
 
 export const useQuestionHandler = ({ userId }: { userId: string | null }) => {
   const [questions, setQuestions] = useState<OpenEndedQuestion[]>([]);
@@ -63,15 +64,85 @@ export const useQuestionHandler = ({ userId }: { userId: string | null }) => {
     }
   };
 
-  // Prepare questions for recommended majors
-  const prepareQuestionsForRecommendedMajors = async () => {
+  // Prepare questions for recommended majors - updated to accept provided majors list
+  const prepareQuestionsForRecommendedMajors = async (providedMajors?: string[]) => {
     setLoadingRecommendations(true);
     setLoadingQuestions(true);
-    // Here you would implement logic to load questions based on recommended majors
-    // This is a placeholder implementation
-    setRecommendedMajors(['Computer Science', 'Data Science', 'Business Analytics']);
-    setLoadingQuestions(false);
-    setLoadingRecommendations(false);
+    
+    try {
+      // Use provided majors if available, otherwise use default set
+      let majorsToUse = providedMajors || ['Computer Science', 'Data Science', 'Business Analytics'];
+      console.log("Preparing questions for majors:", majorsToUse);
+      
+      if (providedMajors && providedMajors.length > 0) {
+        setRecommendedMajors(providedMajors);
+      } else {
+        setRecommendedMajors(majorsToUse);
+      }
+
+      // Select up to 5 majors
+      const selectedMajors = majorsToUse.slice(0, 5);
+      
+      // For each major, try to load questions
+      const allQuestions: OpenEndedQuestion[] = [];
+      
+      for (const major of selectedMajors) {
+        try {
+          // Format major for file lookup - handle "Major at School" format
+          const [majorName, schoolName] = major.split(' at ');
+          const formattedMajor = formatMajorForFile(majorName, schoolName || '');
+          
+          // Try to load questions with school-specific formatting
+          const schools = schoolName ? [schoolName] : ['NTU', 'NUS', 'SMU'];
+          
+          for (const school of schools) {
+            try {
+              const response = await fetch(`/quiz_refer/Open_ended_quiz_questions/${formattedMajor}_${school}.json`);
+              
+              if (response.ok) {
+                const loadedQuestions = await response.json();
+                
+                // Add major name to each question for display
+                const questionsWithMajor = loadedQuestions.map((q: any) => ({
+                  ...q,
+                  majorName: majorName
+                }));
+                
+                // Add a few randomly selected questions
+                const randomQuestions = questionsWithMajor
+                  .sort(() => 0.5 - Math.random())
+                  .slice(0, 3);
+                  
+                allQuestions.push(...randomQuestions);
+                break; // Found questions for this major, move to next
+              }
+            } catch (error) {
+              console.error(`Error loading questions for ${majorName} at ${school}:`, error);
+              // Continue to next school
+            }
+          }
+        } catch (error) {
+          console.error(`Error processing major ${major}:`, error);
+        }
+      }
+      
+      // Shuffle questions for variety
+      const shuffledQuestions = allQuestions.sort(() => 0.5 - Math.random());
+      
+      console.log(`Loaded ${shuffledQuestions.length} questions from recommended majors`);
+      setQuestions(shuffledQuestions);
+      
+    } catch (error) {
+      console.error("Error preparing questions for recommended majors:", error);
+      toast({
+        title: "Error",
+        description: "Failed to prepare quiz questions. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoadingRecommendations(false);
+      setLoadingQuestions(false);
+    }
   };
 
   // Submit responses to the database
@@ -98,7 +169,7 @@ export const useQuestionHandler = ({ userId }: { userId: string | null }) => {
             user_id: userId,
             question: questionInfo?.question || '',
             response: response.response,
-            major: majorName || ''
+            major: questionInfo?.majorName || majorName || ''
           };
         });
       

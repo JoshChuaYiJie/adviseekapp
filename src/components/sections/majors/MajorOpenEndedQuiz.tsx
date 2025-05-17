@@ -10,10 +10,11 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ArrowLeft, ArrowRight, SkipForward, Check } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check } from 'lucide-react';
 import { getMatchingMajors, mapRiasecToCode, mapWorkValueToCode, formCode } from '@/utils/recommendation';
 import { formatMajorForFile } from '@/components/sections/majors/MajorUtils';
 import { useQuestionHandler } from './useQuestionHandler';
+import { useRecommendationContext } from '@/contexts/RecommendationContext';
 
 interface MajorOpenEndedQuizProps {
   major: string | null;
@@ -25,6 +26,7 @@ const MajorOpenEndedQuiz: React.FC<MajorOpenEndedQuizProps> = ({ major }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const { isCurrentlyDark } = useTheme();
   const { toast } = useToast();
+  const { majorRecommendations } = useRecommendationContext();
 
   const {
     questions,
@@ -55,15 +57,31 @@ const MajorOpenEndedQuiz: React.FC<MajorOpenEndedQuizProps> = ({ major }) => {
     checkAuth();
   }, []);
 
-  // Load questions when major changes
+  // Load questions when major changes or use recommended majors
   useEffect(() => {
-    if (userId && major) {
-      loadQuestions(major);
-    } else if (userId && !major && recommendedMajors.length > 0) {
-      // If no specific major is provided, use recommended majors
-      prepareQuestionsForRecommendedMajors();
+    if (userId) {
+      if (major) {
+        loadQuestions(major);
+      } else if (majorRecommendations) {
+        // If no specific major is provided, use recommended majors from context
+        const allRecommendedMajors = [
+          ...(majorRecommendations.exactMatches || []),
+          ...(majorRecommendations.riasecMatches || []),
+          ...(majorRecommendations.workValueMatches || [])
+        ];
+        
+        if (allRecommendedMajors.length > 0) {
+          prepareQuestionsForRecommendedMajors(allRecommendedMajors);
+        } else {
+          // Fallback if no recommended majors are available
+          prepareQuestionsForRecommendedMajors();
+        }
+      } else if (recommendedMajors.length > 0) {
+        // Fallback to any recommended majors from the hook
+        prepareQuestionsForRecommendedMajors();
+      }
     }
-  }, [userId, major, recommendedMajors]);
+  }, [userId, major, majorRecommendations, recommendedMajors, loadQuestions, prepareQuestionsForRecommendedMajors]);
 
   // Progress calculation
   const progress = useMemo(() => {
@@ -87,8 +105,26 @@ const MajorOpenEndedQuiz: React.FC<MajorOpenEndedQuizProps> = ({ major }) => {
 
   // Navigate to next question
   const handleNext = () => {
+    if (currentQuestionIndex >= questions.length) return;
+    
+    // Save the current question's response, mark as skipped if empty
+    const questionId = questions[currentQuestionIndex].id;
+    const currentResponse = answeredQuestions[questionId]?.response || '';
+    
+    if (!currentResponse.trim()) {
+      setAnsweredQuestions(prev => ({
+        ...prev,
+        [questionId]: {
+          response: '',
+          skipped: true
+        }
+      }));
+    }
+
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(prevIndex => prevIndex + 1);
+    } else {
+      handleSubmit();
     }
   };
 
@@ -96,25 +132,6 @@ const MajorOpenEndedQuiz: React.FC<MajorOpenEndedQuizProps> = ({ major }) => {
   const handlePrevious = () => {
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex(prevIndex => prevIndex - 1);
-    }
-  };
-
-  // Skip current question
-  const handleSkip = () => {
-    const questionId = questions[currentQuestionIndex].id;
-    
-    setAnsweredQuestions(prev => ({
-      ...prev,
-      [questionId]: {
-        response: '',
-        skipped: true
-      }
-    }));
-    
-    if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(prevIndex => prevIndex + 1);
-    } else {
-      handleSubmit();
     }
   };
 
@@ -227,7 +244,7 @@ const MajorOpenEndedQuiz: React.FC<MajorOpenEndedQuizProps> = ({ major }) => {
             />
             
             {currentResponse.skipped && (
-              <p className="text-amber-500 italic text-sm">You skipped this question</p>
+              <p className="text-amber-500 italic text-sm">This question has been skipped</p>
             )}
           </div>
           
@@ -264,24 +281,13 @@ const MajorOpenEndedQuiz: React.FC<MajorOpenEndedQuizProps> = ({ major }) => {
         </CardContent>
         
         <CardFooter className="flex justify-between">
-          <div className="flex space-x-2">
-            <Button 
-              variant="outline" 
-              onClick={handlePrevious}
-              disabled={currentQuestionIndex === 0 || submitting}
-            >
-              <ArrowLeft className="mr-2 h-4 w-4" /> Previous
-            </Button>
-            
-            <Button
-              variant="outline"
-              onClick={handleSkip}
-              disabled={submitting || currentResponse.skipped}
-              className="text-amber-500 border-amber-500 hover:bg-amber-500/10"
-            >
-              <SkipForward className="mr-2 h-4 w-4" /> Skip
-            </Button>
-          </div>
+          <Button 
+            variant="outline" 
+            onClick={handlePrevious}
+            disabled={currentQuestionIndex === 0 || submitting}
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" /> Previous
+          </Button>
           
           {currentQuestionIndex < questions.length - 1 ? (
             <Button 

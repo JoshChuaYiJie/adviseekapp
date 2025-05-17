@@ -53,6 +53,7 @@ const Recommendations = () => {
   const [allModulesRated, setAllModulesRated] = useState(false);
   const [topPrefixes, setTopPrefixes] = useState<ModuleRatingResult[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
+  const [batchCount, setBatchCount] = useState(1); // Track which batch we're on
 
   // Get current user ID
   useEffect(() => {
@@ -241,19 +242,26 @@ const Recommendations = () => {
 
       await new Promise(resolve => setTimeout(resolve, 500));
       
+      // Check if we've reached the end of all modules
       if (currentIndex < recommendations.length - 1) {
-        setCurrentIndex(prevIndex => prevIndex + 1);
+        // Increment the current index
+        const nextIndex = currentIndex + 1;
+        setCurrentIndex(nextIndex);
         setRating(5);
         setShowAnimation(true);
+        
+        // Check if we've completed a batch of 50 modules
+        if (nextIndex > 0 && nextIndex % 50 === 0) {
+          // Calculate and show the batch results
+          setBatchCount(Math.floor(nextIndex / 50));
+          
+          // Show intermediate results
+          await aggregateModuleScores();
+          setShowSuggestion(true);
+        }
       } else {
-        // All modules have been rated - set flag to trigger completion actions
+        // All modules have been rated
         setAllModulesRated(true);
-      }
-
-      // Check if the user has rated a multiple of 30 modules
-      const newCount = Object.keys(userFeedback).length + 1;
-      if (newCount % 30 === 0 && !allModulesRated) {
-        setShowSuggestion(true);
       }
     } catch (err) {
       console.error("Error rating module:", err);
@@ -342,8 +350,36 @@ const Recommendations = () => {
       <div className="flex-1 flex flex-col items-center justify-center p-4 md:p-8">
         {showSuggestion && !allModulesRated && (
           <div className="text-center animate-fade-in bg-white/80 shadow-lg p-8 rounded-2xl max-w-xl mx-auto">
-            <h2 className="text-3xl font-bold mb-4 text-purple-700">Your suggested programme is ready!</h2>
-            <p className="text-lg mb-8 text-gray-700">View it now or rate 30 more modules for a more refined suggestion</p>
+            <h2 className="text-3xl font-bold mb-4 text-purple-700">
+              {batchCount > 1 
+                ? `Batch ${batchCount} complete! Your results so far:` 
+                : 'Your suggested programme is ready!'}
+            </h2>
+            
+            {topPrefixes.length > 0 && (
+              <div className="space-y-4 mb-6">
+                <h3 className="text-xl font-semibold text-purple-600">Your Top Program Areas</h3>
+                {topPrefixes.map((result, idx) => (
+                  <div key={result.prefix} className="bg-white/60 rounded-lg p-3 shadow-sm">
+                    <div className="flex justify-between items-center">
+                      <span className="text-lg font-bold text-purple-800">#{idx + 1}: {result.prefix}</span>
+                      <span className="text-md font-medium text-purple-600">
+                        {result.averageScore.toFixed(1)}/10
+                      </span>
+                    </div>
+                    <p className="text-gray-600 text-sm">
+                      Based on {result.count} module ratings
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+            
+            <p className="text-lg mb-8 text-gray-700">
+              {batchCount > 1 
+                ? `You've rated ${currentIndex} modules so far. Continue rating for more refined suggestions?` 
+                : 'View it now or rate more modules for a more refined suggestion'}
+            </p>
             <div className="space-x-4">
               <Button 
                 onClick={handleViewSuggestion}
@@ -351,7 +387,9 @@ const Recommendations = () => {
               >
                 View suggestion
               </Button>
-              <Button onClick={handleRateMore} variant="outline" className="font-bold border-purple-200">Rate more modules</Button>
+              <Button onClick={handleRateMore} variant="outline" className="font-bold border-purple-200">
+                Rate more modules
+              </Button>
             </div>
           </div>
         )}

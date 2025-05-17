@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { Module } from '@/integrations/supabase/client';
 import { MajorRecommendationsType } from '@/components/sections/majors/types';
@@ -46,15 +47,13 @@ export const RecommendationProvider: React.FC<{children: React.ReactNode}> = ({ 
   const [error, setError] = useState<string | null>(null);
   const [codesLoaded, setCodesLoaded] = useState<boolean>(false);
 
-  // Limit modules to max 10 per prefix, with total max 100
-  const limitModulesPerPrefix = useCallback((modules: Module[]): Module[] => {
-    const prefixModuleMap: Record<string, Module[]> = {};
-    const MAX_PER_PREFIX = 10;
-    const MAX_TOTAL_MODULES = 100;
-    
+  // Ensure diverse module recommendations by prioritizing unique prefixes
+  const diversifyModules = useCallback((modules: Module[]): Module[] => {
     // Group modules by their prefix
+    const prefixModuleMap: Record<string, Module[]> = {};
+    
+    // Extract prefix from course code (usually first 2-3 characters before numbers)
     modules.forEach(module => {
-      // Extract prefix from course code (usually first 2-3 characters before numbers)
       const match = module.course_code.match(/^[A-Z]+/);
       const prefix = match ? match[0] : 'OTHER';
       
@@ -65,23 +64,30 @@ export const RecommendationProvider: React.FC<{children: React.ReactNode}> = ({ 
       prefixModuleMap[prefix].push(module);
     });
     
-    // For each prefix, randomly select up to MAX_PER_PREFIX modules
-    const limitedModules: Module[] = [];
+    // First, take one module from each prefix to ensure diversity
+    const diverseModules: Module[] = [];
+    const prefixes = Object.keys(prefixModuleMap);
     
-    Object.keys(prefixModuleMap).forEach(prefix => {
-      const modulesForPrefix = prefixModuleMap[prefix];
-      
-      // Randomize module selection for this prefix
-      const shuffled = [...modulesForPrefix].sort(() => 0.5 - Math.random());
-      const selected = shuffled.slice(0, MAX_PER_PREFIX);
-      
-      limitedModules.push(...selected);
+    // Take first one from each prefix
+    prefixes.forEach(prefix => {
+      if (prefixModuleMap[prefix].length > 0) {
+        // Take one module from this prefix
+        const module = prefixModuleMap[prefix].shift();
+        if (module) diverseModules.push(module);
+      }
     });
     
-    // Limit to MAX_TOTAL_MODULES and randomize the final selection
-    return limitedModules
-      .sort(() => 0.5 - Math.random())
-      .slice(0, MAX_TOTAL_MODULES);
+    // Then add the remaining modules
+    prefixes.forEach(prefix => {
+      if (prefixModuleMap[prefix].length > 0) {
+        // Shuffle the remaining modules for this prefix
+        const shuffled = [...prefixModuleMap[prefix]].sort(() => 0.5 - Math.random());
+        diverseModules.push(...shuffled);
+      }
+    });
+    
+    // Return the final diversified list
+    return diverseModules;
   }, []);
 
   // Load RIASEC and Work Value codes from localStorage only once
@@ -187,18 +193,18 @@ export const RecommendationProvider: React.FC<{children: React.ReactNode}> = ({ 
         semester: "1" // Default value
       }));
       
-      // Limit modules by prefix and total count
-      const limitedModules = limitModulesPerPrefix(modulesWithIds);
+      // Diversify modules to ensure we have a good mix of prefixes
+      const diverseModules = diversifyModules(modulesWithIds);
       
-      console.log("Loaded and limited module recommendations:", limitedModules.length);
-      setModuleRecommendations(limitedModules);
+      console.log("Loaded and diversified module recommendations:", diverseModules.length);
+      setModuleRecommendations(diverseModules);
     } catch (error) {
       console.error("Error loading module recommendations:", error);
       setError("Failed to load module recommendations");
     } finally {
       setIsLoading(false);
     }
-  }, [majorRecommendations, limitModulesPerPrefix]);
+  }, [majorRecommendations, diversifyModules]);
   
   // Generate consistent module IDs based on modulecode
   const getModuleId = (code: string) => {
