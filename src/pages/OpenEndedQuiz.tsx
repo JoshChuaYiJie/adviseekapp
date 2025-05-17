@@ -13,6 +13,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { ArrowLeft, ArrowRight, SkipForward } from 'lucide-react';
 import { getMatchingMajors, mapRiasecToCode, mapWorkValueToCode, formCode } from '@/utils/recommendation';
 import { formatMajorForFile } from '@/components/sections/majors/MajorUtils';
+import { useRecommendationContext } from '@/contexts/RecommendationContext';
 
 interface QuizQuestion {
   major: string;
@@ -34,6 +35,9 @@ const OpenEndedQuiz = () => {
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [responses, setResponses] = useState<Record<string, { response: string; skipped: boolean }>>({});
+  
+  // Use context to get recommended majors
+  const { majorRecommendations } = useRecommendationContext();
   
   // Profile data
   const [riasecProfile, setRiasecProfile] = useState<Array<{ component: string; average: number; score: number }>>([]);
@@ -183,7 +187,7 @@ const OpenEndedQuiz = () => {
       
       if (allCompleted) {
         // All requirements met, prepare the quiz
-        prepareQuizQuestions();
+        prepareQuizQuestionsFromRecommendations();
       } else {
         handlePrerequisitesNotMet();
       }
@@ -326,60 +330,40 @@ const OpenEndedQuiz = () => {
     }
   };
   
-  // Prepare quiz questions based on recommended majors
-  const prepareQuizQuestions = async () => {
+  // New function: Prepare questions using recommended majors from context
+  const prepareQuizQuestionsFromRecommendations = async () => {
     try {
-      // Get top RIASEC components
-      const topRiasec = riasecProfile.slice(0, 3);
+      setLoading(true);
+      console.log("Preparing questions from recommendations context");
       
-      // Get top Work Values components
-      const topWorkValues = workValueProfile.slice(0, 3);
+      // Get recommended majors from the context
+      let recommendedMajors: string[] = [];
       
-      // Log the data for debugging
-      console.log("Top RIASEC components for quiz generation:", topRiasec);
-      console.log("Top Work Values components for quiz generation:", topWorkValues);
-      
-      // If profiles are empty, use hardcoded default values for testing
-      const useTopRiasec = topRiasec.length > 0 ? topRiasec : [
-        { component: "R", score: 5, average: 5 },
-        { component: "S", score: 4, average: 4 },
-        { component: "A", score: 3, average: 3 }
-      ];
-      
-      const useTopWorkValues = topWorkValues.length > 0 ? topWorkValues : [
-        { component: "Recognition", score: 5, average: 5 },
-        { component: "Achievement", score: 4, average: 4 },
-        { component: "Independence", score: 3, average: 3 }
-      ];
-      
-      // Generate codes for recommendation
-      const generatedRiasecCode = formCode(useTopRiasec, mapRiasecToCode) || "RSI";
-      const generatedWorkValueCode = formCode(useTopWorkValues, mapWorkValueToCode) || "ARS";
-      
-      console.log("Generated codes for quiz:", {
-        riasec: generatedRiasecCode,
-        workValues: generatedWorkValueCode
-      });
-      
-      // Get recommended majors based on profile codes
-      const majorRecommendations = await getMatchingMajors(generatedRiasecCode, generatedWorkValueCode);
-      
-      // Combine all recommended majors in priority order
-      const recommendedMajors = [
-        ...majorRecommendations.exactMatches,
-        ...majorRecommendations.riasecMatches,
-        ...majorRecommendations.workValueMatches
-      ];
-      
-      // Remove duplicates
-      const uniqueRecommendedMajors = [...new Set(recommendedMajors)];
-      
-      console.log("Recommended majors for quiz questions:", uniqueRecommendedMajors);
+      if (majorRecommendations) {
+        // Combine all recommended majors from the context
+        recommendedMajors = [
+          ...(majorRecommendations.exactMatches || []),
+          ...(majorRecommendations.permutationMatches || []),
+          ...(majorRecommendations.riasecMatches || []),
+          ...(majorRecommendations.workValueMatches || [])
+        ];
+        
+        // Remove duplicates
+        recommendedMajors = [...new Set(recommendedMajors)];
+        
+        console.log("Using recommended majors from context:", recommendedMajors);
+      } else {
+        console.log("No recommendations found in context, falling back to profile-based recommendations");
+        
+        // Fallback to generate recommendations based on profile
+        await prepareQuizQuestions();
+        return;
+      }
       
       // If we have recommended majors, use them for questions
-      if (uniqueRecommendedMajors.length > 0) {
+      if (recommendedMajors.length > 0) {
         // Select up to 5 majors
-        const selectedMajors = uniqueRecommendedMajors.slice(0, 5);
+        const selectedMajors = recommendedMajors.slice(0, 5);
         
         console.log("Selected majors for quiz:", selectedMajors);
         
@@ -392,58 +376,10 @@ const OpenEndedQuiz = () => {
             const [majorName, school] = major.split(' at ');
             const formattedMajor = formatMajorForFile(majorName, school || '');
             
-            // Fetch questions from the JSON file
-            const response = await fetch(`/quiz_refer/Open_ended_quiz_questions/${formattedMajor}.json`);
-            if (!response.ok) {
-              console.error(`Failed to load questions for ${major}`);
-              continue;
-            }
-            
-            const allQuestions = await response.json();
-            console.log(`Found ${allQuestions.length} questions for ${major}`);
-            
-            // Categorize questions by criterion
-            const interestQuestions = allQuestions.filter(q => 
-              q.criterion.toLowerCase().includes('interest')
-            );
-            const skillQuestions = allQuestions.filter(q => 
-              q.criterion.toLowerCase().includes('skill')
-            );
-            const experienceQuestions = allQuestions.filter(q => 
-              q.criterion.toLowerCase().includes('experience') || 
-              q.criterion.toLowerCase().includes('background')
-            );
-            
-            console.log(`Questions by category for ${major}:`, {
-              interests: interestQuestions.length,
-              skills: skillQuestions.length,
-              experience: experienceQuestions.length
-            });
-            
-            // Select one random question from each category if available
-            const categories = [
-              { name: 'interests', questions: interestQuestions },
-              { name: 'skills', questions: skillQuestions },
-              { name: 'experience', questions: experienceQuestions }
-            ];
-            
-            for (const category of categories) {
-              if (category.questions.length > 0) {
-                const randomIndex = Math.floor(Math.random() * category.questions.length);
-                const question = category.questions[randomIndex];
-                
-                quizQuestions.push({
-                  major,
-                  question: {
-                    ...question,
-                    category: category.name
-                  }
-                });
-              }
-            }
+            // Try to load questions with school suffix
+            await loadQuestionsWithSchoolSuffix(major, quizQuestions);
           } catch (error) {
             console.error(`Error loading questions for ${major}:`, error);
-            // Continue to next major
           }
         }
         
@@ -464,11 +400,79 @@ const OpenEndedQuiz = () => {
       }
       
     } catch (error) {
-      console.error('Error preparing quiz questions based on profile:', error);
+      console.error('Error preparing quiz questions from recommendations:', error);
       // Fall back to existing random major selection
       loadRandomMajorQuestions();
     } finally {
       setLoading(false);
+    }
+  };
+  
+  // Helper function to try loading questions with school suffix
+  const loadQuestionsWithSchoolSuffix = async (major: string, quizQuestions: QuizQuestion[]) => {
+    try {
+      // Try to formalize the filename format with school suffix
+      const [majorName, schoolName] = major.split(' at ');
+      const formattedMajor = majorName.replace(/ /g, '_').replace(/[\/&,]/g, '_');
+      const schools = schoolName ? [schoolName] : ['NTU', 'NUS', 'SMU'];
+      
+      let foundQuestions = false;
+      
+      for (const school of schools) {
+        try {
+          const response = await fetch(`/quiz_refer/Open_ended_quiz_questions/${formattedMajor}_${school}.json`);
+          
+          if (response.ok) {
+            const allQuestions = await response.json();
+            console.log(`Found ${allQuestions.length} questions for ${majorName} at ${school}`);
+            
+            // Categorize questions
+            const interestQuestions = allQuestions.filter((q: any) => 
+              q.criterion.toLowerCase().includes('interest')
+            );
+            const skillQuestions = allQuestions.filter((q: any) => 
+              q.criterion.toLowerCase().includes('skill')
+            );
+            const experienceQuestions = allQuestions.filter((q: any) => 
+              q.criterion.toLowerCase().includes('experience') || 
+              q.criterion.toLowerCase().includes('background')
+            );
+            
+            // Select one random question from each category if available
+            const categories = [
+              { name: 'interests', questions: interestQuestions },
+              { name: 'skills', questions: skillQuestions },
+              { name: 'experience', questions: experienceQuestions }
+            ];
+            
+            for (const category of categories) {
+              if (category.questions.length > 0) {
+                const randomIndex = Math.floor(Math.random() * category.questions.length);
+                const question = category.questions[randomIndex];
+                
+                quizQuestions.push({
+                  major: `${majorName} at ${school}`,
+                  question: {
+                    ...question,
+                    category: category.name
+                  }
+                });
+              }
+            }
+            
+            foundQuestions = true;
+            break;
+          }
+        } catch (error) {
+          console.error(`Error loading questions for ${majorName} at ${school}:`, error);
+          // Continue to next school
+        }
+      }
+      
+      return foundQuestions;
+    } catch (error) {
+      console.error(`Error in loadQuestionsWithSchoolSuffix for ${major}:`, error);
+      return false;
     }
   };
   
@@ -606,6 +610,95 @@ const OpenEndedQuiz = () => {
       navigate('/');
     }
   };
+
+  // Original prepare quiz function
+  const prepareQuizQuestions = async () => {
+    try {
+      // Get top RIASEC components
+      const topRiasec = riasecProfile.slice(0, 3);
+      
+      // Get top Work Values components
+      const topWorkValues = workValueProfile.slice(0, 3);
+      
+      // Log the data for debugging
+      console.log("Top RIASEC components for quiz generation:", topRiasec);
+      console.log("Top Work Values components for quiz generation:", topWorkValues);
+      
+      // If profiles are empty, use hardcoded default values for testing
+      const useTopRiasec = topRiasec.length > 0 ? topRiasec : [
+        { component: "R", score: 5, average: 5 },
+        { component: "S", score: 4, average: 4 },
+        { component: "A", score: 3, average: 3 }
+      ];
+      
+      const useTopWorkValues = topWorkValues.length > 0 ? topWorkValues : [
+        { component: "Recognition", score: 5, average: 5 },
+        { component: "Achievement", score: 4, average: 4 },
+        { component: "Independence", score: 3, average: 3 }
+      ];
+      
+      // Generate codes for recommendation
+      const generatedRiasecCode = formCode(useTopRiasec, mapRiasecToCode) || "RSI";
+      const generatedWorkValueCode = formCode(useTopWorkValues, mapWorkValueToCode) || "ARS";
+      
+      console.log("Generated codes for quiz:", {
+        riasec: generatedRiasecCode,
+        workValues: generatedWorkValueCode
+      });
+      
+      // Get recommended majors based on profile codes
+      const majorRecommendations = await getMatchingMajors(generatedRiasecCode, generatedWorkValueCode);
+      
+      // Combine all recommended majors in priority order
+      const recommendedMajors = [
+        ...majorRecommendations.exactMatches,
+        ...majorRecommendations.riasecMatches,
+        ...majorRecommendations.workValueMatches
+      ];
+      
+      // Remove duplicates
+      const uniqueRecommendedMajors = [...new Set(recommendedMajors)];
+      
+      console.log("Recommended majors for quiz questions:", uniqueRecommendedMajors);
+      
+      // If we have recommended majors, use them for questions
+      if (uniqueRecommendedMajors.length > 0) {
+        // Select up to 5 majors
+        const selectedMajors = uniqueRecommendedMajors.slice(0, 5);
+        
+        console.log("Selected majors for quiz:", selectedMajors);
+        
+        // For each selected major, load and select questions
+        const quizQuestions: QuizQuestion[] = [];
+        
+        for (const major of selectedMajors) {
+          await loadQuestionsWithSchoolSuffix(major, quizQuestions);
+        }
+        
+        // Shuffle the questions for variety
+        const shuffledQuestions = quizQuestions.sort(() => Math.random() - 0.5);
+        console.log(`Final quiz generated with ${shuffledQuestions.length} questions from recommended majors`);
+        setQuestions(shuffledQuestions);
+        
+        if (shuffledQuestions.length === 0) {
+          console.log("No questions found for recommended majors, falling back to random selection");
+          // Fall back to existing random major selection
+          loadRandomMajorQuestions();
+        }
+      } else {
+        console.log("No recommended majors found, falling back to random selection");
+        // Fall back to existing random major selection
+        loadRandomMajorQuestions();
+      }
+      
+    } catch (error) {
+      console.error('Error preparing quiz questions based on profile:', error);
+      // Fall back to existing random major selection
+      loadRandomMajorQuestions();
+    } finally {
+      setLoading(false);
+    }
+  };
   
   // Handle response changes
   const handleResponseChange = (value: string) => {
@@ -621,17 +714,66 @@ const OpenEndedQuiz = () => {
     }));
   };
   
-  // Navigate to next question
+  // Navigate to next question - UPDATED to reset the response box
   const handleNext = () => {
     if (currentQuestionIndex < questions.length - 1) {
+      // Save current response
+      const currentQuestionId = questions[currentQuestionIndex].question.id;
+      const currentResponseText = responses[currentQuestionId]?.response || '';
+      
+      if (currentResponseText.trim() !== '') {
+        // If response isn't empty, save as answered
+        setResponses(prev => ({
+          ...prev,
+          [currentQuestionId]: { 
+            response: currentResponseText,
+            skipped: false 
+          }
+        }));
+      }
+      
+      // Move to next question
       setCurrentQuestionIndex(currentQuestionIndex + 1);
+      
+      // Clear textarea when moving to next question
+      const textareaElement = document.querySelector('textarea');
+      if (textareaElement) {
+        textareaElement.value = responses[questions[currentQuestionIndex + 1].question.id]?.response || '';
+      }
+    } else {
+      handleSubmit();
     }
   };
   
   // Navigate to previous question
   const handlePrevious = () => {
     if (currentQuestionIndex > 0) {
+      // Save current response
+      const currentQuestionId = questions[currentQuestionIndex].question.id;
+      const currentResponseText = responses[currentQuestionId]?.response || '';
+      
+      if (currentResponseText.trim() !== '') {
+        // If response isn't empty, save as answered
+        setResponses(prev => ({
+          ...prev,
+          [currentQuestionId]: { 
+            response: currentResponseText,
+            skipped: false 
+          }
+        }));
+      }
+      
+      // Move to previous question
       setCurrentQuestionIndex(currentQuestionIndex - 1);
+      
+      // Load the previous response into textarea
+      const previousQuestionId = questions[currentQuestionIndex - 1].question.id;
+      const previousResponse = responses[previousQuestionId]?.response || '';
+      
+      const textareaElement = document.querySelector('textarea');
+      if (textareaElement) {
+        textareaElement.value = previousResponse;
+      }
     }
   };
 
@@ -653,6 +795,12 @@ const OpenEndedQuiz = () => {
     // Move to next question or submit if this is the last one
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
+      
+      // Clear textarea when skipping to next question
+      const textareaElement = document.querySelector('textarea');
+      if (textareaElement) {
+        textareaElement.value = responses[questions[currentQuestionIndex + 1].question.id]?.response || '';
+      }
     } else {
       handleSubmit();
     }
@@ -747,6 +895,36 @@ const OpenEndedQuiz = () => {
     }
   };
   
+  // Handle clicking on a question directly
+  const handleQuestionClick = (index: number) => {
+    // Save current response before switching
+    const currentQuestionId = questions[currentQuestionIndex].question.id;
+    const currentResponseText = document.querySelector('textarea')?.value || '';
+    
+    if (currentResponseText.trim() !== '') {
+      // If response isn't empty, save as answered
+      setResponses(prev => ({
+        ...prev,
+        [currentQuestionId]: { 
+          response: currentResponseText,
+          skipped: false 
+        }
+      }));
+    }
+    
+    // Set new current question index
+    setCurrentQuestionIndex(index);
+    
+    // Load the selected question's response into textarea
+    const selectedQuestionId = questions[index].question.id;
+    const selectedResponse = responses[selectedQuestionId]?.response || '';
+    
+    const textareaElement = document.querySelector('textarea');
+    if (textareaElement) {
+      textareaElement.value = selectedResponse;
+    }
+  };
+  
   // Calculate progress percentage
   const progress = questions.length > 0 
     ? Math.round(((currentQuestionIndex + 1) / questions.length) * 100) 
@@ -831,7 +1009,12 @@ const OpenEndedQuiz = () => {
             placeholder="Type your answer here..."
             value={currentResponse.response}
             onChange={(e) => handleResponseChange(e.target.value)}
+            disabled={currentResponse.skipped}
           />
+          
+          {currentResponse.skipped && (
+            <p className="text-amber-500 italic text-sm mt-2">This question has been skipped</p>
+          )}
         </div>
         
         <div className="flex justify-between mt-6">
@@ -869,7 +1052,7 @@ const OpenEndedQuiz = () => {
         </div>
       </Card>
       
-      {/* Skipped questions summary */}
+      {/* Question status indicators */}
       <div className="mt-6">
         <h3 className="font-medium mb-2">Question Status:</h3>
         <div className="grid grid-cols-5 gap-2">
@@ -895,7 +1078,7 @@ const OpenEndedQuiz = () => {
                   status === 'skipped' ? 'bg-amber-500 text-white' :
                   'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
                 }`}
-                onClick={() => setCurrentQuestionIndex(idx)}
+                onClick={() => handleQuestionClick(idx)}
               >
                 {idx + 1}
               </div>
