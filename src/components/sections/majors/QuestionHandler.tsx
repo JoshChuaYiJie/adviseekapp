@@ -153,7 +153,7 @@ export const QuestionHandler = ({ questions, majorName }: QuestionHandlerProps) 
             key={index} 
             className={`w-6 h-6 rounded-full flex items-center justify-center text-xs cursor-pointer
               ${index === currentQuestionIndex ? 'ring-2 ring-offset-2 ring-blue-500' : ''}
-              ${responses[index] && responses[index].trim() !== '' ? 'bg-green-500 text-white' : 'bg-gray-200 dark:bg-gray-700'}`}
+              ${responses[index] && responses[index].trim() !== '' ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-700'}`}
             onClick={() => setCurrentQuestionIndex(index)}
           >
             {index + 1}

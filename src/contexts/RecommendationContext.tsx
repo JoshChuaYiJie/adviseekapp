@@ -8,6 +8,7 @@ import {
   getMatchingMajors
 } from '@/utils/recommendation';
 import { fetchModuleRecommendations } from '@/utils/recommendation/moduleRecommendationUtils';
+import { supabase } from '@/integrations/supabase/client';
 
 interface RecommendationContextType {
   riasecCode: string;
@@ -122,7 +123,45 @@ export const RecommendationProvider: React.FC<{children: React.ReactNode}> = ({ 
     loadMajorRecommendations();
   }, [riasecCode, workValueCode]);
 
-  // Load module recommendations whenever major recommendations change - using memo to prevent excessive recalculation
+  // Limit modules to max 10 per prefix, with total max 100
+  const limitModulesPerPrefix = useCallback((modules: Module[]): Module[] => {
+    const prefixModuleMap: Record<string, Module[]> = {};
+    const MAX_PER_PREFIX = 10;
+    const MAX_TOTAL_MODULES = 100;
+    
+    // Group modules by their prefix
+    modules.forEach(module => {
+      // Extract prefix from course code (usually first 2-3 characters before numbers)
+      const match = module.course_code.match(/^[A-Z]+/);
+      const prefix = match ? match[0] : 'OTHER';
+      
+      if (!prefixModuleMap[prefix]) {
+        prefixModuleMap[prefix] = [];
+      }
+      
+      prefixModuleMap[prefix].push(module);
+    });
+    
+    // For each prefix, randomly select up to MAX_PER_PREFIX modules
+    const limitedModules: Module[] = [];
+    
+    Object.keys(prefixModuleMap).forEach(prefix => {
+      const modulesForPrefix = prefixModuleMap[prefix];
+      
+      // Randomize module selection for this prefix
+      const shuffled = [...modulesForPrefix].sort(() => 0.5 - Math.random());
+      const selected = shuffled.slice(0, MAX_PER_PREFIX);
+      
+      limitedModules.push(...selected);
+    });
+    
+    // Limit to MAX_TOTAL_MODULES and randomize the final selection
+    return limitedModules
+      .sort(() => 0.5 - Math.random())
+      .slice(0, MAX_TOTAL_MODULES);
+  }, []);
+
+  // Load module recommendations whenever major recommendations change
   const loadModuleRecommendations = useCallback(async () => {
     if (!majorRecommendations) return;
     
@@ -148,22 +187,19 @@ export const RecommendationProvider: React.FC<{children: React.ReactNode}> = ({ 
         semester: "1" // Default value
       }));
       
-      console.log("Loaded module recommendations:", modulesWithIds.length);
-      setModuleRecommendations(modulesWithIds);
+      // Limit modules by prefix and total count
+      const limitedModules = limitModulesPerPrefix(modulesWithIds);
+      
+      console.log("Loaded and limited module recommendations:", limitedModules.length);
+      setModuleRecommendations(limitedModules);
     } catch (error) {
       console.error("Error loading module recommendations:", error);
       setError("Failed to load module recommendations");
     } finally {
       setIsLoading(false);
     }
-  }, [majorRecommendations]);
+  }, [majorRecommendations, limitModulesPerPrefix]);
   
-  useEffect(() => {
-    if (majorRecommendations) {
-      loadModuleRecommendations();
-    }
-  }, [majorRecommendations, loadModuleRecommendations]);
-
   // Generate consistent module IDs based on modulecode - EXACTLY as in existing code
   const getModuleId = (code: string) => {
     let hash = 0;

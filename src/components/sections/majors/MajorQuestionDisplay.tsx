@@ -60,6 +60,12 @@ export const MajorQuestionDisplay = ({
   // Handle multi-question mode
   if (openEndedQuestions && openEndedQuestions.length > 0) {
     const currentQuestion = openEndedQuestions[currentIndex];
+    
+    // Initialize answer for the current question if it doesn't exist
+    if (currentQuestion && !answers[currentQuestion.id]) {
+      answers[currentQuestion.id] = { text: '', skipped: false };
+    }
+    
     const currentAnswer = currentQuestion ? (answers[currentQuestion.id] || { text: '', skipped: false }) : { text: '', skipped: false };
     
     const handleNextQuestion = () => {
@@ -102,7 +108,7 @@ export const MajorQuestionDisplay = ({
                 key={idx} 
                 className={`w-6 h-6 rounded-full flex items-center justify-center text-xs cursor-pointer
                   ${idx === currentIndex ? 'ring-2 ring-offset-2 ring-blue-500' : ''}
-                  ${hasAnswer ? 'bg-green-500 text-white' : 'bg-gray-200 dark:bg-gray-700'}`}
+                  ${hasAnswer ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-700'}`}
                 onClick={() => setCurrentIndex(idx)}
               >
                 {idx + 1}

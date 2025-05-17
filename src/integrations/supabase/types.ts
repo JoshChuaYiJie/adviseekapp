@@ -206,6 +206,33 @@ export type Database = {
         }
         Relationships: []
       }
+      recommendations_score: {
+        Row: {
+          created_at: string
+          id: string
+          module_code: string
+          module_prefix: string
+          rating: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          module_code: string
+          module_prefix: string
+          rating: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          module_code?: string
+          module_prefix?: string
+          rating?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       resumes: {
         Row: {
           activities: Json | null
