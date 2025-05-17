@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -432,7 +433,7 @@ const OpenEndedQuiz = () => {
     
     setSubmitting(true);
     try {
-      // Prepare responses for database - using the updated schema with question_id and skipped fields
+      // Prepare responses for database - now using the new open_ended_responses table
       const responsesToSubmit = Object.entries(responses).map(([questionId, responseData]) => {
         const questionInfo = questions.find(q => q.question.id === questionId);
         
