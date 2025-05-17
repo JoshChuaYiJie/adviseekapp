@@ -70,8 +70,11 @@ export const useResumeManager = () => {
     loadSavedResumes();
   }, [toast]);
 
-  const handleFileUpload = (file: File) => {
+  const handleFileUpload = (files: File[]) => {
     try {
+      // Use the first file if multiple files were uploaded
+      const file = files[0];
+      
       // Validate file type
       if (!file.type.includes('pdf')) {
         toast({

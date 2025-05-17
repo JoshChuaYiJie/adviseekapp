@@ -215,9 +215,14 @@ export const AppliedProgrammes = () => {
       if (data && data.length > 0) {
         // Add the new programme with its ID to the local state
         const programmeWithId: Programme = {
-          ...newProgramme,
           id: data[0].id,
-          course: selectedMajor
+          logo: newProgramme.logo_path,
+          school: newProgramme.school,
+          course: selectedMajor,
+          degree: newProgramme.degree,
+          major: newProgramme.major,
+          college: newProgramme.college,
+          extras: newProgramme.extras
         };
         
         setAppliedProgrammes([programmeWithId, ...appliedProgrammes]);

@@ -4,10 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { FileUp } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
-import { toast } from "@/components/ui/sonner";
+import { toast } from "sonner";
 
 interface UploadResumeCardProps {
-  onFileUpload: (files: File[]) => void;
+  onFileUpload: (file: File) => void;
 }
 
 export const UploadResumeCard = ({ onFileUpload }: UploadResumeCardProps) => {
@@ -40,7 +40,7 @@ export const UploadResumeCard = ({ onFileUpload }: UploadResumeCardProps) => {
     const pdfFiles = droppedFiles.filter(file => file.type === "application/pdf");
     
     if (pdfFiles.length > 0) {
-      onFileUpload(pdfFiles);
+      onFileUpload(pdfFiles[0]);
     } else {
       toast.error("Please upload PDF files only.");
     }
@@ -53,8 +53,7 @@ export const UploadResumeCard = ({ onFileUpload }: UploadResumeCardProps) => {
   const handleInputFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length > 0) {
-      const fileArray = Array.from(files);
-      onFileUpload(fileArray);
+      onFileUpload(files[0]);
     }
   };
 
@@ -83,7 +82,6 @@ export const UploadResumeCard = ({ onFileUpload }: UploadResumeCardProps) => {
         accept=".pdf"
         className="hidden"
         onChange={handleInputFileChange}
-        multiple
       />
     </Card>
   );

@@ -40,6 +40,12 @@ export const MyResume = () => {
     };
   }, []);
 
+  // Adapter function to handle file upload from UploadResumeCard
+  const handleFileUploadAdapter = (file: File) => {
+    // Convert single file to array for handleFileUpload
+    handleFileUpload([file]);
+  };
+
   return (
     <div className="w-full h-full space-y-6">
       {!isUserAuthenticated && (
@@ -52,7 +58,7 @@ export const MyResume = () => {
       
       {/* Upload and Build Resume Cards */}
       <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6">
-        <UploadResumeCard onFileUpload={handleFileUpload} />
+        <UploadResumeCard onFileUpload={handleFileUploadAdapter} />
         <BuildResumeCard />
       </div>
       
