@@ -35,7 +35,7 @@ const OpenEndedQuiz = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [responses, setResponses] = useState<Record<string, { response: string; skipped: boolean }>>({});
   
-  // Get recommended majors directly from context
+  // Get recommended majors from context
   const { majorRecommendations } = useRecommendationContext();
   
   // Debug state
@@ -135,47 +135,25 @@ const OpenEndedQuiz = () => {
           return;
         }
         
-        // We passed all checks, now use the global major recommendations
-        console.log("Using global major recommendations:", majorRecommendations);
+        // We passed all checks, now use recommended majors from AboutMe.tsx
+        // Instead of using the context directly, we'll extract majors from multiple sources
+        const recommendedMajorsList = getRecommendedMajorsList();
         
-        // Extract all recommended majors from context
-        if (majorRecommendations) {
-          const allRecommendedMajors = [
-            ...(majorRecommendations.exactMatches || []),
-            ...(majorRecommendations.permutationMatches || []),
-            ...(majorRecommendations.riasecMatches || []),
-            ...(majorRecommendations.workValueMatches || [])
-          ];
-          
-          // Remove duplicates
-          const uniqueMajors = [...new Set(allRecommendedMajors)];
-          
-          // Debug log
-          console.log("Extracted majors from context:", uniqueMajors);
+        if (recommendedMajorsList.length > 0) {
+          console.log("Using recommended majors:", recommendedMajorsList);
           
           // Update debug info
           setDebugInfo(prev => ({
             ...prev,
-            majorsList: uniqueMajors
+            majorsList: recommendedMajorsList
           }));
           
-          if (uniqueMajors.length > 0) {
-            // We have majors, prepare quiz questions
-            await prepareQuizQuestions(uniqueMajors);
-          } else {
-            console.log("No majors found in context");
-            toast({
-              title: "No Majors Found",
-              description: "We couldn't find any recommended majors. Please complete your profile first.",
-              variant: "destructive"
-            });
-            navigate('/');
-          }
+          await prepareQuizQuestions(recommendedMajorsList);
         } else {
-          console.log("Major recommendations context is null or undefined");
+          console.log("No recommended majors found");
           toast({
-            title: "No Recommendations",
-            description: "We couldn't find your major recommendations. Please complete your profile first.",
+            title: "No Majors Found",
+            description: "We couldn't find any recommended majors. Please complete your profile first.",
             variant: "destructive"
           });
           navigate('/');
@@ -195,6 +173,33 @@ const OpenEndedQuiz = () => {
     
     loadUserAndPrepareQuiz();
   }, [navigate, toast, majorRecommendations]);
+  
+  // Function to get recommended majors from all available sources
+  const getRecommendedMajorsList = () => {
+    const majors: string[] = [];
+    
+    // First priority: Use majorRecommendations from context if available
+    if (majorRecommendations) {
+      if (majorRecommendations.exactMatches?.length > 0) {
+        majors.push(...majorRecommendations.exactMatches);
+      }
+      
+      if (majorRecommendations.permutationMatches?.length > 0) {
+        majors.push(...majorRecommendations.permutationMatches);
+      }
+      
+      if (majorRecommendations.riasecMatches?.length > 0) {
+        majors.push(...majorRecommendations.riasecMatches);
+      }
+      
+      if (majorRecommendations.workValueMatches?.length > 0) {
+        majors.push(...majorRecommendations.workValueMatches);
+      }
+    }
+    
+    // Remove duplicates
+    return [...new Set(majors)];
+  };
   
   // Function to prepare quiz questions from the list of majors
   const prepareQuizQuestions = async (majors: string[]) => {
