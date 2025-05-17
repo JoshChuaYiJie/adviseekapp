@@ -44,9 +44,8 @@ export const RecommendationProvider: React.FC<{children: React.ReactNode}> = ({ 
   const [moduleRecommendations, setModuleRecommendations] = useState<Module[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [codesLastUpdated, setCodesLastUpdated] = useState<number>(0);
 
-  // Load RIASEC and Work Value codes from localStorage only once on mount
+  // Load RIASEC and Work Value codes from localStorage
   useEffect(() => {
     const loadCodes = async () => {
       try {
@@ -81,9 +80,6 @@ export const RecommendationProvider: React.FC<{children: React.ReactNode}> = ({ 
           setWorkValueCode(defaultWorkValueCode);
           console.log("Using default Work Values code:", defaultWorkValueCode);
         }
-        
-        // Record the timestamp when codes were last updated
-        setCodesLastUpdated(Date.now());
       } catch (error) {
         console.error("Error loading codes from localStorage:", error);
         // Use default fallbacks
@@ -95,7 +91,7 @@ export const RecommendationProvider: React.FC<{children: React.ReactNode}> = ({ 
     };
 
     loadCodes();
-  }, []); // Only run once on mount
+  }, []);
 
   // Load major recommendations whenever codes change
   useEffect(() => {
@@ -178,7 +174,7 @@ export const RecommendationProvider: React.FC<{children: React.ReactNode}> = ({ 
     setModuleRecommendations(modules);
   };
 
-  // Refresh all recommendations - only called explicitly when needed
+  // Refresh all recommendations
   const refreshRecommendations = async () => {
     try {
       console.log("Refreshing all recommendations...");
@@ -197,9 +193,6 @@ export const RecommendationProvider: React.FC<{children: React.ReactNode}> = ({ 
         const newWorkValueCode = formCode(workValueComponents, mapWorkValueToCode);
         setWorkValueCode(newWorkValueCode);
       }
-      
-      // Record the timestamp when codes were last updated
-      setCodesLastUpdated(Date.now());
       
       // The code and major recommendations will be updated through the effects
     } catch (error) {

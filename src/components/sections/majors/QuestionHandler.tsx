@@ -32,16 +32,6 @@ export const QuestionHandler = ({ questions, majorName }: QuestionHandlerProps) 
     setSkipped(initialSkipped);
   }, [questions]);
 
-  // Initialize empty response for current question if not already set
-  useEffect(() => {
-    if (!responses[currentQuestionIndex]) {
-      setResponses(prev => ({
-        ...prev,
-        [currentQuestionIndex]: ''
-      }));
-    }
-  }, [currentQuestionIndex]);
-
   const handleResponseChange = (response: string) => {
     setResponses({
       ...responses,
@@ -166,7 +156,7 @@ export const QuestionHandler = ({ questions, majorName }: QuestionHandlerProps) 
     return <div className="p-4 text-center">
       <p>No questions available for this major.</p>
       <Button 
-        className="mt-4 bg-purple-500 hover:bg-purple-600"
+        className="mt-4"
         onClick={() => navigate('/recommendations')}
       >
         Back to Recommendations
@@ -188,9 +178,9 @@ export const QuestionHandler = ({ questions, majorName }: QuestionHandlerProps) 
           <div 
             key={index} 
             className={`w-6 h-6 rounded-full flex items-center justify-center text-xs cursor-pointer transition-colors
-              ${index === currentQuestionIndex ? 'ring-2 ring-purple-500 ring-offset-2' : ''}
+              ${index === currentQuestionIndex ? 'ring-2 ring-offset-2' : ''}
               ${skipped[index] ? 'bg-yellow-500 text-white' : 
-                responses[index] ? 'bg-purple-500 text-white' : 'bg-gray-200 dark:bg-gray-700'}`}
+                responses[index] ? 'bg-green-500 text-white' : 'bg-gray-200 dark:bg-gray-700'}`}
             onClick={() => setCurrentQuestionIndex(index)}
           >
             {index + 1}
@@ -225,7 +215,6 @@ export const QuestionHandler = ({ questions, majorName }: QuestionHandlerProps) 
           {!isLastQuestion ? (
             <Button 
               onClick={handleNext}
-              className="bg-purple-500 hover:bg-purple-600"
             >
               Next
             </Button>
@@ -233,7 +222,6 @@ export const QuestionHandler = ({ questions, majorName }: QuestionHandlerProps) 
             <Button 
               onClick={handleFinish}
               disabled={isSubmitting}
-              className="bg-green-600 hover:bg-green-700"
             >
               {isSubmitting ? "Saving..." : "Finish"}
             </Button>

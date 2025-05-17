@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { OpenEndedQuestion } from './types';
@@ -33,18 +33,6 @@ export const MajorQuestionDisplay = ({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, { text: string; skipped: boolean }>>({});
 
-  // Initialize empty answers for new question sets
-  useEffect(() => {
-    if (openEndedQuestions.length > 0) {
-      // Pre-initialize all questions with empty answers
-      const initializedAnswers: Record<string, { text: string; skipped: boolean }> = {};
-      openEndedQuestions.forEach(q => {
-        initializedAnswers[q.id] = { text: '', skipped: false };
-      });
-      setAnswers(prev => ({...prev, ...initializedAnswers}));
-    }
-  }, [openEndedQuestions]);
-
   // Handle standalone question mode
   if (question) {
     const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -57,9 +45,9 @@ export const MajorQuestionDisplay = ({
       <div className={`p-6 rounded-lg ${
         isSkipped ? 'bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800' :
         response ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800' :
-        isFocused ? 'bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800' :
+        isFocused ? 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800' :
         'bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700'
-      } transition-colors duration-200 shadow-md`}>
+      } transition-colors duration-200`}>
         <h3 className="text-lg font-medium mb-4">{question}</h3>
         <Textarea
           value={response}
@@ -67,7 +55,7 @@ export const MajorQuestionDisplay = ({
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           placeholder="Type your answer here..."
-          className="min-h-[120px] resize-y border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+          className="min-h-[120px] resize-y"
           disabled={isSkipped}
         />
         {isSkipped && (
@@ -134,9 +122,9 @@ export const MajorQuestionDisplay = ({
               <div 
                 key={idx} 
                 className={`w-6 h-6 rounded-full flex items-center justify-center text-xs cursor-pointer transition-colors
-                  ${idx === currentIndex ? 'ring-2 ring-purple-500 ring-offset-2' : ''}
+                  ${idx === currentIndex ? 'ring-2 ring-offset-2' : ''}
                   ${isSkipped ? 'bg-yellow-500 text-white' : 
-                    isAnswered ? 'bg-purple-500 text-white' : 'bg-gray-200 dark:bg-gray-700'}`}
+                    isAnswered ? 'bg-green-500 text-white' : 'bg-gray-200 dark:bg-gray-700'}`}
                 onClick={() => setCurrentIndex(idx)}
               >
                 {idx + 1}
@@ -145,17 +133,17 @@ export const MajorQuestionDisplay = ({
           })}
         </div>
         
-        <div className={`p-6 rounded-lg shadow-md ${
+        <div className={`p-6 rounded-lg ${
           currentAnswer.skipped ? 'bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800' :
           currentAnswer.text ? 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800' :
-          'bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800'
+          'bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700'
         }`}>
           <h3 className="text-lg font-medium mb-4">{currentQuestion.question}</h3>
           <Textarea
             value={currentAnswer.text}
             onChange={handleChange}
             placeholder="Type your answer here..."
-            className="min-h-[120px] resize-y border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+            className="min-h-[120px] resize-y"
             disabled={currentAnswer.skipped}
           />
           {currentAnswer.skipped && (
@@ -179,7 +167,7 @@ export const MajorQuestionDisplay = ({
               Skip
             </Button>
             {currentIndex < openEndedQuestions.length - 1 ? (
-              <Button onClick={handleNextQuestion} className="bg-purple-500 hover:bg-purple-600">
+              <Button onClick={handleNextQuestion}>
                 Next
               </Button>
             ) : (
