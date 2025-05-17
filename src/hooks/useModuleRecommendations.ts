@@ -20,13 +20,15 @@ export const useModuleRecommendations = () => {
 
   // Convert the global modules to the RecommendedModule format
   useEffect(() => {
+    console.log("useModuleRecommendations: Converting global modules, count:", moduleRecommendations.length);
+    
     const formattedModules: RecommendedModule[] = moduleRecommendations.map(module => ({
       module,
       reasoning: ["Based on your recommended majors"]
     }));
     
     setRecommendedModules(formattedModules);
-    console.log("useModuleRecommendations: formatted modules count:", formattedModules.length);
+    console.log("useModuleRecommendations: Formatted modules count:", formattedModules.length);
   }, [moduleRecommendations]);
 
   return { 

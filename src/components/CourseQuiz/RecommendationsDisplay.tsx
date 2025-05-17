@@ -22,7 +22,10 @@ export const RecommendationsDisplay: React.FC<RecommendationsDisplayProps> = ({ 
   } = useQuiz();
   
   // Use our hook for recommendations
-  const { recommendedModules, loadingModules, error } = useModuleRecommendations();
+  const { recommendedModules, loadingModules, error, refetchRecommendations } = useModuleRecommendations();
+  
+  // Log to check if recommendations are loaded
+  console.log("RecommendationsDisplay: Module recommendations count:", recommendedModules.length);
   
   const [modalOpen, setModalOpen] = useState(false);
   const [selections, setSelections] = useState<{module: Module, reason: string}[]>([]);
@@ -78,7 +81,11 @@ export const RecommendationsDisplay: React.FC<RecommendationsDisplayProps> = ({ 
       <div className="flex flex-col items-center justify-center p-8 min-h-[60vh]">
         <h2 className="text-2xl font-bold">No Recommendations Available</h2>
         <p className="mt-4 text-gray-700">We couldn't generate recommendations based on your responses.</p>
-        <Button onClick={onBack} className="mt-8">Go Back</Button>
+        <Button onClick={() => {
+          console.log("Triggering recommendations refresh...");
+          refetchRecommendations();
+        }} className="mt-4">Refresh Recommendations</Button>
+        <Button onClick={onBack} className="mt-4">Go Back</Button>
       </div>
     );
   }
@@ -92,6 +99,8 @@ export const RecommendationsDisplay: React.FC<RecommendationsDisplayProps> = ({ 
     created_at: new Date().toISOString(),
     reason: rec.reasoning[0] || "Recommended based on your major preferences"
   }));
+  
+  console.log("RecommendationsDisplay: Final formatted recommendations:", recommendations.length);
   
   return (
     <div className="flex flex-col min-h-screen bg-white">
