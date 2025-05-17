@@ -28,13 +28,61 @@ export const QuestionHandler = ({ questions, majorName }: QuestionHandlerProps) 
     console.log("Initializing responses for questions:", questions.length);
     const initialResponses: Record<number, string> = {};
     const initialSkipped: Record<number, boolean> = {};
-    questions.forEach((question) => {
-      initialResponses[question.id] = '';
-      initialSkipped[question.id] = false;
-    });
+    
+    // Try to load from localStorage first
+    try {
+      const savedResponses = localStorage.getItem('openEndedResponses');
+      const savedSkipped = localStorage.getItem('openEndedSkipped');
+      
+      if (savedResponses) {
+        const parsedResponses = JSON.parse(savedResponses);
+        // Only use saved responses that match the current questions
+        questions.forEach((question) => {
+          initialResponses[question.id] = parsedResponses[question.id] || '';
+        });
+        console.log("Loaded cached responses:", initialResponses);
+      } else {
+        questions.forEach((question) => {
+          initialResponses[question.id] = '';
+        });
+      }
+      
+      if (savedSkipped) {
+        const parsedSkipped = JSON.parse(savedSkipped);
+        // Only use saved skipped status that match the current questions
+        questions.forEach((question) => {
+          initialSkipped[question.id] = parsedSkipped[question.id] || false;
+        });
+        console.log("Loaded cached skipped statuses:", initialSkipped);
+      } else {
+        questions.forEach((question) => {
+          initialSkipped[question.id] = false;
+        });
+      }
+    } catch (error) {
+      console.error("Error loading cached responses:", error);
+      // Fall back to empty responses
+      questions.forEach((question) => {
+        initialResponses[question.id] = '';
+        initialSkipped[question.id] = false;
+      });
+    }
+    
     setResponses(initialResponses);
     setSkippedQuestions(initialSkipped);
   }, [questions]);
+
+  // Cache responses in localStorage whenever they change
+  useEffect(() => {
+    try {
+      localStorage.setItem('openEndedResponses', JSON.stringify(responses));
+      localStorage.setItem('openEndedSkipped', JSON.stringify(skippedQuestions));
+      console.log("Cached responses to localStorage:", responses);
+      console.log("Cached skipped statuses to localStorage:", skippedQuestions);
+    } catch (error) {
+      console.error("Error caching responses:", error);
+    }
+  }, [responses, skippedQuestions]);
 
   const handleResponseChange = (response: string) => {
     console.log(`Response changed for question ${currentQuestionIndex}:`, response);
@@ -139,6 +187,11 @@ export const QuestionHandler = ({ questions, majorName }: QuestionHandlerProps) 
             title: "Responses saved successfully",
             description: `Saved ${responsesToSave.length} response(s)`,
           });
+          
+          // Clear cached responses after successful submission
+          localStorage.removeItem('openEndedResponses');
+          localStorage.removeItem('openEndedSkipped');
+          console.log("Cleared cached responses after successful submission");
         }
       } else {
         toast({

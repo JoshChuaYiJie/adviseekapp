@@ -1,5 +1,4 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { OpenEndedQuestion } from './types';
@@ -18,53 +17,11 @@ export const useQuestionHandler = ({ userId }: { userId: string | null }) => {
   const { majorRecommendations } = useRecommendationContext();
 
   // Load questions for a specific major
-  const loadQuestions = async (majorName: string) => {
-    setLoadingQuestions(true);
-    try {
-      // Initialize the open-ended questions for the major
-      const formattedMajor = majorName.replace(/ /g, '_').replace(/[\/&,]/g, '_');
-      const schools = ['NTU', 'NUS', 'SMU'];
-      
-      // Try each school suffix until we find one that works
-      let allQuestions: OpenEndedQuestion[] = [];
-      let foundQuestions = false;
-      
-      for (const school of schools) {
-        try {
-          const response = await fetch(`/quiz_refer/Open_ended_quiz_questions/${formattedMajor}_${school}.json`);
-          
-          if (response.ok) {
-            const questions = await response.json();
-            console.log(`Found ${questions.length} questions for ${majorName} at ${school}`);
-            allQuestions = questions;
-            foundQuestions = true;
-            break;
-          }
-        } catch (error) {
-          console.error(`Error loading questions for ${majorName} at ${school}:`, error);
-          // Continue to next school
-        }
-      }
-      
-      if (!foundQuestions) {
-        console.log(`No questions found for ${majorName}`);
-        setQuestions([]);
-        setLoadingQuestions(false);
-        return;
-      }
-
-      setQuestions(allQuestions);
-    } catch (error) {
-      console.error('Error loading questions:', error);
-      toast({
-        title: "Error",
-        description: "Failed to load questions. Please try again.",
-        variant: "destructive"
-      });
-    } finally {
-      setLoadingQuestions(false);
-    }
-  };
+  useEffect(() => {
+    const loadSavedResumes = async () => {
+    };
+    
+  }, [toast]);
 
   // Prepare questions for recommended majors - updated to use context
   const prepareQuestionsForRecommendedMajors = async (providedMajors?: string[]) => {
@@ -166,6 +123,54 @@ export const useQuestionHandler = ({ userId }: { userId: string | null }) => {
     }
   };
 
+  const loadQuestions = async (majorName: string) => {
+    setLoadingQuestions(true);
+    try {
+      // Initialize the open-ended questions for the major
+      const formattedMajor = majorName.replace(/ /g, '_').replace(/[\/&,]/g, '_');
+      const schools = ['NTU', 'NUS', 'SMU'];
+      
+      // Try each school suffix until we find one that works
+      let allQuestions: OpenEndedQuestion[] = [];
+      let foundQuestions = false;
+      
+      for (const school of schools) {
+        try {
+          const response = await fetch(`/quiz_refer/Open_ended_quiz_questions/${formattedMajor}_${school}.json`);
+          
+          if (response.ok) {
+            const questions = await response.json();
+            console.log(`Found ${questions.length} questions for ${majorName} at ${school}`);
+            allQuestions = questions;
+            foundQuestions = true;
+            break;
+          }
+        } catch (error) {
+          console.error(`Error loading questions for ${majorName} at ${school}:`, error);
+          // Continue to next school
+        }
+      }
+      
+      if (!foundQuestions) {
+        console.log(`No questions found for ${majorName}`);
+        setQuestions([]);
+        setLoadingQuestions(false);
+        return;
+      }
+
+      setQuestions(allQuestions);
+    } catch (error) {
+      console.error('Error loading questions:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load questions. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoadingQuestions(false);
+    }
+  };
+
   // Submit responses to the database
   const handleSubmitResponses = async (majorName: string | null) => {
     if (!userId) {
@@ -186,7 +191,7 @@ export const useQuestionHandler = ({ userId }: { userId: string | null }) => {
         .map(([questionId, response]) => {
           const questionInfo = questions.find(q => q.id === questionId);
           
-          return {
+          const dataToSave = {
             user_id: userId,
             question_id: questionId,
             question: questionInfo?.question || '',
@@ -194,11 +199,16 @@ export const useQuestionHandler = ({ userId }: { userId: string | null }) => {
             skipped: response.skipped,
             major: questionInfo?.majorName || majorName || ''
           };
+          
+          console.log(`Preparing to save response for question ${questionId}:`, dataToSave);
+          return dataToSave;
         });
       
       if (responsesToSave.length > 0) {
+        console.log(`Submitting ${responsesToSave.length} responses to Supabase:`, responsesToSave);
+        
         // Save valid responses to database
-        const { error } = await supabase
+        const { error, data } = await supabase
           .from('open_ended_responses')
           .insert(responsesToSave);
           
@@ -210,6 +220,7 @@ export const useQuestionHandler = ({ userId }: { userId: string | null }) => {
             variant: "destructive"
           });
         } else {
+          console.log("Responses saved successfully:", data);
           toast({
             title: "Responses saved successfully",
             description: `Saved ${responsesToSave.length} response(s)`,
@@ -227,6 +238,14 @@ export const useQuestionHandler = ({ userId }: { userId: string | null }) => {
             
           if (completionError) {
             console.error('Error updating quiz completion:', completionError);
+          }
+          
+          // Clear cached responses after successful submission
+          try {
+            localStorage.removeItem('cachedOpenEndedResponses');
+            console.log("Cleared cached open-ended responses after successful submission");
+          } catch (e) {
+            console.error("Error clearing cached responses:", e);
           }
           
           setCompleted(true);

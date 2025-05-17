@@ -23,13 +23,14 @@ export const useResumeManager = () => {
     const loadSavedResumes = async () => {
       try {
         setLoading(true);
+        console.log("[Resume Manager] Loading saved resumes");
         
         // Get the current user session
         const { data: sessionData } = await supabase.auth.getSession();
-        console.log("Auth session for resume loading:", sessionData);
+        console.log("[Resume Manager] Auth session for resume loading:", sessionData);
         
         if (!sessionData.session?.user) {
-          console.log("No user session found for resume loading");
+          console.log("[Resume Manager] No user session found for resume loading");
           setLoading(false);
           return;
         }
@@ -42,7 +43,7 @@ export const useResumeManager = () => {
           .order('updated_at', { ascending: false });
           
         if (error) {
-          console.error("Error loading resumes:", error);
+          console.error("[Resume Manager] Error loading resumes:", error);
           toast({
             title: "Error Loading Resumes",
             description: "There was a problem loading your saved resumes.",
@@ -55,13 +56,13 @@ export const useResumeManager = () => {
             updated_at: new Date(resume.updated_at).toLocaleDateString()
           }));
           
-          console.log(`Loaded ${formattedResumes.length} resumes from Supabase:`, formattedResumes);
+          console.log(`[Resume Manager] Loaded ${formattedResumes.length} resumes from Supabase:`, formattedResumes);
           setSavedResumes(formattedResumes);
         } else {
-          console.log("No resumes found");
+          console.log("[Resume Manager] No resumes found");
         }
       } catch (error) {
-        console.error("Error loading resumes:", error);
+        console.error("[Resume Manager] Error loading resumes:", error);
       } finally {
         setLoading(false);
       }
@@ -73,13 +74,13 @@ export const useResumeManager = () => {
   const handleFileUpload = (files: File[]) => {
     try {
       if (!files.length) {
-        console.error("No files provided to handleFileUpload");
+        console.error("[Resume Manager] No files provided to handleFileUpload");
         return;
       }
       
       // Use the first file if multiple files were uploaded
       const file = files[0];
-      console.log("Processing uploaded file:", file.name, file.type);
+      console.log("[Resume Manager] Processing uploaded file:", file.name, file.type);
       
       // Validate file type
       if (!file.type.includes('pdf')) {
@@ -92,14 +93,14 @@ export const useResumeManager = () => {
       }
       
       setResumeFiles(prevFiles => [file, ...prevFiles]);
-      console.log("Resume file added to state");
+      console.log("[Resume Manager] Resume file added to state");
       
       toast({
         title: "Resume Uploaded",
         description: "Your resume has been uploaded successfully.",
       });
     } catch (error) {
-      console.error("Error uploading file:", error);
+      console.error("[Resume Manager] Error uploading file:", error);
       toast({
         title: "Upload Error",
         description: "There was a problem uploading your resume.",
@@ -110,10 +111,10 @@ export const useResumeManager = () => {
 
   const handleViewResume = async (resumeId: string, templateType: string) => {
     try {
-      console.log(`Navigating to view resume: ${resumeId} with template: ${templateType}`);
+      console.log(`[Resume Manager] Navigating to view resume: ${resumeId} with template: ${templateType}`);
       navigate(`/resumebuilder/${templateType.toLowerCase()}?id=${resumeId}&mode=view`);
     } catch (error) {
-      console.error("Navigation error:", error);
+      console.error("[Resume Manager] Navigation error:", error);
       toast({
         title: "Navigation Error",
         description: "There was a problem viewing this resume.",
@@ -124,10 +125,10 @@ export const useResumeManager = () => {
 
   const handleEditResume = async (resumeId: string, templateType: string) => {
     try {
-      console.log(`Navigating to edit resume: ${resumeId} with template: ${templateType}`);
+      console.log(`[Resume Manager] Navigating to edit resume: ${resumeId} with template: ${templateType}`);
       navigate(`/resumebuilder/${templateType.toLowerCase()}?id=${resumeId}&mode=edit`);
     } catch (error) {
-      console.error("Navigation error:", error);
+      console.error("[Resume Manager] Navigation error:", error);
       toast({
         title: "Navigation Error",
         description: "There was a problem editing this resume.",
@@ -148,11 +149,11 @@ export const useResumeManager = () => {
       const fileUrl = URL.createObjectURL(file);
       localStorage.setItem('uploadedPDF', file.name);
       localStorage.setItem('uploadedPDFUrl', fileUrl);
-      console.log("PDF set in localStorage, navigating to resume builder");
+      console.log("[Resume Manager] PDF set in localStorage, navigating to resume builder");
       
       navigate('/resumebuilder/basic?source=pdf');
     } catch (error) {
-      console.error("Navigation error:", error);
+      console.error("[Resume Manager] Navigation error:", error);
       toast({
         title: "Navigation Error",
         description: "There was a problem editing this PDF.",

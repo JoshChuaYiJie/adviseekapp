@@ -32,7 +32,35 @@ const OpenEndedQuiz = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  
+  // Add cached responses state management
   const [responses, setResponses] = useState<Record<string, { response: string; skipped: boolean }>>({});
+  
+  // Load cached responses on component mount
+  useEffect(() => {
+    try {
+      const cachedResponses = localStorage.getItem('openEndedQuizResponses');
+      if (cachedResponses) {
+        const parsedResponses = JSON.parse(cachedResponses);
+        console.log("Loaded cached responses from localStorage:", parsedResponses);
+        setResponses(parsedResponses);
+      }
+    } catch (error) {
+      console.error("Error loading cached responses:", error);
+    }
+  }, []);
+  
+  // Cache responses whenever they change
+  useEffect(() => {
+    if (Object.keys(responses).length > 0) {
+      try {
+        localStorage.setItem('openEndedQuizResponses', JSON.stringify(responses));
+        console.log("Cached responses to localStorage:", responses);
+      } catch (error) {
+        console.error("Error caching responses:", error);
+      }
+    }
+  }, [responses]);
   
   // Get recommended majors directly from context
   const { majorRecommendations } = useRecommendationContext();
@@ -325,6 +353,21 @@ const OpenEndedQuiz = () => {
         skipped: false 
       }
     }));
+    
+    // Cache the response immediately
+    try {
+      const updatedResponses = {
+        ...responses,
+        [questionId]: {
+          response: value,
+          skipped: false
+        }
+      };
+      localStorage.setItem('openEndedQuizResponses', JSON.stringify(updatedResponses));
+      console.log(`Cached response for question ${questionId}:`, value);
+    } catch (error) {
+      console.error("Error caching response:", error);
+    }
   };
   
   // Navigate to next question
@@ -397,13 +440,23 @@ const OpenEndedQuiz = () => {
     const questionId = questions[currentQuestionIndex].question.id;
     
     // Mark question as skipped
-    setResponses(prev => ({
-      ...prev,
+    const updatedResponses = {
+      ...responses,
       [questionId]: { 
         response: '',
         skipped: true 
       }
-    }));
+    };
+    
+    setResponses(updatedResponses);
+    
+    // Cache the skipped status immediately
+    try {
+      localStorage.setItem('openEndedQuizResponses', JSON.stringify(updatedResponses));
+      console.log(`Cached skipped status for question ${questionId}`);
+    } catch (error) {
+      console.error("Error caching skipped status:", error);
+    }
 
     // Move to next question or submit if this is the last one
     if (currentQuestionIndex < questions.length - 1) {
@@ -436,7 +489,7 @@ const OpenEndedQuiz = () => {
       const responsesToSubmit = Object.entries(responses).map(([questionId, responseData]) => {
         const questionInfo = questions.find(q => q.question.id === questionId);
         
-        return {
+        const dataToSave = {
           user_id: userId,
           question_id: questionId,
           response: responseData.response,
@@ -444,6 +497,9 @@ const OpenEndedQuiz = () => {
           major: questionInfo?.major || '',
           question: questionInfo?.question?.question || ''
         };
+        
+        console.log(`Preparing to submit response for ${questionId}:`, dataToSave);
+        return dataToSave;
       });
       
       // Filter out any undefined responses (shouldn't happen but just in case)
@@ -452,7 +508,7 @@ const OpenEndedQuiz = () => {
       console.log("Submitting responses to open_ended_responses table:", validResponses);
       
       // Upload responses to Supabase open_ended_responses table
-      const { error } = await supabase
+      const { error, data } = await supabase
         .from('open_ended_responses')
         .insert(validResponses);
         
@@ -460,6 +516,8 @@ const OpenEndedQuiz = () => {
         console.error("Error inserting into open_ended_responses:", error);
         throw new Error(error.message);
       }
+      
+      console.log("Responses saved successfully:", data);
       
       // Update quiz completion status
       const { error: completionError } = await supabase
@@ -484,6 +542,10 @@ const OpenEndedQuiz = () => {
           completions.push('open-ended');
           localStorage.setItem('completed_quiz_segments', JSON.stringify(completions));
         }
+        
+        // Clear cached responses after successful submission
+        localStorage.removeItem('openEndedQuizResponses');
+        console.log("Cleared cached responses after successful submission");
       } catch (error) {
         console.error("Error updating local storage:", error);
       }
