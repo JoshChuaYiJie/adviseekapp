@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { McqQuestion } from '@/utils/quizQuestions';
@@ -8,14 +7,20 @@ export const loadQuizQuestions = async (currentStep: number): Promise<McqQuestio
   try {
     // Load questions based on current step
     let questionsJsonPath = '';
+    let category = '';
+    
     if (currentStep === 1) {
       questionsJsonPath = './quiz_refer/Mcq_questions/RIASEC_interest_questions_pt1.json';
+      category = 'interest-part 1';
     } else if (currentStep === 2) {
       questionsJsonPath = './quiz_refer/Mcq_questions/RIASEC_interest_questions_pt2.json';
+      category = 'interest-part 2';
     } else if (currentStep === 3) {
       questionsJsonPath = './quiz_refer/Mcq_questions/RIASEC_competence_questions.json';
+      category = 'competence';
     } else if (currentStep === 4) {
       questionsJsonPath = './quiz_refer/Mcq_questions/Work_value_questions.json';
+      category = 'work-values';
     }
 
     if (!questionsJsonPath) {
@@ -23,7 +28,7 @@ export const loadQuizQuestions = async (currentStep: number): Promise<McqQuestio
     }
 
     // Debug logging to help diagnose path issues
-    console.log(`Attempting to fetch questions from: ${questionsJsonPath}`);
+    console.log(`Attempting to fetch questions from: ${questionsJsonPath} for category ${category}`);
     
     const response = await fetch(questionsJsonPath);
     
@@ -38,7 +43,7 @@ export const loadQuizQuestions = async (currentStep: number): Promise<McqQuestio
     // Add category property based on the current step if it doesn't exist
     const questionsWithCategory = loadedQuestions.map(q => ({
       ...q,
-      category: q.category || `interest-part ${currentStep}`,
+      category: q.category || category,
       id: q.id || String(Math.random())
     }));
     
@@ -89,4 +94,3 @@ export const loadUserResponses = async () => {
     return {};
   }
 };
-

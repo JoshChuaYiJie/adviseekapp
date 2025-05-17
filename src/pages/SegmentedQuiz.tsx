@@ -278,7 +278,10 @@ const SegmentedQuiz = () => {
   };
 
   const handleQuizCompletion = async () => {
-    const quizType = `interest-part ${currentStep}`;
+    // Fix quiz type format for consistency
+    const quizType = currentStep === 3 ? "competence" : 
+                     currentStep === 4 ? "work-values" : 
+                     `interest-part ${currentStep}`;
     await submitResponses(quizType);
     navigate('/recommendations');
   };

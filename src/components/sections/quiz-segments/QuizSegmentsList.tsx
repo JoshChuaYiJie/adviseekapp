@@ -27,7 +27,7 @@ export const QuizSegmentsList = ({
 }: QuizSegmentsListProps) => {
   const { isCurrentlyDark } = useTheme();
   const { resetQuiz, navigateToPath } = useQuiz();
-  const [activeTab, setActiveTab] = useState("interest-part 1");
+  const [activeTab, setActiveTab] = useState("interest-part-1");
   
   // Enhanced function to handle quiz start/retake with appropriate state reset
   const handleStartQuiz = (segmentId: string) => {
@@ -43,19 +43,21 @@ export const QuizSegmentsList = ({
     if (segmentId === "open-ended") {
       navigateToPath(`/open-ended`);
     } else {
-      navigateToPath(`/quiz/${segmentId}`);
+      // Fix URL format to use proper path parameter format
+      const stepNumber = segmentId.split("-").pop();
+      navigateToPath(`/quiz/interest-part/${stepNumber}`);
     }
   };
   
   const quizSegments: QuizSegment[] = [
     {
-      id: "interest-part 1",
+      id: "interest-part-1",
       title: "Interest Part 1",
       description: "Answer questions about your interests in different activities and subjects.",
       completed: completedSegments.includes("interest-part 1")
     },
     {
-      id: "interest-part 2",
+      id: "interest-part-2",
       title: "Interest Part 2",
       description: "Continue exploring your interests with additional questions.",
       completed: completedSegments.includes("interest-part 2")
