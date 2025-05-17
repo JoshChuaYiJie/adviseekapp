@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -35,9 +34,12 @@ const Recommendations = () => {
   // Log recommendations for debugging
   console.log("Recommendations in /recommendations page:", recommendedModules.length);
 
-  // Convert recommendedModules to the same format as recommendations
+  // Convert recommendedModules to the same format as recommendations with proper type casting
   const recommendations = recommendedModules.map((rec) => ({
-    module: rec.module,
+    module: {
+      ...rec.module,
+      university: rec.module.university as "NUS" | "NTU" | "SMU"
+    } as Module,
     module_id: rec.module.id,
     user_id: "",
     reason: rec.reasoning[0] || "Recommended based on your major preferences",
@@ -307,7 +309,7 @@ const Recommendations = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#f8fafc] via-[#ede9fe] to-[#f3e8ff] text-gray-900 flex flex-col items-center justify-center p-8 font-open-sans">
         <h2 className="text-3xl font-bold text-red-400 mb-4">Error</h2>
-        <p className="mb-8">{error}</p>
+        <p className="mb-8">{error.message || "An unknown error occurred"}</p>
         <Button onClick={() => navigate(-1)}>Go Back</Button>
       </div>
     );

@@ -124,7 +124,7 @@ export const RecommendationsDisplay: React.FC<RecommendationsDisplayProps> = ({ 
     return (
       <div className="flex flex-col items-center justify-center p-8 min-h-[60vh]">
         <h2 className="text-2xl font-bold text-red-600">Error Loading Recommendations</h2>
-        <p className="mt-4 text-gray-700">{error}</p>
+        <p className="mt-4 text-gray-700">{error.message || "An error occurred"}</p>
         <Button onClick={onBack} className="mt-8">Go Back</Button>
       </div>
     );

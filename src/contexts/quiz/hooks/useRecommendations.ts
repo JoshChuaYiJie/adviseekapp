@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Module } from '@/integrations/supabase/client';
 import { getUserId } from '../utils/databaseHelpers';
@@ -31,7 +30,10 @@ export const useRecommendations = () => {
     module_id: rec.module.id,
     reason: rec.reasoning[0] || "Recommended based on your major preferences",
     created_at: new Date().toISOString(),
-    module: rec.module
+    module: {
+      ...rec.module,
+      university: rec.module.university as "NUS" | "NTU" | "SMU"
+    } as Module
   }));
 
   // Log the recommendations for debugging
@@ -166,9 +168,12 @@ export const useRecommendations = () => {
         return [];
       }
       
-      // Convert selections to ModuleSelection format
+      // Convert selections to ModuleSelection format and ensure proper typing
       const formattedSelections: ModuleSelection[] = selections.map(module => ({
-        module,
+        module: {
+          ...module,
+          university: module.university as "NUS" | "NTU" | "SMU"
+        } as Module,
         reason: "Selected based on your preferences"
       }));
       

@@ -1,17 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRecommendationContext } from '@/contexts/RecommendationContext';
-
-// Define the Module interface matching what's in RecommendationContext
-interface Module {
-  id: number;
-  university: string; // This will be cast to proper type when needed
-  course_code: string;
-  title: string;
-  description: string;
-  aus_cus: number;
-  semester: string;
-}
+import { Module } from '@/integrations/supabase/client';
 
 export interface RecommendedModule {
   module: Module;
@@ -37,9 +27,9 @@ export const useModuleRecommendations = () => {
       const formattedModules = moduleRecommendations.map(module => ({
         module: {
           ...module,
-          // Ensure university is one of the allowed values
+          // Ensure university is properly typed as a union type
           university: module.university as "NUS" | "NTU" | "SMU"
-        },
+        } as Module,
         reasoning: ["Based on your recommended majors"]
       }));
       
