@@ -44,8 +44,11 @@ export const AboutMe = () => {
     isCurrentlyDark
   } = useTheme();
   
-  // Use the global recommendation context
-  const { updateModuleRecommendations } = useRecommendationContext();
+  // Use the global recommendation context for state management
+  const { 
+    updateModuleRecommendations, 
+    updateMajorRecommendations 
+  } = useRecommendationContext();
   
   // Enhanced state for dynamic profile information
   const [profileInfo, setProfileInfo] = useState({
@@ -146,6 +149,9 @@ export const AboutMe = () => {
           console.log("Recommended majors:", majorRecommendations);
           setRecommendedMajors(majorRecommendations);
           
+          // IMPORTANT: Update the global context with major recommendations
+          updateMajorRecommendations(majorRecommendations);
+          
           // Fetch module recommendations based on the recommended majors
           setLoadingModules(true);
           try {
@@ -164,6 +170,8 @@ export const AboutMe = () => {
               semester: "1"
             })));
             
+            console.log("Updated global module recommendations in context");
+            
           } catch (error) {
             console.error("Error fetching module recommendations:", error);
           } finally {
@@ -177,7 +185,7 @@ export const AboutMe = () => {
       }
     };
     loadUserProfiles();
-  }, [updateModuleRecommendations]);
+  }, [updateModuleRecommendations, updateMajorRecommendations]);
 
   // Helper function to generate consistent module IDs
   const getModuleId = (code: string) => {
@@ -189,6 +197,8 @@ export const AboutMe = () => {
     }
     return Math.abs(hash);
   };
+
+  // ... keep existing code (generateStrengthsFromRIASEC, generateLikesFromRIASEC, generateDislikesFromRIASEC, generateWorkPreferencesFromWorkValues functions)
 
   const generateStrengthsFromRIASEC = (code: string): string[] => {
     const traits: Record<string, string[]> = {
