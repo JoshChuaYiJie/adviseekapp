@@ -79,10 +79,10 @@ const OpenEndedQuiz = () => {
     }
   }, [responses]);
   
-  // Focus textarea when current question changes
+  // Focus management for textarea
   useEffect(() => {
     if (textareaRef.current) {
-      // Use a small timeout to ensure the DOM is ready
+      // Use a small delay to ensure the DOM has updated
       setTimeout(() => {
         textareaRef.current?.focus();
       }, 50);
@@ -420,22 +420,13 @@ const OpenEndedQuiz = () => {
         return prev;
       }
       
-      const updatedResponses = {
+      return {
         ...prev,
         [questionId]: { 
           response: value,
           skipped: false 
         }
       };
-      
-      // Cache the response immediately, but don't do it inside this state update function
-      try {
-        localStorage.setItem('openEndedQuizResponses', JSON.stringify(updatedResponses));
-      } catch (error) {
-        console.error("Error caching response:", error);
-      }
-      
-      return updatedResponses;
     });
   };
   
