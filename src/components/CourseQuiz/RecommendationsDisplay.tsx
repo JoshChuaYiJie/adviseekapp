@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { useToast } from "@/hooks/use-toast";
@@ -7,6 +8,7 @@ import { Module } from '@/integrations/supabase/client';
 import { RecommendationsSkeleton } from './RecommendationsSkeleton';
 import { SelectionModal } from './SelectionModal';
 import { useModuleRecommendations } from '@/hooks/useModuleRecommendations';
+import { supabase } from '@/integrations/supabase/client';
 
 interface RecommendationsDisplayProps {
   onBack: () => void;
@@ -29,6 +31,18 @@ export const RecommendationsDisplay: React.FC<RecommendationsDisplayProps> = ({ 
   
   const [modalOpen, setModalOpen] = useState(false);
   const [selections, setSelections] = useState<{module: Module, reason: string}[]>([]);
+  const [userId, setUserId] = useState<string | null>(null);
+  
+  // Get current user ID
+  useEffect(() => {
+    const getUserId = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        setUserId(session.user.id);
+      }
+    };
+    getUserId();
+  }, []);
   
   // Count rated modules
   const ratedModulesCount = Object.keys(userFeedback).length;
@@ -38,9 +52,49 @@ export const RecommendationsDisplay: React.FC<RecommendationsDisplayProps> = ({ 
     return userFeedback[moduleId] || 0;
   };
   
+  // Extract prefix from course code
+  const extractPrefix = (courseCode: string): string => {
+    const match = courseCode.match(/^[A-Z]+/);
+    return match ? match[0] : 'OTHER';
+  };
+  
   // Handle rating changes
-  const handleRatingChange = (moduleId: number, rating: number) => {
+  const handleRatingChange = async (moduleId: number, rating: number, courseCode: string) => {
+    // Update state with the rating
     rateModule(moduleId, rating);
+    
+    // Also save to Supabase if user is logged in
+    if (userId) {
+      try {
+        const modulePrefix = extractPrefix(courseCode);
+        
+        const { error } = await supabase
+          .from('recommendations_score')
+          .upsert({
+            user_id: userId,
+            module_code: courseCode,
+            module_prefix: modulePrefix,
+            rating: rating
+          }, {
+            onConflict: 'user_id,module_code'
+          });
+        
+        if (error) {
+          console.error("Error saving rating to recommendations_score:", error);
+          toast({
+            title: "Error Saving Rating",
+            description: "There was a problem saving your rating to the database.",
+            variant: "destructive",
+          });
+        } else {
+          console.log(`Rating saved to database: ${moduleId} = ${rating}`);
+        }
+      } catch (err) {
+        console.error("Error in handleRatingChange:", err);
+      }
+    } else {
+      console.warn("User not logged in, rating saved only to local state");
+    }
   };
   
   // Handle showing final selections
@@ -161,7 +215,7 @@ export const RecommendationsDisplay: React.FC<RecommendationsDisplayProps> = ({ 
                     min={1}
                     max={10}
                     step={1}
-                    onValueChange={([value]) => handleRatingChange(rec.module.id, value)}
+                    onValueChange={([value]) => handleRatingChange(rec.module.id, value, rec.module.course_code)}
                     className="flex-1"
                     aria-label={`Rate module ${rec.module.course_code}, 1 to 10`}
                   />

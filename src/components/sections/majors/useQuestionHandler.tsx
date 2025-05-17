@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { OpenEndedQuestion } from './types';
 import { formatMajorForFile } from './MajorUtils';
+import { useRecommendationContext } from '@/contexts/RecommendationContext';
 
 export const useQuestionHandler = ({ userId }: { userId: string | null }) => {
   const [questions, setQuestions] = useState<OpenEndedQuestion[]>([]);
@@ -14,6 +15,7 @@ export const useQuestionHandler = ({ userId }: { userId: string | null }) => {
   const [recommendedMajors, setRecommendedMajors] = useState<string[]>([]);
   const [loadingRecommendations, setLoadingRecommendations] = useState(false);
   const { toast } = useToast();
+  const { majorRecommendations } = useRecommendationContext();
 
   // Load questions for a specific major
   const loadQuestions = async (majorName: string) => {
@@ -64,15 +66,34 @@ export const useQuestionHandler = ({ userId }: { userId: string | null }) => {
     }
   };
 
-  // Prepare questions for recommended majors - updated to accept provided majors list
+  // Prepare questions for recommended majors - updated to use context
   const prepareQuestionsForRecommendedMajors = async (providedMajors?: string[]) => {
     setLoadingRecommendations(true);
     setLoadingQuestions(true);
     
     try {
-      // Use provided majors if available, otherwise use default set
-      let majorsToUse = providedMajors || ['Computer Science', 'Data Science', 'Business Analytics'];
-      console.log("Preparing questions for majors:", majorsToUse);
+      // First check if we have majors from context
+      let majorsToUse: string[] = [];
+      
+      if (majorRecommendations) {
+        // Get combined list of all recommended majors from context
+        const allContextMajors = [
+          ...(majorRecommendations.exactMatches || []),
+          ...(majorRecommendations.permutationMatches || []),
+          ...(majorRecommendations.riasecMatches || []),
+          ...(majorRecommendations.workValueMatches || [])
+        ];
+        
+        // Use unique majors from context
+        majorsToUse = [...new Set(allContextMajors)];
+        console.log("Using majors from context:", majorsToUse);
+      }
+      
+      // If no majors from context, use provided majors or default set
+      if (majorsToUse.length === 0) {
+        majorsToUse = providedMajors || ['Computer Science', 'Data Science', 'Business Analytics'];
+        console.log("Using provided or default majors:", majorsToUse); 
+      }
       
       if (providedMajors && providedMajors.length > 0) {
         setRecommendedMajors(providedMajors);
@@ -159,9 +180,9 @@ export const useQuestionHandler = ({ userId }: { userId: string | null }) => {
     setSubmitting(true);
     
     try {
-      // Filter out empty responses and skipped questions
+      // Filter out skipped questions
       const responsesToSave = Object.entries(answeredQuestions)
-        .filter(([_, response]) => response.response.trim() !== '' && !response.skipped)
+        .filter(([_, response]) => !response.skipped)
         .map(([questionId, response]) => {
           const questionInfo = questions.find(q => q.id === questionId);
           
@@ -191,6 +212,21 @@ export const useQuestionHandler = ({ userId }: { userId: string | null }) => {
             title: "Responses saved successfully",
             description: `Saved ${responsesToSave.length} response(s)`,
           });
+          
+          // Update quiz completion status
+          const { error: completionError } = await supabase
+            .from('quiz_completion')
+            .upsert({
+              user_id: userId,
+              quiz_type: 'open-ended'
+            }, {
+              onConflict: 'user_id, quiz_type'
+            });
+            
+          if (completionError) {
+            console.error('Error updating quiz completion:', completionError);
+          }
+          
           setCompleted(true);
         }
       } else {

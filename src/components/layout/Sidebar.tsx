@@ -1,5 +1,5 @@
 
-import { School, FileText, BookOpen, Video, DollarSign, Settings, Play, LogOut, Users, Award, UserRound } from "lucide-react";
+import { School, FileText, BookOpen, Video, DollarSign, Settings, Play, LogOut, UserRound } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
@@ -25,6 +25,7 @@ interface NavItem {
   icon: React.ComponentType<{ className?: string }>;
   id: string;
   tooltip: string;
+  hidden?: boolean;
 }
 
 const getNavItems = (t: any): NavItem[] => [
@@ -58,17 +59,20 @@ const getNavItems = (t: any): NavItem[] => [
     id: "get-paid",
     tooltip: "Earn money by helping others with their applications"
   },
+  // Hide Community and Achievements sections
   { 
     label: t("navigation.community"), 
-    icon: Users, 
+    icon: UserRound, 
     id: "community",
-    tooltip: "Discuss and share your university experiences"
+    tooltip: "Discuss and share your university experiences",
+    hidden: true
   },
   { 
     label: t("navigation.achievements"), 
-    icon: Award, 
+    icon: UserRound, 
     id: "achievements",
-    tooltip: "View your badges and progress"
+    tooltip: "View your badges and progress",
+    hidden: true
   },
 ];
 
@@ -110,7 +114,7 @@ export const AppSidebar = ({ selectedSection, setSelectedSection, user, onReplay
           <SidebarGroupLabel>{t("navigation.title", "Navigation")}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {navItems.map((item) => (
+              {navItems.filter(item => !item.hidden).map((item) => (
                 <SidebarMenuItem key={item.id}>
                   <Tooltip>
                     <TooltipTrigger asChild>

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { SidebarProvider } from "@/components/ui/sidebar";
@@ -10,11 +9,12 @@ import { MockInterviews } from "@/components/sections/MockInterviews";
 import { GetPaid } from "@/components/sections/GetPaid";
 import { Tutorial } from "@/components/Tutorial";
 import AuthSection from "@/components/auth/AuthSection";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Routes, Route } from "react-router-dom";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/contexts/ThemeContext";
+import OpenEndedQuiz from "./OpenEndedQuiz";
 
 const Index = () => {
   const [user, setUser] = useState<any>(null);
@@ -106,7 +106,7 @@ const Index = () => {
     return () => {
       subscription.unsubscribe();
     };
-  }, []);
+  }, [location.search, navigate]);
 
   const handleCloseTutorial = () => {
     setShowTutorial(false);
@@ -135,6 +135,11 @@ const Index = () => {
 
   if (!user) {
     return <AuthSection />;
+  }
+
+  // Check if we're on the open-ended quiz route and render it directly
+  if (location.pathname === '/open-ended') {
+    return <OpenEndedQuiz />;
   }
 
   const renderContent = () => {
