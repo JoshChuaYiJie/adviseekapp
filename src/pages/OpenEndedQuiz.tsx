@@ -48,6 +48,7 @@ const OpenEndedQuiz = () => {
   const [submissionError, setSubmissionError] = useState<string | null>(null);
   const questionsRef = useRef<HTMLDivElement>(null);
   const currentQuestionRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   
   // Add cached responses state management
   const [responses, setResponses] = useState<Record<string, { response: string; skipped: boolean }>>({});
@@ -77,6 +78,16 @@ const OpenEndedQuiz = () => {
       }
     }
   }, [responses]);
+  
+  // Focus textarea when current question changes
+  useEffect(() => {
+    if (textareaRef.current) {
+      // Use a small timeout to ensure the DOM is ready
+      setTimeout(() => {
+        textareaRef.current?.focus();
+      }, 50);
+    }
+  }, [currentQuestionIndex]);
   
   // Get recommended majors directly from context
   const { majorRecommendations } = useRecommendationContext();
@@ -394,7 +405,7 @@ const OpenEndedQuiz = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
   
-  // Handle response changes - ensure multiple words can be typed
+  // Handle response changes - allow multiple words without losing focus
   const handleResponseChange = (value: string) => {
     if (currentQuestionIndex >= questions.length) return;
     
@@ -402,28 +413,30 @@ const OpenEndedQuiz = () => {
     const currentQuestion = questions[currentQuestionIndex];
     const questionId = currentQuestion.uniqueId || currentQuestion.question.id;
     
-    setResponses(prev => ({
-      ...prev,
-      [questionId]: { 
-        response: value, // Store the full text value without modification
-        skipped: false 
+    // Update responses state using functional update to minimize unnecessary re-renders
+    setResponses(prev => {
+      // Only update if the value has actually changed
+      if (prev[questionId]?.response === value) {
+        return prev;
       }
-    }));
-    
-    // Cache the response immediately
-    try {
+      
       const updatedResponses = {
-        ...responses,
-        [questionId]: {
-          response: value, // Store the full text value without modification
-          skipped: false
+        ...prev,
+        [questionId]: { 
+          response: value,
+          skipped: false 
         }
       };
-      localStorage.setItem('openEndedQuizResponses', JSON.stringify(updatedResponses));
-      console.log(`Cached response for question ${questionId}:`, value);
-    } catch (error) {
-      console.error("Error caching response:", error);
-    }
+      
+      // Cache the response immediately, but don't do it inside this state update function
+      try {
+        localStorage.setItem('openEndedQuizResponses', JSON.stringify(updatedResponses));
+      } catch (error) {
+        console.error("Error caching response:", error);
+      }
+      
+      return updatedResponses;
+    });
   };
   
   // Navigate to next question - now properly handling empty responses
@@ -743,6 +756,7 @@ const OpenEndedQuiz = () => {
           </div>
           
           <Textarea
+            ref={textareaRef}
             className="min-h-[150px]"
             placeholder="Type your answer here..."
             value={currentResponse.response}
