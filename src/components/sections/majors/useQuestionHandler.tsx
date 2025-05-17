@@ -180,7 +180,7 @@ export const useQuestionHandler = ({ userId }: { userId: string | null }) => {
     setSubmitting(true);
     
     try {
-      // Filter out skipped questions
+      // Prepare responses using the updated schema
       const responsesToSave = Object.entries(answeredQuestions)
         .filter(([_, response]) => !response.skipped)
         .map(([questionId, response]) => {
@@ -188,8 +188,10 @@ export const useQuestionHandler = ({ userId }: { userId: string | null }) => {
           
           return {
             user_id: userId,
+            question_id: questionId,
             question: questionInfo?.question || '',
             response: response.response,
+            skipped: response.skipped,
             major: questionInfo?.majorName || majorName || ''
           };
         });

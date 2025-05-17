@@ -104,14 +104,17 @@ export const QuestionHandler = ({ questions, majorName }: QuestionHandlerProps) 
     try {
       // Filter out empty responses
       const responsesToSave = Object.entries(responses)
-        .filter(([_, response]) => response.trim() !== '')
-        .map(([index, response]) => {
-          const questionIndex = parseInt(index, 10);
-          const questionObj = questions.find(q => q.id === questionIndex);
+        .map(([questionId, response]) => {
+          const questionIdNum = parseInt(questionId, 10);
+          const questionObj = questions.find(q => q.id === questionIdNum);
+          const isSkipped = skippedQuestions[questionIdNum] || false;
+          
           return {
             user_id: userId,
-            question: questionObj?.question || `Question ${questionIndex}`,
+            question_id: questionId,
+            question: questionObj?.question || `Question ${questionId}`,
             response: response,
+            skipped: isSkipped,
             major: majorName
           };
         });

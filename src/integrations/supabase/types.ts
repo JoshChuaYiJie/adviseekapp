@@ -146,7 +146,9 @@ export type Database = {
           id: number
           major: string | null
           question: string | null
+          question_id: string | null
           response: string | null
+          skipped: boolean | null
           user_id: string | null
         }
         Insert: {
@@ -154,7 +156,9 @@ export type Database = {
           id?: number
           major?: string | null
           question?: string | null
+          question_id?: string | null
           response?: string | null
+          skipped?: boolean | null
           user_id?: string | null
         }
         Update: {
@@ -162,7 +166,9 @@ export type Database = {
           id?: number
           major?: string | null
           question?: string | null
+          question_id?: string | null
           response?: string | null
+          skipped?: boolean | null
           user_id?: string | null
         }
         Relationships: []
@@ -239,6 +245,7 @@ export type Database = {
           awards: string | null
           created_at: string
           education_dates: string | null
+          education_items: Json | null
           email: string | null
           id: string
           institution: string | null
@@ -249,6 +256,7 @@ export type Database = {
           nationality: string | null
           phone: string | null
           qualifications: string | null
+          resume_name: string | null
           template_type: string
           updated_at: string
           user_id: string
@@ -259,6 +267,7 @@ export type Database = {
           awards?: string | null
           created_at?: string
           education_dates?: string | null
+          education_items?: Json | null
           email?: string | null
           id?: string
           institution?: string | null
@@ -269,6 +278,7 @@ export type Database = {
           nationality?: string | null
           phone?: string | null
           qualifications?: string | null
+          resume_name?: string | null
           template_type: string
           updated_at?: string
           user_id: string
@@ -279,6 +289,7 @@ export type Database = {
           awards?: string | null
           created_at?: string
           education_dates?: string | null
+          education_items?: Json | null
           email?: string | null
           id?: string
           institution?: string | null
@@ -289,6 +300,7 @@ export type Database = {
           nationality?: string | null
           phone?: string | null
           qualifications?: string | null
+          resume_name?: string | null
           template_type?: string
           updated_at?: string
           user_id?: string
