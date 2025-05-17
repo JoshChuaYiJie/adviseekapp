@@ -824,7 +824,7 @@ const handleResponseChange = (value: string) => {
           {/* Only render the current question */}
           {questions.length > 0 && currentQuestionIndex < questions.length && (
             <QuestionDisplay
-              key={questions[currentQuestionIndex].uniqueId || questions[currentQuestionIndex].question.id}
+              key={questions[currentQuestionIndex].question.id}
               question={questions[currentQuestionIndex]}
               index={currentQuestionIndex}
             />
