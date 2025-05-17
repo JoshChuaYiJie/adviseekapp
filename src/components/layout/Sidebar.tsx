@@ -1,4 +1,3 @@
-
 import { School, FileText, BookOpen, Video, DollarSign, Settings, Play, LogOut, UserRound } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
