@@ -395,36 +395,20 @@ const OpenEndedQuiz = () => {
   }, []);
   
   // Handle response changes - ensure multiple words can be typed
-  const handleResponseChange = (value: string) => {
-    if (currentQuestionIndex >= questions.length) return;
-    
-    // Use uniqueId if available, fallback to question.id
-    const currentQuestion = questions[currentQuestionIndex];
-    const questionId = currentQuestion.uniqueId || currentQuestion.question.id;
-    
-    setResponses(prev => ({
-      ...prev,
-      [questionId]: { 
-        response: value, // Store the full text value without modification
-        skipped: false 
-      }
-    }));
-    
-    // Cache the response immediately
-    try {
-      const updatedResponses = {
-        ...responses,
-        [questionId]: {
-          response: value, // Store the full text value without modification
-          skipped: false
-        }
-      };
-      localStorage.setItem('openEndedQuizResponses', JSON.stringify(updatedResponses));
-      console.log(`Cached response for question ${questionId}:`, value);
-    } catch (error) {
-      console.error("Error caching response:", error);
+const handleResponseChange = (value: string) => {
+  if (currentQuestionIndex >= questions.length) return;
+
+  const currentQuestion = questions[currentQuestionIndex];
+  const questionId = currentQuestion.uniqueId || currentQuestion.question.id;
+
+  setResponses(prev => ({
+    ...prev,
+    [questionId]: { 
+      response: value,
+      skipped: false 
     }
-  };
+  }));
+};
   
   // Navigate to next question - now properly handling empty responses
   const handleNext = () => {
