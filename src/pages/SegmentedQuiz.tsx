@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate, useParams } from 'react-router-dom'; // <-- import useParams
+import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -83,12 +83,12 @@ const QuizDebugger: React.FC<QuizDebuggerProps> = ({ userId, responses, quizType
 const SegmentedQuiz = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { step } = useParams(); // <-- get step param from url
+  const { step } = useParams(); // Get step from URL params
   const { toast } = useToast();
   const { isCurrentlyDark } = useTheme();
   const {
     currentStep,
-    setCurrentStep, // <-- make sure you have setCurrentStep in your context
+    setCurrentStep,
     responses,
     questions,
     isLoading,
@@ -110,6 +110,7 @@ const SegmentedQuiz = () => {
     if (step) {
       const parsed = Number(step);
       if (!isNaN(parsed)) {
+        console.log(`Setting current step to ${parsed} from URL param`);
         setCurrentStep(parsed);
       }
     }
@@ -266,13 +267,13 @@ const SegmentedQuiz = () => {
 
   const goToNextStep = () => {
     if (currentStep < 4) { // Assuming maximum 4 steps
-      navigate(`/quiz/interest-part ${currentStep + 1}`);
+      navigate(`/quiz/interest-part/${currentStep + 1}`);
     }
   };
 
   const goToPreviousStep = () => {
     if (currentStep > 1) {
-      navigate(`/quiz/interest-part ${currentStep - 1}`);
+      navigate(`/quiz/interest-part/${currentStep - 1}`);
     }
   };
 

@@ -9,22 +9,26 @@ export const loadQuizQuestions = async (currentStep: number): Promise<McqQuestio
     // Load questions based on current step
     let questionsJsonPath = '';
     if (currentStep === 1) {
-      questionsJsonPath = '/quiz_refer/Mcq_questions/RIASEC_interest_questions_pt1.json';
+      questionsJsonPath = './quiz_refer/Mcq_questions/RIASEC_interest_questions_pt1.json';
     } else if (currentStep === 2) {
-      questionsJsonPath = '/quiz_refer/Mcq_questions/RIASEC_interest_questions_pt2.json';
+      questionsJsonPath = './quiz_refer/Mcq_questions/RIASEC_interest_questions_pt2.json';
     } else if (currentStep === 3) {
-      questionsJsonPath = '/quiz_refer/Mcq_questions/RIASEC_competence_questions.json';
+      questionsJsonPath = './quiz_refer/Mcq_questions/RIASEC_competence_questions.json';
     } else if (currentStep === 4) {
-      questionsJsonPath = '/quiz_refer/Mcq_questions/Work_value_questions.json';
+      questionsJsonPath = './quiz_refer/Mcq_questions/Work_value_questions.json';
     }
 
     if (!questionsJsonPath) {
       throw new Error(`Invalid quiz step: ${currentStep}`);
     }
 
+    // Debug logging to help diagnose path issues
+    console.log(`Attempting to fetch questions from: ${questionsJsonPath}`);
+    
     const response = await fetch(questionsJsonPath);
     
     if (!response.ok) {
+      console.error(`Failed to fetch questions: ${response.status} ${response.statusText}`);
       throw new Error(`Failed to fetch questions: ${response.status} ${response.statusText}`);
     }
     
