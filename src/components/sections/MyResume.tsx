@@ -6,6 +6,7 @@ import { useResumeManager } from "@/hooks/useResumeManager";
 import { useTranslation } from "react-i18next";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export const MyResume = () => {
   const { t } = useTranslation();
@@ -24,6 +25,7 @@ export const MyResume = () => {
   useEffect(() => {
     const checkAuthStatus = async () => {
       const { data } = await supabase.auth.getSession();
+      console.log("Auth session data:", data);
       setIsUserAuthenticated(!!data.session);
     };
     
@@ -31,6 +33,7 @@ export const MyResume = () => {
     
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (event, session) => {
+        console.log("Auth state change:", event, session?.user?.id);
         setIsUserAuthenticated(!!session);
       }
     );
@@ -42,6 +45,7 @@ export const MyResume = () => {
 
   // Adapter function to handle file upload from UploadResumeCard
   const handleFileUploadAdapter = (file: File) => {
+    console.log("File received in adapter:", file.name);
     // Convert single file to array for handleFileUpload
     handleFileUpload([file]);
   };
@@ -49,11 +53,11 @@ export const MyResume = () => {
   return (
     <div className="w-full h-full space-y-6">
       {!isUserAuthenticated && (
-        <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4">
-          <p className="text-yellow-700">
+        <Alert variant="warning">
+          <AlertDescription>
             Log in to save your resumes and access them from any device.
-          </p>
-        </div>
+          </AlertDescription>
+        </Alert>
       )}
       
       {/* Upload and Build Resume Cards */}

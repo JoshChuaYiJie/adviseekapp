@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { OpenEndedQuestion } from './types';
@@ -32,6 +32,12 @@ export const MajorQuestionDisplay = ({
   const [isFocused, setIsFocused] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, { text: string; skipped: boolean }>>({});
+  
+  console.log("MajorQuestionDisplay props:", { 
+    question, 
+    response, 
+    isSkipped
+  });
 
   // Handle standalone question mode
   if (question) {
@@ -49,7 +55,7 @@ export const MajorQuestionDisplay = ({
           onChange={handleTextareaChange}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
-          placeholder="Type your answer here..."
+          placeholder=""
           className="min-h-[120px] resize-y"
           disabled={isSkipped}
         />
@@ -62,9 +68,14 @@ export const MajorQuestionDisplay = ({
     const currentQuestion = openEndedQuestions[currentIndex];
     
     // Initialize answer for the current question if it doesn't exist
-    if (currentQuestion && !answers[currentQuestion.id]) {
-      answers[currentQuestion.id] = { text: '', skipped: false };
-    }
+    useEffect(() => {
+      if (currentQuestion && !answers[currentQuestion.id]) {
+        setAnswers(prev => ({
+          ...prev,
+          [currentQuestion.id]: { text: '', skipped: false }
+        }));
+      }
+    }, [currentQuestion]);
     
     const currentAnswer = currentQuestion ? (answers[currentQuestion.id] || { text: '', skipped: false }) : { text: '', skipped: false };
     
@@ -98,9 +109,8 @@ export const MajorQuestionDisplay = ({
     return (
       <div className="space-y-4">
         <div className="flex flex-wrap gap-2 mb-4">
-          {openEndedQuestions.map((_, idx) => {
-            const q = openEndedQuestions[idx];
-            const ans = q ? answers[q.id] : undefined;
+          {openEndedQuestions.map((q, idx) => {
+            const ans = answers[q.id];
             const hasAnswer = ans?.text && ans.text.trim().length > 0;
             
             return (
@@ -122,7 +132,7 @@ export const MajorQuestionDisplay = ({
           <Textarea
             value={currentAnswer.text}
             onChange={handleChange}
-            placeholder="Type your answer here..."
+            placeholder=""
             className="min-h-[120px] resize-y"
           />
         </div>

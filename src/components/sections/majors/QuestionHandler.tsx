@@ -18,29 +18,57 @@ interface QuestionHandlerProps {
 export const QuestionHandler = ({ questions, majorName }: QuestionHandlerProps) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [responses, setResponses] = useState<Record<number, string>>({});
+  const [skippedQuestions, setSkippedQuestions] = useState<Record<number, boolean>>({});
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Initialize responses state for all questions
   useEffect(() => {
+    console.log("Initializing responses for questions:", questions.length);
     const initialResponses: Record<number, string> = {};
-    questions.forEach((_, index) => {
-      initialResponses[index] = '';
+    const initialSkipped: Record<number, boolean> = {};
+    questions.forEach((question) => {
+      initialResponses[question.id] = '';
+      initialSkipped[question.id] = false;
     });
     setResponses(initialResponses);
+    setSkippedQuestions(initialSkipped);
   }, [questions]);
 
   const handleResponseChange = (response: string) => {
+    console.log(`Response changed for question ${currentQuestionIndex}:`, response);
+    
+    const currentQuestion = questions[currentQuestionIndex];
+    if (!currentQuestion) return;
+    
     setResponses({
       ...responses,
-      [currentQuestionIndex]: response
+      [currentQuestion.id]: response
     });
+    
+    // If user enters a response, mark it as not skipped
+    if (response.trim() !== '') {
+      setSkippedQuestions({
+        ...skippedQuestions,
+        [currentQuestion.id]: false
+      });
+    }
   };
 
   const handleNext = () => {
     // Move to the next question if available
     if (currentQuestionIndex < questions.length - 1) {
+      const currentQuestion = questions[currentQuestionIndex];
+      
+      // If the current question has no response, mark it as skipped
+      if (currentQuestion && (!responses[currentQuestion.id] || responses[currentQuestion.id].trim() === '')) {
+        setSkippedQuestions({
+          ...skippedQuestions,
+          [currentQuestion.id]: true
+        });
+      }
+      
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
       handleFinish();
@@ -55,6 +83,9 @@ export const QuestionHandler = ({ questions, majorName }: QuestionHandlerProps) 
 
   const handleFinish = async () => {
     setIsSubmitting(true);
+    
+    console.log("Finishing question responses:", responses);
+    console.log("Skipped questions:", skippedQuestions);
     
     // Verify user is logged in
     const { data: { session } } = await supabase.auth.getSession();
@@ -76,13 +107,16 @@ export const QuestionHandler = ({ questions, majorName }: QuestionHandlerProps) 
         .filter(([_, response]) => response.trim() !== '')
         .map(([index, response]) => {
           const questionIndex = parseInt(index, 10);
+          const questionObj = questions.find(q => q.id === questionIndex);
           return {
             user_id: userId,
-            question: questions[questionIndex].question,
+            question: questionObj?.question || `Question ${questionIndex}`,
             response: response,
             major: majorName
           };
         });
+      
+      console.log("Saving responses to database:", responsesToSave);
       
       if (responsesToSave.length > 0) {
         // Save valid responses to database
@@ -140,6 +174,8 @@ export const QuestionHandler = ({ questions, majorName }: QuestionHandlerProps) 
 
   const currentQuestion = questions[currentQuestionIndex];
   const isLastQuestion = currentQuestionIndex === questions.length - 1;
+  const currentResponse = currentQuestion ? responses[currentQuestion.id] || '' : '';
+  const isCurrentSkipped = currentQuestion ? skippedQuestions[currentQuestion.id] || false : false;
 
   return (
     <div className="space-y-6">
@@ -148,23 +184,37 @@ export const QuestionHandler = ({ questions, majorName }: QuestionHandlerProps) 
       </h2>
       
       <div className="flex flex-wrap gap-2 mb-4">
-        {questions.map((_, index) => (
-          <div 
-            key={index} 
-            className={`w-6 h-6 rounded-full flex items-center justify-center text-xs cursor-pointer
-              ${index === currentQuestionIndex ? 'ring-2 ring-offset-2 ring-blue-500' : ''}
-              ${responses[index] && responses[index].trim() !== '' ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-700'}`}
-            onClick={() => setCurrentQuestionIndex(index)}
-          >
-            {index + 1}
-          </div>
-        ))}
+        {questions.map((question, index) => {
+          const isAnswered = responses[question.id] && responses[question.id].trim() !== '';
+          const isSkipped = skippedQuestions[question.id];
+          
+          console.log(`Question ${question.id} status:`, { 
+            isAnswered, 
+            isSkipped, 
+            response: responses[question.id] 
+          });
+          
+          return (
+            <div 
+              key={question.id} 
+              className={`w-6 h-6 rounded-full flex items-center justify-center text-xs cursor-pointer
+                ${index === currentQuestionIndex ? 'ring-2 ring-offset-2 ring-blue-500' : ''}
+                ${isAnswered ? 'bg-blue-500 text-white' : 
+                  isSkipped ? 'bg-yellow-500 text-white' : 
+                  'bg-gray-200 dark:bg-gray-700'}`}
+              onClick={() => setCurrentQuestionIndex(index)}
+            >
+              {index + 1}
+            </div>
+          );
+        })}
       </div>
       
       <MajorQuestionDisplay 
         question={currentQuestion.question}
-        response={responses[currentQuestionIndex] || ''}
+        response={currentResponse}
         onResponseChange={handleResponseChange}
+        isSkipped={isCurrentSkipped}
       />
       
       <div className="flex justify-between pt-4">

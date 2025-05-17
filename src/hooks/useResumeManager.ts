@@ -26,9 +26,10 @@ export const useResumeManager = () => {
         
         // Get the current user session
         const { data: sessionData } = await supabase.auth.getSession();
+        console.log("Auth session for resume loading:", sessionData);
         
         if (!sessionData.session?.user) {
-          console.log("No user session found");
+          console.log("No user session found for resume loading");
           setLoading(false);
           return;
         }
@@ -54,8 +55,10 @@ export const useResumeManager = () => {
             updated_at: new Date(resume.updated_at).toLocaleDateString()
           }));
           
-          console.log(`Loaded ${formattedResumes.length} resumes from Supabase`);
+          console.log(`Loaded ${formattedResumes.length} resumes from Supabase:`, formattedResumes);
           setSavedResumes(formattedResumes);
+        } else {
+          console.log("No resumes found");
         }
       } catch (error) {
         console.error("Error loading resumes:", error);
@@ -69,8 +72,14 @@ export const useResumeManager = () => {
 
   const handleFileUpload = (files: File[]) => {
     try {
+      if (!files.length) {
+        console.error("No files provided to handleFileUpload");
+        return;
+      }
+      
       // Use the first file if multiple files were uploaded
       const file = files[0];
+      console.log("Processing uploaded file:", file.name, file.type);
       
       // Validate file type
       if (!file.type.includes('pdf')) {
@@ -82,7 +91,8 @@ export const useResumeManager = () => {
         return;
       }
       
-      setResumeFiles([file, ...resumeFiles]);
+      setResumeFiles(prevFiles => [file, ...prevFiles]);
+      console.log("Resume file added to state");
       
       toast({
         title: "Resume Uploaded",
@@ -138,6 +148,7 @@ export const useResumeManager = () => {
       const fileUrl = URL.createObjectURL(file);
       localStorage.setItem('uploadedPDF', file.name);
       localStorage.setItem('uploadedPDFUrl', fileUrl);
+      console.log("PDF set in localStorage, navigating to resume builder");
       
       navigate('/resumebuilder/basic?source=pdf');
     } catch (error) {

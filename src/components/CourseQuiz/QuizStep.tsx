@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuiz } from '@/contexts/QuizContext';
 import { QuizQuestion } from '@/integrations/supabase/client';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -13,6 +13,7 @@ interface QuizStepProps {
 
 export const QuizStep: React.FC<QuizStepProps> = ({ questions }) => {
   const { responses, handleResponse } = useQuiz();
+  console.log("Current quiz responses:", responses);
   
   // Group questions by section
   const sections = questions.reduce((acc: Record<string, QuizQuestion[]>, question) => {
@@ -26,6 +27,7 @@ export const QuizStep: React.FC<QuizStepProps> = ({ questions }) => {
   // Render a single-select question
   const renderSingleSelect = (question: QuizQuestion) => {
     const currentResponse = responses[question.id] as string || '';
+    console.log(`Question ${question.id} response:`, currentResponse);
     
     return (
       <div className="mb-6">
@@ -49,6 +51,7 @@ export const QuizStep: React.FC<QuizStepProps> = ({ questions }) => {
   // Render a multi-select question
   const renderMultiSelect = (question: QuizQuestion) => {
     const currentResponse = (responses[question.id] as string[]) || [];
+    console.log(`Question ${question.id} multi-select response:`, currentResponse);
     
     const handleCheckboxChange = (option: string, checked: boolean) => {
       if (checked) {
@@ -80,6 +83,7 @@ export const QuizStep: React.FC<QuizStepProps> = ({ questions }) => {
   // Render a text question
   const renderTextQuestion = (question: QuizQuestion) => {
     const currentResponse = responses[question.id] as string || '';
+    console.log(`Question ${question.id} text response:`, currentResponse);
     
     return (
       <div className="mb-6">
@@ -88,7 +92,7 @@ export const QuizStep: React.FC<QuizStepProps> = ({ questions }) => {
           type="text"
           value={currentResponse}
           onChange={(e) => handleResponse(question.id, e.target.value)}
-          placeholder="Type your answer here..."
+          placeholder=""
           className="w-full"
         />
       </div>
