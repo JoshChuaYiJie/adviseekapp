@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -11,7 +12,6 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { supabase } from "@/integrations/supabase/client";
 import jsPDF from "jspdf";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
-import { TooltipProvider } from "@/components/ui/tooltip";
 
 interface WorkExperience {
   id: string;
@@ -1285,234 +1285,232 @@ const BasicResume = () => {
   };
 
   return (
-    <TooltipProvider>
-      <div className="container mx-auto py-8 px-4">
-        {/* Header with back button */}
-        <div className="flex items-center mb-6">
-          <Button variant="ghost" size="icon" onClick={() => navigate('/resumebuilder')} className="mr-2">
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <h1 className="text-2xl font-bold flex-1">
-            {isPdfUpload ? "Edit PDF Resume" : "Basic Resume Builder"}
-          </h1>
-          <div className="flex gap-2">
-            {!viewMode && (
-              <Button onClick={saveResume} disabled={isLoading} className="flex items-center">
-                <Save className="h-4 w-4 mr-2" /> Save
-              </Button>
-            )}
-            <Button variant="outline" onClick={downloadPDF} disabled={isLoading} className="flex items-center">
-              <Download className="h-4 w-4 mr-2" /> Download PDF
+    <div className="container mx-auto py-8 px-4">
+      {/* Header with back button */}
+      <div className="flex items-center mb-6">
+        <Button variant="ghost" size="icon" onClick={() => navigate('/resumebuilder')} className="mr-2">
+          <ArrowLeft className="h-5 w-5" />
+        </Button>
+        <h1 className="text-2xl font-bold flex-1">
+          {isPdfUpload ? "Edit PDF Resume" : "Basic Resume Builder"}
+        </h1>
+        <div className="flex gap-2">
+          {!viewMode && (
+            <Button onClick={saveResume} disabled={isLoading} className="flex items-center">
+              <Save className="h-4 w-4 mr-2" /> Save
             </Button>
-          </div>
+          )}
+          <Button variant="outline" onClick={downloadPDF} disabled={isLoading} className="flex items-center">
+            <Download className="h-4 w-4 mr-2" /> Download PDF
+          </Button>
         </div>
-        
-        {/* Full-width resume preview with clickable sections */}
-        <div className="max-w-4xl mx-auto">
-          <Card className={`p-6 ${isCurrentlyDark ? 'bg-gray-800 text-gray-200' : 'bg-white'}`}>
-            <CardContent className="p-0">
-              <div 
-                className={`border rounded-md p-8 ${isCurrentlyDark ? 'border-gray-700 bg-gray-900' : 'bg-white'}`} 
-                style={{ minHeight: "1120px", margin: "0 auto" }}
-              >
-                {/* Resume Name Button */}
-                <div className="mb-4 text-right">
-                  <Button 
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => openEditDialog('resumeName')}
-                    className={`${isCurrentlyDark ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-700'} flex items-center`}
-                  >
-                    <Edit className="h-4 w-4 mr-1" />
-                    {resumeData.resumeName}
-                  </Button>
-                </div>
-              
-                {/* Header - Personal Information Section */}
-                <div 
-                  className={`text-center mb-6 p-4 rounded-md ${!viewMode && 'cursor-pointer hover:bg-gray-100 hover:dark:bg-gray-800'}`}
-                  onClick={() => openEditDialog('personal')}
-                >
-                  <h1 className="text-2xl font-bold uppercase" style={{ color: "#2e6b8f" }}>
-                    {resumeData.name || "FULL NAME"}
-                  </h1>
-                  <p className="text-sm mt-1" style={{ color: "#2e6b8f" }}>
-                    {[resumeData.phone, resumeData.email, resumeData.nationality].filter(Boolean).join(" | ") || "Phone | Email | Nationality"}
-                  </p>
-                  {!viewMode && <div className="mt-2 text-xs text-blue-500">(Click to edit personal information)</div>}
-                </div>
-                
-                {/* Education Section */}
-                <div 
-                  className={`mb-6 p-4 rounded-md ${!viewMode && 'cursor-pointer hover:bg-gray-100 hover:dark:bg-gray-800'}`}
-                  onClick={() => openEditDialog('education')}
-                >
-                  <h2 className="text-lg font-bold uppercase mb-2 pb-1 border-b-2" style={{ color: "#2e6b8f", borderColor: "#2e6b8f" }}>
-                    Education
-                  </h2>
-                  {resumeData.educationItems.map((edu, index) => (
-                    <div key={edu.id} className="ml-2 mb-4">
-                      <div className="flex justify-between items-start">
-                        <span className="font-bold" style={{ color: "#2e6b8f" }}>{edu.institution || "Institution"}</span>
-                        <span className="italic" style={{ color: "#2e6b8f" }}>{edu.dates || "Dates"}</span>
-                      </div>
-                      <ul className="list-disc ml-5 mt-2 text-sm">
-                        {edu.qualifications ? 
-                          edu.qualifications.split("\n").filter(Boolean).map((qual, idx) => (
-                            <li key={idx}>{qual}</li>
-                          )) : 
-                          <li>Qualifications will appear here</li>
-                        }
-                      </ul>
-                    </div>
-                  ))}
-                  {!viewMode && <div className="mt-2 text-xs text-blue-500">(Click to manage education entries)</div>}
-                </div>
-                
-                {/* Work Experience Section */}
-                <div 
-                  className={`mb-6 p-4 rounded-md ${!viewMode && 'cursor-pointer hover:bg-gray-100 hover:dark:bg-gray-800'}`}
-                  onClick={() => openEditDialog('workExperience')}
-                >
-                  <h2 className="text-lg font-bold uppercase mb-2 pb-1 border-b-2" style={{ color: "#2e6b8f", borderColor: "#2e6b8f" }}>
-                    Work Experience
-                  </h2>
-                  {resumeData.workExperience.map((work, index) => (
-                    <div 
-                      key={work.id} 
-                      className={`ml-2 mb-4 p-2 rounded ${!viewMode && 'hover:bg-gray-200 hover:dark:bg-gray-700'}`}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if (!viewMode) {
-                          setEditingWorkIndex(index);
-                          setEditingSection('workExperienceItem');
-                        }
-                      }}
-                    >
-                      <div className="flex justify-between items-start">
-                        <span className="font-bold" style={{ color: "#2e6b8f" }}>{work.role || "Role/Position"}</span>
-                        <span className="italic" style={{ color: "#2e6b8f" }}>{work.dates || "Dates"}</span>
-                      </div>
-                      <div className="font-bold text-sm" style={{ color: "#2e6b8f" }}>{work.organization || "Organization/Company"}</div>
-                      <ul className="list-disc ml-5 mt-1 text-sm">
-                        {work.description ? 
-                          work.description.split("\n").filter(Boolean).map((desc, i) => (
-                            <li key={i}>{desc}</li>
-                          )) : 
-                          <li>Description will appear here</li>
-                        }
-                      </ul>
-                      {!viewMode && <div className="mt-1 text-xs text-blue-500">(Click to edit this work experience)</div>}
-                    </div>
-                  ))}
-                  {!viewMode && <div className="mt-2 text-xs text-blue-500">(Click to manage work experience entries)</div>}
-                </div>
-                
-                {/* Awards & Certificates Section */}
-                <div 
-                  className={`mb-6 p-4 rounded-md ${!viewMode && 'cursor-pointer hover:bg-gray-100 hover:dark:bg-gray-800'}`}
-                  onClick={() => openEditDialog('awards')}
-                >
-                  <h2 className="text-lg font-bold uppercase mb-2 pb-1 border-b-2" style={{ color: "#2e6b8f", borderColor: "#2e6b8f" }}>
-                    Awards & Certificates
-                  </h2>
-                  <ul className="list-disc ml-7 text-sm">
-                    {resumeData.awards.map((award, index) => (
-                      <li key={award.id}>
-                        {award.title || "Award Title"} {award.date ? `(${award.date})` : ""}
-                      </li>
-                    ))}
-                    {resumeData.awards.length === 0 && <li>Awards will appear here</li>}
-                  </ul>
-                  {!viewMode && <div className="mt-2 text-xs text-blue-500">(Click to manage awards and certificates)</div>}
-                </div>
-                
-                {/* Extra-Curricular Activities Section */}
-                <div 
-                  className={`mb-6 p-4 rounded-md ${!viewMode && 'cursor-pointer hover:bg-gray-100 hover:dark:bg-gray-800'}`}
-                  onClick={() => openEditDialog('activities')}
-                >
-                  <h2 className="text-lg font-bold uppercase mb-2 pb-1 border-b-2" style={{ color: "#2e6b8f", borderColor: "#2e6b8f" }}>
-                    Extra-Curricular Activities
-                  </h2>
-                  {resumeData.activities.map((activity, index) => (
-                    <div 
-                      key={activity.id} 
-                      className={`ml-2 mb-4 p-2 rounded ${!viewMode && 'hover:bg-gray-200 hover:dark:bg-gray-700'}`}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        if (!viewMode) {
-                          setEditingActivityIndex(index);
-                          setEditingSection('activitiesItem');
-                        }
-                      }}
-                    >
-                      <div className="flex justify-between items-start">
-                        <span className="font-bold" style={{ color: "#2e6b8f" }}>{activity.role || "Role/Position"}</span>
-                        <span className="italic" style={{ color: "#2e6b8f" }}>{activity.dates || "Dates"}</span>
-                      </div>
-                      <div className="font-bold text-sm" style={{ color: "#2e6b8f" }}>{activity.organization || "Organization"}</div>
-                      <ul className="list-disc ml-5 mt-1 text-sm">
-                        {activity.description ? 
-                          activity.description.split("\n").filter(Boolean).map((desc, i) => (
-                            <li key={i}>{desc}</li>
-                          )) : 
-                          <li>Description will appear here</li>
-                        }
-                      </ul>
-                      {!viewMode && <div className="mt-1 text-xs text-blue-500">(Click to edit this activity)</div>}
-                    </div>
-                  ))}
-                  {!viewMode && <div className="mt-2 text-xs text-blue-500">(Click to manage activities)</div>}
-                </div>
-                
-                {/* Additional Information Section */}
-                <div 
-                  className={`p-4 rounded-md ${!viewMode && 'cursor-pointer hover:bg-gray-100 hover:dark:bg-gray-800'}`}
-                  onClick={() => openEditDialog('additional')}
-                >
-                  <h2 className="text-lg font-bold uppercase mb-2 pb-1 border-b-2" style={{ color: "#2e6b8f", borderColor: "#2e6b8f" }}>
-                    Additional Information
-                  </h2>
-                  <div className="ml-2 space-y-3 text-sm">
-                    {resumeData.languages && (
-                      <div>
-                        <span className="font-bold" style={{ color: "#2e6b8f" }}>Languages: </span>
-                        {resumeData.languages}
-                      </div>
-                    )}
-                    {resumeData.interests && (
-                      <div>
-                        <span className="font-bold" style={{ color: "#2e6b8f" }}>Interests: </span>
-                        {resumeData.interests}
-                      </div>
-                    )}
-                    {resumeData.itSkills && (
-                      <div>
-                        <span className="font-bold" style={{ color: "#2e6b8f" }}>IT Skills: </span>
-                        {resumeData.itSkills}
-                      </div>
-                    )}
-                    {!resumeData.languages && !resumeData.interests && !resumeData.itSkills && (
-                      <p>Additional information will appear here</p>
-                    )}
-                  </div>
-                  {!viewMode && <div className="mt-2 text-xs text-blue-500">(Click to edit additional information)</div>}
-                </div>
-                
-                {/* Footer */}
-                <div className="mt-16 text-center text-xs text-gray-500">
-                  Created with Adviseek © 2025
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Render the edit dialog */}
-        {renderEditDialog()}
       </div>
-    </TooltipProvider>
+      
+      {/* Full-width resume preview with clickable sections */}
+      <div className="max-w-4xl mx-auto">
+        <Card className={`p-6 ${isCurrentlyDark ? 'bg-gray-800 text-gray-200' : 'bg-white'}`}>
+          <CardContent className="p-0">
+            <div 
+              className={`border rounded-md p-8 ${isCurrentlyDark ? 'border-gray-700 bg-gray-900' : 'bg-white'}`} 
+              style={{ minHeight: "1120px", margin: "0 auto" }}
+            >
+              {/* Resume Name Button */}
+              <div className="mb-4 text-right">
+                <Button 
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => openEditDialog('resumeName')}
+                  className={`${isCurrentlyDark ? 'text-gray-400 hover:text-white' : 'text-gray-500 hover:text-gray-700'} flex items-center`}
+                >
+                  <Edit className="h-4 w-4 mr-1" />
+                  {resumeData.resumeName}
+                </Button>
+              </div>
+            
+              {/* Header - Personal Information Section */}
+              <div 
+                className={`text-center mb-6 p-4 rounded-md ${!viewMode && 'cursor-pointer hover:bg-gray-100 hover:dark:bg-gray-800'}`}
+                onClick={() => openEditDialog('personal')}
+              >
+                <h1 className="text-2xl font-bold uppercase" style={{ color: "#2e6b8f" }}>
+                  {resumeData.name || "FULL NAME"}
+                </h1>
+                <p className="text-sm mt-1" style={{ color: "#2e6b8f" }}>
+                  {[resumeData.phone, resumeData.email, resumeData.nationality].filter(Boolean).join(" | ") || "Phone | Email | Nationality"}
+                </p>
+                {!viewMode && <div className="mt-2 text-xs text-blue-500">(Click to edit personal information)</div>}
+              </div>
+              
+              {/* Education Section */}
+              <div 
+                className={`mb-6 p-4 rounded-md ${!viewMode && 'cursor-pointer hover:bg-gray-100 hover:dark:bg-gray-800'}`}
+                onClick={() => openEditDialog('education')}
+              >
+                <h2 className="text-lg font-bold uppercase mb-2 pb-1 border-b-2" style={{ color: "#2e6b8f", borderColor: "#2e6b8f" }}>
+                  Education
+                </h2>
+                {resumeData.educationItems.map((edu, index) => (
+                  <div key={edu.id} className="ml-2 mb-4">
+                    <div className="flex justify-between items-start">
+                      <span className="font-bold" style={{ color: "#2e6b8f" }}>{edu.institution || "Institution"}</span>
+                      <span className="italic" style={{ color: "#2e6b8f" }}>{edu.dates || "Dates"}</span>
+                    </div>
+                    <ul className="list-disc ml-5 mt-2 text-sm">
+                      {edu.qualifications ? 
+                        edu.qualifications.split("\n").filter(Boolean).map((qual, idx) => (
+                          <li key={idx}>{qual}</li>
+                        )) : 
+                        <li>Qualifications will appear here</li>
+                      }
+                    </ul>
+                  </div>
+                ))}
+                {!viewMode && <div className="mt-2 text-xs text-blue-500">(Click to manage education entries)</div>}
+              </div>
+              
+              {/* Work Experience Section */}
+              <div 
+                className={`mb-6 p-4 rounded-md ${!viewMode && 'cursor-pointer hover:bg-gray-100 hover:dark:bg-gray-800'}`}
+                onClick={() => openEditDialog('workExperience')}
+              >
+                <h2 className="text-lg font-bold uppercase mb-2 pb-1 border-b-2" style={{ color: "#2e6b8f", borderColor: "#2e6b8f" }}>
+                  Work Experience
+                </h2>
+                {resumeData.workExperience.map((work, index) => (
+                  <div 
+                    key={work.id} 
+                    className={`ml-2 mb-4 p-2 rounded ${!viewMode && 'hover:bg-gray-200 hover:dark:bg-gray-700'}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (!viewMode) {
+                        setEditingWorkIndex(index);
+                        setEditingSection('workExperienceItem');
+                      }
+                    }}
+                  >
+                    <div className="flex justify-between items-start">
+                      <span className="font-bold" style={{ color: "#2e6b8f" }}>{work.role || "Role/Position"}</span>
+                      <span className="italic" style={{ color: "#2e6b8f" }}>{work.dates || "Dates"}</span>
+                    </div>
+                    <div className="font-bold text-sm" style={{ color: "#2e6b8f" }}>{work.organization || "Organization/Company"}</div>
+                    <ul className="list-disc ml-5 mt-1 text-sm">
+                      {work.description ? 
+                        work.description.split("\n").filter(Boolean).map((desc, i) => (
+                          <li key={i}>{desc}</li>
+                        )) : 
+                        <li>Description will appear here</li>
+                      }
+                    </ul>
+                    {!viewMode && <div className="mt-1 text-xs text-blue-500">(Click to edit this work experience)</div>}
+                  </div>
+                ))}
+                {!viewMode && <div className="mt-2 text-xs text-blue-500">(Click to manage work experience entries)</div>}
+              </div>
+              
+              {/* Awards & Certificates Section */}
+              <div 
+                className={`mb-6 p-4 rounded-md ${!viewMode && 'cursor-pointer hover:bg-gray-100 hover:dark:bg-gray-800'}`}
+                onClick={() => openEditDialog('awards')}
+              >
+                <h2 className="text-lg font-bold uppercase mb-2 pb-1 border-b-2" style={{ color: "#2e6b8f", borderColor: "#2e6b8f" }}>
+                  Awards & Certificates
+                </h2>
+                <ul className="list-disc ml-7 text-sm">
+                  {resumeData.awards.map((award, index) => (
+                    <li key={award.id}>
+                      {award.title || "Award Title"} {award.date ? `(${award.date})` : ""}
+                    </li>
+                  ))}
+                  {resumeData.awards.length === 0 && <li>Awards will appear here</li>}
+                </ul>
+                {!viewMode && <div className="mt-2 text-xs text-blue-500">(Click to manage awards and certificates)</div>}
+              </div>
+              
+              {/* Extra-Curricular Activities Section */}
+              <div 
+                className={`mb-6 p-4 rounded-md ${!viewMode && 'cursor-pointer hover:bg-gray-100 hover:dark:bg-gray-800'}`}
+                onClick={() => openEditDialog('activities')}
+              >
+                <h2 className="text-lg font-bold uppercase mb-2 pb-1 border-b-2" style={{ color: "#2e6b8f", borderColor: "#2e6b8f" }}>
+                  Extra-Curricular Activities
+                </h2>
+                {resumeData.activities.map((activity, index) => (
+                  <div 
+                    key={activity.id} 
+                    className={`ml-2 mb-4 p-2 rounded ${!viewMode && 'hover:bg-gray-200 hover:dark:bg-gray-700'}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (!viewMode) {
+                        setEditingActivityIndex(index);
+                        setEditingSection('activitiesItem');
+                      }
+                    }}
+                  >
+                    <div className="flex justify-between items-start">
+                      <span className="font-bold" style={{ color: "#2e6b8f" }}>{activity.role || "Role/Position"}</span>
+                      <span className="italic" style={{ color: "#2e6b8f" }}>{activity.dates || "Dates"}</span>
+                    </div>
+                    <div className="font-bold text-sm" style={{ color: "#2e6b8f" }}>{activity.organization || "Organization"}</div>
+                    <ul className="list-disc ml-5 mt-1 text-sm">
+                      {activity.description ? 
+                        activity.description.split("\n").filter(Boolean).map((desc, i) => (
+                          <li key={i}>{desc}</li>
+                        )) : 
+                        <li>Description will appear here</li>
+                      }
+                    </ul>
+                    {!viewMode && <div className="mt-1 text-xs text-blue-500">(Click to edit this activity)</div>}
+                  </div>
+                ))}
+                {!viewMode && <div className="mt-2 text-xs text-blue-500">(Click to manage activities)</div>}
+              </div>
+              
+              {/* Additional Information Section */}
+              <div 
+                className={`p-4 rounded-md ${!viewMode && 'cursor-pointer hover:bg-gray-100 hover:dark:bg-gray-800'}`}
+                onClick={() => openEditDialog('additional')}
+              >
+                <h2 className="text-lg font-bold uppercase mb-2 pb-1 border-b-2" style={{ color: "#2e6b8f", borderColor: "#2e6b8f" }}>
+                  Additional Information
+                </h2>
+                <div className="ml-2 space-y-3 text-sm">
+                  {resumeData.languages && (
+                    <div>
+                      <span className="font-bold" style={{ color: "#2e6b8f" }}>Languages: </span>
+                      {resumeData.languages}
+                    </div>
+                  )}
+                  {resumeData.interests && (
+                    <div>
+                      <span className="font-bold" style={{ color: "#2e6b8f" }}>Interests: </span>
+                      {resumeData.interests}
+                    </div>
+                  )}
+                  {resumeData.itSkills && (
+                    <div>
+                      <span className="font-bold" style={{ color: "#2e6b8f" }}>IT Skills: </span>
+                      {resumeData.itSkills}
+                    </div>
+                  )}
+                  {!resumeData.languages && !resumeData.interests && !resumeData.itSkills && (
+                    <p>Additional information will appear here</p>
+                  )}
+                </div>
+                {!viewMode && <div className="mt-2 text-xs text-blue-500">(Click to edit additional information)</div>}
+              </div>
+              
+              {/* Footer */}
+              <div className="mt-16 text-center text-xs text-gray-500">
+                Created with Adviseek © 2025
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Render the edit dialog */}
+      {renderEditDialog()}
+    </div>
   );
 };
 

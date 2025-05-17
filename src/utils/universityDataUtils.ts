@@ -53,33 +53,6 @@ const mockUniversityData: UniversityData = {
         eligibility: [{ qualificationType: "A-Level", description: "Good grades in mathematics and economics" }],
         suitability: [{ criterion: "Analytical thinking", description: "Strong data analysis skills", weight: 5 }]
       }
-    },
-    {
-      college: "Faculty of Arts and Social Sciences",
-      major: "Psychology",
-      degree: "Bachelor of Arts",
-      criteria: {
-        eligibility: [{ qualificationType: "A-Level", description: "Good grades in humanities subjects" }],
-        suitability: [{ criterion: "Empathy", description: "Strong interpersonal skills", weight: 5 }]
-      }
-    },
-    {
-      college: "School of Engineering",
-      major: "Mechanical Engineering",
-      degree: "Bachelor of Engineering",
-      criteria: {
-        eligibility: [{ qualificationType: "A-Level", description: "Good grades in physics and mathematics" }],
-        suitability: [{ criterion: "Problem solving", description: "Strong analytical skills", weight: 5 }]
-      }
-    },
-    {
-      college: "Faculty of Science",
-      major: "Chemistry",
-      degree: "Bachelor of Science",
-      criteria: {
-        eligibility: [{ qualificationType: "A-Level", description: "Good grades in chemistry and mathematics" }],
-        suitability: [{ criterion: "Precision", description: "Attention to detail", weight: 5 }]
-      }
     }
   ]
 };
@@ -113,26 +86,71 @@ export const loadUniversityData = async (university: string): Promise<University
         break;
       default:
         console.error('Unknown university:', university);
-        console.log('Falling back to mock data for:', university);
-        dataCache[normalizedName] = mockUniversityData;
-        return mockUniversityData;
+        return mockUniversityData; // Return mock data instead of empty data
     }
     
-    console.log(`Using mock data for ${university} due to file loading issues`);
-    dataCache[normalizedName] = mockUniversityData;
+    // We'll try different path strategies to load the file
+    const fileStrategies = [
+      // Strategy 1: Using the base URL of the site with no leading slash
+      `${window.location.origin}/school-data/Standardized%20weights/standardized_${shortName}_majors.json`,
+      
+      // Strategy 2: Relative path with just a leading slash
+      `/school-data/Standardized%20weights/standardized_${shortName}_majors.json`,
+      
+      // Strategy 3: Just the file path with no leading slash
+      `school-data/Standardized%20weights/standardized_${shortName}_majors.json`
+    ];
+    
+    let data = null;
+    let successPath = '';
+    
+    // Try each file loading strategy
+    for (const filePath of fileStrategies) {
+      try {
+        console.log(`Attempting to fetch from: ${filePath}`);
+        const response = await fetch(filePath);
+        
+        if (!response.ok) {
+          console.log(`Strategy failed for ${filePath} with status: ${response.status}`);
+          continue;
+        }
+        
+        const fetchedData = await response.json();
+        
+        if (!fetchedData || !fetchedData.programs || !Array.isArray(fetchedData.programs)) {
+          console.log(`Invalid data format from ${filePath}`);
+          continue;
+        }
+        
+        // If we got here, we have valid data
+        data = fetchedData;
+        successPath = filePath;
+        break;
+      } catch (error) {
+        console.log(`Error with strategy ${filePath}:`, error);
+        // Continue to next strategy
+      }
+    }
+    
+    if (data) {
+      console.log(`Successfully loaded data from ${successPath} for ${university}`);
+      dataCache[normalizedName] = data;
+      return data;
+    }
+    
+    // If all strategies fail, use mock data
+    console.error(`All file loading strategies failed for ${university}, using mock data`);
     return mockUniversityData;
   } catch (error) {
     console.error('Error in loadUniversityData:', error);
-    console.log('Falling back to mock data due to error');
-    dataCache[normalizedName] = mockUniversityData;
-    return mockUniversityData;
+    return mockUniversityData; // Return mock data instead of null
   }
 };
 
 // Extract all degrees from university data
 export const getDegrees = (data: UniversityData | null): string[] => {
   if (!data?.programs) {
-    console.log('No valid programs array in data, returning empty array');
+    console.log('No valid programs array in data:', data);
     return [];
   }
 

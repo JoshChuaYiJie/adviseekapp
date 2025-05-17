@@ -11,15 +11,11 @@ interface ThemeContextProps {
 
 const ThemeContext = createContext<ThemeContextProps | undefined>(undefined);
 
-// The ThemeProvider component must be a function component
-export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   // Get initial theme from localStorage or default to system
   const [theme, setThemeState] = useState<Theme>(() => {
-    if (typeof window !== 'undefined') {
-      const savedTheme = localStorage.getItem("theme");
-      return (savedTheme as Theme) || "system";
-    }
-    return "system";
+    const savedTheme = localStorage.getItem("theme");
+    return (savedTheme as Theme) || "system";
   });
   
   const [isCurrentlyDark, setIsCurrentlyDark] = useState<boolean>(false);
@@ -27,15 +23,11 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   // Function to update the theme
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem("theme", newTheme);
-    }
+    localStorage.setItem("theme", newTheme);
   };
 
   // Effect to apply theme classes
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    
     const root = window.document.documentElement;
     root.classList.remove("light", "dark");
 
@@ -53,7 +45,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   // Listen for system theme changes
   useEffect(() => {
-    if (typeof window === 'undefined' || theme !== "system") return;
+    if (theme !== "system") return;
     
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     const handleChange = () => {

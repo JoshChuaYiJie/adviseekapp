@@ -74,7 +74,7 @@ export const useQuestionHandler = ({ userId }: { userId: string | null }) => {
     setLoadingRecommendations(false);
   };
 
-  // Submit responses to the database - Updated to ensure proper saving to open_ended_responses
+  // Submit responses to the database
   const handleSubmitResponses = async (majorName: string | null) => {
     if (!userId) {
       toast({
@@ -88,7 +88,7 @@ export const useQuestionHandler = ({ userId }: { userId: string | null }) => {
     setSubmitting(true);
     
     try {
-      // Filter out skipped questions and prepare valid responses
+      // Filter out empty responses and skipped questions
       const responsesToSave = Object.entries(answeredQuestions)
         .filter(([_, response]) => response.response.trim() !== '' && !response.skipped)
         .map(([questionId, response]) => {
@@ -102,10 +102,8 @@ export const useQuestionHandler = ({ userId }: { userId: string | null }) => {
           };
         });
       
-      console.log("Saving responses to open_ended_responses table:", responsesToSave);
-      
       if (responsesToSave.length > 0) {
-        // Save valid responses to open_ended_responses table
+        // Save valid responses to database
         const { error } = await supabase
           .from('open_ended_responses')
           .insert(responsesToSave);

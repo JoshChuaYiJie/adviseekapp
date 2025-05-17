@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -606,7 +607,7 @@ const OpenEndedQuiz = () => {
     }
   };
   
-  // Handle response changes - Modified to only affect the current question without carrying over
+  // Handle response changes
   const handleResponseChange = (value: string) => {
     if (currentQuestionIndex >= questions.length) return;
     
@@ -620,7 +621,7 @@ const OpenEndedQuiz = () => {
     }));
   };
   
-  // Navigate to next question - Modified to clear text area for next question
+  // Navigate to next question
   const handleNext = () => {
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
@@ -634,13 +635,13 @@ const OpenEndedQuiz = () => {
     }
   };
 
-  // Skip current question - Modified to only mark current question as skipped
+  // Skip current question
   const handleSkip = () => {
     if (currentQuestionIndex >= questions.length) return;
 
     const questionId = questions[currentQuestionIndex].question.id;
     
-    // Mark only the current question as skipped
+    // Mark question as skipped
     setResponses(prev => ({
       ...prev,
       [questionId]: { 
@@ -657,7 +658,7 @@ const OpenEndedQuiz = () => {
     }
   };
   
-  // Submit all responses - Ensure proper saving to open_ended_responses table
+  // Submit all responses
   const handleSubmit = async () => {
     if (!userId) {
       toast({
@@ -670,24 +671,22 @@ const OpenEndedQuiz = () => {
     
     setSubmitting(true);
     try {
-      // Prepare responses for database - explicitly using the open_ended_responses table
+      // Prepare responses for database - now using the new open_ended_responses table
       const responsesToSubmit = Object.entries(responses).map(([questionId, responseData]) => {
         const questionInfo = questions.find(q => q.question.id === questionId);
         
         return {
           user_id: userId,
-          question: questionInfo?.question?.question || '',
+          question_id: questionId,
           response: responseData.response,
-          major: questionInfo?.major || ''
+          skipped: responseData.skipped,
+          major: questionInfo?.major || '',
+          question: questionInfo?.question?.question || ''
         };
       });
       
-      // Filter out skipped responses and empty responses
-      const validResponses = responsesToSubmit.filter(r => 
-        r !== undefined && 
-        !responses[r.question]?.skipped &&
-        responses[r.question]?.response.trim() !== ''
-      );
+      // Filter out any undefined responses (shouldn't happen but just in case)
+      const validResponses = responsesToSubmit.filter(r => r !== undefined);
       
       console.log("Submitting responses to open_ended_responses table:", validResponses);
       
@@ -802,10 +801,9 @@ const OpenEndedQuiz = () => {
     );
   }
   
-  // Current question and response
   const currentQuestion = questions[currentQuestionIndex];
   const questionId = currentQuestion?.question?.id;
-  const currentResponse = questionId ? responses[questionId] || { response: '', skipped: false } : { response: '', skipped: false };
+  const currentResponse = responses[questionId] || { response: '', skipped: false };
   
   return (
     <div className="max-w-4xl mx-auto p-6">
@@ -824,21 +822,16 @@ const OpenEndedQuiz = () => {
       
       <Card className={`p-6 transition-all duration-300 animate-fade-in ${isCurrentlyDark ? 'bg-gray-800' : 'bg-white'}`}>
         <div className="mb-4">
-          <Badge className="mb-2 capitalize">{currentQuestion?.question.category || currentQuestion?.question.criterion}</Badge>
-          <h3 className="text-xl font-medium mb-1">Major: {currentQuestion?.major}</h3>
-          <p className="text-lg mb-6">{currentQuestion?.question.question}</p>
+          <Badge className="mb-2 capitalize">{currentQuestion.question.category || currentQuestion.question.criterion}</Badge>
+          <h3 className="text-xl font-medium mb-1">Major: {currentQuestion.major}</h3>
+          <p className="text-lg mb-6">{currentQuestion.question.question}</p>
           
           <Textarea
             className="min-h-[150px]"
             placeholder="Type your answer here..."
             value={currentResponse.response}
             onChange={(e) => handleResponseChange(e.target.value)}
-            disabled={currentResponse.skipped}
           />
-          
-          {currentResponse.skipped && (
-            <p className="text-amber-500 italic text-sm">You skipped this question</p>
-          )}
         </div>
         
         <div className="flex justify-between mt-6">
@@ -855,7 +848,6 @@ const OpenEndedQuiz = () => {
               variant="outline"
               onClick={handleSkip}
               className="text-amber-500 border-amber-500 hover:bg-amber-500/10"
-              disabled={currentResponse.skipped}
             >
               <SkipForward className="mr-2 h-4 w-4" /> Skip
             </Button>
@@ -877,7 +869,7 @@ const OpenEndedQuiz = () => {
         </div>
       </Card>
       
-      {/* Question Status section - Modified to only highlight current skipped question */}
+      {/* Skipped questions summary */}
       <div className="mt-6">
         <h3 className="font-medium mb-2">Question Status:</h3>
         <div className="grid grid-cols-5 gap-2">
@@ -900,8 +892,7 @@ const OpenEndedQuiz = () => {
                   idx === currentQuestionIndex ? 'ring-2 ring-blue-500' : ''
                 } ${
                   status === 'answered' ? 'bg-green-500 text-white' :
-                  status === 'skipped' && idx === currentQuestionIndex ? 'bg-amber-500 text-white' :
-                  status === 'skipped' ? 'bg-gray-400 text-white' :
+                  status === 'skipped' ? 'bg-amber-500 text-white' :
                   'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
                 }`}
                 onClick={() => setCurrentQuestionIndex(idx)}

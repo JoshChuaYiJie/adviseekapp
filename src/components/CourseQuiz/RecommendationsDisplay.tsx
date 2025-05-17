@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
@@ -6,7 +7,7 @@ import { useQuiz } from '@/contexts/QuizContext';
 import { Module } from '@/integrations/supabase/client';
 import { RecommendationsSkeleton } from './RecommendationsSkeleton';
 import { SelectionModal } from './SelectionModal';
-import { useGlobalProfile } from '@/contexts/GlobalProfileContext';
+import { useModuleRecommendations, RecommendedModule } from '@/hooks/useModuleRecommendations';
 
 interface RecommendationsDisplayProps {
   onBack: () => void;
@@ -21,47 +22,14 @@ export const RecommendationsDisplay: React.FC<RecommendationsDisplayProps> = ({ 
     getFinalSelections 
   } = useQuiz();
   
-  // Use global profile context instead of the hook
-  const { 
-    recommendedModules,
-    isLoading: loadingModules,
-    error
-  } = useGlobalProfile();
+  // Use our new hook for recommendations
+  const { recommendedModules, loadingModules, error } = useModuleRecommendations();
   
   const [modalOpen, setModalOpen] = useState(false);
   const [selections, setSelections] = useState<{module: Module, reason: string}[]>([]);
   
   // Count rated modules
   const ratedModulesCount = Object.keys(userFeedback).length;
-  
-  // Convert modules to the format expected by this component
-  const recommendations = recommendedModules.map((rec) => ({
-    module: {
-      id: getModuleId(rec.modulecode),
-      university: rec.institution,
-      course_code: rec.modulecode,
-      title: rec.title,
-      description: rec.description || "No description available.",
-      aus_cus: 4,
-      semester: "1" 
-    },
-    module_id: getModuleId(rec.modulecode),
-    reasoning: ["Based on your recommended majors"],
-    user_id: '',
-    created_at: new Date().toISOString(),
-    reason: "Recommended based on your major preferences"
-  }));
-
-  // Generate consistent module IDs - same as in other places
-  function getModuleId(code: string): number {
-    let hash = 0;
-    for (let i = 0; i < code.length; i++) {
-      const char = code.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
-      hash = hash & hash; // Convert to 32bit integer
-    }
-    return Math.abs(hash);
-  }
   
   // Get current rating for a module
   const getRating = (moduleId: number): number => {
@@ -106,7 +74,7 @@ export const RecommendationsDisplay: React.FC<RecommendationsDisplayProps> = ({ 
     );
   }
   
-  if (!recommendations || recommendations.length === 0) {
+  if (!recommendedModules || recommendedModules.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center p-8 min-h-[60vh]">
         <h2 className="text-2xl font-bold">No Recommendations Available</h2>
@@ -115,6 +83,16 @@ export const RecommendationsDisplay: React.FC<RecommendationsDisplayProps> = ({ 
       </div>
     );
   }
+  
+  // Format recommendations to match the expected structure for the UI
+  const recommendations = recommendedModules.map((rec) => ({
+    module: rec.module,
+    module_id: rec.module.id,
+    reasoning: rec.reasoning,
+    user_id: '',
+    created_at: new Date().toISOString(),
+    reason: rec.reasoning[0] || "Recommended based on your major preferences"
+  }));
   
   return (
     <div className="flex flex-col min-h-screen bg-white">

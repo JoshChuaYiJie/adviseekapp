@@ -1,6 +1,12 @@
 
 import { MajorRecommendationsType } from '@/components/sections/majors/types';
-import { Module } from './types';
+
+export interface Module {
+  modulecode: string;
+  title: string;
+  institution: "NUS" | "NTU" | "SMU";
+  description: string;
+}
 
 /**
  * Fetches module recommendations based on the top recommended majors

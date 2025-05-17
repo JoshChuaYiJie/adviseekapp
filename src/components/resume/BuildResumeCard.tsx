@@ -1,46 +1,34 @@
 
-import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ClipboardEdit } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { FilePlus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import { useTheme } from "@/contexts/ThemeContext";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
 
-export const BuildResumeCard: React.FC = () => {
+export const BuildResumeCard = () => {
   const navigate = useNavigate();
+  const { isCurrentlyDark } = useTheme();
   const { t } = useTranslation();
-
-  const handleCreateResume = () => {
-    // Navigate to the resume builder page with a basic template
-    navigate('/resumebuilder/basic');
-    
-    // For debugging purposes, show a toast to track navigation
-    console.log("Navigating to resume builder page with basic template");
+  
+  const handleBuildResume = () => {
+    // Pass the default resume name as a URL parameter
+    navigate("/resumebuilder?name=Default NUS Resume");
   };
 
   return (
-    <TooltipProvider>
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <ClipboardEdit className="mr-2 h-5 w-5" />
-            {t('Build a Resume')}
-          </CardTitle>
-          <CardDescription>
-            {t('Create a new resume using our interactive builder')}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Button 
-            onClick={handleCreateResume}
-            className="w-full"
-          >
-            {t('Create Resume')}
-          </Button>
-        </CardContent>
-      </Card>
-    </TooltipProvider>
+    <Card
+      className={`p-6 border rounded-lg flex flex-col items-center justify-center text-center h-64 ${
+        isCurrentlyDark ? "border-gray-700 bg-gray-800" : ""
+      }`}
+      data-tutorial="build-resume"
+    >
+      <FilePlus className="h-12 w-12 text-blue-500 mb-4" />
+      <h3 className="text-lg font-medium mb-2">{t("resume.build_title", "Build Your Resume")}</h3>
+      <p className={`text-sm ${isCurrentlyDark ? "text-gray-300" : "text-gray-500"} mb-4`}>
+        {t("resume.build_description", "Create a professional resume with our templates and AI assistance")}
+      </p>
+      <Button onClick={handleBuildResume}>{t("resume.build_button", "Build Now")}</Button>
+    </Card>
   );
 };

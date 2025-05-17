@@ -251,8 +251,7 @@ const MajorOpenEndedQuiz: React.FC<MajorOpenEndedQuizProps> = ({ major }) => {
                     idx === currentQuestionIndex ? 'ring-2 ring-blue-500' : ''
                   } ${
                     status === 'answered' ? 'bg-green-500 text-white' :
-                    status === 'skipped' && idx === currentQuestionIndex ? 'bg-amber-500 text-white' :
-                    status === 'skipped' ? 'bg-gray-400 text-white' :
+                    status === 'skipped' ? 'bg-amber-500 text-white' :
                     'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
                   }`}
                   onClick={() => handleQuestionClick(idx)}

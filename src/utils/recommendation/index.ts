@@ -1,11 +1,9 @@
 
 // Re-export from recommendation module - for backward compatibility
 import {
-  fetchModuleRecommendations
+  fetchModuleRecommendations,
+  Module
 } from './moduleRecommendationUtils';
-
-// Import Module type from types
-import { Module } from './types';
 
 // Import mappers
 import {
@@ -28,8 +26,7 @@ import {
 // Import types
 import type { 
   OccupationMajorMapping,
-  MajorRecommendations,
-  UIModule
+  MajorRecommendations
 } from './types';
 
 // Import file utils
@@ -64,14 +61,13 @@ export {
   // Types
   type OccupationMajorMapping,
   type MajorRecommendations,
-  type Module,
-  type UIModule,
   
   // File utils
   sanitizeToFilename,
   
   // Module recommendations
   fetchModuleRecommendations,
+  type Module,
   
   // Recommendation helpers
   generateRecommendationsUtil,

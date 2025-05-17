@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 
 export type QuizType = 'interest-part 1' | 'interest-part 2' | 'competence' | 'work-values';
@@ -16,7 +17,6 @@ export interface McqQuestion {
   question: string;
   options: string[];
   category: string;
-  component?: string; // Added component property
   optionScores: Record<string, number>;
   riasec_component?: string;
   work_value_component?: string;

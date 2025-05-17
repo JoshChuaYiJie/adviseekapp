@@ -1,80 +1,90 @@
 
-import React, { useRef, useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Upload } from "lucide-react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { useTranslation } from "react-i18next";
+import { Card } from "@/components/ui/card";
+import { FileUp } from "lucide-react";
+import { useTheme } from "@/contexts/ThemeContext";
+import { toast } from "@/components/ui/sonner";
 
 interface UploadResumeCardProps {
   onFileUpload: (files: File[]) => void;
 }
 
-export const UploadResumeCard: React.FC<UploadResumeCardProps> = ({ onFileUpload }) => {
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [dragOver, setDragOver] = useState(false);
-  const { t } = useTranslation();
+export const UploadResumeCard = ({ onFileUpload }: UploadResumeCardProps) => {
+  const [isDragActive, setIsDragActive] = useState(false);
+  const { isCurrentlyDark } = useTheme();
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleDragEnter = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragActive(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragActive(false);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragActive(false);
+    
+    const droppedFiles = Array.from(e.dataTransfer.files);
+    const pdfFiles = droppedFiles.filter(file => file.type === "application/pdf");
+    
+    if (pdfFiles.length > 0) {
+      onFileUpload(pdfFiles);
+    } else {
+      toast.error("Please upload PDF files only.");
+    }
+  };
+
+  const handleBrowseFiles = () => {
+    document.getElementById('resume-file-upload')?.click();
+  };
+
+  const handleInputFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length > 0) {
-      onFileUpload(Array.from(files));
-      e.target.value = ''; // Reset file input
+      const fileArray = Array.from(files);
+      onFileUpload(fileArray);
     }
-  };
-
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    setDragOver(false);
-    
-    const files = e.dataTransfer.files;
-    if (files && files.length > 0) {
-      onFileUpload(Array.from(files));
-    }
-  };
-
-  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    setDragOver(true);
-  };
-
-  const handleDragLeave = () => {
-    setDragOver(false);
   };
 
   return (
-    <TooltipProvider>
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <Upload className="mr-2 h-5 w-5" />
-            {t('Upload Resume')}
-          </CardTitle>
-          <CardDescription>
-            {t('Upload an existing resume file')}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div
-            className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer ${dragOver ? 'border-primary bg-primary/5' : 'border-muted-foreground/25'}`}
-            onClick={() => fileInputRef.current?.click()}
-            onDrop={handleDrop}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-          >
-            <input 
-              type="file" 
-              ref={fileInputRef} 
-              onChange={handleFileChange}
-              accept=".pdf,.doc,.docx"
-              className="hidden"
-            />
-            <Upload className="h-10 w-10 mx-auto mb-3 text-muted-foreground" />
-            <p className="text-sm font-medium mb-1">{t('Click to upload or drag and drop')}</p>
-            <p className="text-xs text-muted-foreground">{t('PDF, DOC, or DOCX files supported')}</p>
-          </div>
-        </CardContent>
-      </Card>
-    </TooltipProvider>
+    <Card
+      className={`p-6 border-2 border-dashed ${
+        isDragActive ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20" : "border-gray-300 dark:border-gray-600"
+      } rounded-lg flex flex-col items-center justify-center text-center h-64 dark:bg-gray-800`}
+      onDragEnter={handleDragEnter}
+      onDragLeave={handleDragLeave}
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
+      data-tutorial="drop-resume"
+    >
+      <FileUp className={`h-12 w-12 ${isCurrentlyDark ? "text-gray-300" : "text-gray-400"} mb-4`} />
+      <h3 className="text-lg font-medium mb-2">Upload Your Resume</h3>
+      <p className={`text-sm ${isCurrentlyDark ? "text-gray-300" : "text-gray-500"} mb-4`}>
+        Drag and drop your PDF resume here or click to browse
+      </p>
+      <Button variant="outline" size="sm" onClick={handleBrowseFiles}>
+        Browse Files
+      </Button>
+      <input
+        id="resume-file-upload"
+        type="file"
+        accept=".pdf"
+        className="hidden"
+        onChange={handleInputFileChange}
+        multiple
+      />
+    </Card>
   );
 };

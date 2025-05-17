@@ -1,6 +1,4 @@
 
-
-
 // Types for major recommendations
 export interface OccupationMajorMapping {
   occupation: string;
@@ -20,29 +18,8 @@ export interface MajorRecommendations {
   matchType: 'exact' | 'riasec' | 'workValue' | 'none';
 }
 
-// Consistent Module interface used throughout the application
-export interface Module {
-  id?: number;
-  modulecode: string;
-  title: string;
-  institution: "NUS" | "NTU" | "SMU";
-  description: string;
-}
-
-// Extended module format used in some UI components
-export interface UIModule {
-  id: number;
-  university: "NUS" | "NTU" | "SMU";  // Updated from string to match Module.institution type
-  course_code: string;
-  title: string;
-  description: string;
-  aus_cus: number;
-  semester: string;
-}
-
 // Export other types that might be needed
 export interface RecommendationResponse {
   majors: string[];
   files: string[];
 }
-

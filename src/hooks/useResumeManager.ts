@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/sonner";
 import { useNavigate } from "react-router-dom";
 import { SavedResume } from "@/components/resume/ResumeTable";
 import { formatTemplateType } from "@/utils/resumeHelpers";
@@ -51,50 +51,33 @@ export const useResumeManager = () => {
 
   const handleFileUpload = async (files: File[]) => {
     try {
-      setLoading(true);
       const { data: session } = await supabase.auth.getSession();
       const userId = session?.session?.user?.id;
       
       if (!userId) {
-        toast.error('You must be logged in to save resumes');
-        setLoading(false);
+        setResumeFiles(prev => [...prev, ...files]);
+        toast.success(`${files.length} resume${files.length > 1 ? 's' : ''} uploaded successfully!`);
+        
+        // For uploaded PDFs, we'll send to the basic resume editor with source=pdf param
+        if (files.length === 1) {
+          navigate("/resumebuilder/basic?source=pdf");
+        }
         return;
       }
       
-      // Store file information in state for immediate display
+      // Upload to Supabase Storage (this would need a bucket setup)
+      // For now, we'll just add the files to the state
       setResumeFiles(prev => [...prev, ...files]);
+      toast.success(`${files.length} resume${files.length > 1 ? 's' : ''} uploaded successfully!`);
       
-      // For uploaded PDFs, create a placeholder entry in the database
-      if (files.length > 0) {
-        const { error } = await supabase
-          .from('resumes')
-          .insert({
-            user_id: userId,
-            name: files[0].name,
-            template_type: 'basic',
-            updated_at: new Date().toISOString()
-          });
-        
-        if (error) {
-          console.error('Error creating resume record:', error);
-          toast.error('Failed to save resume information.');
-        } else {
-          toast.success(`${files.length} resume${files.length > 1 ? 's' : ''} uploaded successfully!`);
-          
-          // Refresh the list of saved resumes
-          fetchSavedResumes();
-          
-          // For uploaded PDFs, we'll send to the basic resume editor with source=pdf param
-          if (files.length === 1) {
-            navigate("/resumebuilder/basic?source=pdf");
-          }
-        }
+      // For uploaded PDFs, we'll send to the basic resume editor with source=pdf param
+      if (files.length === 1) {
+        navigate("/resumebuilder/basic?source=pdf");
       }
+
     } catch (error) {
       console.error('Error uploading files:', error);
       toast.error('Failed to upload resume files.');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -120,7 +103,6 @@ export const useResumeManager = () => {
     handleFileUpload,
     handleViewResume,
     handleEditResume,
-    handleEditPDF,
-    fetchSavedResumes
+    handleEditPDF
   };
 };
