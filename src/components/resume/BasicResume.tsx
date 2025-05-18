@@ -35,6 +35,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Json } from "@/integrations/supabase/types";
 
 interface EducationItem {
   id: string;
@@ -76,6 +77,20 @@ interface ResumeData {
   user_id?: string;
   template_type?: string;
 }
+
+// Helper functions to convert between typed arrays and Json
+const parseJsonArray = <T,>(jsonArray: Json | null | undefined, fallback: T[]): T[] => {
+  if (!jsonArray) return fallback;
+  try {
+    if (Array.isArray(jsonArray)) {
+      return jsonArray as T[];
+    }
+    return fallback;
+  } catch (error) {
+    console.error("Error parsing JSON array:", error);
+    return fallback;
+  }
+};
 
 const BasicResume = () => {
   const navigate = useNavigate();
@@ -140,6 +155,16 @@ const BasicResume = () => {
         
         console.log("Resume data loaded:", data);
         
+        // Default values for arrays if they're null or not arrays
+        const defaultEducationItem: EducationItem = { id: '1', institution: '', degree: '', dates: '', description: '' };
+        const defaultWorkExperience: WorkExperienceItem = { id: '1', role: '', organization: '', dates: '', description: '' };
+        const defaultActivity: ActivityItem = { id: '1', role: '', organization: '', dates: '', description: '' };
+        
+        // Parse JSON arrays with proper typing
+        const educationItems = parseJsonArray<EducationItem>(data.educationItems, [defaultEducationItem]);
+        const workExperience = parseJsonArray<WorkExperienceItem>(data.work_experience, [defaultWorkExperience]);
+        const activities = parseJsonArray<ActivityItem>(data.activities, [defaultActivity]);
+        
         // Clean resumeData and set defaults for missing fields
         const cleanedData: ResumeData = {
           id: data.id,
@@ -147,15 +172,9 @@ const BasicResume = () => {
           email: data.email || '',
           phone: data.phone || '',
           nationality: data.nationality || '',
-          educationItems: Array.isArray(data.educationItems) ? data.educationItems : [
-            { id: '1', institution: '', degree: '', dates: '', description: '' }
-          ],
-          work_experience: Array.isArray(data.work_experience) ? data.work_experience : [
-            { id: '1', role: '', organization: '', dates: '', description: '' }
-          ],
-          activities: Array.isArray(data.activities) ? data.activities : [
-            { id: '1', role: '', organization: '', dates: '', description: '' }
-          ],
+          educationItems,
+          work_experience: workExperience,
+          activities,
           awards: data.awards || '',
           languages: data.languages || '',
           interests: data.interests || '',
@@ -346,14 +365,13 @@ const BasicResume = () => {
         name: resumeName || 'My Resume',
         user_id: session.user.id,
         template_type: 'basic',
-        // Include all resume fields explicitly to avoid missing any
         email: resumeData.email || '',
         phone: resumeData.phone || '',
-        name: resumeData.name || '',
         nationality: resumeData.nationality || '',
-        educationItems: resumeData.educationItems || [],
-        work_experience: resumeData.work_experience || [],
-        activities: resumeData.activities || [],
+        // Convert complex objects to JSON for database storage
+        educationItems: resumeData.educationItems as unknown as Json,
+        work_experience: resumeData.work_experience as unknown as Json,
+        activities: resumeData.activities as unknown as Json,
         awards: resumeData.awards || '',
         languages: resumeData.languages || '',
         interests: resumeData.interests || '',
