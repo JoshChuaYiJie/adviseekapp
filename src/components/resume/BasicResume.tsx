@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { 
@@ -24,7 +23,7 @@ import {
 } from 'lucide-react';
 import { useNavigate, useLocation } from "react-router-dom";
 import { jsPDF } from "jspdf";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase, Json, parseJsonArray } from "@/integrations/supabase/client";
 import { useTheme } from "@/contexts/ThemeContext";
 import { 
   Dialog,
@@ -35,7 +34,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Json } from "@/integrations/supabase/types";
 
 interface EducationItem {
   id: string;
@@ -77,20 +75,6 @@ interface ResumeData {
   user_id?: string;
   template_type?: string;
 }
-
-// Helper functions to convert between typed arrays and Json
-const parseJsonArray = <T,>(jsonArray: Json | null | undefined, fallback: T[]): T[] => {
-  if (!jsonArray) return fallback;
-  try {
-    if (Array.isArray(jsonArray)) {
-      return jsonArray as T[];
-    }
-    return fallback;
-  } catch (error) {
-    console.error("Error parsing JSON array:", error);
-    return fallback;
-  }
-};
 
 const BasicResume = () => {
   const navigate = useNavigate();
@@ -368,7 +352,6 @@ const BasicResume = () => {
         email: resumeData.email || '',
         phone: resumeData.phone || '',
         nationality: resumeData.nationality || '',
-        // Convert complex objects to JSON for database storage
         educationItems: resumeData.educationItems as unknown as Json,
         work_experience: resumeData.work_experience as unknown as Json,
         activities: resumeData.activities as unknown as Json,

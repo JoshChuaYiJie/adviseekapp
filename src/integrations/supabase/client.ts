@@ -75,6 +75,23 @@ export type UserSettings = {
   updated_at: string;
 };
 
+// Export Json type for proper type handling with Supabase
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
+
+// Helper functions to convert between typed arrays and Json
+export const parseJsonArray = <T,>(jsonArray: Json | null | undefined, fallback: T[]): T[] => {
+  if (!jsonArray) return fallback;
+  try {
+    if (Array.isArray(jsonArray)) {
+      return jsonArray as T[];
+    }
+    return fallback;
+  } catch (error) {
+    console.error("Error parsing JSON array:", error);
+    return fallback;
+  }
+};
+
 // Import the supabase client like this:
 // import { supabase } from "@/integrations/supabase/client";
 
