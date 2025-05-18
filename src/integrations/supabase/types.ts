@@ -245,7 +245,7 @@ export type Database = {
           awards: string | null
           created_at: string
           education_dates: string | null
-          education_items: Json | null
+          educationItems: Json | null
           email: string | null
           id: string
           institution: string | null
@@ -256,7 +256,7 @@ export type Database = {
           nationality: string | null
           phone: string | null
           qualifications: string | null
-          resume_name: string | null
+          resumeName: string | null
           template_type: string
           updated_at: string
           user_id: string
@@ -267,7 +267,7 @@ export type Database = {
           awards?: string | null
           created_at?: string
           education_dates?: string | null
-          education_items?: Json | null
+          educationItems?: Json | null
           email?: string | null
           id?: string
           institution?: string | null
@@ -278,7 +278,7 @@ export type Database = {
           nationality?: string | null
           phone?: string | null
           qualifications?: string | null
-          resume_name?: string | null
+          resumeName?: string | null
           template_type: string
           updated_at?: string
           user_id: string
@@ -289,7 +289,7 @@ export type Database = {
           awards?: string | null
           created_at?: string
           education_dates?: string | null
-          education_items?: Json | null
+          educationItems?: Json | null
           email?: string | null
           id?: string
           institution?: string | null
@@ -300,7 +300,7 @@ export type Database = {
           nationality?: string | null
           phone?: string | null
           qualifications?: string | null
-          resume_name?: string | null
+          resumeName?: string | null
           template_type?: string
           updated_at?: string
           user_id?: string
