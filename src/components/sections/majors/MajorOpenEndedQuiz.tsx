@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -89,6 +88,10 @@ const MajorOpenEndedQuiz: React.FC<MajorOpenEndedQuizProps> = ({ major }) => {
       // Use a small delay to ensure the DOM has updated
       setTimeout(() => {
         textareaRef.current?.focus();
+        
+        // Ensure cursor is at the end
+        const length = textareaRef.current.value.length;
+        textareaRef.current.setSelectionRange(length, length);
       }, 0);
     }
   }, [currentQuestionIndex]);
@@ -261,6 +264,7 @@ const MajorOpenEndedQuiz: React.FC<MajorOpenEndedQuizProps> = ({ major }) => {
               value={currentResponse.response}
               onChange={(e) => handleResponseChange(e.target.value)}
               disabled={submitting || currentResponse.skipped}
+              key={`question-${questionId}`}
             />
             
             {currentResponse.skipped && (
