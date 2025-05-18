@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -35,6 +34,12 @@ interface QuizQuestion {
   uniqueId?: string; // Add uniqueId field
 }
 
+// Interface for response data
+interface ResponseData {
+  response: string;
+  skipped: boolean;
+}
+
 const OpenEndedQuiz = () => {
   const navigate = useNavigate();
   const { isCurrentlyDark } = useTheme();
@@ -48,17 +53,15 @@ const OpenEndedQuiz = () => {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [submissionError, setSubmissionError] = useState<string | null>(null);
   const questionsRef = useRef<HTMLDivElement>(null);
-  const currentQuestionRef = useRef<HTMLDivElement>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
   
-  // Add cached responses state management
-  const [responses, setResponses] = useState<Record<string, { response: string; skipped: boolean }>>({});
+  // Store responses in parent state, but don't update on every keystroke
+  const [responses, setResponses] = useState<Record<string, ResponseData>>({});
   
-  // Cache responses whenever they change - moved outside the state update function
+  // Cache responses when they actually change, not on every render
   const responsesRef = useRef(responses);
+  
   useEffect(() => {
-    // Only update localStorage if responses actually changed
-    if (responses !== responsesRef.current) {
+    if (JSON.stringify(responses) !== JSON.stringify(responsesRef.current)) {
       responsesRef.current = responses;
       try {
         localStorage.setItem('openEndedQuizResponses', JSON.stringify(responses));
@@ -82,21 +85,6 @@ const OpenEndedQuiz = () => {
       console.error("Error loading cached responses:", error);
     }
   }, []);
-  
-  // Focus management for textarea - use higher timeout to ensure DOM is fully updated
-  useEffect(() => {
-    if (textareaRef.current) {
-      const focusTextarea = () => {
-        if (textareaRef.current) {
-          textareaRef.current.focus();
-        }
-      };
-      
-      // Use a more reliable approach with setTimeout
-      const timerId = setTimeout(focusTextarea, 100);
-      return () => clearTimeout(timerId);
-    }
-  }, [currentQuestionIndex]);
   
   // Get recommended majors directly from context
   const { majorRecommendations } = useRecommendationContext();
@@ -414,65 +402,21 @@ const OpenEndedQuiz = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
   
-  // Handle response changes - optimized to prevent unnecessary re-renders
-  const handleResponseChange = (value: string) => {
-    if (questions.length === 0 || currentQuestionIndex >= questions.length) return;
-    
-    const questionId = questions[currentQuestionIndex].uniqueId || questions[currentQuestionIndex].question.id;
-    
-    // Use functional update to minimize re-renders
-    setResponses(prev => {
-      // Only update if the value has actually changed
-      if (prev[questionId]?.response === value) {
-        return prev;
+  // Save response callback - only called when navigating away from a question
+  const saveResponse = (questionId: string, responseText: string, isSkipped: boolean) => {
+    setResponses(prev => ({
+      ...prev,
+      [questionId]: {
+        response: responseText,
+        skipped: isSkipped
       }
-      
-      return {
-        ...prev,
-        [questionId]: { 
-          response: value,
-          skipped: false 
-        }
-      };
-    });
+    }));
   };
   
-  // Navigate to next question - now properly handling empty responses
+  // Navigate to next question 
   const handleNext = () => {
     if (currentQuestionIndex < questions.length - 1) {
-      // Save current response
-      const currentQuestion = questions[currentQuestionIndex];
-      const currentQuestionId = currentQuestion.uniqueId || currentQuestion.question.id;
-      const currentResponseText = responses[currentQuestionId]?.response || '';
-      
-      // Check if response is empty and mark as skipped if it is
-      if (currentResponseText.trim() === '') {
-        setResponses(prev => ({
-          ...prev,
-          [currentQuestionId]: { 
-            response: '',
-            skipped: true 
-          }
-        }));
-        
-        // Cache the skipped status immediately
-        try {
-          const updatedResponses = {
-            ...responses,
-            [currentQuestionId]: {
-              response: '',
-              skipped: true
-            }
-          };
-          localStorage.setItem('openEndedQuizResponses', JSON.stringify(updatedResponses));
-          console.log(`Cached skipped status for empty response for question ${currentQuestionId}`);
-        } catch (error) {
-          console.error("Error caching skipped status:", error);
-        }
-      }
-      
-      // Move to next question
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
+      setCurrentQuestionIndex(prevIndex => prevIndex + 1);
     } else {
       handleSubmit();
     }
@@ -481,24 +425,7 @@ const OpenEndedQuiz = () => {
   // Navigate to previous question
   const handlePrevious = () => {
     if (currentQuestionIndex > 0) {
-      // Save current response
-      const currentQuestion = questions[currentQuestionIndex];
-      const currentQuestionId = currentQuestion.uniqueId || currentQuestion.question.id;
-      const currentResponseText = responses[currentQuestionId]?.response || '';
-      
-      if (currentResponseText.trim() !== '') {
-        // If response isn't empty, save as answered
-        setResponses(prev => ({
-          ...prev,
-          [currentQuestionId]: { 
-            response: currentResponseText,
-            skipped: false 
-          }
-        }));
-      }
-      
-      // Move to previous question
-      setCurrentQuestionIndex(currentQuestionIndex - 1);
+      setCurrentQuestionIndex(prevIndex => prevIndex - 1);
     }
   };
 
@@ -510,33 +437,17 @@ const OpenEndedQuiz = () => {
     const questionId = currentQuestion.uniqueId || currentQuestion.question.id;
     
     // Mark question as skipped
-    const updatedResponses = {
-      ...responses,
-      [questionId]: { 
-        response: '',
-        skipped: true 
-      }
-    };
-    
-    setResponses(updatedResponses);
-    
-    // Cache the skipped status immediately
-    try {
-      localStorage.setItem('openEndedQuizResponses', JSON.stringify(updatedResponses));
-      console.log(`Cached skipped status for question ${questionId}`);
-    } catch (error) {
-      console.error("Error caching skipped status:", error);
-    }
+    saveResponse(questionId, '', true);
 
     // Move to next question or submit if this is the last one
     if (currentQuestionIndex < questions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
+      setCurrentQuestionIndex(prevIndex => prevIndex + 1);
     } else {
       handleSubmit();
     }
   };
   
-  // Submit all responses - ensure empty responses are saved as skipped
+  // Submit all responses
   const handleSubmit = async () => {
     if (!userId) {
       toast({
@@ -667,26 +578,7 @@ const OpenEndedQuiz = () => {
   
   // Handle clicking on a question directly
   const handleQuestionClick = (index: number) => {
-    // Save current response before switching
-    if (questions.length > 0 && currentQuestionIndex < questions.length) {
-      const currentQuestion = questions[currentQuestionIndex];
-      const currentQuestionId = currentQuestion.uniqueId || currentQuestion.question.id;
-      const currentResponseText = responses[currentQuestionId]?.response || '';
-      
-      if (currentResponseText.trim() !== '') {
-        // If response isn't empty, save as answered
-        setResponses(prev => ({
-          ...prev,
-          [currentQuestionId]: { 
-            response: currentResponseText,
-            skipped: false 
-          }
-        }));
-      }
-      
-      // Set new current question index
-      setCurrentQuestionIndex(index);
-    }
+    setCurrentQuestionIndex(index);
   };
   
   // Calculate progress percentage
@@ -699,7 +591,7 @@ const OpenEndedQuiz = () => {
     setVisibleCount(prev => prev + 1);
   };
 
-  // QuestionDisplay component - memoized to prevent unnecessary re-renders
+  // QuestionDisplay component - memoized with local state management
   const QuestionDisplay = React.memo(({ 
     question, 
     index 
@@ -713,8 +605,51 @@ const OpenEndedQuiz = () => {
     
     // Use uniqueId if available, or fallback to original question.id
     const questionId = question.uniqueId || question.question.id;
-    const currentResponse = responses[questionId] || { response: '', skipped: false };
     
+    // Local state for the textarea value - doesn't trigger parent re-renders
+    const [localResponse, setLocalResponse] = useState('');
+    const [isLocalSkipped, setIsLocalSkipped] = useState(false);
+    
+    // Initialize local state from parent responses when the component mounts 
+    // or when the question changes
+    useEffect(() => {
+      const savedResponse = responses[questionId];
+      if (savedResponse) {
+        setLocalResponse(savedResponse.response || '');
+        setIsLocalSkipped(savedResponse.skipped || false);
+      } else {
+        setLocalResponse('');
+        setIsLocalSkipped(false);
+      }
+    }, [questionId, responses]);
+    
+    // Save the response to parent state when unmounting
+    useEffect(() => {
+      return () => {
+        // Only save if there are changes
+        const existingResponse = responses[questionId];
+        const hasChanged = !existingResponse || 
+                          existingResponse.response !== localResponse || 
+                          existingResponse.skipped !== isLocalSkipped;
+        
+        if (hasChanged) {
+          saveResponse(questionId, localResponse, isLocalSkipped);
+        }
+      };
+    }, [questionId, localResponse, isLocalSkipped]);
+    
+    // Handle local textarea changes
+    const handleLocalResponseChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      const newValue = e.target.value;
+      setLocalResponse(newValue);
+      
+      // If user types something, it's no longer skipped
+      if (isLocalSkipped && newValue.trim() !== '') {
+        setIsLocalSkipped(false);
+      }
+    };
+    
+    // Visibility observer
     useEffect(() => {
       const observer = new IntersectionObserver(
         (entries) => {
@@ -754,15 +689,14 @@ const OpenEndedQuiz = () => {
           </div>
           
           <Textarea
-            ref={textareaRef}
             className="min-h-[150px]"
             placeholder="Type your answer here..."
-            value={currentResponse.response}
-            onChange={(e) => handleResponseChange(e.target.value)}
-            disabled={currentResponse.skipped}
+            value={localResponse}
+            onChange={handleLocalResponseChange}
+            disabled={isLocalSkipped}
           />
           
-          {currentResponse.skipped && (
+          {isLocalSkipped && (
             <p className="text-amber-500 italic text-sm mt-2">This question has been skipped</p>
           )}
         </div>
@@ -772,12 +706,6 @@ const OpenEndedQuiz = () => {
   
   // Set display name for the memoized component
   QuestionDisplay.displayName = 'QuestionDisplay';
-  
-  // Debug logging
-  console.log("Rendering questions:", questions.length);
-  console.log("Current question index:", currentQuestionIndex);
-  console.log("Current question available:", questions[currentQuestionIndex]);
-  console.log("Questions with uniqueIds:", questions.map(q => q.uniqueId || "no-id"));
   
   if (loading) {
     return (
