@@ -402,8 +402,9 @@ const OpenEndedQuiz = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
   
-  // Save response callback - only called when navigating away from a question
+  // Save response callback - only called when navigating away from a question or when needed
   const saveResponse = (questionId: string, responseText: string, isSkipped: boolean) => {
+    console.log(`Saving response for ${questionId}:`, { responseText, isSkipped });
     setResponses(prev => ({
       ...prev,
       [questionId]: {
@@ -413,8 +414,20 @@ const OpenEndedQuiz = () => {
     }));
   };
   
+  // Before navigating, ensure current question response is saved
+  const saveCurrentResponse = () => {
+    if (questions.length === 0 || currentQuestionIndex >= questions.length) return;
+    
+    const currentQuestion = questions[currentQuestionIndex];
+    const questionId = currentQuestion.uniqueId || currentQuestion.question.id;
+    
+    // Get the current response from the QuestionDisplay component's state
+    // This is handled internally by QuestionDisplay now
+  };
+  
   // Navigate to next question 
   const handleNext = () => {
+    saveCurrentResponse();
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(prevIndex => prevIndex + 1);
     } else {
@@ -424,6 +437,7 @@ const OpenEndedQuiz = () => {
   
   // Navigate to previous question
   const handlePrevious = () => {
+    saveCurrentResponse();
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex(prevIndex => prevIndex - 1);
     }
@@ -578,6 +592,7 @@ const OpenEndedQuiz = () => {
   
   // Handle clicking on a question directly
   const handleQuestionClick = (index: number) => {
+    saveCurrentResponse();
     setCurrentQuestionIndex(index);
   };
   
@@ -591,7 +606,7 @@ const OpenEndedQuiz = () => {
     setVisibleCount(prev => prev + 1);
   };
 
-  // QuestionDisplay component - memoized with local state management
+  // QuestionDisplay component - memoized to prevent unnecessary re-renders
   const QuestionDisplay = React.memo(({ 
     question, 
     index 
@@ -606,41 +621,56 @@ const OpenEndedQuiz = () => {
     // Use uniqueId if available, or fallback to original question.id
     const questionId = question.uniqueId || question.question.id;
     
-    // Local state for the textarea value - doesn't trigger parent re-renders
+    // Local state for the textarea value
     const [localResponse, setLocalResponse] = useState('');
     const [isLocalSkipped, setIsLocalSkipped] = useState(false);
     
-    // Initialize local state from parent responses when the component mounts 
-    // or when the question changes
+    // Use ref to store previous values and detect changes
+    const previousQuestionIdRef = useRef(questionId);
+    const localStateInitializedRef = useRef(false);
+    
+    // Initialize local state from parent responses when the component mounts or question changes
     useEffect(() => {
-      const savedResponse = responses[questionId];
-      if (savedResponse) {
-        setLocalResponse(savedResponse.response || '');
-        setIsLocalSkipped(savedResponse.skipped || false);
-      } else {
-        setLocalResponse('');
-        setIsLocalSkipped(false);
+      // Only initialize once or when the question changes
+      if (!localStateInitializedRef.current || previousQuestionIdRef.current !== questionId) {
+        const savedResponse = responses[questionId];
+        
+        console.log(`Initializing local state for ${questionId}`, savedResponse);
+        
+        if (savedResponse) {
+          setLocalResponse(savedResponse.response || '');
+          setIsLocalSkipped(savedResponse.skipped || false);
+        } else {
+          setLocalResponse('');
+          setIsLocalSkipped(false);
+        }
+        
+        localStateInitializedRef.current = true;
+        previousQuestionIdRef.current = questionId;
       }
     }, [questionId, responses]);
     
-    // Save the response to parent state when unmounting
+    // Save response when component unmounts or when the question changes
     useEffect(() => {
       return () => {
-        // Only save if there are changes
-        const existingResponse = responses[questionId];
-        const hasChanged = !existingResponse || 
-                          existingResponse.response !== localResponse || 
-                          existingResponse.skipped !== isLocalSkipped;
-        
-        if (hasChanged) {
+        // Save current response to parent state when unmounting
+        if (localStateInitializedRef.current) {
+          console.log(`Saving response for ${questionId} on unmount:`, {
+            response: localResponse,
+            skipped: isLocalSkipped
+          });
+          
           saveResponse(questionId, localResponse, isLocalSkipped);
         }
       };
-    }, [questionId, localResponse, isLocalSkipped]);
+    }, []);
     
-    // Handle local textarea changes
+    // Handle local textarea changes (doesn't affect parent state)
     const handleLocalResponseChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
       const newValue = e.target.value;
+      
+      console.log(`Local response change for ${questionId}:`, newValue);
+      
       setLocalResponse(newValue);
       
       // If user types something, it's no longer skipped
@@ -649,7 +679,7 @@ const OpenEndedQuiz = () => {
       }
     };
     
-    // Visibility observer
+    // Visibility observer for animations
     useEffect(() => {
       const observer = new IntersectionObserver(
         (entries) => {
@@ -753,7 +783,7 @@ const OpenEndedQuiz = () => {
               {questions.length > 0 ? Math.round(((currentQuestionIndex + 1) / questions.length) * 100) : 0}% Complete
             </span>
           </div>
-          <Progress value={questions.length > 0 ? Math.round(((currentQuestionIndex + 1) / questions.length) * 100) : 0} className="h-2 bg-purple-100 dark:bg-purple-900" />
+          <Progress value={progress} className="h-2 bg-purple-100 dark:bg-purple-900" />
           
           {/* Authentication status indicator */}
           <div className="mt-2">
@@ -780,10 +810,10 @@ const OpenEndedQuiz = () => {
         )}
         
         <div ref={questionsRef} className="pb-24">
-          {/* Only render the current question with a stable key that doesn't change on re-renders */}
+          {/* Only render the current question with a stable key */}
           {questions.length > 0 && currentQuestionIndex < questions.length && (
             <QuestionDisplay
-              key={questions[currentQuestionIndex].uniqueId || questions[currentQuestionIndex].question.id}
+              key={`question-display-${currentQuestionIndex}`}
               question={questions[currentQuestionIndex]}
               index={currentQuestionIndex}
             />
@@ -803,14 +833,14 @@ const OpenEndedQuiz = () => {
               if (response) {
                 if (response.skipped) {
                   status = "skipped";
-                } else if (response.response.trim()) {
+                } else if (response.response && response.response.trim()) {
                   status = "answered";
                 }
               }
               
               return (
                 <div 
-                  key={questionId}
+                  key={`question-dot-${idx}`}
                   className={`w-6 h-6 flex items-center justify-center rounded-full text-xs cursor-pointer ${
                     idx === currentQuestionIndex ? 'ring-2 ring-offset-2 ring-blue-500' : ''
                   } ${
@@ -873,7 +903,7 @@ const OpenEndedQuiz = () => {
         </div>
       </div>
       
-      {/* Debug panel - keep existing code */}
+      {/* Debug panel */}
       {import.meta.env.DEV && (
         <div className="fixed bottom-0 left-0 p-2">
           <Button 
