@@ -54,10 +54,14 @@ const OpenEndedQuiz = () => {
   const [submissionError, setSubmissionError] = useState<string | null>(null);
   const questionsRef = useRef<HTMLDivElement>(null);
   
-  // Store responses in parent state, but don't update on every keystroke
+  // Store responses in parent state
   const [responses, setResponses] = useState<Record<string, ResponseData>>({});
   
-  // Cache responses when they actually change, not on every render
+  // Track current response separately to avoid re-renders
+  const [currentResponse, setCurrentResponse] = useState<string>('');
+  const [isCurrentSkipped, setIsCurrentSkipped] = useState<boolean>(false);
+  
+  // Cache responses when they actually change
   const responsesRef = useRef(responses);
   
   useEffect(() => {
@@ -110,6 +114,139 @@ const OpenEndedQuiz = () => {
   // Generate a unique ID for a question
   const generateUniqueId = (question: QuizQuestion, index: number): string => {
     return `${question.major.replace(/ /g, '_')}_${question.question.id}_${index}`;
+  };
+  
+  // Helper function to format major name for file lookup
+  const formatMajorForFile = (majorName: string, schoolName: string | undefined) => {
+    const formattedMajor = majorName.replace(/ /g, '_').replace(/[\/&,]/g, '_');
+    return schoolName ? `${formattedMajor}_${schoolName}` : formattedMajor;
+  };
+  
+  // Load questions for a specific major
+  const loadQuestionsForMajor = async (
+    majorName: string, 
+    schoolName: string | undefined, 
+    quizQuestions: QuizQuestion[]
+  ) => {
+    // Format the major name for file lookup
+    const formattedMajor = formatMajorForFile(majorName, schoolName);
+    
+    // Determine which schools to try
+    const schools = schoolName ? [schoolName] : ['NTU', 'NUS', 'SMU'];
+    
+    // Try each school
+    for (const school of schools) {
+      try {
+        const formattedFileName = formatMajorForFile(majorName, school);
+        console.log(`Trying to load questions for ${formattedFileName}.json`);
+        
+        const response = await fetch(`/quiz_refer/Open_ended_quiz_questions/${formattedFileName}.json`);
+        
+        if (response.ok) {
+          const allQuestions = await response.json();
+          console.log(`Found ${allQuestions.length} questions for ${majorName} at ${school}`);
+          
+          // Categorize questions by type
+          const interestQuestions = allQuestions.filter((q: any) => 
+            q.criterion.toLowerCase().includes('interest')
+          );
+          
+          const skillQuestions = allQuestions.filter((q: any) => 
+            q.criterion.toLowerCase().includes('skill')
+          );
+          
+          const experienceQuestions = allQuestions.filter((q: any) => 
+            q.criterion.toLowerCase().includes('experience') || 
+            q.criterion.toLowerCase().includes('background')
+          );
+          
+          // Try to get one question from each category
+          const categories = [
+            { name: 'interests', questions: interestQuestions },
+            { name: 'skills', questions: skillQuestions },
+            { name: 'experience', questions: experienceQuestions }
+          ];
+          
+          for (const category of categories) {
+            if (category.questions.length > 0) {
+              const randomIndex = Math.floor(Math.random() * category.questions.length);
+              const question = category.questions[randomIndex];
+              
+              quizQuestions.push({
+                major: `${majorName} at ${school}`,
+                question: {
+                  ...question,
+                  category: category.name
+                }
+              });
+            }
+          }
+          
+          // We found questions for this major/school, no need to try other schools
+          break;
+        } else {
+          console.log(`No questions found for ${majorName} at ${school}`);
+        }
+      } catch (error) {
+        console.error(`Error loading questions for ${majorName} at ${school}:`, error);
+        // Continue to next school
+      }
+    }
+  };
+  
+  // Prepare quiz questions from list of majors
+  const prepareQuizQuestions = async (majors: string[]) => {
+    try {
+      console.log("Preparing quiz questions for majors:", majors);
+      
+      // Limit to 5 majors for the quiz
+      const selectedMajors = majors.slice(0, 5);
+      const quizQuestions: QuizQuestion[] = [];
+      
+      // Load questions for each major
+      for (const major of selectedMajors) {
+        try {
+          // Split major name and school
+          const [majorName, school] = major.split(' at ');
+          console.log(`Loading questions for ${majorName} at ${school || 'any school'}`);
+          
+          // Try to load questions with specific school or try all schools
+          await loadQuestionsForMajor(majorName, school, quizQuestions);
+        } catch (error) {
+          console.error(`Error loading questions for ${major}:`, error);
+        }
+      }
+      
+      // Shuffle the questions
+      const shuffledQuestions = quizQuestions.sort(() => Math.random() - 0.5);
+      
+      // Add unique IDs to each question
+      const questionsWithIds = shuffledQuestions.map((question, index) => ({
+        ...question,
+        uniqueId: generateUniqueId(question, index)
+      }));
+      
+      console.log(`Generated ${questionsWithIds.length} questions for the quiz`);
+      
+      if (questionsWithIds.length === 0) {
+        toast({
+          title: "No Questions Available",
+          description: "We couldn't find any questions for your recommended majors.",
+          variant: "destructive"
+        });
+        navigate('/');
+        return;
+      }
+      
+      setQuestions(questionsWithIds);
+    } catch (error) {
+      console.error("Error preparing quiz questions:", error);
+      toast({
+        title: "Error",
+        description: "Failed to prepare quiz questions. Please try again later.",
+        variant: "destructive"
+      });
+    }
   };
   
   // Load user data and prepare quiz - simplified to focus on using global majors
@@ -252,139 +389,6 @@ const OpenEndedQuiz = () => {
     loadUserAndPrepareQuiz();
   }, [navigate, toast, majorRecommendations]);
   
-  // Helper function to format major name for file lookup
-  const formatMajorForFile = (majorName: string, schoolName: string | undefined) => {
-    const formattedMajor = majorName.replace(/ /g, '_').replace(/[\/&,]/g, '_');
-    return schoolName ? `${formattedMajor}_${schoolName}` : formattedMajor;
-  };
-  
-  // Function to prepare quiz questions from the list of majors
-  const prepareQuizQuestions = async (majors: string[]) => {
-    try {
-      console.log("Preparing quiz questions for majors:", majors);
-      
-      // Limit to 5 majors for the quiz
-      const selectedMajors = majors.slice(0, 5);
-      const quizQuestions: QuizQuestion[] = [];
-      
-      // Load questions for each major
-      for (const major of selectedMajors) {
-        try {
-          // Split major name and school
-          const [majorName, school] = major.split(' at ');
-          console.log(`Loading questions for ${majorName} at ${school || 'any school'}`);
-          
-          // Try to load questions with specific school or try all schools
-          await loadQuestionsForMajor(majorName, school, quizQuestions);
-        } catch (error) {
-          console.error(`Error loading questions for ${major}:`, error);
-        }
-      }
-      
-      // Shuffle the questions
-      const shuffledQuestions = quizQuestions.sort(() => Math.random() - 0.5);
-      
-      // Add unique IDs to each question
-      const questionsWithIds = shuffledQuestions.map((question, index) => ({
-        ...question,
-        uniqueId: generateUniqueId(question, index)
-      }));
-      
-      console.log(`Generated ${questionsWithIds.length} questions for the quiz`);
-      
-      if (questionsWithIds.length === 0) {
-        toast({
-          title: "No Questions Available",
-          description: "We couldn't find any questions for your recommended majors.",
-          variant: "destructive"
-        });
-        navigate('/');
-        return;
-      }
-      
-      setQuestions(questionsWithIds);
-    } catch (error) {
-      console.error("Error preparing quiz questions:", error);
-      toast({
-        title: "Error",
-        description: "Failed to prepare quiz questions. Please try again later.",
-        variant: "destructive"
-      });
-    }
-  };
-  
-  // Load questions for a specific major
-  const loadQuestionsForMajor = async (
-    majorName: string, 
-    schoolName: string | undefined, 
-    quizQuestions: QuizQuestion[]
-  ) => {
-    // Format the major name for file lookup
-    const formattedMajor = formatMajorForFile(majorName, schoolName);
-    
-    // Determine which schools to try
-    const schools = schoolName ? [schoolName] : ['NTU', 'NUS', 'SMU'];
-    
-    // Try each school
-    for (const school of schools) {
-      try {
-        const formattedFileName = formatMajorForFile(majorName, school);
-        console.log(`Trying to load questions for ${formattedFileName}.json`);
-        
-        const response = await fetch(`/quiz_refer/Open_ended_quiz_questions/${formattedFileName}.json`);
-        
-        if (response.ok) {
-          const allQuestions = await response.json();
-          console.log(`Found ${allQuestions.length} questions for ${majorName} at ${school}`);
-          
-          // Categorize questions by type
-          const interestQuestions = allQuestions.filter((q: any) => 
-            q.criterion.toLowerCase().includes('interest')
-          );
-          
-          const skillQuestions = allQuestions.filter((q: any) => 
-            q.criterion.toLowerCase().includes('skill')
-          );
-          
-          const experienceQuestions = allQuestions.filter((q: any) => 
-            q.criterion.toLowerCase().includes('experience') || 
-            q.criterion.toLowerCase().includes('background')
-          );
-          
-          // Try to get one question from each category
-          const categories = [
-            { name: 'interests', questions: interestQuestions },
-            { name: 'skills', questions: skillQuestions },
-            { name: 'experience', questions: experienceQuestions }
-          ];
-          
-          for (const category of categories) {
-            if (category.questions.length > 0) {
-              const randomIndex = Math.floor(Math.random() * category.questions.length);
-              const question = category.questions[randomIndex];
-              
-              quizQuestions.push({
-                major: `${majorName} at ${school}`,
-                question: {
-                  ...question,
-                  category: category.name
-                }
-              });
-            }
-          }
-          
-          // We found questions for this major/school, no need to try other schools
-          break;
-        } else {
-          console.log(`No questions found for ${majorName} at ${school}`);
-        }
-      } catch (error) {
-        console.error(`Error loading questions for ${majorName} at ${school}:`, error);
-        // Continue to next school
-      }
-    }
-  };
-  
   // Scroll handling for progress bar
   useEffect(() => {
     const handleScroll = () => {
@@ -402,9 +406,30 @@ const OpenEndedQuiz = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
   
-  // Save response callback - only called when navigating away from a question or when needed
+  // Effect to update current response when changing questions
+  useEffect(() => {
+    if (questions.length > 0 && currentQuestionIndex < questions.length) {
+      const currentQuestion = questions[currentQuestionIndex];
+      const questionId = currentQuestion.uniqueId || currentQuestion.question.id;
+      const savedResponse = responses[questionId];
+      
+      console.log("Loading current response for question:", questionId, savedResponse);
+      
+      if (savedResponse) {
+        setCurrentResponse(savedResponse.response);
+        setIsCurrentSkipped(savedResponse.skipped);
+      } else {
+        setCurrentResponse('');
+        setIsCurrentSkipped(false);
+      }
+    }
+  }, [currentQuestionIndex, questions, responses]);
+  
+  // Save response to parent state
   const saveResponse = (questionId: string, responseText: string, isSkipped: boolean) => {
     console.log(`Saving response for ${questionId}:`, { responseText, isSkipped });
+    
+    // Update the responses state
     setResponses(prev => ({
       ...prev,
       [questionId]: {
@@ -414,15 +439,28 @@ const OpenEndedQuiz = () => {
     }));
   };
   
-  // Before navigating, ensure current question response is saved
+  // Save current response before navigating
   const saveCurrentResponse = () => {
     if (questions.length === 0 || currentQuestionIndex >= questions.length) return;
     
     const currentQuestion = questions[currentQuestionIndex];
     const questionId = currentQuestion.uniqueId || currentQuestion.question.id;
     
-    // Get the current response from the QuestionDisplay component's state
-    // This is handled internally by QuestionDisplay now
+    // Save current response to the responses state
+    saveResponse(questionId, currentResponse, isCurrentSkipped);
+  };
+  
+  // Handle response change
+  const handleResponseChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newValue = e.target.value;
+    setCurrentResponse(newValue);
+    
+    // If user types something, it's no longer skipped
+    if (isCurrentSkipped && newValue.trim() !== '') {
+      setIsCurrentSkipped(false);
+    }
+    
+    // We don't update the parent state here to avoid re-renders
   };
   
   // Navigate to next question 
@@ -450,7 +488,11 @@ const OpenEndedQuiz = () => {
     const currentQuestion = questions[currentQuestionIndex];
     const questionId = currentQuestion.uniqueId || currentQuestion.question.id;
     
-    // Mark question as skipped
+    // Mark current question as skipped
+    setCurrentResponse('');
+    setIsCurrentSkipped(true);
+    
+    // Save to parent state
     saveResponse(questionId, '', true);
 
     // Move to next question or submit if this is the last one
@@ -463,6 +505,9 @@ const OpenEndedQuiz = () => {
   
   // Submit all responses
   const handleSubmit = async () => {
+    // Save current response before submitting
+    saveCurrentResponse();
+    
     if (!userId) {
       toast({
         title: "Not Logged In",
@@ -476,23 +521,6 @@ const OpenEndedQuiz = () => {
     setSubmissionError(null);
     
     try {
-      // Check for any unanswered questions in the final screen and mark as skipped
-      const currentQuestion = questions[currentQuestionIndex];
-      if (currentQuestion) {
-        const currentQuestionId = currentQuestion.uniqueId || currentQuestion.question.id;
-        const currentResponseText = responses[currentQuestionId]?.response || '';
-        
-        if (currentResponseText.trim() === '') {
-          setResponses(prev => ({
-            ...prev,
-            [currentQuestionId]: { 
-              response: '',
-              skipped: true 
-            }
-          }));
-        }
-      }
-      
       // Prepare responses for database - now using the updated open_ended_responses table
       const responsesToSubmit = Object.entries(responses).map(([questionId, responseData]) => {
         // Find the question based on uniqueId or fallback to question.id
@@ -592,6 +620,7 @@ const OpenEndedQuiz = () => {
   
   // Handle clicking on a question directly
   const handleQuestionClick = (index: number) => {
+    // Save current response before changing questions
     saveCurrentResponse();
     setCurrentQuestionIndex(index);
   };
@@ -606,137 +635,6 @@ const OpenEndedQuiz = () => {
     setVisibleCount(prev => prev + 1);
   };
 
-  // QuestionDisplay component - memoized to prevent unnecessary re-renders
-  const QuestionDisplay = React.memo(({ 
-    question, 
-    index 
-  }: { 
-    question: QuizQuestion, 
-    index: number 
-  }) => {
-    const { isCurrentlyDark } = useTheme();
-    const ref = useRef<HTMLDivElement>(null);
-    const [isVisible, setIsVisible] = useState(true);
-    
-    // Use uniqueId if available, or fallback to original question.id
-    const questionId = question.uniqueId || question.question.id;
-    
-    // Local state for the textarea value
-    const [localResponse, setLocalResponse] = useState('');
-    const [isLocalSkipped, setIsLocalSkipped] = useState(false);
-    
-    // Use ref to store previous values and detect changes
-    const previousQuestionIdRef = useRef(questionId);
-    const localStateInitializedRef = useRef(false);
-    
-    // Initialize local state from parent responses when the component mounts or question changes
-    useEffect(() => {
-      // Only initialize once or when the question changes
-      if (!localStateInitializedRef.current || previousQuestionIdRef.current !== questionId) {
-        const savedResponse = responses[questionId];
-        
-        console.log(`Initializing local state for ${questionId}`, savedResponse);
-        
-        if (savedResponse) {
-          setLocalResponse(savedResponse.response || '');
-          setIsLocalSkipped(savedResponse.skipped || false);
-        } else {
-          setLocalResponse('');
-          setIsLocalSkipped(false);
-        }
-        
-        localStateInitializedRef.current = true;
-        previousQuestionIdRef.current = questionId;
-      }
-    }, [questionId, responses]);
-    
-    // Save response when component unmounts or when the question changes
-    useEffect(() => {
-      return () => {
-        // Save current response to parent state when unmounting
-        if (localStateInitializedRef.current) {
-          console.log(`Saving response for ${questionId} on unmount:`, {
-            response: localResponse,
-            skipped: isLocalSkipped
-          });
-          
-          saveResponse(questionId, localResponse, isLocalSkipped);
-        }
-      };
-    }, []);
-    
-    // Handle local textarea changes (doesn't affect parent state)
-    const handleLocalResponseChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      const newValue = e.target.value;
-      
-      console.log(`Local response change for ${questionId}:`, newValue);
-      
-      setLocalResponse(newValue);
-      
-      // If user types something, it's no longer skipped
-      if (isLocalSkipped && newValue.trim() !== '') {
-        setIsLocalSkipped(false);
-      }
-    };
-    
-    // Visibility observer for animations
-    useEffect(() => {
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach(entry => {
-            if (entry.isIntersecting && !isVisible) {
-              setIsVisible(true);
-              handleQuestionVisible();
-            }
-          });
-        },
-        { threshold: 0.3 }
-      );
-
-      if (ref.current) {
-        observer.observe(ref.current);
-      }
-
-      return () => {
-        if (ref.current) {
-          observer.unobserve(ref.current);
-        }
-      };
-    }, [isVisible]);
-    
-    return (
-      <div 
-        ref={ref}
-        id={`question-${questionId}`}
-        className={`min-h-[85vh] flex flex-col justify-center p-8 md:p-16 transition-all duration-700
-          ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-20"}`}
-      >
-        <h2 className="text-3xl font-bold mb-4">{question.major}</h2>
-        <div className={`max-w-3xl ${isCurrentlyDark ? 'bg-gray-800' : 'bg-white/5'} backdrop-blur-md p-8 rounded-lg border ${isCurrentlyDark ? 'border-gray-700' : 'border-white/10'} shadow-xl`}>
-          <div className="mb-4">
-            <Badge className="mb-2 capitalize">{question.question.category || question.question.criterion}</Badge>
-            <h3 className="text-2xl font-semibold mb-6">{question.question.question}</h3>
-          </div>
-          
-          <Textarea
-            className="min-h-[150px]"
-            placeholder="Type your answer here..."
-            value={localResponse}
-            onChange={handleLocalResponseChange}
-            disabled={isLocalSkipped}
-          />
-          
-          {isLocalSkipped && (
-            <p className="text-amber-500 italic text-sm mt-2">This question has been skipped</p>
-          )}
-        </div>
-      </div>
-    );
-  });
-  
-  // Set display name for the memoized component
-  QuestionDisplay.displayName = 'QuestionDisplay';
-  
   if (loading) {
     return (
       <div className={`min-h-screen ${isCurrentlyDark ? 'bg-gray-900 text-white' : 'bg-gradient-to-br from-[#f8fafc] via-[#ede9fe] to-[#f3e8ff]'}`}>
@@ -769,6 +667,9 @@ const OpenEndedQuiz = () => {
       </div>
     );
   }
+  
+  // Get current question
+  const currentQuestion = questions[currentQuestionIndex];
   
   // Display a single question at a time (current question only)
   return (
@@ -810,14 +711,29 @@ const OpenEndedQuiz = () => {
         )}
         
         <div ref={questionsRef} className="pb-24">
-          {/* Only render the current question with a stable key */}
-          {questions.length > 0 && currentQuestionIndex < questions.length && (
-            <QuestionDisplay
-              key={`question-display-${currentQuestionIndex}`}
-              question={questions[currentQuestionIndex]}
-              index={currentQuestionIndex}
-            />
-          )}
+          <div 
+            className="min-h-[85vh] flex flex-col justify-center p-8 md:p-16 transition-all duration-700 opacity-100 translate-y-0"
+          >
+            <h2 className="text-3xl font-bold mb-4">{currentQuestion.major}</h2>
+            <div className={`max-w-3xl ${isCurrentlyDark ? 'bg-gray-800' : 'bg-white/5'} backdrop-blur-md p-8 rounded-lg border ${isCurrentlyDark ? 'border-gray-700' : 'border-white/10'} shadow-xl`}>
+              <div className="mb-4">
+                <Badge className="mb-2 capitalize">{currentQuestion.question.category || currentQuestion.question.criterion}</Badge>
+                <h3 className="text-2xl font-semibold mb-6">{currentQuestion.question.question}</h3>
+              </div>
+              
+              <Textarea
+                className="min-h-[150px]"
+                placeholder="Type your answer here..."
+                value={currentResponse}
+                onChange={handleResponseChange}
+                disabled={isCurrentSkipped}
+              />
+              
+              {isCurrentSkipped && (
+                <p className="text-amber-500 italic text-sm mt-2">This question has been skipped</p>
+              )}
+            </div>
+          </div>
         </div>
         
         {/* Question navigation and buttons */}
@@ -825,12 +741,16 @@ const OpenEndedQuiz = () => {
           {/* Question navigation dots */}
           <div className="mb-4 flex flex-wrap justify-center gap-2 max-w-md mx-auto px-4">
             {questions.map((q, idx) => {
-              // Use uniqueId if available, otherwise fall back to question.id
               const questionId = q.uniqueId || q.question.id;
               const response = responses[questionId];
               let status = "not-answered";
               
-              if (response) {
+              // Determine question status
+              if (idx === currentQuestionIndex && currentResponse.trim()) {
+                status = "answered"; // Use current response for current question
+              } else if (idx === currentQuestionIndex && isCurrentSkipped) {
+                status = "skipped"; // Use current skip status for current question
+              } else if (response) {
                 if (response.skipped) {
                   status = "skipped";
                 } else if (response.response && response.response.trim()) {
@@ -903,7 +823,7 @@ const OpenEndedQuiz = () => {
         </div>
       </div>
       
-      {/* Debug panel */}
+      {/* Debug panel (only in development mode) */}
       {import.meta.env.DEV && (
         <div className="fixed bottom-0 left-0 p-2">
           <Button 
@@ -922,14 +842,12 @@ const OpenEndedQuiz = () => {
                   currentIndex: currentQuestionIndex,
                   questionsCount: questions.length,
                   responseCount: Object.keys(responses).length,
-                  progress: questions.length > 0 ? Math.round(((currentQuestionIndex + 1) / questions.length) * 100) : 0,
+                  currentResponseText: currentResponse,
+                  isCurrentSkipped,
+                  progress,
                   userId,
                   currentQuestion: questions[currentQuestionIndex],
-                  questionsWithIDs: questions.map(q => ({
-                    uniqueId: q.uniqueId,
-                    questionId: q.question.id,
-                    major: q.major
-                  })),
+                  responsesForCurrentQuestion: responses[questions[currentQuestionIndex]?.uniqueId || ''],
                   ...debugInfo
                 }, null, 2)}
               </pre>
