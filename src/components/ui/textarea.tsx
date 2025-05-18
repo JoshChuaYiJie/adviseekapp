@@ -12,17 +12,36 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
     const internalRef = React.useRef<HTMLTextAreaElement>(null);
     const resolvedRef = ref || internalRef;
     
-    // Maintain focus after parent rerenders
+    // Store the current selection position
+    const [selection, setSelection] = React.useState<{start: number | null, end: number | null}>({
+      start: null, 
+      end: null
+    });
+    
+    // Save selection position before component updates
     React.useEffect(() => {
       const currentElement = resolvedRef as React.RefObject<HTMLTextAreaElement>;
-      if (currentElement?.current && document.activeElement !== currentElement.current) {
-        // If the textarea is meant to have focus
-        if (document.activeElement instanceof HTMLElement && 
-            document.activeElement.tagName === 'TEXTAREA') {
-          currentElement.current.focus();
-        }
+      if (currentElement?.current && document.activeElement === currentElement.current) {
+        setSelection({
+          start: currentElement.current.selectionStart,
+          end: currentElement.current.selectionEnd
+        });
       }
     });
+    
+    // Restore focus and selection after render
+    React.useEffect(() => {
+      const currentElement = resolvedRef as React.RefObject<HTMLTextAreaElement>;
+      if (currentElement?.current && selection.start !== null && selection.end !== null) {
+        // If this textarea had focus before, restore it
+        if (document.activeElement instanceof HTMLElement && 
+            (document.activeElement.tagName === 'BODY' || 
+             document.activeElement.tagName === 'TEXTAREA')) {
+          currentElement.current.focus();
+          currentElement.current.setSelectionRange(selection.start, selection.end);
+        }
+      }
+    }, [selection, resolvedRef]);
 
     return (
       <textarea

@@ -40,13 +40,18 @@ export const MajorQuestionDisplay = ({
     isSkipped
   });
 
-  // Focus management for textarea
+  // Improved focus management for textarea with a slight delay
   useEffect(() => {
     if (textareaRef.current && !isSkipped) {
-      // Small timeout to ensure DOM has updated
-      setTimeout(() => {
-        textareaRef.current?.focus();
-      }, 0);
+      const focusTextarea = () => {
+        if (textareaRef.current) {
+          textareaRef.current.focus();
+        }
+      };
+      
+      // Use a more reliable approach with setTimeout
+      const timerId = setTimeout(focusTextarea, 100);
+      return () => clearTimeout(timerId);
     }
   }, [currentIndex, isSkipped, question]);
 
@@ -105,12 +110,16 @@ export const MajorQuestionDisplay = ({
       }
     };
     
+    // Optimize change handler to prevent unnecessary re-renders
     const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
       if (currentQuestion) {
-        setAnswers({
-          ...answers,
-          [currentQuestion.id]: { text: e.target.value, skipped: false }
-        });
+        const newText = e.target.value;
+        if (answers[currentQuestion.id]?.text !== newText) {
+          setAnswers(prev => ({
+            ...prev,
+            [currentQuestion.id]: { text: newText, skipped: false }
+          }));
+        }
       }
     };
     

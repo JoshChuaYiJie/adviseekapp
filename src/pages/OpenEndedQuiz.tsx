@@ -53,13 +53,28 @@ const OpenEndedQuiz = () => {
   // Add cached responses state management
   const [responses, setResponses] = useState<Record<string, { response: string; skipped: boolean }>>({});
   
+  // Cache responses whenever they change - moved outside the state update function
+  const responsesRef = useRef(responses);
+  useEffect(() => {
+    // Only update localStorage if responses actually changed
+    if (responses !== responsesRef.current) {
+      responsesRef.current = responses;
+      try {
+        localStorage.setItem('openEndedQuizResponses', JSON.stringify(responses));
+        console.log("Cached responses to localStorage");
+      } catch (error) {
+        console.error("Error caching responses:", error);
+      }
+    }
+  }, [responses]);
+  
   // Load cached responses on component mount
   useEffect(() => {
     try {
       const cachedResponses = localStorage.getItem('openEndedQuizResponses');
       if (cachedResponses) {
         const parsedResponses = JSON.parse(cachedResponses);
-        console.log("Loaded cached responses from localStorage:", parsedResponses);
+        console.log("Loaded cached responses from localStorage");
         setResponses(parsedResponses);
       }
     } catch (error) {
@@ -67,25 +82,18 @@ const OpenEndedQuiz = () => {
     }
   }, []);
   
-  // Cache responses whenever they change
-  useEffect(() => {
-    if (Object.keys(responses).length > 0) {
-      try {
-        localStorage.setItem('openEndedQuizResponses', JSON.stringify(responses));
-        console.log("Cached responses to localStorage:", responses);
-      } catch (error) {
-        console.error("Error caching responses:", error);
-      }
-    }
-  }, [responses]);
-  
-  // Focus management for textarea
+  // Focus management for textarea - use higher timeout to ensure DOM is fully updated
   useEffect(() => {
     if (textareaRef.current) {
-      // Use a small delay to ensure the DOM has updated
-      setTimeout(() => {
-        textareaRef.current?.focus();
-      }, 50);
+      const focusTextarea = () => {
+        if (textareaRef.current) {
+          textareaRef.current.focus();
+        }
+      };
+      
+      // Use a more reliable approach with setTimeout
+      const timerId = setTimeout(focusTextarea, 100);
+      return () => clearTimeout(timerId);
     }
   }, [currentQuestionIndex]);
   
@@ -405,15 +413,13 @@ const OpenEndedQuiz = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
   
-  // Handle response changes - allow multiple words without losing focus
+  // Handle response changes - optimized to prevent unnecessary re-renders
   const handleResponseChange = (value: string) => {
-    if (currentQuestionIndex >= questions.length) return;
+    if (questions.length === 0 || currentQuestionIndex >= questions.length) return;
     
-    // Use uniqueId if available, fallback to question.id
-    const currentQuestion = questions[currentQuestionIndex];
-    const questionId = currentQuestion.uniqueId || currentQuestion.question.id;
+    const questionId = questions[currentQuestionIndex].uniqueId || questions[currentQuestionIndex].question.id;
     
-    // Update responses state using functional update to minimize unnecessary re-renders
+    // Use functional update to minimize re-renders
     setResponses(prev => {
       // Only update if the value has actually changed
       if (prev[questionId]?.response === value) {
@@ -692,8 +698,8 @@ const OpenEndedQuiz = () => {
     setVisibleCount(prev => prev + 1);
   };
 
-  // QuestionDisplay component similar to QuizQuestion in SegmentedQuiz
-  const QuestionDisplay = ({ 
+  // QuestionDisplay component - memoized to prevent unnecessary re-renders
+  const QuestionDisplay = React.memo(({ 
     question, 
     index 
   }: { 
@@ -702,7 +708,7 @@ const OpenEndedQuiz = () => {
   }) => {
     const { isCurrentlyDark } = useTheme();
     const ref = useRef<HTMLDivElement>(null);
-    const [isVisible, setIsVisible] = useState(true); // Changed to true by default
+    const [isVisible, setIsVisible] = useState(true);
     
     // Use uniqueId if available, or fallback to original question.id
     const questionId = question.uniqueId || question.question.id;
@@ -761,7 +767,10 @@ const OpenEndedQuiz = () => {
         </div>
       </div>
     );
-  };
+  });
+  
+  // Set display name for the memoized component
+  QuestionDisplay.displayName = 'QuestionDisplay';
   
   // Debug logging
   console.log("Rendering questions:", questions.length);
@@ -812,10 +821,10 @@ const OpenEndedQuiz = () => {
               Open-ended Quiz
             </h1>
             <span className="text-lg font-medium text-purple-400">
-              {progress}% Complete
+              {questions.length > 0 ? Math.round(((currentQuestionIndex + 1) / questions.length) * 100) : 0}% Complete
             </span>
           </div>
-          <Progress value={progress} className="h-2 bg-purple-100 dark:bg-purple-900" />
+          <Progress value={questions.length > 0 ? Math.round(((currentQuestionIndex + 1) / questions.length) * 100) : 0} className="h-2 bg-purple-100 dark:bg-purple-900" />
           
           {/* Authentication status indicator */}
           <div className="mt-2">
@@ -842,7 +851,7 @@ const OpenEndedQuiz = () => {
         )}
         
         <div ref={questionsRef} className="pb-24">
-          {/* Only render the current question */}
+          {/* Only render the current question with a stable key that doesn't change on re-renders */}
           {questions.length > 0 && currentQuestionIndex < questions.length && (
             <QuestionDisplay
               key={questions[currentQuestionIndex].uniqueId || questions[currentQuestionIndex].question.id}
@@ -852,6 +861,7 @@ const OpenEndedQuiz = () => {
           )}
         </div>
         
+        {/* Question navigation and buttons */}
         <div className="fixed bottom-8 flex flex-col items-center w-full z-40">
           {/* Question navigation dots */}
           <div className="mb-4 flex flex-wrap justify-center gap-2 max-w-md mx-auto px-4">
@@ -934,7 +944,7 @@ const OpenEndedQuiz = () => {
         </div>
       </div>
       
-      {/* Debug information panel (only visible in development) */}
+      {/* Debug panel - keep existing code */}
       {import.meta.env.DEV && (
         <div className="fixed bottom-0 left-0 p-2">
           <Button 
@@ -953,7 +963,7 @@ const OpenEndedQuiz = () => {
                   currentIndex: currentQuestionIndex,
                   questionsCount: questions.length,
                   responseCount: Object.keys(responses).length,
-                  progress,
+                  progress: questions.length > 0 ? Math.round(((currentQuestionIndex + 1) / questions.length) * 100) : 0,
                   userId,
                   currentQuestion: questions[currentQuestionIndex],
                   questionsWithIDs: questions.map(q => ({
