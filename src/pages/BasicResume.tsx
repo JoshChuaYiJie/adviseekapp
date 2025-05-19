@@ -1,16 +1,18 @@
-import { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useLocation, useSearchParams } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, Plus, Trash, Download, Save, X, Edit } from "lucide-react";
-import { toast } from "@/components/ui/sonner";
-import { useTheme } from "@/contexts/ThemeContext";
-import { supabase } from "@/integrations/supabase/client";
-import jsPDF from "jspdf";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from "@/components/ui/dialog";
+import { Dialog as ConfirmDialog, DialogContent as ConfirmDialogContent, DialogDescription as ConfirmDialogDescription, DialogFooter as ConfirmDialogFooter, DialogHeader as ConfirmDialogHeader, DialogTitle as ConfirmDialogTitle } from "@/components/ui/dialog";
+import { ChevronDown, Edit2, Plus, Trash, Download, FileText } from "lucide-react";
+import { jsPDF } from "jspdf";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { toast } from "sonner";
+import { ChatWithAdviseek } from "@/components/resume/ChatWithAdviseek";
 
 interface WorkExperience {
   id: string;
@@ -820,17 +822,20 @@ const BasicResume = () => {
                 <Input 
                   id="resumeName"
                   name="resumeName"
-                  value={resumeData.resumeName}
+                  value={resumeData.resumeName || ''}
                   onChange={handleInputChange}
                   placeholder="Resume for XYZ Company"
                 />
                 <p className="text-sm text-muted-foreground">This name will be shown in your list of resumes.</p>
               </div>
-              <div className="flex justify-end">
-                <DialogClose asChild>
-                  <Button>Save Changes</Button>
-                </DialogClose>
-              </div>
+              <DialogFooter className="flex flex-wrap items-center gap-2 justify-end">
+                <Button type="button" variant="outline" onClick={closeEditDialog}>Cancel</Button>
+                <Button onClick={saveResume}>Save Changes</Button>
+                <ChatWithAdviseek 
+                  sectionType="Resume Name" 
+                  contextInfo={`Current resume name: ${resumeData.resumeName || 'Untitled'}`} 
+                />
+              </DialogFooter>
             </div>
           )}
 
@@ -881,11 +886,14 @@ const BasicResume = () => {
                   />
                 </div>
               </div>
-              <div className="flex justify-end">
-                <DialogClose asChild>
-                  <Button>Save Changes</Button>
-                </DialogClose>
-              </div>
+              <DialogFooter className="flex flex-wrap items-center gap-2 justify-end">
+                <Button type="button" variant="outline" onClick={closeEditDialog}>Cancel</Button>
+                <Button onClick={saveResume}>Save Changes</Button>
+                <ChatWithAdviseek 
+                  sectionType="Personal Information" 
+                  contextInfo={`Name: ${resumeData.name || ''}, Email: ${resumeData.email || ''}, Phone: ${resumeData.phone || ''}`} 
+                />
+              </DialogFooter>
             </div>
           )}
 
@@ -926,11 +934,14 @@ const BasicResume = () => {
               >
                 <Plus className="h-4 w-4 mr-2" /> Add Education
               </Button>
-              <div className="flex justify-end pt-4">
-                <DialogClose asChild>
-                  <Button>Done</Button>
-                </DialogClose>
-              </div>
+              <DialogFooter className="flex flex-wrap items-center gap-2 justify-end">
+                <Button type="button" variant="outline" onClick={closeEditDialog}>Cancel</Button>
+                <Button onClick={saveResume}>Save Changes</Button>
+                <ChatWithAdviseek 
+                  sectionType="Education" 
+                  contextInfo={`Number of education entries: ${resumeData.educationItems?.length || 0}`} 
+                />
+              </DialogFooter>
             </div>
           )}
 
@@ -966,11 +977,14 @@ const BasicResume = () => {
                   className="min-h-[100px]"
                 />
               </div>
-              <div className="flex justify-end">
-                <DialogClose asChild>
-                  <Button>Save Changes</Button>
-                </DialogClose>
-              </div>
+              <DialogFooter className="flex flex-wrap items-center gap-2 justify-end">
+                <Button type="button" variant="outline" onClick={closeEditDialog}>Cancel</Button>
+                <Button onClick={saveEducationItem}>Save Changes</Button>
+                <ChatWithAdviseek 
+                  sectionType="Education Details" 
+                  contextInfo={`Current institution: ${currentEducationItem?.institution || ''}`} 
+                />
+              </DialogFooter>
             </div>
           )}
 
@@ -1011,11 +1025,14 @@ const BasicResume = () => {
               >
                 <Plus className="h-4 w-4 mr-2" /> Add Work Experience
               </Button>
-              <div className="flex justify-end pt-4">
-                <DialogClose asChild>
-                  <Button>Done</Button>
-                </DialogClose>
-              </div>
+              <DialogFooter className="flex flex-wrap items-center gap-2 justify-end">
+                <Button type="button" variant="outline" onClick={closeEditDialog}>Cancel</Button>
+                <Button onClick={saveResume}>Save Changes</Button>
+                <ChatWithAdviseek 
+                  sectionType="Work Experience" 
+                  contextInfo={`Number of work experience entries: ${resumeData.work_experience?.length || 0}`} 
+                />
+              </DialogFooter>
             </div>
           )}
 
@@ -1061,11 +1078,14 @@ const BasicResume = () => {
                   className="min-h-[150px]"
                 />
               </div>
-              <div className="flex justify-end pt-4">
-                <DialogClose asChild>
-                  <Button>Save Changes</Button>
-                </DialogClose>
-              </div>
+              <DialogFooter className="flex flex-wrap items-center gap-2 justify-end">
+                <Button type="button" variant="outline" onClick={closeEditDialog}>Cancel</Button>
+                <Button onClick={saveWorkExperienceItem}>Save Changes</Button>
+                <ChatWithAdviseek 
+                  sectionType="Work Experience Details" 
+                  contextInfo={`Current role: ${currentWorkExperienceItem?.role || ''}, Organization: ${currentWorkExperienceItem?.organization || ''}`} 
+                />
+              </DialogFooter>
             </div>
           )}
 
@@ -1106,11 +1126,14 @@ const BasicResume = () => {
               >
                 <Plus className="h-4 w-4 mr-2" /> Add Award/Certificate
               </Button>
-              <div className="flex justify-end pt-4">
-                <DialogClose asChild>
-                  <Button>Done</Button>
-                </DialogClose>
-              </div>
+              <DialogFooter className="flex flex-wrap items-center gap-2 justify-end">
+                <Button type="button" variant="outline" onClick={closeEditDialog}>Cancel</Button>
+                <Button onClick={saveResume}>Save Changes</Button>
+                <ChatWithAdviseek 
+                  sectionType="Awards & Certificates" 
+                  contextInfo={`Number of awards: ${resumeData.awards?.length || 0}`} 
+                />
+              </DialogFooter>
             </div>
           )}
 
@@ -1135,11 +1158,14 @@ const BasicResume = () => {
                   placeholder="June 2022"
                 />
               </div>
-              <div className="flex justify-end pt-4">
-                <DialogClose asChild>
-                  <Button>Save Changes</Button>
-                </DialogClose>
-              </div>
+              <DialogFooter className="flex flex-wrap items-center gap-2 justify-end">
+                <Button type="button" variant="outline" onClick={closeEditDialog}>Cancel</Button>
+                <Button onClick={saveAwardItem}>Save Changes</Button>
+                <ChatWithAdviseek 
+                  sectionType="Award Details" 
+                  contextInfo={`Current award: ${currentAwardItem?.name || ''}`} 
+                />
+              </DialogFooter>
             </div>
           )}
 
@@ -1180,11 +1206,14 @@ const BasicResume = () => {
               >
                 <Plus className="h-4 w-4 mr-2" /> Add Activity
               </Button>
-              <div className="flex justify-end pt-4">
-                <DialogClose asChild>
-                  <Button>Done</Button>
-                </DialogClose>
-              </div>
+              <DialogFooter className="flex flex-wrap items-center gap-2 justify-end">
+                <Button type="button" variant="outline" onClick={closeEditDialog}>Cancel</Button>
+                <Button onClick={saveResume}>Save Changes</Button>
+                <ChatWithAdviseek 
+                  sectionType="Extra-Curricular Activities" 
+                  contextInfo={`Number of activities: ${resumeData.activities?.length || 0}`} 
+                />
+              </DialogFooter>
             </div>
           )}
 
@@ -1230,11 +1259,14 @@ const BasicResume = () => {
                   className="min-h-[150px]"
                 />
               </div>
-              <div className="flex justify-end pt-4">
-                <DialogClose asChild>
-                  <Button>Save Changes</Button>
-                </DialogClose>
-              </div>
+              <DialogFooter className="flex flex-wrap items-center gap-2 justify-end">
+                <Button type="button" variant="outline" onClick={closeEditDialog}>Cancel</Button>
+                <Button onClick={saveActivityItem}>Save Changes</Button>
+                <ChatWithAdviseek 
+                  sectionType="Activity Details" 
+                  contextInfo={`Current activity: ${currentActivityItem?.role || ''}, Organization: ${currentActivityItem?.organization || ''}`} 
+                />
+              </DialogFooter>
             </div>
           )}
 
@@ -1271,11 +1303,14 @@ const BasicResume = () => {
                   placeholder="MS Office, Adobe Photoshop, HTML/CSS"
                 />
               </div>
-              <div className="flex justify-end pt-4">
-                <DialogClose asChild>
-                  <Button>Save Changes</Button>
-                </DialogClose>
-              </div>
+              <DialogFooter className="flex flex-wrap items-center gap-2 justify-end">
+                <Button type="button" variant="outline" onClick={closeEditDialog}>Cancel</Button>
+                <Button onClick={saveResume}>Save Changes</Button>
+                <ChatWithAdviseek 
+                  sectionType="Additional Information" 
+                  contextInfo={`Languages: ${resumeData.languages || ''}, IT Skills: ${resumeData.it_skills || ''}, Interests: ${resumeData.interests || ''}`} 
+                />
+              </DialogFooter>
             </div>
           )}
         </DialogContent>

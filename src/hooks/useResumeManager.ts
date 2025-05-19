@@ -52,7 +52,7 @@ export const useResumeManager = () => {
         });
       } else if (data) {
         // Format the date for display and map resumeName to name
-        const formattedResumes = data.map(resume => ({
+        const formattedResumes = data.map((resume) => ({
           id: resume.id,
           name: resume.resumeName,
           template_type: resume.template_type,
