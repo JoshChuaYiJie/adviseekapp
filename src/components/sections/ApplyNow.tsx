@@ -9,6 +9,7 @@ import {
   loadUniversityData, 
   getDegrees, 
   getMajorsForDegree, 
+  getUniversityShortName,
   UniversityData,
   Major
 } from "@/utils/universityDataUtils";
@@ -259,7 +260,33 @@ export const ApplyNow = () => {
         }
       }
       
-      toast.success("Your responses have been saved!");
+      // After successfully saving responses, save to applied programs
+      const shortName = getUniversityShortName(selectedUniversity);
+      const selectedMajorObj = availableMajors.find(m => m.major === selectedMajor);
+      
+      const programData = {
+        user_id: session.session.user.id,
+        university: selectedUniversity,
+        school: shortName,
+        major: selectedMajor,
+        degree: selectedDegree,
+        logo_path: `/school-logos/${shortName}.png`,
+        college: selectedMajorObj?.college
+      };
+      
+      const { error: programError } = await supabase
+        .from('applied_programs')
+        .upsert(programData, {
+          onConflict: 'user_id,university,degree,major'
+        });
+        
+      if (programError) {
+        console.error("Error saving to applied programs:", programError);
+        toast.error("Your responses were saved, but there was a problem adding this to your applied programs.");
+      } else {
+        toast.success("Your responses have been saved and added to your applied programs!");
+      }
+      
     } catch (error) {
       console.error("Error saving responses:", error);
       toast.error("There was a problem saving your responses.");

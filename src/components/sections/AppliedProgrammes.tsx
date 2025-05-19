@@ -24,7 +24,6 @@ interface Programme {
   degree?: string;
   major?: string;
   college?: string;
-  extras?: string;
   id?: string;
 }
 
@@ -76,8 +75,7 @@ export const AppliedProgrammes = () => {
             course: program.major,
             degree: program.degree,
             major: program.major,
-            college: program.college,
-            extras: program.extras || `${program.degree} - ${program.college || ''}`
+            college: program.college
           }));
           
           console.log("Loaded applied programmes:", formattedPrograms);
@@ -186,8 +184,7 @@ export const AppliedProgrammes = () => {
       university: selectedUniversity,
       major: selectedMajor,
       degree: selectedDegree,
-      college: selectedMajorObj?.college,
-      extras: `${selectedDegree} - ${selectedMajorObj?.college || ''}`
+      college: selectedMajorObj?.college
     };
     
     try {
@@ -221,8 +218,7 @@ export const AppliedProgrammes = () => {
           course: selectedMajor,
           degree: newProgramme.degree,
           major: newProgramme.major,
-          college: newProgramme.college,
-          extras: newProgramme.extras
+          college: newProgramme.college
         };
         
         setAppliedProgrammes([programmeWithId, ...appliedProgrammes]);
@@ -323,7 +319,6 @@ export const AppliedProgrammes = () => {
                 <TableHead>{t("university.school", "School")}</TableHead>
                 <TableHead>{t("university.degree", "Degree")}</TableHead>
                 <TableHead>{t("university.major", "Major")}</TableHead>
-                <TableHead>{t("university.additional", "Additional Info")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -335,7 +330,6 @@ export const AppliedProgrammes = () => {
                   <TableCell>{prog.school}</TableCell>
                   <TableCell>{prog.degree || "-"}</TableCell>
                   <TableCell>{prog.course}</TableCell>
-                  <TableCell>{prog.extras || "-"}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

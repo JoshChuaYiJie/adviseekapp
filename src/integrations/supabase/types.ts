@@ -44,7 +44,7 @@ export type Database = {
           created_at: string
           degree: string
           id: string
-          programme: string
+          Major: string
           question: string
           question_id: string
           response: string | null
@@ -56,7 +56,7 @@ export type Database = {
           created_at?: string
           degree: string
           id?: string
-          programme: string
+          Major: string
           question: string
           question_id: string
           response?: string | null
@@ -68,7 +68,7 @@ export type Database = {
           created_at?: string
           degree?: string
           id?: string
-          programme?: string
+          Major?: string
           question?: string
           question_id?: string
           response?: string | null
