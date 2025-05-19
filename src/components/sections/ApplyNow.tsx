@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -262,6 +263,17 @@ export const ApplyNow = () => {
       // After successfully saving responses, save to applied programs
       const shortName = getUniversityShortName(selectedUniversity);
       const selectedMajorObj = availableMajors.find(m => m.major === selectedMajor);
+      
+      // Define programData before using it
+      const programData = {
+        user_id: session.session.user.id,
+        university: selectedUniversity,
+        school: shortName,
+        major: selectedMajor,
+        degree: selectedDegree,
+        logo_path: `/school-logos/${shortName}.png`,
+        college: selectedMajorObj?.college
+      };
       
       // Check if the entry already exists before inserting
       const { data: existingPrograms } = await supabase
