@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -208,10 +207,10 @@ const BasicResume = () => {
           phone: data.phone || "",
           email: data.email || "",
           nationality: data.nationality || "",
-          educationItems: data.educationItems || [{ id: "education-1", institution: "", dates: "", qualifications: "" }],
-          workExperience: data.work_experience || [{ id: "work-1", role: "", organization: "", dates: "", description: "" }],
-          awards: data.awards || [{ id: "award-1", title: "", date: "" }],
-          activities: data.activities || [{ id: "activity-1", role: "", organization: "", dates: "", description: "" }],
+          educationItems: Array.isArray(data.educationItems) ? data.educationItems : [{ id: "education-1", institution: "", dates: "", qualifications: "" }],
+          workExperience: Array.isArray(data.work_experience) ? data.work_experience : [{ id: "work-1", role: "", organization: "", dates: "", description: "" }],
+          awards: Array.isArray(data.awards) ? data.awards : [{ id: "award-1", title: "", date: "" }],
+          activities: Array.isArray(data.activities) ? data.activities : [{ id: "activity-1", role: "", organization: "", dates: "", description: "" }],
           languages: data.languages || "",
           interests: data.interests || "",
           itSkills: data.it_skills || ""
@@ -248,10 +247,10 @@ const BasicResume = () => {
           phone: data.phone || "",
           email: data.email || "",
           nationality: data.nationality || "",
-          educationItems: data.educationItems || [{ id: "education-1", institution: "", dates: "", qualifications: "" }],
-          workExperience: data.work_experience || [{ id: "work-1", role: "", organization: "", dates: "", description: "" }],
-          awards: data.awards || [{ id: "award-1", title: "", date: "" }],
-          activities: data.activities || [{ id: "activity-1", role: "", organization: "", dates: "", description: "" }],
+          educationItems: Array.isArray(data.educationItems) ? data.educationItems : [{ id: "education-1", institution: "", dates: "", qualifications: "" }],
+          workExperience: Array.isArray(data.work_experience) ? data.work_experience : [{ id: "work-1", role: "", organization: "", dates: "", description: "" }],
+          awards: Array.isArray(data.awards) ? data.awards : [{ id: "award-1", title: "", date: "" }],
+          activities: Array.isArray(data.activities) ? data.activities : [{ id: "activity-1", role: "", organization: "", dates: "", description: "" }],
           languages: data.languages || "",
           interests: data.interests || "",
           itSkills: data.it_skills || ""
