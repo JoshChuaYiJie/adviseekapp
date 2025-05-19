@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
@@ -12,6 +11,8 @@ export interface SavedResume {
   updated_at: string;
   is_pdf_upload?: boolean;
   file_path?: string;
+  sections?: Record<string, string>;
+  template?: any;
 }
 
 export const useResumeManager = () => {
@@ -40,7 +41,7 @@ export const useResumeManager = () => {
       // Load resumes from Supabase
       const { data, error } = await supabase
         .from('resumes')
-        .select('id, resumeName, template_type, updated_at, is_pdf_upload, file_path')
+        .select('id, resumeName, template_type, updated_at, is_pdf_upload, file_path, sections, template')
         .eq('user_id', sessionData.session.user.id)
         .order('updated_at', { ascending: false });
         
@@ -58,7 +59,9 @@ export const useResumeManager = () => {
           template_type: resume.template_type,
           updated_at: new Date(resume.updated_at).toLocaleDateString(),
           is_pdf_upload: resume.is_pdf_upload,
-          file_path: resume.file_path
+          file_path: resume.file_path,
+          sections: resume.sections,
+          template: resume.template
         }));
         
         console.log(`[Resume Manager] Loaded ${formattedResumes.length} resumes from Supabase:`, formattedResumes);
@@ -76,6 +79,58 @@ export const useResumeManager = () => {
   useEffect(() => {
     loadSavedResumes();
   }, [uiToast]);
+
+  const getResumeById = (resumeId: string): SavedResume | null => {
+    const resume = savedResumes.find(resume => resume.id === resumeId);
+    return resume || null;
+  };
+
+  const updateResume = async (resumeId: string, updatedResume: SavedResume) => {
+    try {
+      console.log("[Resume Manager] Updating resume:", resumeId, updatedResume);
+      
+      // Get the current user session
+      const { data: sessionData } = await supabase.auth.getSession();
+      
+      if (!sessionData.session?.user) {
+        console.log("[Resume Manager] No user session found for resume update");
+        toast("You must be logged in to update a resume.");
+        return;
+      }
+
+      // Update the resume in Supabase
+      const { error } = await supabase
+        .from('resumes')
+        .update({
+          sections: updatedResume.sections,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', resumeId)
+        .eq('user_id', sessionData.session.user.id);
+        
+      if (error) {
+        console.error("[Resume Manager] Error updating resume:", error);
+        toast("There was a problem updating your resume.");
+        return false;
+      }
+      
+      // Update the local state
+      setSavedResumes(prevResumes => 
+        prevResumes.map(resume => 
+          resume.id === resumeId 
+            ? { ...resume, ...updatedResume, updated_at: new Date().toLocaleDateString() } 
+            : resume
+        )
+      );
+      
+      toast("Your resume has been updated successfully.");
+      return true;
+    } catch (error) {
+      console.error("[Resume Manager] Error updating resume:", error);
+      toast("There was a problem updating your resume.");
+      return false;
+    }
+  };
 
   const handleFileUpload = async (files: File[]) => {
     try {
@@ -286,6 +341,8 @@ export const useResumeManager = () => {
     handleEditResume,
     handleEditPDF,
     handleDeleteResume,
-    handleDownloadResume
+    handleDownloadResume,
+    getResumeById,
+    updateResume
   };
 };
