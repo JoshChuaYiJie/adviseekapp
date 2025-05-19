@@ -45,7 +45,6 @@ export const useResumeManager = () => {
       if (error) {
         console.error("[Resume Manager] Error loading resumes:", error);
         uiToast({
-          title: "Error Loading Resumes",
           description: "There was a problem loading your saved resumes.",
           variant: "destructive",
         });
@@ -87,28 +86,17 @@ export const useResumeManager = () => {
       
       // Validate file type
       if (!file.type.includes('pdf')) {
-        toast({
-          title: "Invalid File Type",
-          description: "Please upload a PDF file.",
-          variant: "destructive",
-        });
+        toast("Please upload a PDF file.");
         return;
       }
       
       setResumeFiles(prevFiles => [file, ...prevFiles]);
       console.log("[Resume Manager] Resume file added to state");
       
-      toast({
-        title: "Resume Uploaded",
-        description: "Your resume has been uploaded successfully.",
-      });
+      toast("Your resume has been uploaded successfully.");
     } catch (error) {
       console.error("[Resume Manager] Error uploading file:", error);
-      toast({
-        title: "Upload Error",
-        description: "There was a problem uploading your resume.",
-        variant: "destructive",
-      });
+      toast("There was a problem uploading your resume.");
     }
   };
 
@@ -118,11 +106,7 @@ export const useResumeManager = () => {
       navigate(`/resumebuilder/${templateType.toLowerCase()}?id=${resumeId}&mode=view`);
     } catch (error) {
       console.error("[Resume Manager] Navigation error:", error);
-      toast({
-        title: "Navigation Error",
-        description: "There was a problem viewing this resume.",
-        variant: "destructive",
-      });
+      toast("There was a problem viewing this resume.");
     }
   };
 
@@ -132,11 +116,7 @@ export const useResumeManager = () => {
       navigate(`/resumebuilder/${templateType.toLowerCase()}?id=${resumeId}&mode=edit`);
     } catch (error) {
       console.error("[Resume Manager] Navigation error:", error);
-      toast({
-        title: "Navigation Error",
-        description: "There was a problem editing this resume.",
-        variant: "destructive",
-      });
+      toast("There was a problem editing this resume.");
     }
   };
 
@@ -157,11 +137,7 @@ export const useResumeManager = () => {
       navigate('/resumebuilder/basic?source=pdf&mode=edit');
     } catch (error) {
       console.error("[Resume Manager] Navigation error:", error);
-      toast({
-        title: "Navigation Error",
-        description: "There was a problem editing this PDF.",
-        variant: "destructive",
-      });
+      toast("There was a problem editing this PDF.");
     }
   };
 
@@ -174,11 +150,7 @@ export const useResumeManager = () => {
       
       if (!sessionData.session?.user) {
         console.log("[Resume Manager] No user session found for resume deletion");
-        toast({
-          title: "Authentication Error",
-          description: "You must be logged in to delete a resume.",
-          variant: "destructive",
-        });
+        toast("You must be logged in to delete a resume.");
         return;
       }
       
@@ -191,28 +163,17 @@ export const useResumeManager = () => {
         
       if (error) {
         console.error("[Resume Manager] Error deleting resume:", error);
-        toast({
-          title: "Deletion Error",
-          description: "There was a problem deleting your resume.",
-          variant: "destructive",
-        });
+        toast("There was a problem deleting your resume.");
         return;
       }
       
       // Update the saved resumes list
       setSavedResumes(prevResumes => prevResumes.filter(resume => resume.id !== resumeId));
       
-      toast({
-        title: "Resume Deleted",
-        description: "Your resume has been deleted successfully.",
-      });
+      toast("Your resume has been deleted successfully.");
     } catch (error) {
       console.error("[Resume Manager] Error deleting resume:", error);
-      toast({
-        title: "Deletion Error",
-        description: "There was a problem deleting your resume.",
-        variant: "destructive",
-      });
+      toast("There was a problem deleting your resume.");
     }
   };
 
