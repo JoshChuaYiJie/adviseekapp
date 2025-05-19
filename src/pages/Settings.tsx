@@ -1,9 +1,9 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { ApiKeySettings } from "@/components/settings/ApiKeySettings"; 
 import { DeepseekApiSettings } from "@/components/settings/DeepseekApiSettings";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useNavigate } from "react-router-dom";
@@ -38,7 +38,7 @@ const Settings = () => {
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
           <TabsList>
             <TabsTrigger value="general">General</TabsTrigger>
-            <TabsTrigger value="api">API Keys</TabsTrigger>
+            <TabsTrigger value="api">API Settings</TabsTrigger>
             <TabsTrigger value="account">Account</TabsTrigger>
           </TabsList>
 
@@ -91,10 +91,6 @@ const Settings = () => {
           </TabsContent>
 
           <TabsContent value="api" className="space-y-8">
-            <div className="bg-card p-6 rounded-lg border shadow-sm">
-              <ApiKeySettings />
-            </div>
-            
             <div className="bg-card p-6 rounded-lg border shadow-sm">
               <DeepseekApiSettings />
             </div>

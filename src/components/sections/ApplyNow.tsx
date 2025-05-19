@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -60,6 +59,9 @@ export const ApplyNow = () => {
   const [chatMessages, setChatMessages] = useState<Record<string, QuestionChatState>>({});
   const [userProfileData, setUserProfileData] = useState<any>(null);
   const [previousApplications, setPreviousApplications] = useState<any[]>([]);
+  
+  // New state to track which textarea is focused
+  const [focusedQuestionId, setFocusedQuestionId] = useState<string | null>(null);
 
   const universities = ["National University of Singapore", "Nanyang Technological University", "Singapore Management University"];
 
@@ -632,9 +634,11 @@ If there's a word limit mentioned in the question, help them stay within that li
                       value={responses[question.id] || ""}
                       onChange={(e) => handleResponseChange(question.id, e.target.value)}
                       placeholder={t("apply.response_placeholder", "Type your response here...")}
-                      onFocus={() => setActiveChatQuestion(null)} // Close chat when focusing on textarea
+                      onFocus={() => setFocusedQuestionId(question.id)} 
+                      onBlur={() => setFocusedQuestionId(null)}
                     />
-                    {responses[question.id] && responses[question.id].length > 10 && (
+                    {/* Show chat button when question is focused */}
+                    {focusedQuestionId === question.id && (
                       <Button
                         variant="outline"
                         size="sm"
