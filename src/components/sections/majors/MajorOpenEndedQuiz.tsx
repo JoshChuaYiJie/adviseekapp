@@ -83,17 +83,19 @@ const MajorOpenEndedQuiz: React.FC<MajorOpenEndedQuizProps> = ({ major }) => {
     }
   }, [userId, major, majorRecommendations, recommendedMajors, loadQuestions, prepareQuestionsForRecommendedMajors]);
 
-  // Restore focus to textarea when changing questions
+  // Restore focus to textarea and place cursor at the end when changing questions
   useEffect(() => {
     if (textareaRef.current) {
       // Use a small delay to ensure the DOM has updated
       setTimeout(() => {
-        textareaRef.current?.focus();
-        
-        // Ensure cursor is at the end
-        const length = textareaRef.current.value.length;
-        textareaRef.current.setSelectionRange(length, length);
-      }, 0);
+        if (textareaRef.current) {
+          textareaRef.current.focus();
+          
+          // Ensure cursor is at the end
+          const length = textareaRef.current.value.length;
+          textareaRef.current.setSelectionRange(length, length);
+        }
+      }, 10);
     }
   }, [currentQuestionIndex]);
 
@@ -166,6 +168,24 @@ const MajorOpenEndedQuiz: React.FC<MajorOpenEndedQuizProps> = ({ major }) => {
   // Handle clicking on a question dot
   const handleQuestionClick = (index: number) => {
     setCurrentQuestionIndex(index);
+  };
+
+  // Custom textarea component with cursor always at the end
+  const TextareaWithEndCursor = ({ value, onChange, ...props }: any) => {
+    const ref = textareaRef;
+    
+    const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      onChange(e.target.value);
+    };
+    
+    return (
+      <Textarea
+        ref={ref}
+        value={value}
+        onChange={handleChange}
+        {...props}
+      />
+    );
   };
 
   if (loadingQuestions || loadingRecommendations) {
@@ -258,12 +278,11 @@ const MajorOpenEndedQuiz: React.FC<MajorOpenEndedQuizProps> = ({ major }) => {
           <div className="space-y-4">
             <p className="text-lg">{currentQuestion.question}</p>
             
-            <Textarea
-              ref={textareaRef}
+            <TextareaWithEndCursor
               placeholder="Type your answer here..."
               className="min-h-[150px]"
               value={currentResponse.response}
-              onChange={(e) => handleResponseChange(e.target.value)}
+              onChange={handleResponseChange}
               disabled={submitting || currentResponse.skipped}
               key={`question-${questionId}`}
             />

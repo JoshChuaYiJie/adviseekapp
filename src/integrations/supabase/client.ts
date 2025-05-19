@@ -75,6 +75,56 @@ export type UserSettings = {
   updated_at: string;
 };
 
+// Resume related types with proper JSON handling
+export type ResumeEducationItem = {
+  institution: string;
+  degree: string;
+  fieldOfStudy: string;
+  startDate: string;
+  endDate: string;
+  grade?: string;
+  description?: string;
+};
+
+export type ResumeWorkExperienceItem = {
+  company: string;
+  position: string;
+  location?: string;
+  startDate: string;
+  endDate: string;
+  description: string;
+};
+
+export type ResumeActivityItem = {
+  name: string;
+  role?: string;
+  date?: string;
+  description?: string;
+};
+
+export type Resume = {
+  id: string;
+  user_id: string;
+  resumeName: string | null;
+  template_type: string;
+  name: string | null;
+  email: string | null;
+  phone: string | null;
+  nationality: string | null;
+  institution: string | null;
+  education_dates: string | null;
+  qualifications: string | null;
+  awards: string | null;
+  languages: string | null;
+  interests: string | null;
+  it_skills: string | null;
+  created_at: string;
+  updated_at: string;
+  educationItems: ResumeEducationItem[] | null;
+  work_experience: ResumeWorkExperienceItem[] | null;
+  activities: ResumeActivityItem[] | null;
+};
+
 // Export Json type for proper type handling with Supabase
 export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
@@ -84,6 +134,9 @@ export const parseJsonArray = <T,>(jsonArray: Json | null | undefined, fallback:
   try {
     if (Array.isArray(jsonArray)) {
       return jsonArray as T[];
+    }
+    if (typeof jsonArray === 'string') {
+      return JSON.parse(jsonArray) as T[];
     }
     return fallback;
   } catch (error) {

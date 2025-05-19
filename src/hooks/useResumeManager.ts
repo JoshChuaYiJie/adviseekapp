@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase, Resume, parseJsonArray } from "@/integrations/supabase/client";
 
 export interface SavedResume {
   id: string;
@@ -38,7 +38,7 @@ export const useResumeManager = () => {
         // Load resumes from Supabase
         const { data, error } = await supabase
           .from('resumes')
-          .select('id, name, template_type, updated_at')
+          .select('id, resumeName as name, template_type, updated_at')
           .eq('user_id', sessionData.session.user.id)
           .order('updated_at', { ascending: false });
           
