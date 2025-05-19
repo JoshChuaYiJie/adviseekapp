@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, X } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "@/components/ui/sonner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -140,6 +140,7 @@ const templates = [
 
 const ResumeBuilder = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [selectedTemplate, setSelectedTemplate] = useState<number | null>(null);
   const [showFullTemplate, setShowFullTemplate] = useState(false);
   const { isCurrentlyDark } = useTheme();
@@ -157,10 +158,15 @@ const ResumeBuilder = () => {
     setShowFullTemplate(false);
   };
   
+  const handleBackNavigation = () => {
+    // Navigate directly to dashboard
+    navigate('/dashboard');
+  };
+  
   return (
     <div className="container mx-auto py-10 max-w-7xl">
       <div className="flex items-center mb-6">
-        <Button variant="ghost" size="icon" onClick={() => navigate('/dashboard')} className="mr-2">
+        <Button variant="ghost" size="icon" onClick={handleBackNavigation} className="mr-2">
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <h1 className="text-2xl font-bold">Resume Builder</h1>

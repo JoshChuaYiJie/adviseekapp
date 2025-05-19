@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { Eye, Edit } from "lucide-react";
+import { Eye, Edit, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "@/contexts/ThemeContext";
 
@@ -11,6 +11,7 @@ interface ResumeTableProps {
   onViewResume: (resumeId: string, templateType: string) => void;
   onEditResume: (resumeId: string, templateType: string) => void;
   onEditPDF: (index: number) => void;
+  onDeleteResume?: (resumeId: string) => void;
 }
 
 export interface SavedResume {
@@ -26,7 +27,8 @@ export const ResumeTable = ({
   resumeFiles, 
   onViewResume, 
   onEditResume, 
-  onEditPDF 
+  onEditPDF,
+  onDeleteResume
 }: ResumeTableProps) => {
   const navigate = useNavigate();
   const { isCurrentlyDark } = useTheme();
@@ -129,6 +131,17 @@ export const ResumeTable = ({
                         <Edit className="h-4 w-4" />
                         Edit
                       </Button>
+                      {onDeleteResume && (
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => onDeleteResume(resume.id)}
+                          className="flex items-center gap-1 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          Delete
+                        </Button>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -155,7 +168,15 @@ export const ResumeTable = ({
                       <Button 
                         variant="ghost" 
                         size="sm"
-                        onClick={() => navigate("/resumebuilder/basic?source=pdf")}
+                        onClick={() => {
+                          // Create a blob URL for the file
+                          const fileUrl = URL.createObjectURL(file);
+                          // Store the file information in local storage
+                          localStorage.setItem('uploadedPDF', file.name);
+                          localStorage.setItem('uploadedPDFUrl', fileUrl);
+                          // Navigate to view the PDF
+                          navigate("/resumebuilder/basic?source=pdf&mode=view");
+                        }}
                         className="flex items-center gap-1"
                       >
                         <Eye className="h-4 w-4" />

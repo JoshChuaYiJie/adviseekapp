@@ -12,8 +12,8 @@ export const BuildResumeCard = () => {
   const { t } = useTranslation();
   
   const handleBuildResume = () => {
-    // Pass the default resume name as a URL parameter
-    navigate("/resumebuilder?name=Default NUS Resume");
+    // Redirect directly to the basic resume builder
+    navigate("/resumebuilder/basic");
   };
 
   return (
