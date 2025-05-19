@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -14,7 +13,37 @@ interface ModuleRatingResult {
   totalScore: number;
   count: number;
   averageScore: number;
+  recommendedMajors?: string[];
 }
+
+// Function to load prefix to major mappings from mappings.json
+const usePrefixMajorMappings = () => {
+  const [mappings, setMappings] = useState<Record<string, string[]>>({});
+
+  useEffect(() => {
+    const loadMappings = async () => {
+      try {
+        const response = await fetch('/school-data/mappings.json');
+        if (!response.ok) {
+          console.error('Failed to load mappings:', response.statusText);
+          return;
+        }
+        
+        const data = await response.json();
+        if (data && data.prefix_to_majors) {
+          setMappings(data.prefix_to_majors);
+          console.log('Loaded prefix to major mappings:', data.prefix_to_majors);
+        }
+      } catch (error) {
+        console.error('Error loading prefix to major mappings:', error);
+      }
+    };
+    
+    loadMappings();
+  }, []);
+
+  return mappings;
+};
 
 const Recommendations = () => {
   const navigate = useNavigate();
@@ -23,6 +52,9 @@ const Recommendations = () => {
     rateModule,
     userFeedback
   } = useQuiz();
+  
+  // Load prefix to major mappings
+  const prefixMajorMappings = usePrefixMajorMappings();
   
   // Use our hook for recommendations
   const { 
@@ -190,15 +222,21 @@ const Recommendations = () => {
 
       // Calculate averages and sort to find top prefixes
       const results: ModuleRatingResult[] = Object.entries(prefixScores)
-        .map(([prefix, { totalScore, count }]) => ({
-          prefix,
-          totalScore,
-          count,
-          averageScore: totalScore / count
-        }))
+        .map(([prefix, { totalScore, count }]) => {
+          // Get recommended majors for this prefix from mappings
+          const recommendedMajors = prefixMajorMappings[prefix] || [];
+          
+          return {
+            prefix,
+            totalScore,
+            count,
+            averageScore: totalScore / count,
+            recommendedMajors
+          };
+        })
         .sort((a, b) => b.averageScore - a.averageScore);
 
-      console.log("Top prefixes calculated:", results);
+      console.log("Top prefixes calculated with major recommendations:", results);
       setTopPrefixes(results.slice(0, 3));  // Keep top 3
       
       // Show the program suggestion
@@ -370,6 +408,26 @@ const Recommendations = () => {
                     <p className="text-gray-600 text-sm">
                       Based on {result.count} module ratings
                     </p>
+                    {result.recommendedMajors && result.recommendedMajors.length > 0 && (
+                      <div className="mt-2">
+                        <p className="text-sm font-medium text-purple-700">Recommended Majors:</p>
+                        <div className="flex flex-wrap gap-1 mt-1">
+                          {result.recommendedMajors.slice(0, 3).map((major, i) => (
+                            <span 
+                              key={i} 
+                              className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded-full"
+                            >
+                              {major}
+                            </span>
+                          ))}
+                          {result.recommendedMajors.length > 3 && (
+                            <span className="text-xs text-purple-600">
+                              +{result.recommendedMajors.length - 3} more
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -430,6 +488,21 @@ const Recommendations = () => {
                   <p className="text-gray-600 text-sm mt-1">
                     Based on {result.count} module ratings with total score {result.totalScore}
                   </p>
+                  {result.recommendedMajors && result.recommendedMajors.length > 0 && (
+                    <div className="mt-3">
+                      <p className="text-sm font-medium text-purple-700">Recommended Majors:</p>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {result.recommendedMajors.map((major, i) => (
+                          <span 
+                            key={i} 
+                            className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded-full"
+                          >
+                            {major}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

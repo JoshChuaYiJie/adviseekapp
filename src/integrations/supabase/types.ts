@@ -247,9 +247,11 @@ export type Database = {
           education_dates: string | null
           educationItems: Json | null
           email: string | null
+          file_path: string | null
           id: string
           institution: string | null
           interests: string | null
+          is_pdf_upload: boolean | null
           it_skills: string | null
           languages: string | null
           name: string | null
@@ -269,9 +271,11 @@ export type Database = {
           education_dates?: string | null
           educationItems?: Json | null
           email?: string | null
+          file_path?: string | null
           id?: string
           institution?: string | null
           interests?: string | null
+          is_pdf_upload?: boolean | null
           it_skills?: string | null
           languages?: string | null
           name?: string | null
@@ -291,9 +295,11 @@ export type Database = {
           education_dates?: string | null
           educationItems?: Json | null
           email?: string | null
+          file_path?: string | null
           id?: string
           institution?: string | null
           interests?: string | null
+          is_pdf_upload?: boolean | null
           it_skills?: string | null
           languages?: string | null
           name?: string | null

@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { Eye, Edit, Trash2 } from "lucide-react";
+import { Eye, Edit, Trash2, Download } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "@/contexts/ThemeContext";
 
@@ -11,7 +11,8 @@ interface ResumeTableProps {
   onViewResume: (resumeId: string, templateType: string) => void;
   onEditResume: (resumeId: string, templateType: string) => void;
   onEditPDF: (index: number) => void;
-  onDeleteResume?: (resumeId: string) => void;
+  onDeleteResume?: (resumeId: string, filePath?: string) => void;
+  onDownloadResume?: (resumePath: string | undefined, resumeName: string | null) => void;
 }
 
 export interface SavedResume {
@@ -19,6 +20,8 @@ export interface SavedResume {
   name: string | null;
   template_type: string;
   updated_at: string;
+  is_pdf_upload?: boolean;
+  file_path?: string;
 }
 
 export const ResumeTable = ({ 
@@ -28,7 +31,8 @@ export const ResumeTable = ({
   onViewResume, 
   onEditResume, 
   onEditPDF,
-  onDeleteResume
+  onDeleteResume,
+  onDownloadResume
 }: ResumeTableProps) => {
   const navigate = useNavigate();
   const { isCurrentlyDark } = useTheme();
@@ -113,34 +117,63 @@ export const ResumeTable = ({
                     <td className={`px-6 py-4 whitespace-nowrap text-sm ${
                       isCurrentlyDark ? "text-gray-300" : "text-gray-500"
                     } space-x-2`}>
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        onClick={() => onViewResume(resume.id, resume.template_type)}
-                        className="flex items-center gap-1"
-                      >
-                        <Eye className="h-4 w-4" />
-                        View
-                      </Button>
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        onClick={() => onEditResume(resume.id, resume.template_type)}
-                        className="flex items-center gap-1"
-                      >
-                        <Edit className="h-4 w-4" />
-                        Edit
-                      </Button>
-                      {onDeleteResume && (
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          onClick={() => onDeleteResume(resume.id)}
-                          className="flex items-center gap-1 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                          Delete
-                        </Button>
+                      {resume.is_pdf_upload ? (
+                        <>
+                          {onDownloadResume && (
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => onDownloadResume(resume.file_path, resume.name)}
+                              className="flex items-center gap-1"
+                            >
+                              <Download className="h-4 w-4" />
+                              Download
+                            </Button>
+                          )}
+                          {onDeleteResume && (
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => onDeleteResume(resume.id, resume.file_path)}
+                              className="flex items-center gap-1 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                              Delete
+                            </Button>
+                          )}
+                        </>
+                      ) : (
+                        <>
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => onViewResume(resume.id, resume.template_type)}
+                            className="flex items-center gap-1"
+                          >
+                            <Eye className="h-4 w-4" />
+                            View
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => onEditResume(resume.id, resume.template_type)}
+                            className="flex items-center gap-1"
+                          >
+                            <Edit className="h-4 w-4" />
+                            Edit
+                          </Button>
+                          {onDeleteResume && (
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => onDeleteResume(resume.id)}
+                              className="flex items-center gap-1 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                              Delete
+                            </Button>
+                          )}
+                        </>
                       )}
                     </td>
                   </tr>

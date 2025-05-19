@@ -10,6 +10,8 @@ export interface SavedResume {
   name: string | null;
   template_type: string;
   updated_at: string;
+  is_pdf_upload?: boolean;
+  file_path?: string;
 }
 
 export const useResumeManager = () => {
@@ -38,7 +40,7 @@ export const useResumeManager = () => {
       // Load resumes from Supabase
       const { data, error } = await supabase
         .from('resumes')
-        .select('id, resumeName, template_type, updated_at')
+        .select('id, resumeName, template_type, updated_at, is_pdf_upload, file_path')
         .eq('user_id', sessionData.session.user.id)
         .order('updated_at', { ascending: false });
         
@@ -54,7 +56,9 @@ export const useResumeManager = () => {
           id: resume.id,
           name: resume.resumeName,
           template_type: resume.template_type,
-          updated_at: new Date(resume.updated_at).toLocaleDateString()
+          updated_at: new Date(resume.updated_at).toLocaleDateString(),
+          is_pdf_upload: resume.is_pdf_upload,
+          file_path: resume.file_path
         }));
         
         console.log(`[Resume Manager] Loaded ${formattedResumes.length} resumes from Supabase:`, formattedResumes);
@@ -73,7 +77,7 @@ export const useResumeManager = () => {
     loadSavedResumes();
   }, [uiToast]);
 
-  const handleFileUpload = (files: File[]) => {
+  const handleFileUpload = async (files: File[]) => {
     try {
       if (!files.length) {
         console.error("[Resume Manager] No files provided to handleFileUpload");
@@ -89,9 +93,57 @@ export const useResumeManager = () => {
         toast("Please upload a PDF file.");
         return;
       }
+
+      // Get the current user session
+      const { data: sessionData } = await supabase.auth.getSession();
       
-      setResumeFiles(prevFiles => [file, ...prevFiles]);
-      console.log("[Resume Manager] Resume file added to state");
+      if (!sessionData.session?.user) {
+        console.log("[Resume Manager] No user session found for file upload");
+        toast("You must be logged in to upload a resume.");
+        return;
+      }
+
+      const userId = sessionData.session.user.id;
+      const fileName = `${userId}/${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
+      
+      // Upload the file to Supabase storage
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('resume_files')
+        .upload(fileName, file, {
+          contentType: 'application/pdf',
+          cacheControl: '3600'
+        });
+        
+      if (uploadError) {
+        console.error("[Resume Manager] Error uploading file to storage:", uploadError);
+        toast("There was a problem uploading your resume.");
+        return;
+      }
+
+      console.log("[Resume Manager] File uploaded successfully:", uploadData);
+      
+      // Save the resume record in the database
+      const { data: resumeData, error: resumeError } = await supabase
+        .from('resumes')
+        .insert({
+          user_id: userId,
+          resumeName: file.name,
+          template_type: 'PDF Upload',
+          file_path: fileName,
+          is_pdf_upload: true,
+        })
+        .select();
+        
+      if (resumeError) {
+        console.error("[Resume Manager] Error saving resume data:", resumeError);
+        toast("There was a problem saving your resume information.");
+        return;
+      }
+
+      console.log("[Resume Manager] Resume data saved:", resumeData);
+      
+      // Refresh the resumes list
+      loadSavedResumes();
       
       toast("Your resume has been uploaded successfully.");
     } catch (error) {
@@ -141,7 +193,43 @@ export const useResumeManager = () => {
     }
   };
 
-  const handleDeleteResume = async (resumeId: string) => {
+  const handleDownloadResume = async (resumePath: string | undefined, resumeName: string | null) => {
+    try {
+      if (!resumePath) {
+        toast("Resume file not found.");
+        return;
+      }
+
+      console.log(`[Resume Manager] Downloading resume at path: ${resumePath}`);
+      
+      const { data, error } = await supabase.storage
+        .from('resume_files')
+        .download(resumePath);
+        
+      if (error) {
+        console.error("[Resume Manager] Error downloading file:", error);
+        toast("There was a problem downloading your resume.");
+        return;
+      }
+      
+      // Create a URL for the downloaded file and initiate download
+      const url = URL.createObjectURL(data);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = resumeName || 'resume.pdf';
+      document.body.appendChild(a);
+      a.click();
+      URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+      toast("Resume download started.");
+    } catch (error) {
+      console.error("[Resume Manager] Error downloading resume:", error);
+      toast("There was a problem downloading your resume.");
+    }
+  };
+
+  const handleDeleteResume = async (resumeId: string, filePath?: string) => {
     try {
       console.log(`[Resume Manager] Deleting resume: ${resumeId}`);
       
@@ -152,6 +240,18 @@ export const useResumeManager = () => {
         console.log("[Resume Manager] No user session found for resume deletion");
         toast("You must be logged in to delete a resume.");
         return;
+      }
+      
+      // If it's a PDF upload, delete the file from storage first
+      if (filePath) {
+        const { error: storageError } = await supabase.storage
+          .from('resume_files')
+          .remove([filePath]);
+          
+        if (storageError) {
+          console.error("[Resume Manager] Error deleting file from storage:", storageError);
+          toast("There was a problem deleting the resume file.");
+        }
       }
       
       // Delete the resume from Supabase
@@ -186,5 +286,6 @@ export const useResumeManager = () => {
     handleEditResume,
     handleEditPDF,
     handleDeleteResume,
+    handleDownloadResume
   };
 };

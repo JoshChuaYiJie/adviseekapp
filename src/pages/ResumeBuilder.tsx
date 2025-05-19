@@ -159,7 +159,7 @@ const ResumeBuilder = () => {
   };
   
   const handleBackNavigation = () => {
-    // Navigate directly to dashboard
+    // Navigate directly to dashboard instead of going back
     navigate('/dashboard');
   };
   

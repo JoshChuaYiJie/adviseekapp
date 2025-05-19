@@ -19,7 +19,8 @@ export const MyResume = () => {
     handleViewResume,
     handleEditResume,
     handleEditPDF,
-    handleDeleteResume
+    handleDeleteResume,
+    handleDownloadResume
   } = useResumeManager();
 
   // Check if user is authenticated
@@ -76,6 +77,7 @@ export const MyResume = () => {
         onEditResume={handleEditResume}
         onEditPDF={handleEditPDF}
         onDeleteResume={handleDeleteResume}
+        onDownloadResume={handleDownloadResume}
       />
     </div>
   );
