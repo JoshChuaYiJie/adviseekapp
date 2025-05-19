@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 
 interface DeepseekOptions {
   maxTokens?: number;
@@ -12,30 +12,38 @@ interface DeepseekOptions {
 export const useDeepseek = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { toast } = useToast();
 
   const callDeepseek = async (prompt: string, options?: DeepseekOptions) => {
     try {
       setLoading(true);
       setError(null);
 
+      console.log("Calling Deepseek function with prompt:", prompt);
+      
       const { data, error } = await supabase.functions.invoke('deepseek-call', {
         body: { prompt, options },
       });
 
       if (error) {
-        throw new Error(error.message);
+        console.error("Supabase function error:", error);
+        throw new Error(error.message || "Error calling Deepseek");
       }
 
+      if (!data) {
+        console.error("No data returned from Deepseek function");
+        throw new Error("No response data received");
+      }
+
+      console.log("Received response from Deepseek:", data);
       return data;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
+      console.error("Deepseek error:", errorMessage);
       setError(errorMessage);
       
-      toast({
-        title: "API Error",
-        description: "Failed to call the Deepseek API. Please check your API key settings.",
-        variant: "destructive",
+      toast.error("Failed to get a response from AI", {
+        description: "Please try again or check your connection.",
+        duration: 4000,
       });
       
       return null;
