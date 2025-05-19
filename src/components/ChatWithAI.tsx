@@ -5,7 +5,8 @@ import { MessageSquare } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { toast } from '@/components/ui/sonner';
+import { toast } from 'sonner';
+import { useDeepseek } from '@/hooks/useDeepseek';
 
 export const ChatWithAI = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -14,30 +15,46 @@ export const ChatWithAI = () => {
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const { callDeepseek, loading: deepseekLoading } = useDeepseek();
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (!input.trim()) return;
     
     // Add user message
     const userMessage = {role: 'user' as const, content: input};
-    setMessages([...messages, userMessage]);
+    setMessages(prev => [...prev, userMessage]);
     setInput('');
     setIsLoading(true);
     
-    // Simulate AI response after a delay
-    setTimeout(() => {
-      const responses = [
-        "I can help you with that! What specific information are you looking for about this university?",
-        "Based on your interests, I'd recommend focusing on these three programs.",
-        "Your resume looks great! I'd just suggest highlighting your leadership experience a bit more.",
-        "For interview preparation, make sure to research the university's values and mission statement.",
-        "That's a good question. The application deadline for this program is typically in January, but it varies by university."
-      ];
-      const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+    try {
+      // Call Deepseek API
+      const result = await callDeepseek(
+        input,
+        { maxTokens: 1000, temperature: 0.7, topP: 0.95 }
+      );
       
-      setMessages(prev => [...prev, {role: 'assistant', content: randomResponse}]);
+      if (result && result.choices && result.choices[0]?.message?.content) {
+        // Add AI response to messages
+        const aiResponse = result.choices[0].message.content;
+        setMessages(prev => [...prev, {role: 'assistant', content: aiResponse}]);
+      } else {
+        // Fallback if API call fails
+        toast.error("Failed to get a response from AI. Please try again.");
+        setMessages(prev => [...prev, {
+          role: 'assistant', 
+          content: "I'm sorry, I couldn't process your request. Please try again later."
+        }]);
+      }
+    } catch (error) {
+      console.error("Error calling Deepseek API:", error);
+      toast.error("Error connecting to the AI service. Please try again.");
+      setMessages(prev => [...prev, {
+        role: 'assistant', 
+        content: "I'm having trouble connecting to my brain. Please try again in a moment."
+      }]);
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   return (

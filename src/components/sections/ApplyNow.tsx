@@ -123,9 +123,9 @@ export const ApplyNow = () => {
         ];
       case "Singapore Management University":
         return [
-          { id: "smu-q1", text: "Describe the highlights of your most outstanding achievements/contributions/attributes (Maximum: 300 words)" },
-          { id: "smu-q2", text: "What would you say is your greatest talent or skill? How have you developed and demonstrated that talent over time? (Maximum 50 words)" },
-          { id: "smu-q3", text: "What have you done to make your school or your community a better place? (Maximum 50 words)" },
+          { id: "smu-q1", text: "Describe the highlights of your most outstanding achievements/contributions/attributes (Maximum: 300 words)", wordLimit: 300 },
+          { id: "smu-q2", text: "What would you say is your greatest talent or skill? How have you developed and demonstrated that talent over time? (Maximum 50 words)", wordLimit: 50 },
+          { id: "smu-q3", text: "What have you done to make your school or your community a better place? (Maximum 50 words)", wordLimit: 50 },
           { id: "smu-q4", text: "What are your future plans or career interests? We are aware that many future plans will change, but this is just another way for us to get to know you as an individual." }
         ];
       default:
@@ -426,8 +426,8 @@ export const ApplyNow = () => {
                 question.text.includes('(600)') ? 600 : 
                 question.text.includes('(1100)') ? 1100 : 
                 question.text.includes('(200 words)') ? 200 : 
-                question.text.includes('(300 words)') ? 300 : 
-                question.text.includes('(50 words)') ? 50 : 
+                question.text.includes('(Maximum: 300 words)') ? 300 :
+                question.text.includes('(Maximum 50 words)') ? 50 : 
                 undefined
               );
               
