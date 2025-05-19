@@ -7,7 +7,7 @@ import SocialLoginButton from "@/components/SocialLoginButton";
 import { useToast } from "@/hooks/use-toast";
 
 interface SocialAuthOptionsProps {
-  onEmailContinue: () => void;
+  onEmailContinue?: () => void;
 }
 
 const SocialAuthOptions = ({ onEmailContinue }: SocialAuthOptionsProps) => {
@@ -85,13 +85,15 @@ const SocialAuthOptions = ({ onEmailContinue }: SocialAuthOptionsProps) => {
         )}
       </SocialLoginButton>
 
-      <SocialLoginButton
-        provider="email"
-        onClick={onEmailContinue}
-        disabled={isLoading !== null}
-      >
-        Continue with Email
-      </SocialLoginButton>
+      {onEmailContinue && (
+        <SocialLoginButton
+          provider="email"
+          onClick={onEmailContinue}
+          disabled={isLoading !== null}
+        >
+          Continue with Email
+        </SocialLoginButton>
+      )}
     </div>
   );
 };

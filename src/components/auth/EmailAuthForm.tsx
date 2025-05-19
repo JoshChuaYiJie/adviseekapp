@@ -9,17 +9,29 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
 interface EmailAuthFormProps {
-  email: string;
-  onBack: () => void;
+  mode: "signin" | "signup";
+  email?: string;
+  onBack?: () => void;
 }
 
-const EmailAuthForm = ({ email, onBack }: EmailAuthFormProps) => {
+const EmailAuthForm = ({ mode: initialMode, email, onBack }: EmailAuthFormProps) => {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isSignUp, setIsSignUp] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(initialMode === "signup");
   const [error, setError] = useState<string | null>(null);
+  const [emailInput, setEmailInput] = useState(email || "");
+  const [showPasswordForm, setShowPasswordForm] = useState(Boolean(email));
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  const handleEmailContinue = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!emailInput.trim()) {
+      setError("Please enter your email address");
+      return;
+    }
+    setShowPasswordForm(true);
+  };
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,7 +40,7 @@ const EmailAuthForm = ({ email, onBack }: EmailAuthFormProps) => {
 
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
-        email,
+        email: emailInput,
         password,
       });
 
@@ -62,7 +74,7 @@ const EmailAuthForm = ({ email, onBack }: EmailAuthFormProps) => {
 
     try {
       const { data, error } = await supabase.auth.signUp({
-        email,
+        email: emailInput,
         password,
         options: {
           emailRedirectTo: window.location.origin,
@@ -95,17 +107,52 @@ const EmailAuthForm = ({ email, onBack }: EmailAuthFormProps) => {
     }
   };
 
+  if (!showPasswordForm) {
+    return (
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">Sign in or create an account</h3>
+        
+        {error && (
+          <div className="bg-red-50 p-3 rounded-md flex items-start">
+            <AlertCircle className="h-5 w-5 text-red-600 mr-2 flex-shrink-0 mt-0.5" />
+            <p className="text-sm text-red-600">{error}</p>
+          </div>
+        )}
+
+        <form onSubmit={handleEmailContinue} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              value={emailInput}
+              onChange={(e) => setEmailInput(e.target.value)}
+              placeholder="you@example.com"
+              required
+              autoFocus
+            />
+          </div>
+          <Button type="submit" className="w-full">
+            Continue with Email
+          </Button>
+        </form>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex items-center">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="mr-2 p-0 h-auto"
-          onClick={onBack}
-        >
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
+        {onBack && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="mr-2 p-0 h-auto"
+            onClick={onBack}
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+        )}
         <h3 className="text-lg font-semibold">{isSignUp ? "Create Account" : "Sign In"}</h3>
       </div>
 
@@ -122,9 +169,9 @@ const EmailAuthForm = ({ email, onBack }: EmailAuthFormProps) => {
           <Input
             id="email"
             type="email"
-            value={email}
-            disabled
-            className="bg-gray-50"
+            value={emailInput}
+            disabled={Boolean(onBack)}
+            className={Boolean(onBack) ? "bg-gray-50" : ""}
           />
         </div>
         <div className="space-y-2">

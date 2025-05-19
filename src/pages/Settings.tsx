@@ -38,7 +38,6 @@ const Settings = () => {
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
           <TabsList>
             <TabsTrigger value="general">General</TabsTrigger>
-            <TabsTrigger value="api">API Settings</TabsTrigger>
             <TabsTrigger value="account">Account</TabsTrigger>
           </TabsList>
 
@@ -87,12 +86,6 @@ const Settings = () => {
                   <Switch id="deadline-reminders" defaultChecked />
                 </div>
               </div>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="api" className="space-y-8">
-            <div className="bg-card p-6 rounded-lg border shadow-sm">
-              <DeepseekApiSettings />
             </div>
           </TabsContent>
 

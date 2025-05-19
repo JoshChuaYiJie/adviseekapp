@@ -8,9 +8,19 @@ import CountdownTimer from "./CountdownTimer";
 
 const AuthSection = () => {
   const [authMode, setAuthMode] = useState<"signin" | "signup">("signin");
+  const [showEmailAuth, setShowEmailAuth] = useState(false);
+  const [email, setEmail] = useState("");
 
   const toggleAuthMode = () => {
     setAuthMode(authMode === "signin" ? "signup" : "signin");
+  };
+
+  const handleEmailContinue = () => {
+    setShowEmailAuth(true);
+  };
+
+  const handleBackToOptions = () => {
+    setShowEmailAuth(false);
   };
 
   return (
@@ -21,20 +31,31 @@ const AuthSection = () => {
         </div>
         <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
           <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-            <EmailAuthForm mode={authMode} />
-            <div className="mt-6">
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-300" />
+            {showEmailAuth ? (
+              <EmailAuthForm 
+                mode={authMode} 
+                onBack={handleBackToOptions} 
+              />
+            ) : (
+              <>
+                <EmailAuthForm mode={authMode} />
+                <div className="mt-6">
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-gray-300" />
+                    </div>
+                    <div className="relative flex justify-center text-sm">
+                      <span className="px-2 bg-white text-gray-500">
+                        Or continue with
+                      </span>
+                    </div>
+                  </div>
+                  <div className="mt-6">
+                    <SocialAuthOptions onEmailContinue={handleEmailContinue} />
+                  </div>
                 </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white text-gray-500">
-                    Or continue with
-                  </span>
-                </div>
-              </div>
-              <SocialAuthOptions />
-            </div>
+              </>
+            )}
           </div>
           <AuthFooter
             mode={authMode}
