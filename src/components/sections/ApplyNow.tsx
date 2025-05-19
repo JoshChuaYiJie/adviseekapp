@@ -18,11 +18,24 @@ import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, MessageSquare } from "lucide-react";
 import { useDeepseek } from "@/hooks/useDeepseek";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface ApplicationQuestion {
   id: string;
   text: string;
   wordLimit?: number;
+}
+
+// Define an interface for the chat message
+interface ChatMessage {
+  role: "user" | "assistant";
+  content: string;
+}
+
+// Define an interface for the chat state with inputValue
+interface QuestionChatState {
+  messages: ChatMessage[];
+  inputValue: string;
 }
 
 export const ApplyNow = () => {
@@ -44,7 +57,7 @@ export const ApplyNow = () => {
   
   // New states for the adviseek chat functionality
   const [activeChatQuestion, setActiveChatQuestion] = useState<string | null>(null);
-  const [chatMessages, setChatMessages] = useState<Record<string, Array<{role: "user" | "assistant", content: string}>>>({});
+  const [chatMessages, setChatMessages] = useState<Record<string, QuestionChatState>>({});
   const [userProfileData, setUserProfileData] = useState<any>(null);
   const [previousApplications, setPreviousApplications] = useState<any[]>([]);
 
@@ -382,10 +395,13 @@ export const ApplyNow = () => {
       if (!chatMessages[questionId]) {
         setChatMessages(prev => ({
           ...prev,
-          [questionId]: [{
-            role: "assistant",
-            content: "Hi there! I'm Adviseek. How can I help you with your application response?"
-          }]
+          [questionId]: {
+            messages: [{
+              role: "assistant",
+              content: "Hi there! I'm Adviseek. How can I help you with your application response?"
+            }],
+            inputValue: ""
+          }
         }));
       }
     }
@@ -397,13 +413,16 @@ export const ApplyNow = () => {
 
     // Add user message to chat
     const updatedMessages = [
-      ...(chatMessages[questionId] || []),
+      ...(chatMessages[questionId]?.messages || []),
       { role: "user" as const, content: userInput.trim() }
     ];
     
     setChatMessages(prev => ({
       ...prev,
-      [questionId]: updatedMessages
+      [questionId]: {
+        messages: updatedMessages,
+        inputValue: ""
+      }
     }));
 
     // Prepare all context for the AI
@@ -467,20 +486,26 @@ If there's a word limit mentioned in the question, help them stay within that li
         
         setChatMessages(prev => ({
           ...prev,
-          [questionId]: [
-            ...(prev[questionId] || []),
-            { role: "assistant", content: aiResponse }
-          ]
+          [questionId]: {
+            messages: [
+              ...(prev[questionId]?.messages || []),
+              { role: "assistant", content: aiResponse }
+            ],
+            inputValue: prev[questionId]?.inputValue || ""
+          }
         }));
       }
     } catch (error) {
       console.error("Error calling Deepseek:", error);
       setChatMessages(prev => ({
         ...prev,
-        [questionId]: [
-          ...(prev[questionId] || []),
-          { role: "assistant", content: "I'm sorry, I encountered an error. Please try again." }
-        ]
+        [questionId]: {
+          messages: [
+            ...(prev[questionId]?.messages || []),
+            { role: "assistant", content: "I'm sorry, I encountered an error. Please try again." }
+          ],
+          inputValue: prev[questionId]?.inputValue || ""
+        }
       }));
     }
   };
@@ -640,7 +665,7 @@ If there's a word limit mentioned in the question, help them stay within that li
                       <h5 className="text-sm font-medium mb-2">Adviseek AI Assistant</h5>
                       <ScrollArea className="h-60 mb-4 border rounded-md p-2">
                         <div className="space-y-3">
-                          {chatMessages[question.id]?.map((msg, i) => (
+                          {chatMessages[question.id]?.messages.map((msg, i) => (
                             <div
                               key={i}
                               className={`p-3 rounded-lg ${
@@ -672,8 +697,10 @@ If there's a word limit mentioned in the question, help them stay within that li
                           value={chatMessages[question.id]?.inputValue || ""}
                           onChange={(e) => setChatMessages(prev => ({
                             ...prev,
-                            [question.id]: [...(prev[question.id] || [])],
-                            inputValue: e.target.value
+                            [question.id]: {
+                              messages: prev[question.id]?.messages || [],
+                              inputValue: e.target.value
+                            }
                           }))}
                           placeholder="Ask Adviseek about your response..."
                           className="flex-1 resize-none text-sm min-h-[60px]"
@@ -682,11 +709,6 @@ If there's a word limit mentioned in the question, help them stay within that li
                               e.preventDefault();
                               const inputValue = chatMessages[question.id]?.inputValue || "";
                               if (inputValue.trim()) {
-                                setChatMessages(prev => {
-                                  const newState = {...prev};
-                                  delete newState[question.id].inputValue;
-                                  return newState;
-                                });
                                 sendChatMessage(question.id, question.text, inputValue);
                               }
                             }
@@ -696,11 +718,6 @@ If there's a word limit mentioned in the question, help them stay within that li
                           onClick={() => {
                             const inputValue = chatMessages[question.id]?.inputValue || "";
                             if (inputValue.trim()) {
-                              setChatMessages(prev => {
-                                const newState = {...prev};
-                                delete newState[question.id].inputValue;
-                                return newState;
-                              });
                               sendChatMessage(question.id, question.text, inputValue);
                             }
                           }}
