@@ -39,6 +39,45 @@ export type Database = {
         }
         Relationships: []
       }
+      application_responses: {
+        Row: {
+          created_at: string
+          degree: string
+          id: string
+          programme: string
+          question: string
+          question_id: string
+          response: string | null
+          university: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          degree: string
+          id?: string
+          programme: string
+          question: string
+          question_id: string
+          response?: string | null
+          university: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          degree?: string
+          id?: string
+          programme?: string
+          question?: string
+          question_id?: string
+          response?: string | null
+          university?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       applied_programs: {
         Row: {
           college: string | null

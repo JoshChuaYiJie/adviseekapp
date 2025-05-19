@@ -13,18 +13,29 @@ import {
   Major
 } from "@/utils/universityDataUtils";
 import { Card } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
+import { supabase } from "@/integrations/supabase/client";
+import { Loader2 } from "lucide-react";
+
+interface ApplicationQuestion {
+  id: string;
+  text: string;
+  wordLimit?: number;
+}
 
 export const ApplyNow = () => {
   const [selectedUniversity, setSelectedUniversity] = useState("");
   const [selectedDegree, setSelectedDegree] = useState("");
   const [selectedMajor, setSelectedMajor] = useState("");
-  const [questions, setQuestions] = useState<string[]>([]);
+  const [questions, setQuestions] = useState<ApplicationQuestion[]>([]);
   const [responses, setResponses] = useState<Record<string, string>>({});
   const [universityData, setUniversityData] = useState<UniversityData | null>(null);
   const [availableDegrees, setAvailableDegrees] = useState<string[]>([]);
   const [availableMajors, setAvailableMajors] = useState<Major[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isLoadingResponses, setIsLoadingResponses] = useState(false);
   const { isCurrentlyDark } = useTheme();
   const { t } = useTranslation();
 
@@ -94,12 +105,40 @@ export const ApplyNow = () => {
     }
   }, [selectedDegree]);
 
+  const getUniversitySpecificQuestions = (university: string): ApplicationQuestion[] => {
+    switch (university) {
+      case "National University of Singapore":
+        return [
+          { id: "nus-q1", text: "Tell us something you have done outside your school curriculum to prepare yourself for your chosen degree programme(s) (600)" },
+          { id: "nus-q2", text: "Describe an instance when you did not succeed in accomplishing something on your first attempt but succeeded on subsequent attempts. How and what did you learn from your initial failure, and what changes did you make to your approach to eventually succeed? (600)" },
+          { id: "nus-q3", text: "Share something that is meaningful to you and explain how it has impacted you in a concrete way. (600)" },
+          { id: "nus-q4", text: "What is your proudest achcievement, and how did you accomplish it with the help or inspiration from others? Please also explain how it exemplifies some of the five NUS values of Innovation, Resilience, Excellence, Respect and Integrity. (1100)" },
+          { id: "nus-q5", text: "Is there anything else about yourself which you want us to know? (600)" },
+          { id: "nus-q6", text: "List up to four achievements that may include co-curricular activities, and non-academic activities (e.g social work, competitive sports) in which you have participated. If you have no achievements, please select Not applicable." }
+        ];
+      case "Nanyang Technological University":
+        return [
+          { id: "ntu-q1", text: "Please list down outstanding achievements including medalist in International Science Olympiad competitions, represented country in international competition in the area of the Arts or Sports, in training team for International Olympiad Competitions. (200 words)" }
+        ];
+      case "Singapore Management University":
+        return [
+          { id: "smu-q1", text: "Describe the highlights of your most outstanding achievements/contributions/attributes (Maximum: 300 words)" },
+          { id: "smu-q2", text: "What would you say is your greatest talent or skill? How have you developed and demonstrated that talent over time? (Maximum 50 words)" },
+          { id: "smu-q3", text: "What have you done to make your school or your community a better place? (Maximum 50 words)" },
+          { id: "smu-q4", text: "What are your future plans or career interests? We are aware that many future plans will change, but this is just another way for us to get to know you as an individual." }
+        ];
+      default:
+        return [];
+    }
+  };
+
   const handleUniversityChange = (university: string) => {
     console.log(`University selected: ${university}`);
     setSelectedUniversity(university);
     setSelectedDegree("");
     setSelectedMajor("");
     setQuestions([]);
+    setResponses({});
   };
 
   const handleDegreeChange = (degree: string) => {
@@ -107,41 +146,130 @@ export const ApplyNow = () => {
     setSelectedDegree(degree);
     setSelectedMajor("");
     setQuestions([]);
+    setResponses({});
   };
 
-  const handleMajorChange = (major: string) => {
+  const handleMajorChange = async (major: string) => {
     console.log(`Major selected: ${major}`);
     setSelectedMajor(major);
     
-    // Load application questions for this programme
-    // This is a placeholder, you would typically fetch these from an API
-    const sampleQuestions = [
-      t("apply.questions.interest", "Why are you interested in this programme?"),
-      t("apply.questions.challenge", "Describe a challenge you've overcome that demonstrates your suitability for this field."),
-      t("apply.questions.goals", "What are your career goals and how will this programme help you achieve them?"),
-    ];
+    // Load university-specific questions
+    const universityQuestions = getUniversitySpecificQuestions(selectedUniversity);
+    setQuestions(universityQuestions);
     
-    setQuestions(sampleQuestions);
-    
-    // Initialize responses for these questions
+    // Initialize empty responses
     const initialResponses: Record<string, string> = {};
-    sampleQuestions.forEach(q => {
-      initialResponses[q] = "";
+    universityQuestions.forEach(q => {
+      initialResponses[q.id] = "";
     });
     setResponses(initialResponses);
+    
+    // Try to load saved responses from Supabase
+    await loadSavedResponses(selectedUniversity, selectedDegree, major, universityQuestions);
+  };
+  
+  const loadSavedResponses = async (university: string, degree: string, programme: string, questions: ApplicationQuestion[]) => {
+    try {
+      setIsLoadingResponses(true);
+      
+      const { data: session } = await supabase.auth.getSession();
+      if (!session.session?.user) {
+        toast.error("You need to be logged in to load saved responses.");
+        setIsLoadingResponses(false);
+        return;
+      }
+      
+      const { data, error } = await supabase
+        .from('application_responses')
+        .select('question_id, response')
+        .eq('user_id', session.session.user.id)
+        .eq('university', university)
+        .eq('degree', degree)
+        .eq('programme', programme);
+      
+      if (error) {
+        console.error("Error loading saved responses:", error);
+        toast.error("Failed to load your saved responses.");
+        setIsLoadingResponses(false);
+        return;
+      }
+      
+      if (data && data.length > 0) {
+        const savedResponses: Record<string, string> = {};
+        questions.forEach(q => {
+          const savedResponse = data.find(r => r.question_id === q.id);
+          savedResponses[q.id] = savedResponse ? savedResponse.response : "";
+        });
+        
+        console.log("Loaded saved responses:", savedResponses);
+        setResponses(savedResponses);
+        toast.success("Loaded your previously saved responses.");
+      } else {
+        console.log("No saved responses found");
+      }
+    } catch (error) {
+      console.error("Error in loadSavedResponses:", error);
+    } finally {
+      setIsLoadingResponses(false);
+    }
   };
 
-  const handleResponseChange = (question: string, value: string) => {
+  const handleResponseChange = (questionId: string, value: string) => {
     setResponses(prev => ({
       ...prev,
-      [question]: value
+      [questionId]: value
     }));
   };
 
-  const handleSaveResponses = () => {
-    // Here you would typically save the responses to your database
-    console.log("Saved responses:", responses);
-    toast.success(t("apply.responses_saved", "Your responses have been saved!"));
+  const handleSaveResponses = async () => {
+    try {
+      setIsSaving(true);
+      
+      const { data: session } = await supabase.auth.getSession();
+      if (!session.session?.user) {
+        toast.error("You need to be logged in to save responses.");
+        setIsSaving(false);
+        return;
+      }
+      
+      const responsesToSave = questions.map(question => ({
+        user_id: session.session.user.id,
+        university: selectedUniversity,
+        degree: selectedDegree,
+        programme: selectedMajor,
+        question_id: question.id,
+        question: question.text,
+        response: responses[question.id] || ""
+      }));
+      
+      console.log("Saving responses:", responsesToSave);
+      
+      for (const response of responsesToSave) {
+        const { error } = await supabase
+          .from('application_responses')
+          .upsert(response, { 
+            onConflict: 'user_id,university,degree,programme,question_id' 
+          });
+          
+        if (error) {
+          console.error("Error saving response:", error);
+          toast.error("There was a problem saving your responses.");
+          setIsSaving(false);
+          return;
+        }
+      }
+      
+      toast.success("Your responses have been saved!");
+    } catch (error) {
+      console.error("Error saving responses:", error);
+      toast.error("There was a problem saving your responses.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const getWordCount = (text: string): number => {
+    return text.trim() === '' ? 0 : text.trim().split(/\s+/).length;
   };
 
   return (
@@ -232,27 +360,63 @@ export const ApplyNow = () => {
         </div>
       </div>
 
-      {questions.length > 0 && (
+      {isLoadingResponses && (
+        <div className="flex justify-center items-center p-6">
+          <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+          <span className="ml-2">Loading your saved responses...</span>
+        </div>
+      )}
+
+      {!isLoadingResponses && questions.length > 0 && (
         <div data-tutorial="application-questions" className={`${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} p-6 rounded-lg shadow w-full`}>
           <h3 className="text-lg font-semibold mb-4">{t("apply.questions_header", "Application Questions")}</h3>
           
           <div className="space-y-6">
-            {questions.map((question, index) => (
-              <Card key={index} className={`p-4 ${isCurrentlyDark ? 'bg-gray-700 border-gray-600' : ''}`}>
-                <h4 className="font-medium mb-2">{question}</h4>
-                <textarea 
-                  className={`w-full border rounded p-2 min-h-[100px] ${
-                    isCurrentlyDark ? 'bg-gray-600 text-white border-gray-500' : ''
-                  }`}
-                  value={responses[question] || ""}
-                  onChange={(e) => handleResponseChange(question, e.target.value)}
-                  placeholder={t("apply.response_placeholder", "Type your response here...")}
-                />
-              </Card>
-            ))}
+            {questions.map((question, index) => {
+              const wordCount = getWordCount(responses[question.id] || '');
+              const wordLimit = question.wordLimit || (
+                question.text.includes('(600)') ? 600 : 
+                question.text.includes('(1100)') ? 1100 : 
+                question.text.includes('(200 words)') ? 200 : 
+                question.text.includes('(300 words)') ? 300 : 
+                question.text.includes('(50 words)') ? 50 : 
+                undefined
+              );
+              
+              return (
+                <Card key={index} className={`p-4 ${isCurrentlyDark ? 'bg-gray-700 border-gray-600' : ''}`}>
+                  <h4 className="font-medium mb-2">{question.text}</h4>
+                  <Textarea 
+                    className={`w-full border rounded p-2 min-h-[120px] ${
+                      isCurrentlyDark ? 'bg-gray-600 text-white border-gray-500' : ''
+                    }`}
+                    value={responses[question.id] || ""}
+                    onChange={(e) => handleResponseChange(question.id, e.target.value)}
+                    placeholder={t("apply.response_placeholder", "Type your response here...")}
+                  />
+                  {wordLimit && (
+                    <div className={`text-xs mt-1 flex justify-end ${
+                      wordCount > wordLimit ? 'text-red-500' : 'text-gray-500'
+                    }`}>
+                      {wordCount} / {wordLimit} words
+                      {wordCount > wordLimit && (
+                        <span className="ml-2 font-semibold">
+                          Exceeds word limit by {wordCount - wordLimit} words
+                        </span>
+                      )}
+                    </div>
+                  )}
+                </Card>
+              );
+            })}
             
-            <Button onClick={handleSaveResponses}>
-              {t("apply.save_responses", "Save Responses")}
+            <Button 
+              onClick={handleSaveResponses} 
+              disabled={isSaving}
+              className="flex items-center gap-2"
+            >
+              {isSaving && <Loader2 className="h-4 w-4 animate-spin" />}
+              {isSaving ? "Saving..." : t("apply.save_responses", "Save Responses")}
             </Button>
           </div>
         </div>
