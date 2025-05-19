@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -264,22 +263,32 @@ export const ApplyNow = () => {
       const shortName = getUniversityShortName(selectedUniversity);
       const selectedMajorObj = availableMajors.find(m => m.major === selectedMajor);
       
-      const programData = {
-        user_id: session.session.user.id,
-        university: selectedUniversity,
-        school: shortName,
-        major: selectedMajor,
-        degree: selectedDegree,
-        logo_path: `/school-logos/${shortName}.png`,
-        college: selectedMajorObj?.college
-      };
-      
-      const { error: programError } = await supabase
+      // Check if the entry already exists before inserting
+      const { data: existingPrograms } = await supabase
         .from('applied_programs')
-        .upsert(programData, {
-          onConflict: 'user_id,university,degree,major'
-        });
+        .select('id')
+        .eq('user_id', session.session.user.id)
+        .eq('university', selectedUniversity)
+        .eq('degree', selectedDegree)
+        .eq('major', selectedMajor);
         
+      let programError = null;
+      
+      if (existingPrograms && existingPrograms.length > 0) {
+        // Entry exists, update it
+        const { error } = await supabase
+          .from('applied_programs')
+          .update(programData)
+          .eq('id', existingPrograms[0].id);
+        programError = error;
+      } else {
+        // Entry doesn't exist, insert it
+        const { error } = await supabase
+          .from('applied_programs')
+          .insert(programData);
+        programError = error;
+      }
+      
       if (programError) {
         console.error("Error saving to applied programs:", programError);
         toast.error("Your responses were saved, but there was a problem adding this to your applied programs.");
