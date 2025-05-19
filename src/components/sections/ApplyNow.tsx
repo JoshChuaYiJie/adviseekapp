@@ -168,7 +168,7 @@ export const ApplyNow = () => {
     await loadSavedResponses(selectedUniversity, selectedDegree, major, universityQuestions);
   };
   
-  const loadSavedResponses = async (university: string, degree: string, programme: string, questions: ApplicationQuestion[]) => {
+  const loadSavedResponses = async (university: string, degree: string, Major: string, questions: ApplicationQuestion[]) => {
     try {
       setIsLoadingResponses(true);
       
@@ -185,7 +185,7 @@ export const ApplyNow = () => {
         .eq('user_id', session.session.user.id)
         .eq('university', university)
         .eq('degree', degree)
-        .eq('programme', programme);
+        .eq('Major', Major);
       
       if (error) {
         console.error("Error loading saved responses:", error);
@@ -236,7 +236,7 @@ export const ApplyNow = () => {
         user_id: session.session.user.id,
         university: selectedUniversity,
         degree: selectedDegree,
-        programme: selectedMajor,
+        Major: selectedMajor,
         question_id: question.id,
         question: question.text,
         response: responses[question.id] || ""
@@ -248,7 +248,7 @@ export const ApplyNow = () => {
         const { error } = await supabase
           .from('application_responses')
           .upsert(response, { 
-            onConflict: 'user_id,university,degree,programme,question_id' 
+            onConflict: 'user_id,university,degree,Major,question_id' 
           });
           
         if (error) {
@@ -275,7 +275,7 @@ export const ApplyNow = () => {
   return (
     <div className="w-full h-full space-y-6">
       <div className={`mb-8 p-6 ${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg shadow w-full`}>
-        <h3 className="text-lg font-semibold mb-2">{t("apply.select_header", "Select University and Programme")}</h3>
+        <h3 className="text-lg font-semibold mb-2">{t("apply.select_header", "Select University and Major")}</h3>
         
         <div className="space-y-4">
           <div>
@@ -333,7 +333,7 @@ export const ApplyNow = () => {
           
           {selectedDegree && (
             <div>
-              <label className="block text-sm font-medium mb-1">{t("apply.programme", "Programme")}</label>
+              <label className="block text-sm font-medium mb-1">{t("apply.Major", "Major")}</label>
               <Select 
                 value={selectedMajor}
                 onValueChange={handleMajorChange}
@@ -341,7 +341,7 @@ export const ApplyNow = () => {
                 disabled={isLoading || !availableMajors.length}
               >
                 <SelectTrigger className={`w-full ${isCurrentlyDark ? 'bg-gray-700 text-white border-gray-600' : ''}`}>
-                  <SelectValue placeholder={isLoading ? "Loading..." : t("apply.select_programme", "Select Programme")} />
+                  <SelectValue placeholder={isLoading ? "Loading..." : t("apply.select_Major", "Select Major")} />
                 </SelectTrigger>
                 <SelectContent className={isCurrentlyDark ? 'bg-gray-700 text-white border-gray-600' : ''}>
                   {availableMajors.length > 0 ? (
