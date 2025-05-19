@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
-import { supabase, Resume, parseJsonArray } from "@/integrations/supabase/client";
+import { supabase, parseJsonArray } from "@/integrations/supabase/client";
 
 export interface SavedResume {
   id: string;
@@ -38,7 +38,7 @@ export const useResumeManager = () => {
         // Load resumes from Supabase
         const { data, error } = await supabase
           .from('resumes')
-          .select('id, resumeName as name, template_type, updated_at')
+          .select('id, resumeName, template_type, updated_at')
           .eq('user_id', sessionData.session.user.id)
           .order('updated_at', { ascending: false });
           
@@ -50,9 +50,11 @@ export const useResumeManager = () => {
             variant: "destructive",
           });
         } else if (data) {
-          // Format the date for display
+          // Format the date for display and map resumeName to name
           const formattedResumes = data.map(resume => ({
-            ...resume,
+            id: resume.id,
+            name: resume.resumeName,
+            template_type: resume.template_type,
             updated_at: new Date(resume.updated_at).toLocaleDateString()
           }));
           
