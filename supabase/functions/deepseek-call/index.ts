@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -68,15 +67,15 @@ serve(async (req) => {
     
     const apiKey = decoder.decode(decryptedBuffer);
     
-    // Call the Deepseek API
-    const deepseekResponse = await fetch("https://integrate.api.nvidia.com/v1/chat/completions", {
+    // Call the Deepseek API (update endpoint and model as needed)
+    const deepseekResponse = await fetch("https://api.deepseek.com/v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        model: "nvidia/llama-3.1-nemotron-ultra-253b-v1",
+        model: "deepseek-chat", // Update to the correct Deepseek model name if different
         messages: [
           { role: "system", content: "You are a helpful AI assistant for academic and career guidance." },
           { role: "user", content: prompt }
