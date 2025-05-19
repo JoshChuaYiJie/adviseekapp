@@ -6,11 +6,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft, Plus, Trash, Download, Save, X, Edit } from "lucide-react";
-import { toast } from "@/components/ui/sonner";
+import { toast } from "sonner";
 import { useTheme } from "@/contexts/ThemeContext";
 import { supabase } from "@/integrations/supabase/client";
 import jsPDF from "jspdf";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog";
+import { SegmentAdviseekChat } from "@/components/resume/SegmentAdviseekChat";
 
 interface WorkExperience {
   id: string;
@@ -826,10 +827,11 @@ const BasicResume = () => {
                 />
                 <p className="text-sm text-muted-foreground">This name will be shown in your list of resumes.</p>
               </div>
-              <div className="flex justify-end">
+              <div className="flex items-center justify-end gap-2">
                 <DialogClose asChild>
                   <Button>Save Changes</Button>
                 </DialogClose>
+                <SegmentAdviseekChat segmentType="Resume Name" />
               </div>
             </div>
           )}
@@ -881,10 +883,11 @@ const BasicResume = () => {
                   />
                 </div>
               </div>
-              <div className="flex justify-end">
+              <div className="flex items-center justify-end gap-2">
                 <DialogClose asChild>
                   <Button>Save Changes</Button>
                 </DialogClose>
+                <SegmentAdviseekChat segmentType="Personal Information" />
               </div>
             </div>
           )}
@@ -926,10 +929,11 @@ const BasicResume = () => {
               >
                 <Plus className="h-4 w-4 mr-2" /> Add Education
               </Button>
-              <div className="flex justify-end pt-4">
+              <div className="flex items-center justify-end gap-2">
                 <DialogClose asChild>
                   <Button>Done</Button>
                 </DialogClose>
+                <SegmentAdviseekChat segmentType="Education" />
               </div>
             </div>
           )}
@@ -966,10 +970,11 @@ const BasicResume = () => {
                   className="min-h-[100px]"
                 />
               </div>
-              <div className="flex justify-end">
+              <div className="flex items-center justify-end gap-2">
                 <DialogClose asChild>
                   <Button>Save Changes</Button>
                 </DialogClose>
+                <SegmentAdviseekChat segmentType="Education Details" />
               </div>
             </div>
           )}
@@ -1011,10 +1016,11 @@ const BasicResume = () => {
               >
                 <Plus className="h-4 w-4 mr-2" /> Add Work Experience
               </Button>
-              <div className="flex justify-end pt-4">
+              <div className="flex items-center justify-end gap-2">
                 <DialogClose asChild>
                   <Button>Done</Button>
                 </DialogClose>
+                <SegmentAdviseekChat segmentType="Work Experience" />
               </div>
             </div>
           )}
@@ -1061,10 +1067,11 @@ const BasicResume = () => {
                   className="min-h-[150px]"
                 />
               </div>
-              <div className="flex justify-end pt-4">
+              <div className="flex items-center justify-end gap-2">
                 <DialogClose asChild>
                   <Button>Save Changes</Button>
                 </DialogClose>
+                <SegmentAdviseekChat segmentType="Work Experience Details" />
               </div>
             </div>
           )}
@@ -1106,10 +1113,11 @@ const BasicResume = () => {
               >
                 <Plus className="h-4 w-4 mr-2" /> Add Award/Certificate
               </Button>
-              <div className="flex justify-end pt-4">
+              <div className="flex items-center justify-end gap-2">
                 <DialogClose asChild>
                   <Button>Done</Button>
                 </DialogClose>
+                <SegmentAdviseekChat segmentType="Awards and Certificates" />
               </div>
             </div>
           )}
@@ -1135,10 +1143,11 @@ const BasicResume = () => {
                   placeholder="June 2022"
                 />
               </div>
-              <div className="flex justify-end pt-4">
+              <div className="flex items-center justify-end gap-2">
                 <DialogClose asChild>
                   <Button>Save Changes</Button>
                 </DialogClose>
+                <SegmentAdviseekChat segmentType="Award Details" />
               </div>
             </div>
           )}
@@ -1180,10 +1189,11 @@ const BasicResume = () => {
               >
                 <Plus className="h-4 w-4 mr-2" /> Add Activity
               </Button>
-              <div className="flex justify-end pt-4">
+              <div className="flex items-center justify-end gap-2">
                 <DialogClose asChild>
                   <Button>Done</Button>
                 </DialogClose>
+                <SegmentAdviseekChat segmentType="Extra-Curricular Activities" />
               </div>
             </div>
           )}
@@ -1230,10 +1240,11 @@ const BasicResume = () => {
                   className="min-h-[150px]"
                 />
               </div>
-              <div className="flex justify-end pt-4">
+              <div className="flex items-center justify-end gap-2">
                 <DialogClose asChild>
                   <Button>Save Changes</Button>
                 </DialogClose>
+                <SegmentAdviseekChat segmentType="Activity Details" />
               </div>
             </div>
           )}
@@ -1271,10 +1282,11 @@ const BasicResume = () => {
                   placeholder="MS Office, Adobe Photoshop, HTML/CSS"
                 />
               </div>
-              <div className="flex justify-end pt-4">
+              <div className="flex items-center justify-end gap-2">
                 <DialogClose asChild>
                   <Button>Save Changes</Button>
                 </DialogClose>
+                <SegmentAdviseekChat segmentType="Additional Information" />
               </div>
             </div>
           )}
