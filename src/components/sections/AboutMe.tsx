@@ -168,19 +168,18 @@ export const AboutMe = () => {
           setRecommendedMajors(majorRecommendations);
           
           // NEW: Store recommended major in database
-          if (majorRecommendations.exactMatches.length > 0) {
-            const { error: majorError } = await supabase
-              .from('profiles')
-              .upsert({
-                id: userId,
-                recommended_major: majorRecommendations
-              }, { onConflict: 'id' })
-              
-            if (majorError) {
-              console.error("Error storing recommended majors:", majorError);
-            } else {
-              console.log("Stored recommended majors in database");
-            }
+          
+          const { error: majorError } = await supabase
+            .from('profiles')
+            .upsert({
+              id: userId,
+              recommended_major: majorRecommendations
+            }, { onConflict: 'id' })
+            
+          if (majorError) {
+            console.error("Error storing recommended majors:", majorError);
+          } else {
+            console.log("Stored recommended majors in database");
           }
           
           // IMPORTANT: Update the global context with major recommendations
