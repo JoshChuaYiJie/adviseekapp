@@ -132,6 +132,7 @@ export const AboutMe = () => {
         await supabase
           .from('profiles')
           .upsert({
+            id: userId,
             riasec_code: generatedRiasecCode,
             work_value_code: generatedWorkValueCode,
             personality_traits: JSON.stringify(dynamicStrengths),
@@ -139,7 +140,6 @@ export const AboutMe = () => {
             likes: JSON.stringify(dynamicLikes),
             dislikes: JSON.stringify(dynamicDislikes)
           })
-          .eq('id', userId);
           
         console.log("Updated profile data in database");
         console.log("Final RIASEC profile state:", riasecChartData);
@@ -165,9 +165,9 @@ export const AboutMe = () => {
             await supabase
               .from('profiles')
               .upsert({
+                id: userId,
                 recommended_major: JSON.stringify(majorRecommendations.exactMatches)
               })
-              .eq('id', userId);
               
             console.log("Stored recommended majors in database");
           }
