@@ -36,7 +36,9 @@ export const MockInterviews = ({ user }: MockInterviewsProps) => {
       try {
         setLoading(true);
         // Get current user session
-        const { data: session } = await supabase.auth.getSession();
+        const { data: sessionData } = await supabase.auth.getSession();
+        const session = sessionData?.session;
+        
         if (!session?.user?.id) {
           console.log("No user logged in");
           setLoading(false);
@@ -142,7 +144,9 @@ export const MockInterviews = ({ user }: MockInterviewsProps) => {
   const handleSaveResponses = async () => {
     try {
       // Get current user session
-      const { data: session } = await supabase.auth.getSession();
+      const { data: sessionData } = await supabase.auth.getSession();
+      const session = sessionData?.session;
+      
       if (!session?.user?.id) {
         toast({
           title: "Authentication Error",
