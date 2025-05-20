@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
@@ -24,8 +24,6 @@ export const SegmentAdviseekChat = ({ segmentType }: SegmentAdviseekChatProps) =
   const { callDeepseek, loading } = useDeepseek();
   const [userId, setUserId] = useState<string | null>(null);
   const [profileData, setProfileData] = useState<any>(null);
-  const [isStreaming, setIsStreaming] = useState(false);
-  const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   // Define which segments should show the Adviseek chat
   const allowedSegments = [
@@ -79,7 +77,7 @@ export const SegmentAdviseekChat = ({ segmentType }: SegmentAdviseekChatProps) =
   };
 
   const sendMessage = async () => {
-    if (!input.trim() || loading || isStreaming) return;
+    if (!input.trim() || loading) return;
 
     // Add user message to chat
     const userMessage = {
@@ -119,55 +117,22 @@ export const SegmentAdviseekChat = ({ segmentType }: SegmentAdviseekChatProps) =
     }
 
     try {
-      // Initialize an empty assistant message to start streaming into
-      const assistantMessage = { role: "assistant" as const, content: "" };
-      setMessages(prev => [...prev, assistantMessage]);
+      const response = await callDeepseek(contextualPrompt);
       
-      // Start streaming
-      setIsStreaming(true);
-      
-      await callDeepseek(
-        contextualPrompt,
-        { stream: true },
-        {
-          onChunk: (chunk) => {
-            setMessages(prevMessages => {
-              const newMessages = [...prevMessages];
-              const lastMessage = newMessages[newMessages.length - 1];
-              if (lastMessage.role === "assistant") {
-                lastMessage.content += chunk;
-              }
-              return newMessages;
-            });
-            
-            // Auto-scroll as content arrives
-            if (scrollAreaRef.current) {
-              const scrollArea = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
-              if (scrollArea) {
-                setTimeout(() => {
-                  scrollArea.scrollTop = scrollArea.scrollHeight;
-                }, 0);
-              }
-            }
-          },
-          onComplete: () => {
-            setIsStreaming(false);
-          },
-          onError: (error) => {
-            setIsStreaming(false);
-            setMessages(prev => [
-              ...prev,
-              {
-                role: "assistant",
-                content: "I'm sorry, I encountered an error. Please try again."
-              }
-            ]);
+      if (response) {
+        const aiResponse = response.choices?.[0]?.message?.content || 
+                          "I'm sorry, I couldn't generate a response. Please try again.";
+        
+        setMessages(prev => [
+          ...prev,
+          {
+            role: "assistant",
+            content: aiResponse
           }
-        }
-      );
+        ]);
+      }
     } catch (error) {
       console.error("Error calling Deepseek:", error);
-      setIsStreaming(false);
       setMessages(prev => [
         ...prev,
         {
@@ -194,7 +159,7 @@ export const SegmentAdviseekChat = ({ segmentType }: SegmentAdviseekChatProps) =
         <Card className="mt-4 p-4">
           <h4 className="font-medium mb-2">Adviseek Assistant: {segmentType}</h4>
           
-          <ScrollArea className="h-60 mb-4 border rounded-md p-2" ref={scrollAreaRef}>
+          <ScrollArea className="h-60 mb-4 border rounded-md p-2">
             <div className="space-y-3">
               {messages.map((msg, i) => (
                 <div
@@ -211,11 +176,6 @@ export const SegmentAdviseekChat = ({ segmentType }: SegmentAdviseekChatProps) =
                   <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
                 </div>
               ))}
-              {isStreaming && (
-                <div className="flex justify-center">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                </div>
-              )}
             </div>
           </ScrollArea>
           
@@ -225,7 +185,7 @@ export const SegmentAdviseekChat = ({ segmentType }: SegmentAdviseekChatProps) =
               onChange={(e) => setInput(e.target.value)}
               placeholder={`Ask about your ${segmentType.toLowerCase()} section...`}
               className="flex-1 resize-none"
-              disabled={loading || isStreaming}
+              disabled={loading}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
@@ -235,10 +195,10 @@ export const SegmentAdviseekChat = ({ segmentType }: SegmentAdviseekChatProps) =
             />
             <Button
               onClick={sendMessage}
-              disabled={loading || isStreaming || !input.trim()}
+              disabled={loading || !input.trim()}
               className="self-end"
             >
-              {loading || isStreaming ? (
+              {loading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
                 <Send className="h-4 w-4" />
