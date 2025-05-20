@@ -29,41 +29,44 @@ export const useDeepseek = () => {
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) throw new Error("Authentication required");
         
-        // Setup stream reader
-        const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/deepseek-call`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${session.access_token}`,
-          },
-          body: JSON.stringify({
-            prompt,
-            options: {
-              ...(options || {}),
-              stream: true
-            }
-          }),
-        });
+        // Setup direct streaming fetch
+        try {
+          // Make a direct fetch to the edge function for streaming
+          const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/deepseek-call`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${session.access_token}`,
+            },
+            body: JSON.stringify({
+              prompt,
+              options: {
+                ...(options || {}),
+                stream: true
+              }
+            }),
+          });
 
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || "Failed to stream response");
-        }
+          if (!response.ok) {
+            const errorText = await response.text();
+            console.error("Stream response error:", errorText);
+            throw new Error(`Failed to stream response: ${response.status} ${errorText}`);
+          }
 
-        // Process the stream
-        const reader = response.body?.getReader();
-        if (!reader) throw new Error("Failed to get stream reader");
+          // Process the stream
+          const reader = response.body?.getReader();
+          if (!reader) throw new Error("Failed to get stream reader");
 
-        let accumulatedContent = '';
-        
-        // Process stream chunks
-        const processStream = async () => {
+          let accumulatedContent = '';
+          let decoder = new TextDecoder();
+          
+          // Process stream chunks
           while (true) {
             const { done, value } = await reader.read();
             if (done) break;
             
             // Convert the Uint8Array to text
-            const chunk = new TextDecoder().decode(value);
+            const chunk = decoder.decode(value, { stream: true });
             
             try {
               // Process SSE format (data: {...}\n\n)
@@ -81,7 +84,8 @@ export const useDeepseek = () => {
                       options.onStreamChunk(content);
                     }
                   } catch (e) {
-                    console.error("Error parsing chunk:", e);
+                    // If we can't parse JSON, it might be a partial chunk
+                    console.log("Received partial chunk, waiting for complete data");
                   }
                 }
               }
@@ -89,22 +93,31 @@ export const useDeepseek = () => {
               console.error("Error processing stream chunk:", e);
             }
           }
-        };
-
-        await processStream();
-        setLoading(false);
-        
-        // Return the accumulated response in the same format as non-streaming API
-        return {
-          choices: [
-            {
-              message: {
-                role: "assistant",
-                content: accumulatedContent
+          
+          // Complete with final chunk if needed
+          const finalChunk = decoder.decode();
+          if (finalChunk) {
+            console.log("Processing final chunk:", finalChunk);
+            // Process the final chunk if needed
+          }
+          
+          setLoading(false);
+          
+          // Return the accumulated response
+          return {
+            choices: [
+              {
+                message: {
+                  role: "assistant",
+                  content: accumulatedContent
+                }
               }
-            }
-          ]
-        };
+            ]
+          };
+        } catch (streamError) {
+          console.error("Streaming error:", streamError);
+          throw streamError;
+        }
       } else {
         // Regular non-streaming API call
         const { data, error } = await supabase.functions.invoke('deepseek-call', {

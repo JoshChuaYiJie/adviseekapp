@@ -226,7 +226,7 @@ export const ChatWithAI = () => {
       </Button>
       
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="sm:max-w-2xl h-[600px] flex flex-col max-h-[90vh] w-[90vw]">
+        <DialogContent className="sm:max-w-3xl h-[700px] flex flex-col max-h-[90vh] w-[90vw]">
           <DialogHeader className="flex justify-between items-center flex-row">
             <div>
               <DialogTitle>Chat with Adviseek AI</DialogTitle>

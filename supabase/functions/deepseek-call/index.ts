@@ -69,43 +69,48 @@ async function callDeepseekAPI(apiKey: string, prompt: string, options: any, cor
 
   console.log("Request body:", JSON.stringify(requestBody));
 
-  const deepseekResponse = await fetch("https://api.deepseek.com/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${apiKey}`
-    },
-    body: JSON.stringify(requestBody)
-  });
-  
-  if (!deepseekResponse.ok) {
-    const errorText = await deepseekResponse.text();
-    console.error(`Deepseek API error: ${deepseekResponse.status} ${errorText}`);
-    throw new Error(`Deepseek API error: ${deepseekResponse.status} ${errorText}`);
-  }
-  
-  // Handle streaming response
-  if (options.stream) {
-    // Return the stream directly, maintaining headers
-    return new Response(deepseekResponse.body, { 
+  try {
+    const deepseekResponse = await fetch("https://api.deepseek.com/v1/chat/completions", {
+      method: "POST",
       headers: {
-        ...corsHeaders,
-        "Content-Type": "text/event-stream",
-        "Cache-Control": "no-cache",
-        "Connection": "keep-alive"
-      }
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${apiKey}`
+      },
+      body: JSON.stringify(requestBody)
     });
-  }
-  
-  // Handle non-streaming response
-  const deepseekData = await deepseekResponse.json();
-  return new Response(
-    JSON.stringify(deepseekData),
-    { 
-      headers: { 
-        ...corsHeaders, 
-        "Content-Type": "application/json" 
-      } 
+    
+    if (!deepseekResponse.ok) {
+      const errorText = await deepseekResponse.text();
+      console.error(`Deepseek API error: ${deepseekResponse.status} ${errorText}`);
+      throw new Error(`Deepseek API error: ${deepseekResponse.status} ${errorText}`);
     }
-  );
+    
+    // Handle streaming response
+    if (options.stream) {
+      // Return the stream directly, with appropriate headers
+      return new Response(deepseekResponse.body, { 
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "text/event-stream",
+          "Cache-Control": "no-cache",
+          "Connection": "keep-alive"
+        }
+      });
+    }
+    
+    // Handle non-streaming response
+    const deepseekData = await deepseekResponse.json();
+    return new Response(
+      JSON.stringify(deepseekData),
+      { 
+        headers: { 
+          ...corsHeaders, 
+          "Content-Type": "application/json" 
+        } 
+      }
+    );
+  } catch (error) {
+    console.error("Error calling Deepseek API:", error.message);
+    throw new Error(`Error calling Deepseek API: ${error.message}`);
+  }
 }

@@ -58,6 +58,7 @@ serve(async (req) => {
     console.log('Sending email:', emailParams);
     
     // In a real implementation, you'd add code here to send via SMTP or an email API
+    // For now, we'll log success and continue
     
     return new Response(JSON.stringify({ success: true, message: 'Email sent successfully' }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
