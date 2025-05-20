@@ -24,10 +24,10 @@ export const SegmentAdviseekChat = ({ segmentType }: SegmentAdviseekChatProps) =
 
   // Define which segments should show the Adviseek chat
   const allowedSegments = [
-    "Education",
-    "Work Experience",
-    "Awards & Certificates",
-    "Activity",
+    "Education Details",
+    "Work Experience Details",
+    "Awards Details",
+    "Activity Details",
     "Additional Information"
   ];
 
