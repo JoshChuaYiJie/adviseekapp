@@ -71,9 +71,14 @@ export const useDeepseek = () => {
           .eq('user_id', userId);
 
         setUserContext({
-          // Fixed: Ensure we're properly handling potentially null/undefined profileData
-          // by using object destructuring only when profileData is defined
-          ...(profileData || {}),
+          // Create a new context object with default empty values
+          riasec_code: profileData?.riasec_code || undefined,
+          work_value_code: profileData?.work_value_code || undefined,
+          personality_traits: profileData?.personality_traits || undefined,
+          work_environment_preferences: profileData?.work_environment_preferences || undefined,
+          likes: profileData?.likes || undefined,
+          dislikes: profileData?.dislikes || undefined,
+          recommended_major: profileData?.recommended_major || undefined,
           open_ended_responses: openEndedResponses || [],
           previous_applications: applications || []
         });
@@ -168,7 +173,7 @@ export const useDeepseek = () => {
         body: { 
           prompt: contextualizedPrompt, 
           options: {
-            ...(options || {}),  // Fix: Ensure we're spreading an object by providing a fallback empty object
+            ...(options || {}),  // Ensure we're spreading an object by providing a fallback empty object
             stream: true  // Enable streaming for all calls
           }
         },
