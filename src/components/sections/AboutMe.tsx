@@ -171,10 +171,10 @@ export const AboutMe = () => {
           if (majorRecommendations.exactMatches.length > 0) {
             const { error: majorError } = await supabase
               .from('profiles')
-              .update({
+              .upsert({
+                id: userId,
                 recommended_major: JSON.stringify(majorRecommendations.exactMatches)
-              })
-              .eq('id', userId);
+              }, { onConflict: 'id' })
               
             if (majorError) {
               console.error("Error storing recommended majors:", majorError);
