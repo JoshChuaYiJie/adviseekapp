@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { fetchModuleRecommendations, Module } from '@/utils/recommendation/moduleRecommendationUtils';
 import { ModuleRatingCard } from '@/components/ModuleRatingCard';
 import { useRecommendationContext } from '@/contexts/RecommendationContext';
+import { useToast } from "@/hooks/use-toast";
 
 export const AboutMe = () => {
   const [activeTab, setActiveTab] = useState<"quiz" | "profile" | "resume">("quiz");
@@ -40,9 +41,8 @@ export const AboutMe = () => {
   const [recommendedModules, setRecommendedModules] = useState<Module[]>([]);
   const [loadingModules, setLoadingModules] = useState<boolean>(false);
   const navigate = useNavigate();
-  const {
-    isCurrentlyDark
-  } = useTheme();
+  const { isCurrentlyDark } = useTheme();
+  const { toast } = useToast();
   
   // Use the global recommendation context for state management
   const { 
@@ -129,7 +129,7 @@ export const AboutMe = () => {
         });
         
         // NEW: Store profile data in database for global access
-        await supabase
+        const { data: upsertData, error: upsertError } = await supabase
           .from('profiles')
           .upsert({
             id: userId,
@@ -139,12 +139,19 @@ export const AboutMe = () => {
             work_environment_preferences: JSON.stringify(dynamicWorkPreferences),
             likes: JSON.stringify(dynamicLikes),
             dislikes: JSON.stringify(dynamicDislikes)
-          })
+          }, { onConflict: 'id' })
           
-        console.log("Updated profile data in database");
-        console.log("Final RIASEC profile state:", riasecChartData);
-        console.log("Final Work Value profile state:", workValuesChartData);
-
+        if (upsertError) {
+          console.error("Error updating profile data:", upsertError);
+          toast({
+            title: "Profile Update Error",
+            description: "There was an error saving your profile information.",
+            variant: "destructive"
+          });
+        } else {
+          console.log("Updated profile data in database:", upsertData);
+        }
+        
         // Get completed quiz segments from database
         const {
           data: completions
@@ -162,14 +169,18 @@ export const AboutMe = () => {
           
           // NEW: Store recommended major in database
           if (majorRecommendations.exactMatches.length > 0) {
-            await supabase
+            const { error: majorError } = await supabase
               .from('profiles')
-              .upsert({
-                id: userId,
+              .update({
                 recommended_major: JSON.stringify(majorRecommendations.exactMatches)
               })
+              .eq('id', userId);
               
-            console.log("Stored recommended majors in database");
+            if (majorError) {
+              console.error("Error storing recommended majors:", majorError);
+            } else {
+              console.log("Stored recommended majors in database");
+            }
           }
           
           // IMPORTANT: Update the global context with major recommendations
@@ -203,12 +214,17 @@ export const AboutMe = () => {
         }
       } catch (error) {
         console.error("Error loading user profiles:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load profile data. Please try again later.",
+          variant: "destructive"
+        });
       } finally {
         setIsLoading(false);
       }
     };
     loadUserProfiles();
-  }, [updateModuleRecommendations, updateMajorRecommendations]);
+  }, [updateModuleRecommendations, updateMajorRecommendations, toast]);
 
   // Helper function to generate consistent module IDs
   const getModuleId = (code: string) => {
