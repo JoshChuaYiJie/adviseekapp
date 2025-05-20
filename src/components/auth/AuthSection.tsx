@@ -50,7 +50,6 @@ const AuthSection = () => {
               email={email} 
               onBack={() => setIsEmailContinue(false)}
               mode="signin" 
-              {/* Fixed: removed curly braces around the comment */}
             />
           )}
         </div>
