@@ -173,7 +173,7 @@ export const AboutMe = () => {
               .from('profiles')
               .upsert({
                 id: userId,
-                recommended_major: JSON.stringify(majorRecommendations.exactMatches)
+                recommended_major: majorRecommendations
               }, { onConflict: 'id' })
               
             if (majorError) {
