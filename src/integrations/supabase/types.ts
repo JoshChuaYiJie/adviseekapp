@@ -215,18 +215,39 @@ export type Database = {
       profiles: {
         Row: {
           created_at: string
+          dislikes: string | null
           id: string
+          likes: string | null
+          personality_traits: string | null
+          recommended_major: string | null
+          riasec_code: string | null
           username: string | null
+          work_environment_preferences: string | null
+          work_value_code: string | null
         }
         Insert: {
           created_at?: string
+          dislikes?: string | null
           id: string
+          likes?: string | null
+          personality_traits?: string | null
+          recommended_major?: string | null
+          riasec_code?: string | null
           username?: string | null
+          work_environment_preferences?: string | null
+          work_value_code?: string | null
         }
         Update: {
           created_at?: string
+          dislikes?: string | null
           id?: string
+          likes?: string | null
+          personality_traits?: string | null
+          recommended_major?: string | null
+          riasec_code?: string | null
           username?: string | null
+          work_environment_preferences?: string | null
+          work_value_code?: string | null
         }
         Relationships: []
       }

@@ -7,6 +7,7 @@ interface DeepseekOptions {
   maxTokens?: number;
   temperature?: number;
   topP?: number;
+  stream?: boolean;
 }
 
 export const useDeepseek = () => {
@@ -21,7 +22,13 @@ export const useDeepseek = () => {
       console.log("Calling Deepseek function with prompt:", prompt);
       
       const { data, error } = await supabase.functions.invoke('deepseek-call', {
-        body: { prompt, options },
+        body: { 
+          prompt, 
+          options: {
+            ...(options || {}),
+            stream: options?.stream || false // Include streaming option
+          }
+        },
       });
 
       if (error) {

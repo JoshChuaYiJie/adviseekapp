@@ -142,6 +142,7 @@ const Index = () => {
     return <OpenEndedQuiz />;
   }
 
+  // Remove references to university-selection
   const renderContent = () => {
     switch (selectedSection) {
       case "applied-programmes":

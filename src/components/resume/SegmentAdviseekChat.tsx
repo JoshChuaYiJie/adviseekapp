@@ -1,11 +1,12 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { MessageSquare, Send, Loader2 } from "lucide-react";
 import { useDeepseek } from "@/hooks/useDeepseek";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Message {
   role: "user" | "assistant";
@@ -21,6 +22,8 @@ export const SegmentAdviseekChat = ({ segmentType }: SegmentAdviseekChatProps) =
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const { callDeepseek, loading } = useDeepseek();
+  const [userId, setUserId] = useState<string | null>(null);
+  const [profileData, setProfileData] = useState<any>(null);
 
   // Define which segments should show the Adviseek chat
   const allowedSegments = [
@@ -30,6 +33,30 @@ export const SegmentAdviseekChat = ({ segmentType }: SegmentAdviseekChatProps) =
     "Activity Details",
     "Additional Information"
   ];
+
+  useEffect(() => {
+    const getUserData = async () => {
+      // Get current user ID
+      const { data: { session } } = await supabase.auth.getSession();
+      const currentUserId = session?.user?.id;
+      setUserId(currentUserId);
+      
+      // If user is logged in, get their profile data
+      if (currentUserId) {
+        const { data } = await supabase
+          .from('profiles')
+          .select('riasec_code, work_value_code, personality_traits, work_environment_preferences, likes, dislikes, recommended_major')
+          .eq('id', currentUserId)
+          .single();
+          
+        if (data) {
+          setProfileData(data);
+        }
+      }
+    };
+    
+    getUserData();
+  }, []);
 
   // If current segment is not in the allowed list, don't render anything
   if (!allowedSegments.includes(segmentType)) {
@@ -63,7 +90,7 @@ export const SegmentAdviseekChat = ({ segmentType }: SegmentAdviseekChatProps) =
     setInput("");
 
     // Create a context-aware prompt
-    const prompt = `
+    let contextualPrompt = `
       The user is working on the ${segmentType} section of their resume and has the following question:
       "${userQuery}"
       
@@ -71,9 +98,26 @@ export const SegmentAdviseekChat = ({ segmentType }: SegmentAdviseekChatProps) =
       Focus on best practices, formatting tips, content suggestions, and what recruiters look for.
       Keep your response concise (under 150 words) and tailored to the ${segmentType} section.
     `;
+    
+    // Add profile context if available
+    if (profileData) {
+      contextualPrompt += `
+      
+      User's profile information to consider when giving advice:
+      - RIASEC personality type: ${profileData.riasec_code || 'Unknown'}
+      - Work values: ${profileData.work_value_code || 'Unknown'}
+      - Personality traits: ${profileData.personality_traits || 'Unknown'}
+      - Work preferences: ${profileData.work_environment_preferences || 'Unknown'}
+      - Likes: ${profileData.likes || 'Unknown'}
+      - Dislikes: ${profileData.dislikes || 'Unknown'}
+      ${profileData.recommended_major ? `- Recommended majors: ${profileData.recommended_major}` : ''}
+      
+      Tailor your advice to match their profile.
+      `;
+    }
 
     try {
-      const response = await callDeepseek(prompt);
+      const response = await callDeepseek(contextualPrompt);
       
       if (response) {
         const aiResponse = response.choices?.[0]?.message?.content || 

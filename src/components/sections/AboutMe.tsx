@@ -64,11 +64,7 @@ export const AboutMe = () => {
         setIsLoading(true);
 
         // Get current user
-        const {
-          data: {
-            session
-          }
-        } = await supabase.auth.getSession();
+        const { data: { session } } = await supabase.auth.getSession();
         const userId = session?.user?.id;
         if (!userId) {
           console.log("No user ID found");
@@ -131,6 +127,21 @@ export const AboutMe = () => {
           likes: dynamicLikes,
           dislikes: dynamicDislikes
         });
+        
+        // NEW: Store profile data in database for global access
+        await supabase
+          .from('profiles')
+          .update({
+            riasec_code: generatedRiasecCode,
+            work_value_code: generatedWorkValueCode,
+            personality_traits: JSON.stringify(dynamicStrengths),
+            work_environment_preferences: JSON.stringify(dynamicWorkPreferences),
+            likes: JSON.stringify(dynamicLikes),
+            dislikes: JSON.stringify(dynamicDislikes)
+          })
+          .eq('id', userId);
+          
+        console.log("Updated profile data in database");
         console.log("Final RIASEC profile state:", riasecChartData);
         console.log("Final Work Value profile state:", workValuesChartData);
 
@@ -148,6 +159,18 @@ export const AboutMe = () => {
           const majorRecommendations = await getMatchingMajors(generatedRiasecCode, generatedWorkValueCode);
           console.log("Recommended majors:", majorRecommendations);
           setRecommendedMajors(majorRecommendations);
+          
+          // NEW: Store recommended major in database
+          if (majorRecommendations.exactMatches.length > 0) {
+            await supabase
+              .from('profiles')
+              .update({
+                recommended_major: JSON.stringify(majorRecommendations.exactMatches)
+              })
+              .eq('id', userId);
+              
+            console.log("Stored recommended majors in database");
+          }
           
           // IMPORTANT: Update the global context with major recommendations
           updateMajorRecommendations(majorRecommendations);

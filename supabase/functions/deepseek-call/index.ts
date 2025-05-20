@@ -8,6 +8,7 @@ interface RequestData {
     maxTokens?: number;
     temperature?: number;
     topP?: number;
+    stream?: boolean;
   };
 }
 
@@ -54,22 +55,27 @@ serve(async (req) => {
 async function callDeepseekAPI(apiKey: string, prompt: string, options: any, corsHeaders: any) {
   console.log("Calling Deepseek API...");
   
+  const requestBody = {
+    model: "deepseek-chat", 
+    messages: [
+      { role: "system", content: "You are a helpful AI assistant for academic and career guidance." },
+      { role: "user", content: prompt }
+    ],
+    max_tokens: options.maxTokens || 1000,
+    temperature: options.temperature || 0.7,
+    top_p: options.topP || 0.95,
+    stream: options.stream || false
+  };
+
+  console.log("Request body:", JSON.stringify(requestBody));
+
   const deepseekResponse = await fetch("https://api.deepseek.com/v1/chat/completions", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${apiKey}`
     },
-    body: JSON.stringify({
-      model: "deepseek-chat", // Update to the correct Deepseek model name if different
-      messages: [
-        { role: "system", content: "You are a helpful AI assistant for academic and career guidance." },
-        { role: "user", content: prompt }
-      ],
-      max_tokens: options.maxTokens || 1000,
-      temperature: options.temperature || 0.7,
-      top_p: options.topP || 0.95
-    })
+    body: JSON.stringify(requestBody)
   });
   
   if (!deepseekResponse.ok) {
@@ -78,8 +84,24 @@ async function callDeepseekAPI(apiKey: string, prompt: string, options: any, cor
     throw new Error(`Deepseek API error: ${deepseekResponse.status} ${errorText}`);
   }
   
-  const deepseekData = await deepseekResponse.json();
+  // Handle streaming response
+  if (options.stream) {
+    // Return the stream directly, maintaining headers
+    const { readable, writable } = new TransformStream();
+    deepseekResponse.body?.pipeTo(writable);
+    
+    return new Response(readable, { 
+      headers: {
+        ...corsHeaders,
+        "Content-Type": "text/event-stream",
+        "Cache-Control": "no-cache",
+        "Connection": "keep-alive"
+      }
+    });
+  }
   
+  // Handle non-streaming response
+  const deepseekData = await deepseekResponse.json();
   return new Response(
     JSON.stringify(deepseekData),
     { 

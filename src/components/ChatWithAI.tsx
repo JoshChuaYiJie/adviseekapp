@@ -1,12 +1,13 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { MessageSquare } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { MessageSquare, Send, Loader2, X } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
 import { useDeepseek } from '@/hooks/useDeepseek';
+import { supabase } from '@/integrations/supabase/client';
 
 export const ChatWithAI = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -14,22 +15,63 @@ export const ChatWithAI = () => {
     {role: 'assistant', content: 'Hi there! I\'m your Adviseek AI assistant. How can I help you with your university applications today?'}
   ]);
   const [input, setInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const { callDeepseek, loading: deepseekLoading } = useDeepseek();
+  const { callDeepseek, loading } = useDeepseek();
+  const [userId, setUserId] = useState<string | null>(null);
+
+  // Get current user ID
+  useEffect(() => {
+    const getUserId = async () => {
+      const { data } = await supabase.auth.getSession();
+      setUserId(data.session?.user?.id || null);
+    };
+    getUserId();
+  }, []);
 
   const handleSendMessage = async () => {
-    if (!input.trim()) return;
+    if (!input.trim() || loading) return;
     
     // Add user message
     const userMessage = {role: 'user' as const, content: input};
     setMessages(prev => [...prev, userMessage]);
     setInput('');
-    setIsLoading(true);
     
     try {
+      // Fetch profile data for context enrichment
+      let profileContext = '';
+      
+      if (userId) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('riasec_code, work_value_code, personality_traits, work_environment_preferences, likes, dislikes, recommended_major')
+          .eq('id', userId)
+          .single();
+          
+        if (profile) {
+          profileContext = `
+            User profile information:
+            - RIASEC code: ${profile.riasec_code || 'Not available'}
+            - Work values: ${profile.work_value_code || 'Not available'}
+            - Personality traits: ${profile.personality_traits || 'Not available'}
+            - Work preferences: ${profile.work_environment_preferences || 'Not available'}
+            - Likes: ${profile.likes || 'Not available'}
+            - Dislikes: ${profile.dislikes || 'Not available'}
+            - Recommended majors: ${profile.recommended_major || 'Not available'}
+          `;
+        }
+      }
+      
+      // Create context-enriched prompt
+      const contextualPrompt = `
+        ${profileContext}
+        
+        User message: ${input}
+        
+        Respond as a helpful academic and career guidance assistant. Keep your response concise but informative.
+      `;
+      
       // Call Deepseek API
       const result = await callDeepseek(
-        input,
+        contextualPrompt,
         { maxTokens: 1000, temperature: 0.7, topP: 0.95 }
       );
       
@@ -52,8 +94,6 @@ export const ChatWithAI = () => {
         role: 'assistant', 
         content: "I'm having trouble connecting to my brain. Please try again in a moment."
       }]);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -70,11 +110,21 @@ export const ChatWithAI = () => {
       
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent className="sm:max-w-md h-[500px] flex flex-col">
-          <DialogHeader>
-            <DialogTitle>Chat with Adviseek AI</DialogTitle>
-            <DialogDescription>
-              Ask me anything about university applications and admissions.
-            </DialogDescription>
+          <DialogHeader className="flex justify-between items-center flex-row">
+            <div>
+              <DialogTitle>Chat with Adviseek AI</DialogTitle>
+              <DialogDescription>
+                Ask me anything about university applications and admissions.
+              </DialogDescription>
+            </div>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={() => setIsOpen(false)}
+              className="h-8 w-8 p-0"
+            >
+              <X className="h-4 w-4" />
+            </Button>
           </DialogHeader>
           
           <ScrollArea className="flex-grow overflow-auto p-4 my-4 border rounded-md">
@@ -95,7 +145,7 @@ export const ChatWithAI = () => {
                   </div>
                 </div>
               ))}
-              {isLoading && (
+              {loading && (
                 <div className="flex justify-start">
                   <div className="bg-gray-100 text-gray-800 max-w-[80%] rounded-lg p-3">
                     <div className="flex space-x-1 items-center">
@@ -117,15 +167,19 @@ export const ChatWithAI = () => {
               onKeyPress={(e) => {
                 if (e.key === 'Enter') handleSendMessage();
               }}
-              disabled={isLoading}
+              disabled={loading}
               className="flex-grow"
             />
             <Button 
               onClick={handleSendMessage} 
-              disabled={!input.trim() || isLoading}
+              disabled={!input.trim() || loading}
               size="icon"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+              {loading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Send className="h-4 w-4" />
+              )}
             </Button>
           </div>
         </DialogContent>
