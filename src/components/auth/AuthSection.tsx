@@ -49,6 +49,7 @@ const AuthSection = () => {
             <EmailAuthForm 
               email={email} 
               onBack={() => setIsEmailContinue(false)} 
+              mode="signin"  // Add the required mode property with a default value
             />
           )}
         </div>
