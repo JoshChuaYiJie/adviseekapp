@@ -141,13 +141,13 @@ export const ChatWithAI = () => {
       
       // Create context-enriched prompt with both profile and resume data
       const contextualPrompt = `
-        ${profileContext}
-        
-        ${resumeContext}
+        User profile context:
+        ${profileContext} and ${resumeContext}
         
         User message: ${input}
         
-        Respond as a helpful academic and career guidance assistant. Keep your response concise but informative.
+        You are an AI helpful academic and career guidance conversational assistant called Adviseek AI. I have provided you with the user profile. According to the user's message, respond in a friendly manner, providing relevant information and advice. You can also ask clarifying questions if needed. Your goal is to assist the user in their academic and career journey, including university applications, admissions, and related topics.
+        You can also provide insights based on the user's profile and resume information. Please ensure your responses are clear, concise, and helpful.
       `;
       
       // Call Deepseek API
