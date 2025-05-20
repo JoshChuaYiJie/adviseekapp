@@ -173,7 +173,12 @@ export const AboutMe = () => {
             .from('profiles')
             .upsert({
               id: userId,
-              recommended_major: majorRecommendations
+              recommended_major: [
+                majorRecommendations.exactMatches,
+                majorRecommendations.riasecMatches,
+                majorRecommendations.workValueMatches,
+                majorRecommendations.permutationMatches
+              ].join(', ')
             }, { onConflict: 'id' })
             
           if (majorError) {
