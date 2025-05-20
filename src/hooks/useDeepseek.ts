@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -70,7 +71,9 @@ export const useDeepseek = () => {
           .eq('user_id', userId);
 
         setUserContext({
-          ...(profileData || {}), // Fix: Add fallback empty object for null/undefined profileData
+          // Fixed: Ensure we're properly handling potentially null/undefined profileData
+          // by using object destructuring only when profileData is defined
+          ...(profileData || {}),
           open_ended_responses: openEndedResponses || [],
           previous_applications: applications || []
         });
