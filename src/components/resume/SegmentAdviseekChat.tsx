@@ -26,7 +26,7 @@ export const SegmentAdviseekChat = ({ segmentType }: SegmentAdviseekChatProps) =
   const allowedSegments = [
     "Education Details",
     "Work Experience Details",
-    "Awards Details",
+    "Awards and Certificates",
     "Activity Details",
     "Additional Information"
   ];
