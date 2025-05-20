@@ -22,6 +22,20 @@ export const SegmentAdviseekChat = ({ segmentType }: SegmentAdviseekChatProps) =
   const [messages, setMessages] = useState<Message[]>([]);
   const { callDeepseek, loading } = useDeepseek();
 
+  // Define which segments should show the Adviseek chat
+  const allowedSegments = [
+    "Education",
+    "Work Experience",
+    "Awards & Certificates",
+    "Activity",
+    "Additional Information"
+  ];
+
+  // If current segment is not in the allowed list, don't render anything
+  if (!allowedSegments.includes(segmentType)) {
+    return null;
+  }
+
   const toggleChat = () => {
     setIsOpen(!isOpen);
     if (!isOpen && messages.length === 0) {
