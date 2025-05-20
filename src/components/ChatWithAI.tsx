@@ -38,8 +38,10 @@ export const ChatWithAI = () => {
     try {
       // Fetch profile data for context enrichment
       let profileContext = '';
+      let resumeContext = '';
       
       if (userId) {
+        // Get profile information
         const { data: profile } = await supabase
           .from('profiles')
           .select('riasec_code, work_value_code, personality_traits, work_environment_preferences, likes, dislikes, recommended_major')
@@ -58,11 +60,90 @@ export const ChatWithAI = () => {
             - Recommended majors: ${profile.recommended_major || 'Not available'}
           `;
         }
+        
+        // NEW: Get resume information for additional context
+        const { data: resumes } = await supabase
+          .from('resumes')
+          .select('*')
+          .eq('user_id', userId)
+          .order('updated_at', { ascending: false })
+          .limit(1);
+          
+        if (resumes && resumes.length > 0) {
+          const latestResume = resumes[0];
+          
+          // Format education items
+          let educationItems = '';
+          try {
+            const eduItems = typeof latestResume.educationItems === 'string' 
+              ? JSON.parse(latestResume.educationItems) 
+              : latestResume.educationItems;
+              
+            if (Array.isArray(eduItems)) {
+              eduItems.forEach((item, index) => {
+                educationItems += `
+                  Education ${index + 1}:
+                  - Institution: ${item.institution || 'N/A'}
+                  - Degree: ${item.degree || 'N/A'}
+                  - Field: ${item.fieldOfStudy || 'N/A'}
+                  - Date: ${item.startDate || ''} - ${item.endDate || ''}
+                  ${item.description ? `- Description: ${item.description}` : ''}
+                `;
+              });
+            }
+          } catch (error) {
+            console.error("Error parsing education items:", error);
+          }
+          
+          // Format work experience items
+          let workExperienceItems = '';
+          try {
+            const workItems = typeof latestResume.work_experience === 'string'
+              ? JSON.parse(latestResume.work_experience)
+              : latestResume.work_experience;
+              
+            if (Array.isArray(workItems)) {
+              workItems.forEach((item, index) => {
+                workExperienceItems += `
+                  Work Experience ${index + 1}:
+                  - Company: ${item.company || 'N/A'}
+                  - Position: ${item.position || 'N/A'}
+                  - Date: ${item.startDate || ''} - ${item.endDate || ''}
+                  ${item.description ? `- Description: ${item.description}` : ''}
+                `;
+              });
+            }
+          } catch (error) {
+            console.error("Error parsing work experience:", error);
+          }
+          
+          resumeContext = `
+            Resume information:
+            - Name: ${latestResume.name || 'Not specified'}
+            - Email: ${latestResume.email || 'Not specified'}
+            - Phone: ${latestResume.phone || 'Not specified'}
+            - Nationality: ${latestResume.nationality || 'Not specified'}
+            
+            ${educationItems ? `Education:\n${educationItems}` : ''}
+            
+            ${workExperienceItems ? `Work Experience:\n${workExperienceItems}` : ''}
+            
+            ${latestResume.awards ? `Awards: ${latestResume.awards}` : ''}
+            
+            ${latestResume.languages ? `Languages: ${latestResume.languages}` : ''}
+            
+            ${latestResume.interests ? `Interests: ${latestResume.interests}` : ''}
+            
+            ${latestResume.it_skills ? `IT Skills: ${latestResume.it_skills}` : ''}
+          `;
+        }
       }
       
-      // Create context-enriched prompt
+      // Create context-enriched prompt with both profile and resume data
       const contextualPrompt = `
         ${profileContext}
+        
+        ${resumeContext}
         
         User message: ${input}
         

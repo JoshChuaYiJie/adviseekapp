@@ -24,6 +24,7 @@ export const SegmentAdviseekChat = ({ segmentType }: SegmentAdviseekChatProps) =
   const { callDeepseek, loading } = useDeepseek();
   const [userId, setUserId] = useState<string | null>(null);
   const [profileData, setProfileData] = useState<any>(null);
+  const [resumeData, setResumeData] = useState<any>(null);
 
   // Define which segments should show the Adviseek chat
   const allowedSegments = [
@@ -43,6 +44,7 @@ export const SegmentAdviseekChat = ({ segmentType }: SegmentAdviseekChatProps) =
       
       // If user is logged in, get their profile data
       if (currentUserId) {
+        // Get profile data
         const { data } = await supabase
           .from('profiles')
           .select('riasec_code, work_value_code, personality_traits, work_environment_preferences, likes, dislikes, recommended_major')
@@ -51,6 +53,18 @@ export const SegmentAdviseekChat = ({ segmentType }: SegmentAdviseekChatProps) =
           
         if (data) {
           setProfileData(data);
+        }
+        
+        // Get resume data
+        const { data: resumes } = await supabase
+          .from('resumes')
+          .select('*')
+          .eq('user_id', currentUserId)
+          .order('updated_at', { ascending: false })
+          .limit(1);
+          
+        if (resumes && resumes.length > 0) {
+          setResumeData(resumes[0]);
         }
       }
     };
@@ -113,6 +127,76 @@ export const SegmentAdviseekChat = ({ segmentType }: SegmentAdviseekChatProps) =
       ${profileData.recommended_major ? `- Recommended majors: ${profileData.recommended_major}` : ''}
       
       Tailor your advice to match their profile.
+      `;
+    }
+    
+    // Add resume context if available
+    if (resumeData) {
+      // Format education items
+      let educationItems = '';
+      try {
+        const eduItems = typeof resumeData.educationItems === 'string' 
+          ? JSON.parse(resumeData.educationItems) 
+          : resumeData.educationItems;
+          
+        if (Array.isArray(eduItems)) {
+          eduItems.forEach((item: any, index: number) => {
+            educationItems += `
+              Education ${index + 1}:
+              - Institution: ${item.institution || 'N/A'}
+              - Degree: ${item.degree || 'N/A'}
+              - Field: ${item.fieldOfStudy || 'N/A'}
+              - Date: ${item.startDate || ''} - ${item.endDate || ''}
+              ${item.description ? `- Description: ${item.description}` : ''}
+            `;
+          });
+        }
+      } catch (error) {
+        console.error("Error parsing education items:", error);
+      }
+      
+      // Format work experience items
+      let workExperienceItems = '';
+      try {
+        const workItems = typeof resumeData.work_experience === 'string'
+          ? JSON.parse(resumeData.work_experience)
+          : resumeData.work_experience;
+          
+        if (Array.isArray(workItems)) {
+          workItems.forEach((item: any, index: number) => {
+            workExperienceItems += `
+              Work Experience ${index + 1}:
+              - Company: ${item.company || 'N/A'}
+              - Position: ${item.position || 'N/A'}
+              - Date: ${item.startDate || ''} - ${item.endDate || ''}
+              ${item.description ? `- Description: ${item.description}` : ''}
+            `;
+          });
+        }
+      } catch (error) {
+        console.error("Error parsing work experience:", error);
+      }
+      
+      contextualPrompt += `
+      
+      User's current resume information:
+      - Name: ${resumeData.name || 'Not specified'}
+      - Email: ${resumeData.email || 'Not specified'}
+      - Phone: ${resumeData.phone || 'Not specified'}
+      
+      ${educationItems ? `Education:\n${educationItems}` : ''}
+      
+      ${workExperienceItems ? `Work Experience:\n${workExperienceItems}` : ''}
+      
+      ${resumeData.awards ? `Awards: ${resumeData.awards}` : ''}
+      
+      ${resumeData.languages ? `Languages: ${resumeData.languages}` : ''}
+      
+      ${resumeData.interests ? `Interests: ${resumeData.interests}` : ''}
+      
+      ${resumeData.it_skills ? `IT Skills: ${resumeData.it_skills}` : ''}
+      
+      Use this resume information to provide more personalized advice.
       `;
     }
 
