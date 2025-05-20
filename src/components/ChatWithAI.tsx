@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { MessageSquare, Send, Loader2, X } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
@@ -17,6 +17,18 @@ export const ChatWithAI = () => {
   const [input, setInput] = useState('');
   const { callDeepseek, loading } = useDeepseek();
   const [userId, setUserId] = useState<string | null>(null);
+  const [streamingContent, setStreamingContent] = useState('');
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to bottom when new messages arrive
+  useEffect(() => {
+    if (scrollAreaRef.current) {
+      const scrollContainer = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
+      if (scrollContainer) {
+        scrollContainer.scrollTop = scrollContainer.scrollHeight;
+      }
+    }
+  }, [messages, streamingContent]);
 
   // Get current user ID
   useEffect(() => {
@@ -34,6 +46,7 @@ export const ChatWithAI = () => {
     const userMessage = {role: 'user' as const, content: input};
     setMessages(prev => [...prev, userMessage]);
     setInput('');
+    setStreamingContent(''); // Reset streaming content
     
     try {
       // Fetch profile data for context enrichment
@@ -61,7 +74,7 @@ export const ChatWithAI = () => {
           `;
         }
         
-        // NEW: Get resume information for additional context
+        // Get resume information for additional context
         const { data: resumes } = await supabase
           .from('resumes')
           .select('*')
@@ -169,24 +182,27 @@ export const ChatWithAI = () => {
         [Optional clarifying question or call-to-action]
       `;
       
-      // Call Deepseek API
-      const result = await callDeepseek(
+      // Stream the response
+      await callDeepseek(
         contextualPrompt,
-        { maxTokens: 1000, temperature: 0.4, topP: 0.95 }
+        { 
+          maxTokens: 1000, 
+          temperature: 0.4, 
+          topP: 0.95,
+          stream: true,
+          onStreamChunk: (chunk) => {
+            setStreamingContent(prev => prev + chunk);
+          }
+        }
       );
       
-      if (result && result.choices && result.choices[0]?.message?.content) {
-        // Add AI response to messages
-        const aiResponse = result.choices[0].message.content;
-        setMessages(prev => [...prev, {role: 'assistant', content: aiResponse}]);
-      } else {
-        // Fallback if API call fails
-        toast.error("Failed to get a response from AI. Please try again.");
-        setMessages(prev => [...prev, {
-          role: 'assistant', 
-          content: "I'm sorry, I couldn't process your request. Please try again later."
-        }]);
-      }
+      // After streaming is complete, add the full message to history
+      setMessages(prev => [...prev, {
+        role: 'assistant',
+        content: streamingContent 
+      }]);
+      setStreamingContent(''); // Reset streaming content
+      
     } catch (error) {
       console.error("Error calling Deepseek API:", error);
       toast.error("Error connecting to the AI service. Please try again.");
@@ -194,6 +210,7 @@ export const ChatWithAI = () => {
         role: 'assistant', 
         content: "I'm having trouble connecting to my brain. Please try again in a moment."
       }]);
+      setStreamingContent(''); // Reset streaming content
     }
   };
 
@@ -209,7 +226,7 @@ export const ChatWithAI = () => {
       </Button>
       
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="sm:max-w-md h-[500px] flex flex-col">
+        <DialogContent className="sm:max-w-2xl h-[600px] flex flex-col max-h-[90vh] w-[90vw]">
           <DialogHeader className="flex justify-between items-center flex-row">
             <div>
               <DialogTitle>Chat with Adviseek AI</DialogTitle>
@@ -227,7 +244,7 @@ export const ChatWithAI = () => {
             </Button>
           </DialogHeader>
           
-          <ScrollArea className="flex-grow overflow-auto p-4 my-4 border rounded-md">
+          <ScrollArea className="flex-grow overflow-auto p-4 my-4 border rounded-md" ref={scrollAreaRef}>
             <div className="space-y-4">
               {messages.map((message, index) => (
                 <div 
@@ -241,11 +258,18 @@ export const ChatWithAI = () => {
                         : 'bg-gray-100 text-gray-800'
                     }`}
                   >
-                    {message.content}
+                    <div className="whitespace-pre-wrap">{message.content}</div>
                   </div>
                 </div>
               ))}
-              {loading && (
+              {streamingContent && (
+                <div className="flex justify-start">
+                  <div className="bg-gray-100 text-gray-800 max-w-[80%] rounded-lg p-3">
+                    <div className="whitespace-pre-wrap">{streamingContent}</div>
+                  </div>
+                </div>
+              )}
+              {loading && !streamingContent && (
                 <div className="flex justify-start">
                   <div className="bg-gray-100 text-gray-800 max-w-[80%] rounded-lg p-3">
                     <div className="flex space-x-1 items-center">

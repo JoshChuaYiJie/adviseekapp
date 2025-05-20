@@ -3,9 +3,10 @@ import { useState } from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { MessageSquarePlus, Send, X } from 'lucide-react';
-import { toast } from '@/components/ui/sonner';
+import { toast } from 'sonner';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { supabase } from '@/integrations/supabase/client';
 
 const FeedbackForm = () => {
   const [open, setOpen] = useState(false);
@@ -20,17 +21,26 @@ const FeedbackForm = () => {
     }
 
     setIsSubmitting(true);
-    
-    // In a real app, we would send this to the server
-    // await fetch('/api/feedback', { method: 'POST', body: JSON.stringify({ feedback, type }) })
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    toast.success('Thank you for your feedback!');
-    setFeedback('');
-    setOpen(false);
-    setIsSubmitting(false);
+
+    try {
+      // Send the feedback via the Edge Function
+      const { data, error } = await supabase.functions.invoke('send-feedback', {
+        body: { feedback, type }
+      });
+
+      if (error) {
+        throw new Error(error.message || 'Failed to send feedback');
+      }
+      
+      toast.success('Thank you for your feedback!');
+      setFeedback('');
+      setOpen(false);
+    } catch (error) {
+      console.error('Error sending feedback:', error);
+      toast.error('Failed to send feedback. Please try again later.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (

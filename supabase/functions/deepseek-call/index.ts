@@ -87,10 +87,7 @@ async function callDeepseekAPI(apiKey: string, prompt: string, options: any, cor
   // Handle streaming response
   if (options.stream) {
     // Return the stream directly, maintaining headers
-    const { readable, writable } = new TransformStream();
-    deepseekResponse.body?.pipeTo(writable);
-    
-    return new Response(readable, { 
+    return new Response(deepseekResponse.body, { 
       headers: {
         ...corsHeaders,
         "Content-Type": "text/event-stream",

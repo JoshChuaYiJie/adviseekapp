@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
@@ -26,6 +26,8 @@ export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: Segmen
   const [userId, setUserId] = useState<string | null>(null);
   const [profileData, setProfileData] = useState<any>(null);
   const [resumeData, setResumeData] = useState<any>(null);
+  const [streamingContent, setStreamingContent] = useState('');
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   // Define which segments should show the Adviseek chat
   const allowedSegments = [
@@ -35,6 +37,16 @@ export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: Segmen
     "Activity Details",
     "Additional Information"
   ];
+
+  // Auto-scroll to bottom when new messages arrive
+  useEffect(() => {
+    if (scrollAreaRef.current) {
+      const scrollContainer = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
+      if (scrollContainer) {
+        scrollContainer.scrollTop = scrollContainer.scrollHeight;
+      }
+    }
+  }, [messages, streamingContent]);
 
   useEffect(() => {
     const getUserData = async () => {
@@ -103,6 +115,7 @@ export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: Segmen
     setMessages(prev => [...prev, userMessage]);
     const userQuery = input;
     setInput("");
+    setStreamingContent(''); // Reset streaming content
 
     // Create a context-aware prompt
     let contextualPrompt = `
@@ -213,20 +226,27 @@ export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: Segmen
     }
 
     try {
-      const response = await callDeepseek(contextualPrompt);
-      
-      if (response) {
-        const aiResponse = response.choices?.[0]?.message?.content || 
-                          "I'm sorry, I couldn't generate a response. Please try again.";
-        
-        setMessages(prev => [
-          ...prev,
-          {
-            role: "assistant",
-            content: aiResponse
+      // Stream the response
+      await callDeepseek(
+        contextualPrompt,
+        { 
+          stream: true,
+          onStreamChunk: (chunk) => {
+            setStreamingContent(prev => prev + chunk);
           }
-        ]);
-      }
+        }
+      );
+      
+      // After streaming is complete, add the full message to history
+      setMessages(prev => [
+        ...prev,
+        {
+          role: "assistant",
+          content: streamingContent
+        }
+      ]);
+      setStreamingContent(''); // Reset streaming content
+      
     } catch (error) {
       console.error("Error calling Deepseek:", error);
       setMessages(prev => [
@@ -236,6 +256,7 @@ export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: Segmen
           content: "I'm sorry, I encountered an error. Please try again."
         }
       ]);
+      setStreamingContent(''); // Reset streaming content
     }
   };
 
@@ -255,7 +276,7 @@ export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: Segmen
         <Card className="mt-4 p-4">
           <h4 className="font-medium mb-2">Adviseek Assistant: {segmentType}</h4>
           
-          <ScrollArea className="h-60 mb-4 border rounded-md p-2">
+          <ScrollArea className="h-60 mb-4 border rounded-md p-2" ref={scrollAreaRef}>
             <div className="space-y-3">
               {messages.map((msg, i) => (
                 <div
@@ -272,6 +293,12 @@ export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: Segmen
                   <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
                 </div>
               ))}
+              {streamingContent && (
+                <div className="p-3 rounded-lg bg-muted text-foreground mr-8">
+                  <p className="mb-1 text-xs font-medium">Adviseek</p>
+                  <p className="text-sm whitespace-pre-wrap">{streamingContent}</p>
+                </div>
+              )}
             </div>
           </ScrollArea>
           
