@@ -599,6 +599,90 @@ const SegmentedQuiz = () => {
           addDebugLog("Error saving quiz completion", completionError);
         } else {
           addDebugLog("Quiz completion status saved successfully");
+          
+          // NEW: Update user profile with RIASEC and Work Values data after quiz completion
+          try {
+            // Import helper functions
+            const { calculateRiasecProfile, calculateWorkValuesProfile } = await import('@/contexts/quiz/utils/databaseHelpers');
+            const { mapRiasecToCode, mapWorkValueToCode, formCode, generateStrengthsFromRIASEC, generateLikesFromRIASEC, generateDislikesFromRIASEC, generateWorkPreferencesFromWorkValues } = await import('@/utils/recommendation');
+            
+            // Calculate RIASEC profile
+            if (['interest-part 1', 'interest-part 2', 'competence'].includes(segmentId || '')) {
+              const riasecProfile = await calculateRiasecProfile(userId);
+              
+              // Format data for code generation
+              const formattedRiasecData = Object.entries(riasecProfile).map(([component, score]) => ({
+                component,
+                average: 0,
+                score: score as number
+              }));
+              
+              const riasecCode = formCode(formattedRiasecData, mapRiasecToCode);
+              
+              if (riasecCode) {
+                // Generate traits based on RIASEC code
+                const traits = generateStrengthsFromRIASEC(riasecCode);
+                const likes = generateLikesFromRIASEC(riasecCode);
+                const dislikes = generateDislikesFromRIASEC(riasecCode);
+                
+                // Update profile in database
+                await supabase
+                  .from('profiles')
+                  .update({
+                    riasec_code: riasecCode,
+                    personality_traits: JSON.stringify(traits),
+                    likes: JSON.stringify(likes),
+                    dislikes: JSON.stringify(dislikes)
+                  })
+                  .eq('id', userId);
+                  
+                addDebugLog("Updated profile with RIASEC data", {
+                  riasecCode,
+                  traits,
+                  likes,
+                  dislikes
+                });
+              }
+            }
+            
+            // Calculate Work Values profile
+            if (segmentId === 'work-values') {
+              const workValuesProfile = await calculateWorkValuesProfile(userId);
+              
+              // Format data for code generation
+              const formattedWorkValuesData = Object.entries(workValuesProfile).map(([component, score]) => ({
+                component,
+                average: 0,
+                score: score as number
+              }));
+              
+              const workValueCode = formCode(formattedWorkValuesData, mapWorkValueToCode);
+              
+              if (workValueCode) {
+                // Generate work preferences based on Work Values code
+                const workPreferences = generateWorkPreferencesFromWorkValues(workValueCode);
+                
+                // Update profile in database
+                await supabase
+                  .from('profiles')
+                  .update({
+                    work_value_code: workValueCode,
+                    work_environment_preferences: JSON.stringify(workPreferences)
+                  })
+                  .eq('id', userId);
+                  
+                addDebugLog("Updated profile with Work Values data", {
+                  workValueCode,
+                  workPreferences
+                });
+              }
+            }
+            
+            addDebugLog("Profile update complete");
+          } catch (profileError) {
+            addDebugLog("Error updating user profile data", profileError);
+            console.error("Error updating user profile:", profileError);
+          }
         }
       } else if (!userId) {
         addDebugLog("Not logged in, only saved locally");
