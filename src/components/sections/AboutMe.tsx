@@ -131,7 +131,7 @@ export const AboutMe = () => {
         // NEW: Store profile data in database for global access
         await supabase
           .from('profiles')
-          .update({
+          .upsert({
             riasec_code: generatedRiasecCode,
             work_value_code: generatedWorkValueCode,
             personality_traits: JSON.stringify(dynamicStrengths),
@@ -164,7 +164,7 @@ export const AboutMe = () => {
           if (majorRecommendations.exactMatches.length > 0) {
             await supabase
               .from('profiles')
-              .update({
+              .upsert({
                 recommended_major: JSON.stringify(majorRecommendations.exactMatches)
               })
               .eq('id', userId);
