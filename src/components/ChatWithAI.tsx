@@ -153,7 +153,7 @@ export const ChatWithAI = () => {
       // Call Deepseek API
       const result = await callDeepseek(
         contextualPrompt,
-        { maxTokens: 1000, temperature: 0.2, topP: 0.95 }
+        { maxTokens: 1000, temperature: 0.4, topP: 0.95 }
       );
       
       if (result && result.choices && result.choices[0]?.message?.content) {
