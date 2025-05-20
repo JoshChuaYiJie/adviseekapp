@@ -15,9 +15,10 @@ interface Message {
 
 interface SegmentAdviseekChatProps {
   segmentType: string;
+  currentContent?: string; // Add prop for current field content
 }
 
-export const SegmentAdviseekChat = ({ segmentType }: SegmentAdviseekChatProps) => {
+export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: SegmentAdviseekChatProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
@@ -112,6 +113,17 @@ export const SegmentAdviseekChat = ({ segmentType }: SegmentAdviseekChatProps) =
       Focus on best practices, formatting tips, content suggestions, and what recruiters look for.
       Keep your response concise (under 150 words) and tailored to the ${segmentType} section.
     `;
+    
+    // Add current field content as context if available
+    if (currentContent && currentContent.trim() !== "") {
+      contextualPrompt += `
+      
+      Current content in this section:
+      "${currentContent.trim()}"
+      
+      Please consider this existing content when providing advice.
+      `;
+    }
     
     // Add profile context if available
     if (profileData) {

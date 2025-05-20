@@ -6,6 +6,8 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useDeepseek } from "@/hooks/useDeepseek";
+import { Loader2 } from "lucide-react";
 
 interface MockInterviewsProps {
   user: any;
@@ -26,9 +28,11 @@ export const MockInterviews = ({ user }: MockInterviewsProps) => {
   const [responses, setResponses] = useState<Record<string, string>>({});
   const [userApplications, setUserApplications] = useState<AppliedProgram[]>([]);
   const [loading, setLoading] = useState(true);
+  const [generatingQuestions, setGeneratingQuestions] = useState(false);
   const { isCurrentlyDark } = useTheme();
   const { t } = useTranslation();
   const { toast } = useToast();
+  const { callDeepseek } = useDeepseek();
 
   // Fetch user's applied programs from Supabase
   useEffect(() => {
@@ -83,7 +87,132 @@ export const MockInterviews = ({ user }: MockInterviewsProps) => {
     fetchUserApplications();
   }, [toast]);
 
-  const handleApplicationChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const generateInterviewQuestions = async (application: AppliedProgram) => {
+    setGeneratingQuestions(true);
+    
+    try {
+      // Get user profile data for context
+      const { data: sessionData } = await supabase.auth.getSession();
+      const session = sessionData?.session;
+      
+      if (!session?.user?.id) {
+        toast({
+          title: "Error",
+          description: "You must be logged in to generate interview questions",
+          variant: "destructive"
+        });
+        return;
+      }
+      
+      // Fetch user profile data
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', session.user.id)
+        .single();
+        
+      // Fetch resume data
+      const { data: resumeData } = await supabase
+        .from('resumes')
+        .select('*')
+        .eq('user_id', session.user.id)
+        .order('updated_at', { ascending: false })
+        .limit(1);
+        
+      // Create a prompt for the AI
+      let prompt = `
+        Generate 5 realistic interview questions for a ${application.major} program at ${application.university}.
+        
+        Focus on questions that assess:
+        1. Academic preparation
+        2. Technical knowledge relevant to ${application.major}
+        3. Problem-solving ability
+        4. Program fit
+        5. Personal motivations
+        
+        Return ONLY the list of questions, numbered from 1 to 5, with no additional text or explanation.
+      `;
+      
+      // Add profile context if available
+      if (profileData) {
+        prompt += `
+        
+        Take into account this student profile:
+        - RIASEC code: ${profileData.riasec_code || 'Not available'}
+        - Work values: ${profileData.work_value_code || 'Not available'}
+        - Likes: ${profileData.likes || 'Not available'}
+        - Dislikes: ${profileData.dislikes || 'Not available'}
+        `;
+      }
+      
+      // Add resume context if available
+      if (resumeData && resumeData.length > 0) {
+        const resume = resumeData[0];
+        prompt += `
+        
+        Consider this student's background:
+        - Education: ${resume.educationItems ? 'Available' : 'Not available'}
+        - Work experience: ${resume.work_experience ? 'Available' : 'Not available'}
+        - Awards: ${resume.awards || 'Not available'}
+        - Skills: ${resume.it_skills || 'Not available'}
+        `;
+      }
+      
+      console.log("Generating interview questions with prompt:", prompt);
+      
+      // Call the AI to generate questions
+      const result = await callDeepseek(prompt);
+      
+      if (result && result.choices && result.choices[0]?.message?.content) {
+        const content = result.choices[0].message.content;
+        
+        // Parse the questions from the AI response
+        const questionLines = content
+          .split('\n')
+          .filter(line => line.trim().match(/^\d+\.\s/)) // Lines starting with numbers
+          .map(line => line.replace(/^\d+\.\s/, '').trim()); // Remove the numbers
+        
+        if (questionLines.length > 0) {
+          setQuestions(questionLines);
+          
+          // Initialize responses for these questions
+          const initialResponses: Record<string, string> = {};
+          questionLines.forEach(q => {
+            initialResponses[q] = "";
+          });
+          setResponses(initialResponses);
+          
+          console.log("Generated questions:", questionLines);
+        } else {
+          // If parsing failed, show an error
+          console.error("Failed to parse AI-generated questions");
+          toast({
+            title: "Error",
+            description: "Failed to generate interview questions. Please try again.",
+            variant: "destructive"
+          });
+        }
+      } else {
+        console.error("AI did not return expected response format");
+        toast({
+          title: "Error",
+          description: "Failed to generate interview questions. Please try again.",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error("Error generating interview questions:", error);
+      toast({
+        title: "Error",
+        description: "Failed to generate interview questions",
+        variant: "destructive"
+      });
+    } finally {
+      setGeneratingQuestions(false);
+    }
+  };
+
+  const handleApplicationChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
     const applicationId = e.target.value;
     setSelectedApplication(applicationId);
     
@@ -91,43 +220,10 @@ export const MockInterviews = ({ user }: MockInterviewsProps) => {
       // Find the selected application
       const selectedApp = userApplications.find(app => app.id === applicationId);
       
-      // Fetch interview questions based on the selected application's major/university
-      // This would typically come from your AI or database
-      const sampleQuestions = [
-        t("interview.questions.programming", "Tell me about your experience with programming languages."),
-        t("interview.questions.teamwork", "How do you approach problem-solving in a team environment?"),
-        t("interview.questions.motivation", `What motivated you to apply for ${selectedApp?.major || 'this programme'}?`),
-        t("interview.questions.challenge", "Describe a challenging project you've worked on and how you overcame obstacles.")
-      ];
-      
-      // If it's a Computer Science or related major, add technical questions
-      if (selectedApp?.major?.toLowerCase().includes('comput') || 
-          selectedApp?.major?.toLowerCase().includes('software') ||
-          selectedApp?.major?.toLowerCase().includes('information')) {
-        sampleQuestions.push(
-          t("interview.questions.technical", "Explain a programming concept you find interesting and why."),
-          t("interview.questions.project", "Tell me about a programming project you've completed.")
-        );
+      if (selectedApp) {
+        // Generate interview questions based on the selected application
+        await generateInterviewQuestions(selectedApp);
       }
-      
-      // If it's a Business related major, add business questions
-      if (selectedApp?.major?.toLowerCase().includes('business') || 
-          selectedApp?.major?.toLowerCase().includes('management') || 
-          selectedApp?.major?.toLowerCase().includes('finance')) {
-        sampleQuestions.push(
-          t("interview.questions.business", "How do you stay updated with current business trends?"),
-          t("interview.questions.leadership", "Describe a situation where you demonstrated leadership skills.")
-        );
-      }
-      
-      setQuestions(sampleQuestions);
-      
-      // Initialize responses for these questions or load existing ones
-      const initialResponses: Record<string, string> = {};
-      sampleQuestions.forEach(q => {
-        initialResponses[q] = "";
-      });
-      setResponses(initialResponses);
     } else {
       setQuestions([]);
       setResponses({});
@@ -217,30 +313,39 @@ export const MockInterviews = ({ user }: MockInterviewsProps) => {
         )}
       </div>
 
-      {questions.length > 0 && (
-        <div data-tutorial="interview-questions" className={`${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} p-6 rounded-lg shadow w-full`}>
-          <h3 className="text-lg font-semibold mb-4">{t("interview.potential_questions", "Potential Interview Questions")}</h3>
-          
-          <div className="space-y-6">
-            {questions.map((question, index) => (
-              <Card key={index} className={`p-4 ${isCurrentlyDark ? 'bg-gray-700 border-gray-600' : ''}`}>
-                <h4 className="font-medium mb-2">{question}</h4>
-                <textarea 
-                  className={`w-full border rounded p-2 min-h-[100px] ${
-                    isCurrentlyDark ? 'bg-gray-600 text-white border-gray-500' : ''
-                  }`}
-                  value={responses[question] || ""}
-                  onChange={(e) => handleResponseChange(question, e.target.value)}
-                  placeholder={t("interview.response_placeholder", "Type your response here...")}
-                />
-              </Card>
-            ))}
-            
-            <Button onClick={handleSaveResponses}>
-              {t("interview.save_responses", "Save Responses")}
-            </Button>
-          </div>
+      {generatingQuestions ? (
+        <div className="flex flex-col items-center justify-center p-12">
+          <Loader2 className="h-8 w-8 animate-spin mb-4" />
+          <p className="text-center text-muted-foreground">
+            Generating interview questions tailored to your application...
+          </p>
         </div>
+      ) : (
+        questions.length > 0 && (
+          <div data-tutorial="interview-questions" className={`${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} p-6 rounded-lg shadow w-full`}>
+            <h3 className="text-lg font-semibold mb-4">{t("interview.potential_questions", "Interview Questions")}</h3>
+            
+            <div className="space-y-6">
+              {questions.map((question, index) => (
+                <Card key={index} className={`p-4 ${isCurrentlyDark ? 'bg-gray-700 border-gray-600' : ''}`}>
+                  <h4 className="font-medium mb-2">{question}</h4>
+                  <textarea 
+                    className={`w-full border rounded p-2 min-h-[100px] ${
+                      isCurrentlyDark ? 'bg-gray-600 text-white border-gray-500' : ''
+                    }`}
+                    value={responses[question] || ""}
+                    onChange={(e) => handleResponseChange(question, e.target.value)}
+                    placeholder={t("interview.response_placeholder", "Type your response here...")}
+                  />
+                </Card>
+              ))}
+              
+              <Button onClick={handleSaveResponses}>
+                {t("interview.save_responses", "Save Responses")}
+              </Button>
+            </div>
+          </div>
+        )
       )}
     </div>
   );
