@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -70,7 +71,7 @@ export const useDeepseek = () => {
           .eq('user_id', userId);
 
         setUserContext({
-          ...profileData,
+          ...profileData || {}, // Fix: Add fallback empty object for null/undefined profileData
           open_ended_responses: openEndedResponses || [],
           previous_applications: applications || []
         });
@@ -165,7 +166,7 @@ export const useDeepseek = () => {
         body: { 
           prompt: contextualizedPrompt, 
           options: {
-            ...options,
+            ...(options || {}),  // Fix: Add fallback empty object
             stream: true  // Enable streaming for all calls
           }
         },
