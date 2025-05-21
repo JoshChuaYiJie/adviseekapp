@@ -148,6 +148,58 @@ export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: Segmen
       "${currentContent.trim()}"
       
       Please consider this existing content when providing advice.
+      Always start with 'I noticed that you (insert something related to their current content here)'
+      `;
+    }
+
+    if segmentType === "Education Details"{
+      contextualPrompt += `
+      There are two fields to respond to: 
+      - Institution
+      - Qualifications
+      Respond in this format:
+      For Institution: (advice)
+      For Qualifications: (advice)
+      `;
+    } else if (segmentType === "Work Experience Details") {
+      contextualPrompt += `
+      There are three fields to respond to: 
+      - Role
+      - Organization
+      - Description      
+      Respond in this format:
+      For Role: (advice)
+      For Organization: (advice)
+      For Description: (advice)
+      `;
+    } else if (segmentType === "Awards and Certificates") {
+      contextualPrompt += `
+      There is one field to respond to:
+      - Award title
+      Respond in this format:
+      You should include awards that (advice)
+      `
+    } else if (segmentType === "Activity Details  ") {
+      contextualPrompt += `
+      There are three fields to respond to: 
+      - Role
+      - Organization
+      - Description      
+      Respond in this format:
+      For Role: (advice)
+      For Organization: (advice)
+      For Description: (advice)
+      `;
+    } else if (segmentType === "Additional Information") {
+      contextualPrompt += `
+            There are three fields to respond to: 
+      - Languages
+      - Interests
+      - IT Skills     
+      Respond in this format:
+      For Languages: (advice)
+      For Interests: (advice)
+      For IT Skills: (advice)
       `;
     }
     
@@ -178,14 +230,12 @@ export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: Segmen
           : resumeData.educationItems;
           
         if (Array.isArray(eduItems)) {
-          eduItems.forEach((item: any, index: number) => {
+          eduItems.forEach((item, index) => {
             educationItems += `
               Education ${index + 1}:
               - Institution: ${item.institution || 'N/A'}
-              - Degree: ${item.degree || 'N/A'}
-              - Field: ${item.fieldOfStudy || 'N/A'}
-              - Date: ${item.startDate || ''} - ${item.endDate || ''}
-              ${item.description ? `- Description: ${item.description}` : ''}
+              - Qualification: ${item.qualifications || 'N/A'}
+              - Date: ${item.dates || ''}
             `;
           });
         }
@@ -193,7 +243,27 @@ export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: Segmen
         console.error("Error parsing education items:", error);
       }
       
-      // Format work experience items
+      // Format awards
+      let awards = '';
+      try {
+        const awarditems = typeof resumeData.awards === 'string'
+          ? JSON.parse(resumeData.awards)
+          : resumeData.awards;
+          
+        if (Array.isArray(awarditems)) {
+          awarditems.forEach((item, index) => {
+            awards += `
+              Award ${index + 1}:
+              - Award: ${item.title || 'N/A'}
+              - Date: ${item.date || ''}
+            `;
+          });
+        }
+      } catch (error) {
+        console.error("Error parsing awards:", error);
+      }
+
+      // Format work experience
       let workExperienceItems = '';
       try {
         const workItems = typeof resumeData.work_experience === 'string'
@@ -201,12 +271,12 @@ export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: Segmen
           : resumeData.work_experience;
           
         if (Array.isArray(workItems)) {
-          workItems.forEach((item: any, index: number) => {
+          workItems.forEach((item, index) => {
             workExperienceItems += `
               Work Experience ${index + 1}:
-              - Company: ${item.company || 'N/A'}
-              - Position: ${item.position || 'N/A'}
-              - Date: ${item.startDate || ''} - ${item.endDate || ''}
+              - Organisation: ${item.organization || 'N/A'}
+              - Role: ${item.role || 'N/A'}
+              - Date: ${item.dates || ''}
               ${item.description ? `- Description: ${item.description}` : ''}
             `;
           });
@@ -214,29 +284,30 @@ export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: Segmen
       } catch (error) {
         console.error("Error parsing work experience:", error);
       }
+          
       
       contextualPrompt += `
       
-      User's current resume information:
+      Resume information:
       - Name: ${resumeData.name || 'Not specified'}
       - Email: ${resumeData.email || 'Not specified'}
       - Phone: ${resumeData.phone || 'Not specified'}
+      - Nationality: ${resumeData.nationality || 'Not specified'}
       
       ${educationItems ? `Education:\n${educationItems}` : ''}
       
       ${workExperienceItems ? `Work Experience:\n${workExperienceItems}` : ''}
       
-      ${resumeData.awards ? `Awards: ${resumeData.awards}` : ''}
+      ${resumeData.awards ? `Awards:\n${awards}` : ''}
       
       ${resumeData.languages ? `Languages: ${resumeData.languages}` : ''}
       
       ${resumeData.interests ? `Interests: ${resumeData.interests}` : ''}
       
       ${resumeData.it_skills ? `IT Skills: ${resumeData.it_skills}` : ''}
-      
-      Use this resume information to provide more personalized advice.
-      `;
+    `;
     }
+    console.log("Contextual Prompt:", contextualPrompt);
 
     try {
       // Call AI with non-streaming
