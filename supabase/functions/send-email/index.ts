@@ -53,12 +53,43 @@ serve(async (req) => {
       replyTo: replyToEmail,
     };
 
-    // Send email via Supabase Edge function (this would typically use an email service like SendGrid, Postmark, etc.)
-    // For demo purposes, we'll just log this and return success
+    // For demonstration purposes, log the email we're supposed to send
     console.log('Sending email:', emailParams);
     
-    // In a real implementation, you'd add code here to send via SMTP or an email API
-    // For now, we'll log success and continue
+    // In a real implementation, we'd use a service like SendGrid, Postmark, etc.
+    // For example with SendGrid:
+    // const API_KEY = Deno.env.get('SENDGRID_API_KEY');
+    // if (!API_KEY) throw new Error('No SendGrid API key available');
+    // 
+    // const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //     Authorization: `Bearer ${API_KEY}`,
+    //   },
+    //   body: JSON.stringify({
+    //     personalizations: [
+    //       {
+    //         to: [{ email: emailParams.to }],
+    //         subject: emailParams.subject,
+    //       },
+    //     ],
+    //     from: { email: emailParams.from },
+    //     reply_to: { email: emailParams.replyTo },
+    //     content: [
+    //       {
+    //         type: 'text/html',
+    //         value: emailParams.html,
+    //       },
+    //     ],
+    //   }),
+    // });
+    //
+    // if (!response.ok) {
+    //   const errorText = await response.text();
+    //   console.error('SendGrid API error:', response.status, errorText);
+    //   throw new Error(`SendGrid API error: ${response.status} ${errorText}`);
+    // }
     
     return new Response(JSON.stringify({ success: true, message: 'Email sent successfully' }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },

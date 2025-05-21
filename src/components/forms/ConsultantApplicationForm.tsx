@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -10,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Slider } from '@/components/ui/slider';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from '@/components/ui/sonner';
+import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 
 const formSchema = z.object({
@@ -31,6 +31,21 @@ interface ConsultantApplicationFormProps {
 export function ConsultantApplicationForm({ isOpen, onClose, userId }: ConsultantApplicationFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
+  const [currentUserId, setCurrentUserId] = useState<string>(userId);
+  
+  // Get the actual user ID if a placeholder was passed
+  useEffect(() => {
+    const getUserId = async () => {
+      if (userId === "placeholder") {
+        const { data } = await supabase.auth.getSession();
+        if (data.session?.user?.id) {
+          setCurrentUserId(data.session.user.id);
+        }
+      }
+    };
+    
+    getUserId();
+  }, [userId]);
   
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -46,10 +61,15 @@ export function ConsultantApplicationForm({ isOpen, onClose, userId }: Consultan
     setIsSubmitting(true);
     
     try {
-      // In a real implementation, we would save this to Supabase
-      // Store application to database (we would implement this once the table is created)
-      // For now, we'll just simulate success
-      console.log('Consultant application submitted:', values);
+      // Call the Supabase Edge Function to save the application
+      const { data, error } = await supabase.functions.invoke('save-consultant-application', {
+        body: {
+          userId: currentUserId,
+          ...values
+        }
+      });
+      
+      if (error) throw error;
       
       toast.success("Application submitted successfully!");
       onClose();

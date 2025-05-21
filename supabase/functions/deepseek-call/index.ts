@@ -88,14 +88,45 @@ async function callDeepseekAPI(apiKey: string, prompt: string, options: any, cor
     // Handle streaming response
     if (options.stream) {
       // Return the stream directly, with appropriate headers
-      return new Response(deepseekResponse.body, { 
-        headers: {
-          ...corsHeaders,
-          "Content-Type": "text/event-stream",
-          "Cache-Control": "no-cache",
-          "Connection": "keep-alive"
+      const headers = new Headers(corsHeaders);
+      headers.set("Content-Type", "text/event-stream");
+      headers.set("Cache-Control", "no-cache");
+      headers.set("Connection", "keep-alive");
+      
+      // Create a TransformStream to process the response
+      const { readable, writable } = new TransformStream();
+      const writer = writable.getWriter();
+      
+      // Process the stream in the background
+      (async () => {
+        const reader = deepseekResponse.body?.getReader();
+        if (!reader) {
+          writer.write(new TextEncoder().encode('data: {"error": "Failed to get stream reader"}\n\n'));
+          writer.close();
+          return;
         }
-      });
+        
+        const encoder = new TextEncoder();
+        const decoder = new TextDecoder();
+        
+        try {
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            
+            // Convert the Uint8Array to text and forward it
+            const chunk = decoder.decode(value, { stream: true });
+            writer.write(encoder.encode(chunk));
+          }
+        } catch (error) {
+          console.error("Error processing stream:", error);
+          writer.write(encoder.encode(`data: {"error": "${error.message}"}\n\n`));
+        } finally {
+          writer.close();
+        }
+      })();
+      
+      return new Response(readable, { headers });
     }
     
     // Handle non-streaming response

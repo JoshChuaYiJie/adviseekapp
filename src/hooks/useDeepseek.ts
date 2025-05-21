@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -29,7 +28,6 @@ export const useDeepseek = () => {
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) throw new Error("Authentication required");
         
-        // Setup direct streaming fetch
         try {
           // Make a direct fetch to the edge function for streaming
           const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/deepseek-call`, {
@@ -59,6 +57,7 @@ export const useDeepseek = () => {
 
           let accumulatedContent = '';
           let decoder = new TextDecoder();
+          let buffer = ''; // Buffer for incomplete chunks
           
           // Process stream chunks
           while (true) {
@@ -66,39 +65,61 @@ export const useDeepseek = () => {
             if (done) break;
             
             // Convert the Uint8Array to text
-            const chunk = decoder.decode(value, { stream: true });
+            const chunkText = decoder.decode(value, { stream: true });
+            buffer += chunkText;
             
-            try {
-              // Process SSE format (data: {...}\n\n)
-              const lines = chunk.split('\n\n');
-              for (const line of lines) {
-                if (line.startsWith('data: ')) {
-                  const jsonStr = line.substring(6);
-                  if (jsonStr === '[DONE]') continue;
-                  
-                  try {
-                    const data = JSON.parse(jsonStr);
-                    if (data.choices && data.choices[0]?.delta?.content) {
-                      const content = data.choices[0].delta.content;
-                      accumulatedContent += content;
-                      options.onStreamChunk(content);
-                    }
-                  } catch (e) {
-                    // If we can't parse JSON, it might be a partial chunk
-                    console.log("Received partial chunk, waiting for complete data");
-                  }
+            // Split by "data: " and process each event
+            const events = buffer.split('data: ');
+            
+            // Process complete events, keeping any incomplete part in the buffer
+            buffer = events.shift() || ''; // Keep the first part as it may be incomplete
+            
+            for (const event of events) {
+              // If this is a complete event that ends with \n\n
+              if (event.includes('\n\n')) {
+                const [jsonStr, remaining] = event.split('\n\n', 2);
+                buffer = remaining || ''; // Any remainder goes back to buffer
+                
+                if (jsonStr === '[DONE]') {
+                  continue;
                 }
+                
+                try {
+                  const data = JSON.parse(jsonStr);
+                  if (data.choices && data.choices[0]?.delta?.content) {
+                    const content = data.choices[0].delta.content;
+                    accumulatedContent += content;
+                    options.onStreamChunk(content);
+                  }
+                } catch (e) {
+                  console.warn("Error parsing JSON:", e, "Raw JSON:", jsonStr);
+                }
+              } else {
+                // This event is not complete, add it back to the buffer
+                buffer += 'data: ' + event;
               }
-            } catch (e) {
-              console.error("Error processing stream chunk:", e);
             }
           }
           
-          // Complete with final chunk if needed
-          const finalChunk = decoder.decode();
-          if (finalChunk) {
-            console.log("Processing final chunk:", finalChunk);
-            // Process the final chunk if needed
+          // Process any remaining buffer content
+          if (buffer.trim()) {
+            console.log("Processing final buffer:", buffer);
+            const cleanedEvents = buffer.split('data: ');
+            for (const event of cleanedEvents) {
+              if (!event.trim() || event === '[DONE]') continue;
+              
+              try {
+                const data = JSON.parse(event);
+                if (data.choices && data.choices[0]?.delta?.content) {
+                  const content = data.choices[0].delta.content;
+                  accumulatedContent += content;
+                  options.onStreamChunk(content);
+                }
+              } catch (e) {
+                // Might be an incomplete JSON object, can be ignored
+                console.warn("Error parsing final JSON:", e);
+              }
+            }
           }
           
           setLoading(false);
