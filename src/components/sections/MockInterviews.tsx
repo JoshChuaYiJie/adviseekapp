@@ -175,7 +175,7 @@ export const MockInterviews = ({ user }: MockInterviewsProps) => {
         const education = resume.educationItems
           ? resume.educationItems
               .map((item: EducationItem) => 
-                `${item.qualifications} from ${item.institution}${item.dates ? ` (${item.dates})` : ''}`
+                `${item.qualifications} from ${item.institution} during ${item.dates ? ` (${item.dates})` : ''}`
               )
               .filter(Boolean)
               .join('; ') || 'Not available'
@@ -183,19 +183,42 @@ export const MockInterviews = ({ user }: MockInterviewsProps) => {
         const awards = resume.awards
           ? JSON.parse(resume.awards)
               .map((award: { title: string; date?: string }) => 
-                award.title ? `${award.title}${award.date ? ` (${award.date})` : ''}` : null
+                award.title ? `${award.title} at ${award.date ? ` (${award.date})` : ''}` : null
               )
               .filter(Boolean)
               .join('; ') || 'Not available'
+          : 'Not available';
+        const work_experience = resume.work_experience
+          ? (() => {
+              try {
+                const parsed = JSON.parse(resume.work_experience);
+                if (!Array.isArray(parsed)) return 'Not available';
+                return parsed
+                  .map((work: WorkExperience) => {
+                    if (!work.organisation && !work.role) return null;
+                    const parts = [];
+                    if (work.role) parts.push(work.role);
+                    if (work.organisation) parts.push(`at ${work.organisation}`);
+                    if (work.description) parts.push(`: ${work.description}`);
+                    if (work.date) parts.push(` (${work.date})`);
+                    return parts.join('');
+                  })
+                  .filter(Boolean)
+                  .join('; ') || 'Not available';
+              } catch (error) {
+                console.error("Error parsing work_experience:", error);
+                return 'Not available';
+              }
+            })()
           : 'Not available';
 
         prompt += `
         
         Consider this student's background:
         - Education: ${education}
-        - Work experience: ${resume.work_experience || 'Not available'}
+        - Work experience: ${work_experience}
         - Awards: ${awards}
-        - Skills: ${resume.it_skills || 'Not available'}
+        - Skills: it_skills: ${resume.it_skills}, interests: ${resume.interests}, languages spoken:${resume.languages}
         `;
       }
 
