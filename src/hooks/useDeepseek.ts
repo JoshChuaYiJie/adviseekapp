@@ -70,7 +70,7 @@ export function useDeepseek(options: DeepseekOptions = {}): UseDeepseekReturn {
           body: { 
             prompt,
             options: finalOptions
-          },
+          }
           // Supabase client doesn't directly support abortSignal in its type definition
           // We'll remove this property as it's causing the TypeScript error
         });

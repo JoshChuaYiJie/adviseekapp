@@ -24,7 +24,7 @@ const FeedbackForm = () => {
 
     try {
       // Send the feedback via the Edge Function
-      const { data, error } = await supabase.functions.invoke('send-feedback', {
+      const { error } = await supabase.functions.invoke('send-feedback', {
         body: { feedback, type }
       });
 
@@ -35,7 +35,7 @@ const FeedbackForm = () => {
       toast.success('Thank you for your feedback!');
       setFeedback('');
       setOpen(false);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error sending feedback:', error);
       toast.error('Failed to send feedback. Please try again later.');
     } finally {
