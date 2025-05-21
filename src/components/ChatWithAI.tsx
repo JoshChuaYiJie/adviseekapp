@@ -165,7 +165,7 @@ export const ChatWithAI = () => {
           `;
         }
       }
-      
+      console.log("Resume Context:", resumeContext);
       // Create context-enriched prompt with both profile and resume data
       const contextualPrompt = `
         User profile context: ${profileContext}

@@ -218,7 +218,7 @@ export const MockInterviews = ({ user }: MockInterviewsProps) => {
         - Education: ${education}
         - Work experience: ${work_experience}
         - Awards: ${awards}
-        - Skills: it_skills: ${resume.it_skills}, interests: ${resume.interests}, languages spoken:${resume.languages}
+        - Skills: it_skills: ${resume.it_skills || 'None'}, interests: ${resume.interests || 'None'}, languages spoken:${resume.languages || 'None'}
         `;
       }
 
