@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -6,6 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { MessageSquare, Send, Loader2 } from "lucide-react";
 import { useDeepseek } from "@/hooks/useDeepseek";
 import { supabase } from "@/integrations/supabase/client";
+import { useInterval } from "@/hooks/useInterval";
 
 interface Message {
   role: "user" | "assistant";
@@ -27,6 +29,13 @@ export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: Segmen
   const [resumeData, setResumeData] = useState<any>(null);
   const [streamingContent, setStreamingContent] = useState('');
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const [loadingTextIndex, setLoadingTextIndex] = useState(0);
+  
+  const loadingTexts = [
+    'Adviseek is thinking',
+    'Servers are busy',
+    '...'
+  ];
 
   // Define which segments should show the Adviseek chat
   const allowedSegments = [
@@ -46,6 +55,13 @@ export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: Segmen
       }
     }
   }, [messages, streamingContent]);
+
+  // Rotate loading messages
+  useInterval(() => {
+    if (isLoading) {
+      setLoadingTextIndex((prevIndex) => (prevIndex + 1) % loadingTexts.length);
+    }
+  }, 2000);
 
   useEffect(() => {
     const getUserData = async () => {
@@ -296,6 +312,26 @@ export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: Segmen
                 <div className="p-3 rounded-lg bg-muted text-foreground mr-8">
                   <p className="mb-1 text-xs font-medium">Adviseek</p>
                   <p className="text-sm whitespace-pre-wrap">{streamingContent}</p>
+                </div>
+              )}
+              {isLoading && !streamingContent && (
+                <div className="p-3 rounded-lg bg-muted text-foreground mr-8">
+                  <p className="mb-1 text-xs font-medium">Adviseek</p>
+                  <div className="flex items-center">
+                    {loadingTexts[loadingTextIndex].split('').map((char, i) => (
+                      <span 
+                        key={i} 
+                        className="inline-block animate-bounce" 
+                        style={{ 
+                          animationDuration: '1s', 
+                          animationDelay: `${i * 0.1}s`,
+                          marginRight: '1px' 
+                        }}
+                      >
+                        {char}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>

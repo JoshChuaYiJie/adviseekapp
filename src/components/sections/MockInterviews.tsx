@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -7,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useDeepseek } from "@/hooks/useDeepseek";
 import { Loader2 } from "lucide-react";
+import { useInterval } from "@/hooks/useInterval";
 
 interface MockInterviewsProps {
   user: any;
@@ -28,9 +30,23 @@ export const MockInterviews = ({ user }: MockInterviewsProps) => {
   const [userApplications, setUserApplications] = useState<AppliedProgram[]>([]);
   const [loading, setLoading] = useState(true);
   const [generatingQuestions, setGeneratingQuestions] = useState(false);
+  const [loadingTextIndex, setLoadingTextIndex] = useState(0);
   const { isCurrentlyDark } = useTheme();
   const { t } = useTranslation();
   const { callDeepseek } = useDeepseek();
+  
+  const loadingTexts = [
+    'Adviseek is thinking',
+    'Servers are busy',
+    '...'
+  ];
+
+  // Rotate loading messages
+  useInterval(() => {
+    if (generatingQuestions) {
+      setLoadingTextIndex((prevIndex) => (prevIndex + 1) % loadingTexts.length);
+    }
+  }, 2000);
 
   useEffect(() => {
     const fetchUserApplications = async () => {
@@ -277,7 +293,22 @@ export const MockInterviews = ({ user }: MockInterviewsProps) => {
 
       {generatingQuestions ? (
         <div className="flex flex-col items-center justify-center p-12">
-          <Loader2 className="h-8 w-8 animate-spin mb-4" />
+          <div className="mb-4 flex items-center">
+            {loadingTexts[loadingTextIndex].split('').map((char, i) => (
+              <span 
+                key={i} 
+                className="inline-block animate-bounce" 
+                style={{ 
+                  animationDuration: '1s', 
+                  animationDelay: `${i * 0.1}s`,
+                  marginRight: '1px',
+                  fontSize: '1.25rem'
+                }}
+              >
+                {char}
+              </span>
+            ))}
+          </div>
           <p className="text-center text-muted-foreground">
             Generating interview questions tailored to your application...
           </p>

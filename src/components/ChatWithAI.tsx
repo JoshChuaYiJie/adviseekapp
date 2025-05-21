@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { MessageSquare, Send, Loader2, X } from 'lucide-react';
@@ -7,6 +8,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
 import { useDeepseek } from '@/hooks/useDeepseek';
 import { supabase } from '@/integrations/supabase/client';
+import { useInterval } from '@/hooks/useInterval';
 
 export const ChatWithAI = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -18,6 +20,13 @@ export const ChatWithAI = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const [streamingContent, setStreamingContent] = useState('');
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const [loadingTextIndex, setLoadingTextIndex] = useState(0);
+  
+  const loadingTexts = [
+    'Adviseek is thinking',
+    'Servers are busy',
+    '...'
+  ];
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -28,6 +37,13 @@ export const ChatWithAI = () => {
       }
     }
   }, [messages, streamingContent]);
+
+  // Rotate loading messages
+  useInterval(() => {
+    if (isLoading) {
+      setLoadingTextIndex((prevIndex) => (prevIndex + 1) % loadingTexts.length);
+    }
+  }, 2000);
 
   // Get current user ID
   useEffect(() => {
@@ -271,10 +287,20 @@ export const ChatWithAI = () => {
               {isLoading && !streamingContent && (
                 <div className="flex justify-start">
                   <div className="bg-gray-100 text-gray-800 max-w-[80%] rounded-lg p-3">
-                    <div className="flex space-x-1 items-center">
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.4s'}}></div>
+                    <div className="flex items-center">
+                      {loadingTexts[loadingTextIndex].split('').map((char, i) => (
+                        <span 
+                          key={i} 
+                          className="inline-block animate-bounce" 
+                          style={{ 
+                            animationDuration: '1s', 
+                            animationDelay: `${i * 0.1}s`,
+                            marginRight: '1px' 
+                          }}
+                        >
+                          {char}
+                        </span>
+                      ))}
                     </div>
                   </div>
                 </div>

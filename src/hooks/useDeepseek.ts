@@ -129,7 +129,7 @@ export function useDeepseek(options: DeepseekOptions = {}): UseDeepseekReturn {
         return { choices: [{ message: { content: fullText } }] };
         
       } else {
-        // Non-streaming request
+        // Non-streaming request - use previous logic
         const { data, error } = await supabase.functions.invoke('deepseek-call', {
           body: { 
             prompt,
