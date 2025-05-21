@@ -1,188 +1,185 @@
-import { useState } from 'react';
+
+import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { toast } from '@/components/ui/sonner';
 
 interface DeepseekOptions {
   maxTokens?: number;
   temperature?: number;
   topP?: number;
   stream?: boolean;
-  onStreamChunk?: (chunk: string) => void;
 }
 
-export const useDeepseek = () => {
-  const [loading, setLoading] = useState(false);
+interface UseDeepseekReturn {
+  callAI: (prompt: string) => Promise<string>;
+  streamAI: (prompt: string, callback: (chunk: string) => void) => Promise<void>;
+  isLoading: boolean;
+  error: string | null;
+  streamingText: string;
+  isStreaming: boolean;
+  cancelStream: () => void;
+}
+
+export function useDeepseek(options: DeepseekOptions = {}): UseDeepseekReturn {
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [streamingText, setStreamingText] = useState('');
+  const [isStreaming, setIsStreaming] = useState(false);
+  const [abortController, setAbortController] = useState<AbortController | null>(null);
 
-  const callDeepseek = async (prompt: string, options?: DeepseekOptions) => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      console.log("Calling Deepseek function with prompt:", prompt);
-      
-      // Check if streaming is enabled
-      if (options?.stream && options?.onStreamChunk) {
-        console.log("Streaming mode enabled");
-        
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session) throw new Error("Authentication required");
-        
-        try {
-          // Make a direct fetch to the edge function for streaming
-          const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/deepseek-call`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${session.access_token}`,
-            },
-            body: JSON.stringify({
-              prompt,
-              options: {
-                ...(options || {}),
-                stream: true
-              }
-            }),
-          });
-
-          if (!response.ok) {
-            const errorText = await response.text();
-            console.error("Stream response error:", errorText);
-            throw new Error(`Failed to stream response: ${response.status} ${errorText}`);
-          }
-
-          // Process the stream
-          const reader = response.body?.getReader();
-          if (!reader) throw new Error("Failed to get stream reader");
-
-          let accumulatedContent = '';
-          let decoder = new TextDecoder();
-          let buffer = ''; // Buffer for incomplete chunks
-          
-          // Process stream chunks
-          while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-            
-            // Convert the Uint8Array to text
-            const chunkText = decoder.decode(value, { stream: true });
-            buffer += chunkText;
-            
-            // Split by "data: " and process each event
-            const events = buffer.split('data: ');
-            
-            // Process complete events, keeping any incomplete part in the buffer
-            buffer = events.shift() || ''; // Keep the first part as it may be incomplete
-            
-            for (const event of events) {
-              // If this is a complete event that ends with \n\n
-              if (event.includes('\n\n')) {
-                const [jsonStr, remaining] = event.split('\n\n', 2);
-                buffer = remaining || ''; // Any remainder goes back to buffer
-                
-                if (jsonStr === '[DONE]') {
-                  continue;
-                }
-                
-                try {
-                  const data = JSON.parse(jsonStr);
-                  if (data.choices && data.choices[0]?.delta?.content) {
-                    const content = data.choices[0].delta.content;
-                    accumulatedContent += content;
-                    options.onStreamChunk(content);
-                  }
-                } catch (e) {
-                  console.warn("Error parsing JSON:", e, "Raw JSON:", jsonStr);
-                }
-              } else {
-                // This event is not complete, add it back to the buffer
-                buffer += 'data: ' + event;
-              }
-            }
-          }
-          
-          // Process any remaining buffer content
-          if (buffer.trim()) {
-            console.log("Processing final buffer:", buffer);
-            const cleanedEvents = buffer.split('data: ');
-            for (const event of cleanedEvents) {
-              if (!event.trim() || event === '[DONE]') continue;
-              
-              try {
-                const data = JSON.parse(event);
-                if (data.choices && data.choices[0]?.delta?.content) {
-                  const content = data.choices[0].delta.content;
-                  accumulatedContent += content;
-                  options.onStreamChunk(content);
-                }
-              } catch (e) {
-                // Might be an incomplete JSON object, can be ignored
-                console.warn("Error parsing final JSON:", e);
-              }
-            }
-          }
-          
-          setLoading(false);
-          
-          // Return the accumulated response
-          return {
-            choices: [
-              {
-                message: {
-                  role: "assistant",
-                  content: accumulatedContent
-                }
-              }
-            ]
-          };
-        } catch (streamError) {
-          console.error("Streaming error:", streamError);
-          throw streamError;
-        }
-      } else {
-        // Regular non-streaming API call
-        const { data, error } = await supabase.functions.invoke('deepseek-call', {
-          body: { 
-            prompt, 
-            options: {
-              ...(options || {}),
-              stream: false
-            }
-          },
-        });
-
-        if (error) {
-          console.error("Supabase function error:", error);
-          throw new Error(error.message || "Error calling Deepseek");
-        }
-
-        if (!data) {
-          console.error("No data returned from Deepseek function");
-          throw new Error("No response data received");
-        }
-
-        console.log("Received response from Deepseek:", data);
-        setLoading(false);
-        return data;
+  useEffect(() => {
+    // Cleanup function to abort any pending requests when component unmounts
+    return () => {
+      if (abortController) {
+        abortController.abort();
       }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
-      console.error("Deepseek error:", errorMessage);
-      setError(errorMessage);
-      
-      toast.error("Failed to get a response from AI", {
-        description: "Please try again or check your connection.",
-        duration: 4000,
+    };
+  }, []);
+
+  const cancelStream = () => {
+    if (abortController) {
+      abortController.abort();
+      setIsStreaming(false);
+      setIsLoading(false);
+    }
+  };
+
+  const callAI = async (prompt: string): Promise<string> => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('deepseek-call', {
+        body: { 
+          prompt,
+          options: {
+            ...options,
+            stream: false
+          }
+        }
       });
-      
-      setLoading(false);
-      return null;
+
+      if (error) {
+        throw new Error(error.message || 'Failed to call AI');
+      }
+
+      if (!data || !data.choices || !data.choices[0] || !data.choices[0].message) {
+        throw new Error('Invalid response format from AI');
+      }
+
+      return data.choices[0].message.content;
+    } catch (err: any) {
+      const errorMessage = err.message || 'An error occurred while calling the AI';
+      setError(errorMessage);
+      console.error('Error calling DeepSeek AI:', err);
+      toast({
+        title: 'AI Error',
+        description: errorMessage,
+        variant: 'destructive'
+      });
+      return '';
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const streamAI = async (prompt: string, callback: (chunk: string) => void): Promise<void> => {
+    setIsLoading(true);
+    setIsStreaming(true);
+    setError(null);
+    setStreamingText('');
+
+    // Create a new abort controller for this request
+    const controller = new AbortController();
+    setAbortController(controller);
+
+    try {
+      const { data, error } = await supabase.functions.invoke('deepseek-call', {
+        body: { 
+          prompt,
+          options: {
+            ...options,
+            stream: true
+          }
+        },
+        responseType: 'stream',
+        abortSignal: controller.signal,
+      });
+
+      if (error) {
+        throw new Error(error.message || 'Failed to call AI');
+      }
+
+      if (!data) {
+        throw new Error('No data received from stream');
+      }
+
+      const reader = data.getReader();
+      const decoder = new TextDecoder();
+      let fullText = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        // Process the chunk data
+        const chunk = decoder.decode(value, { stream: true });
+        
+        // Split by "data: " to get individual SSE messages
+        const lines = chunk.split('\n').filter(line => line.startsWith('data: '));
+        
+        for (const line of lines) {
+          try {
+            const cleanedLine = line.replace(/^data: /, '');
+            
+            // Skip "[DONE]" message
+            if (cleanedLine.trim() === '[DONE]') continue;
+            
+            const json = JSON.parse(cleanedLine);
+            
+            if (json.choices && json.choices[0] && json.choices[0].delta && json.choices[0].delta.content) {
+              const textChunk = json.choices[0].delta.content;
+              fullText += textChunk;
+              setStreamingText(fullText);
+              callback(textChunk);
+            }
+          } catch (parseError) {
+            console.warn('Error parsing SSE message:', parseError, line);
+            // Continue processing other chunks even if one fails
+          }
+        }
+      }
+
+      return;
+    } catch (err: any) {
+      if (err.name === 'AbortError') {
+        console.log('Stream aborted by user');
+      } else {
+        const errorMessage = err.message || 'An error occurred while streaming AI response';
+        setError(errorMessage);
+        console.error('Error streaming from DeepSeek AI:', err);
+        toast({
+          title: 'AI Streaming Error',
+          description: errorMessage,
+          variant: 'destructive'
+        });
+      }
+    } finally {
+      setIsLoading(false);
+      setIsStreaming(false);
+      setAbortController(null);
     }
   };
 
   return {
-    callDeepseek,
-    loading,
+    callAI,
+    streamAI,
+    isLoading,
     error,
+    streamingText,
+    isStreaming,
+    cancelStream
   };
-};
+}
+
+export default useDeepseek;

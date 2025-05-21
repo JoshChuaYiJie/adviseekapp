@@ -179,6 +179,36 @@ export type Database = {
         }
         Relationships: []
       }
+      consultant_applications: {
+        Row: {
+          about_yourself: string
+          achievements: string
+          created_at: string
+          enthusiasm: number
+          id: string
+          school_and_course: string
+          user_id: string
+        }
+        Insert: {
+          about_yourself: string
+          achievements: string
+          created_at?: string
+          enthusiasm: number
+          id?: string
+          school_and_course: string
+          user_id: string
+        }
+        Update: {
+          about_yourself?: string
+          achievements?: string
+          created_at?: string
+          enthusiasm?: number
+          id?: string
+          school_and_course?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       open_ended_responses: {
         Row: {
           created_at: string

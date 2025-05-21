@@ -4,12 +4,27 @@ import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/sonner";
 import { ConsultantApplicationForm } from "@/components/forms/ConsultantApplicationForm"; 
 import { useTheme } from "@/contexts/ThemeContext";
+import { supabase } from "@/integrations/supabase/client";
 
 export const GetPaid = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const { isCurrentlyDark } = useTheme();
+  const [userId, setUserId] = useState<string>("");
 
-  const handleApplyConsultant = () => {
+  const handleApplyConsultant = async () => {
+    // Get the current user
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    if (!session?.user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to apply as a consultant",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    setUserId(session.user.id);
     setIsFormOpen(true);
   };
 
@@ -60,7 +75,7 @@ export const GetPaid = () => {
       <ConsultantApplicationForm 
         isOpen={isFormOpen} 
         onClose={() => setIsFormOpen(false)}
-        userId="placeholder" // In a real implementation, this would be the actual user ID
+        userId={userId}
       />
     </div>
   );
