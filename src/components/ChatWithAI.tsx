@@ -23,8 +23,8 @@ export const ChatWithAI = () => {
   
   const loadingTexts = [
     'Adviseek is thinking',
-    'Servers are busy',
-    '...'
+    'Seeking Advice',
+    'Speaking to pros'
   ];
 
   // Auto-scroll to bottom when new messages arrive

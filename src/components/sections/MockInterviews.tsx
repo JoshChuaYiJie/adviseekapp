@@ -36,9 +36,9 @@ export const MockInterviews = ({ user }: MockInterviewsProps) => {
   const { callAI } = useDeepseek();
   
   const loadingTexts = [
-    'Adviseek is thinking',
-    'Servers are busy',
-    '...'
+    'What would your interviewers ask?',
+    'Submitting your profile',
+    'Taking a coffee break'
   ];
 
   // Rotate loading messages
