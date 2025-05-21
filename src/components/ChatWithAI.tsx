@@ -120,7 +120,7 @@ export const ChatWithAI = () => {
             console.error("Error parsing education items:", error);
           }
           
-          // Format work experience items
+          // Format awards
           let awards = '';
           try {
             const awarditems = typeof latestResume.awards === 'string'
@@ -140,7 +140,7 @@ export const ChatWithAI = () => {
             console.error("Error parsing awards:", error);
           }
 
-          // Format awards
+          // Format work experience
           let workExperienceItems = '';
           try {
             const workItems = typeof latestResume.work_experience === 'string'
@@ -151,7 +151,7 @@ export const ChatWithAI = () => {
               workItems.forEach((item, index) => {
                 workExperienceItems += `
                   Work Experience ${index + 1}:
-                  - Organisation: ${item.organisation || 'N/A'}
+                  - Organisation: ${item.organization || 'N/A'}
                   - Role: ${item.role || 'N/A'}
                   - Date: ${item.dates || ''}
                   ${item.description ? `- Description: ${item.description}` : ''}
