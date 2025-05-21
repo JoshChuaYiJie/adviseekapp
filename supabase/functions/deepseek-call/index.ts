@@ -55,6 +55,9 @@ serve(async (req) => {
 async function callDeepseekAPI(apiKey: string, prompt: string, options: any, corsHeaders: any) {
   console.log("Calling Deepseek API...");
   
+  // Force stream to false
+  options.stream = false;
+  
   const requestBody = {
     model: "deepseek-chat", 
     messages: [
@@ -64,7 +67,7 @@ async function callDeepseekAPI(apiKey: string, prompt: string, options: any, cor
     max_tokens: options.maxTokens || 1000,
     temperature: options.temperature || 0.7,
     top_p: options.topP || 0.95,
-    stream: options.stream || false
+    stream: false
   };
 
   console.log("Request body:", JSON.stringify(requestBody));
@@ -85,20 +88,7 @@ async function callDeepseekAPI(apiKey: string, prompt: string, options: any, cor
       throw new Error(`Deepseek API error: ${deepseekResponse.status} ${errorText}`);
     }
     
-    // Handle streaming response
-    if (options.stream) {
-      // For streaming, we need to return the text content directly
-      // rather than trying to return a ReadableStream
-      const streamText = await deepseekResponse.text();
-      
-      // Return the stream content as plain text with appropriate headers
-      const headers = new Headers(corsHeaders);
-      headers.set("Content-Type", "text/plain");
-      
-      return new Response(streamText, { headers });
-    }
-    
-    // Handle non-streaming response
+    // Handle non-streaming response only
     const deepseekData = await deepseekResponse.json();
     return new Response(
       JSON.stringify(deepseekData),

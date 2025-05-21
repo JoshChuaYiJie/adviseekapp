@@ -33,7 +33,7 @@ export const MockInterviews = ({ user }: MockInterviewsProps) => {
   const [loadingTextIndex, setLoadingTextIndex] = useState(0);
   const { isCurrentlyDark } = useTheme();
   const { t } = useTranslation();
-  const { callDeepseek } = useDeepseek();
+  const { callAI } = useDeepseek();
   
   const loadingTexts = [
     'Adviseek is thinking',
@@ -166,35 +166,28 @@ export const MockInterviews = ({ user }: MockInterviewsProps) => {
       console.log("Generating interview questions with prompt:", prompt);
       
       // Call the AI to generate questions
-      const result = await callDeepseek(prompt);
+      const aiResponse = await callAI(prompt);
       
-      if (result && result.choices && result.choices[0]?.message?.content) {
-        const content = result.choices[0].message.content;
+      // Parse the questions from the AI response
+      const questionLines = aiResponse
+        .split('\n')
+        .filter(line => line.trim().match(/^\d+\.\s/)) // Lines starting with numbers
+        .map(line => line.replace(/^\d+\.\s/, '').trim()); // Remove the numbers
+      
+      if (questionLines.length > 0) {
+        setQuestions(questionLines);
         
-        // Parse the questions from the AI response
-        const questionLines = content
-          .split('\n')
-          .filter(line => line.trim().match(/^\d+\.\s/)) // Lines starting with numbers
-          .map(line => line.replace(/^\d+\.\s/, '').trim()); // Remove the numbers
+        // Initialize responses for these questions
+        const initialResponses: Record<string, string> = {};
+        questionLines.forEach(q => {
+          initialResponses[q] = "";
+        });
+        setResponses(initialResponses);
         
-        if (questionLines.length > 0) {
-          setQuestions(questionLines);
-          
-          // Initialize responses for these questions
-          const initialResponses: Record<string, string> = {};
-          questionLines.forEach(q => {
-            initialResponses[q] = "";
-          });
-          setResponses(initialResponses);
-          
-          console.log("Generated questions:", questionLines);
-        } else {
-          // If parsing failed, show an error
-          console.error("Failed to parse AI-generated questions");
-          toast.error("Failed to generate interview questions. Please try again.");
-        }
+        console.log("Generated questions:", questionLines);
       } else {
-        console.error("AI did not return expected response format");
+        // If parsing failed, show an error
+        console.error("Failed to parse AI-generated questions");
         toast.error("Failed to generate interview questions. Please try again.");
       }
     } catch (error) {

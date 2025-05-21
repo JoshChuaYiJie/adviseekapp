@@ -16,9 +16,8 @@ export const ChatWithAI = () => {
     {role: 'assistant', content: 'Hi there! I\'m your Adviseek AI assistant. How can I help you with your university applications today?'}
   ]);
   const [input, setInput] = useState('');
-  const { callDeepseek, isLoading } = useDeepseek();
+  const { callAI, isLoading } = useDeepseek();
   const [userId, setUserId] = useState<string | null>(null);
-  const [streamingContent, setStreamingContent] = useState('');
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const [loadingTextIndex, setLoadingTextIndex] = useState(0);
   
@@ -36,7 +35,7 @@ export const ChatWithAI = () => {
         scrollContainer.scrollTop = scrollContainer.scrollHeight;
       }
     }
-  }, [messages, streamingContent]);
+  }, [messages]);
 
   // Rotate loading messages
   useInterval(() => {
@@ -60,8 +59,8 @@ export const ChatWithAI = () => {
     // Add user message
     const userMessage = {role: 'user' as const, content: input};
     setMessages(prev => [...prev, userMessage]);
+    const userInput = input;
     setInput('');
-    setStreamingContent(''); // Reset streaming content
     
     try {
       // Fetch profile data for context enrichment
@@ -171,7 +170,7 @@ export const ChatWithAI = () => {
       const contextualPrompt = `
         User profile context: ${profileContext}
         User resume context: ${resumeContext}
-        User message: ${input}
+        User message: ${userInput}
 
         You are Adviseek AI, a conversational assistant specializing in academic and career guidance. Your goal is to provide clear, concise, and personalized advice to support the user's academic and career journey, including university applications, admissions, study strategies, resume building, career exploration, and interview preparation.
 
@@ -197,27 +196,14 @@ export const ChatWithAI = () => {
         [Optional clarifying question or call-to-action]
       `;
       
-      // Call Deepseek with streaming
-      await callDeepseek(
-        contextualPrompt,
-        { 
-          maxTokens: 1000, 
-          temperature: 0.4, 
-          topP: 0.95,
-          stream: true,
-          onStreamChunk: (chunk) => {
-            setStreamingContent(prev => prev + chunk);
-          }
-        }
-      );
+      // Call AI with complete context
+      const aiResponse = await callAI(contextualPrompt);
       
-      // After streaming is complete, add the full message to history
+      // Add AI response to messages
       setMessages(prev => [...prev, {
         role: 'assistant',
-        content: streamingContent 
+        content: aiResponse
       }]);
-      setStreamingContent(''); // Reset streaming content
-      
     } catch (error) {
       console.error("Error calling Deepseek API:", error);
       toast.error("Error connecting to the AI service. Please try again.");
@@ -225,7 +211,6 @@ export const ChatWithAI = () => {
         role: 'assistant', 
         content: "I'm having trouble connecting to my brain. Please try again in a moment."
       }]);
-      setStreamingContent(''); // Reset streaming content
     }
   };
 
@@ -277,14 +262,7 @@ export const ChatWithAI = () => {
                   </div>
                 </div>
               ))}
-              {streamingContent && (
-                <div className="flex justify-start">
-                  <div className="bg-gray-100 text-gray-800 max-w-[80%] rounded-lg p-3">
-                    <div className="whitespace-pre-wrap">{streamingContent}</div>
-                  </div>
-                </div>
-              )}
-              {isLoading && !streamingContent && (
+              {isLoading && (
                 <div className="flex justify-start">
                   <div className="bg-gray-100 text-gray-800 max-w-[80%] rounded-lg p-3">
                     <div className="flex items-center">

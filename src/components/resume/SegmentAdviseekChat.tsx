@@ -23,11 +23,10 @@ export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: Segmen
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
-  const { callDeepseek, isLoading } = useDeepseek();
+  const { callAI, isLoading } = useDeepseek();
   const [userId, setUserId] = useState<string | null>(null);
   const [profileData, setProfileData] = useState<any>(null);
   const [resumeData, setResumeData] = useState<any>(null);
-  const [streamingContent, setStreamingContent] = useState('');
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const [loadingTextIndex, setLoadingTextIndex] = useState(0);
   
@@ -54,7 +53,7 @@ export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: Segmen
         scrollContainer.scrollTop = scrollContainer.scrollHeight;
       }
     }
-  }, [messages, streamingContent]);
+  }, [messages]);
 
   // Rotate loading messages
   useInterval(() => {
@@ -130,7 +129,6 @@ export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: Segmen
     setMessages(prev => [...prev, userMessage]);
     const userQuery = input;
     setInput("");
-    setStreamingContent(''); // Reset streaming content
 
     // Create a context-aware prompt
     let contextualPrompt = `
@@ -241,26 +239,17 @@ export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: Segmen
     }
 
     try {
-      // Stream the response
-      await callDeepseek(
-        contextualPrompt,
-        { 
-          stream: true,
-          onStreamChunk: (chunk) => {
-            setStreamingContent(prev => prev + chunk);
-          }
-        }
-      );
+      // Call AI with non-streaming
+      const aiResponse = await callAI(contextualPrompt);
       
-      // After streaming is complete, add the full message to history
+      // Add the response to the chat history
       setMessages(prev => [
         ...prev,
         {
           role: "assistant",
-          content: streamingContent
+          content: aiResponse
         }
       ]);
-      setStreamingContent(''); // Reset streaming content
       
     } catch (error) {
       console.error("Error calling Deepseek:", error);
@@ -271,7 +260,6 @@ export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: Segmen
           content: "I'm sorry, I encountered an error. Please try again."
         }
       ]);
-      setStreamingContent(''); // Reset streaming content
     }
   };
 
@@ -308,13 +296,7 @@ export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: Segmen
                   <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
                 </div>
               ))}
-              {streamingContent && (
-                <div className="p-3 rounded-lg bg-muted text-foreground mr-8">
-                  <p className="mb-1 text-xs font-medium">Adviseek</p>
-                  <p className="text-sm whitespace-pre-wrap">{streamingContent}</p>
-                </div>
-              )}
-              {isLoading && !streamingContent && (
+              {isLoading && (
                 <div className="p-3 rounded-lg bg-muted text-foreground mr-8">
                   <p className="mb-1 text-xs font-medium">Adviseek</p>
                   <div className="flex items-center">
