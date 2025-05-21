@@ -181,7 +181,7 @@ export const ChatWithAI = () => {
         [Optional clarifying question or call-to-action]
       `;
       
-      // Stream the response
+      // Call Deepseek with streaming
       await callDeepseek(
         contextualPrompt,
         { 

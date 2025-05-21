@@ -71,8 +71,6 @@ export function useDeepseek(options: DeepseekOptions = {}): UseDeepseekReturn {
             prompt,
             options: finalOptions
           }
-          // Supabase client doesn't directly support abortSignal in its type definition
-          // We'll remove this property as it's causing the TypeScript error
         });
         
         if (error) {
@@ -90,89 +88,46 @@ export function useDeepseek(options: DeepseekOptions = {}): UseDeepseekReturn {
           throw new Error('No data received from stream');
         }
         
-        if (!finalOptions.onStreamChunk) {
-          // Default streaming behavior with returned response
-          let fullText = '';
-          const reader = data.getReader();
-          const decoder = new TextDecoder();
-          
-          while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-            
-            // Process the chunk data
-            const chunk = decoder.decode(value, { stream: true });
-            
-            // Split by "data: " to get individual SSE messages
-            const lines = chunk.split('\n').filter(line => line.startsWith('data: '));
-            
-            for (const line of lines) {
-              try {
-                const cleanedLine = line.replace(/^data: /, '');
+        // Process the streaming data
+        let fullText = '';
+
+        // The data from Supabase functions is already a text stream
+        // We need to manually process it line by line to handle SSE format
+        const lines = data.split('\n');
+        
+        for (const line of lines) {
+          // Process SSE format: lines starting with "data: "
+          if (line.startsWith('data: ')) {
+            try {
+              const cleanedLine = line.replace(/^data: /, '');
+              
+              // Skip "[DONE]" message
+              if (cleanedLine.trim() === '[DONE]') continue;
+              
+              const json = JSON.parse(cleanedLine);
+              
+              if (json.choices && json.choices[0] && json.choices[0].delta && json.choices[0].delta.content) {
+                const textChunk = json.choices[0].delta.content;
+                fullText += textChunk;
                 
-                // Skip "[DONE]" message
-                if (cleanedLine.trim() === '[DONE]') continue;
-                
-                const json = JSON.parse(cleanedLine);
-                
-                if (json.choices && json.choices[0] && json.choices[0].delta && json.choices[0].delta.content) {
-                  const textChunk = json.choices[0].delta.content;
-                  fullText += textChunk;
+                if (finalOptions.onStreamChunk) {
+                  finalOptions.onStreamChunk(textChunk);
+                } else {
                   setStreamingText(fullText);
                 }
-              } catch (parseError) {
-                console.warn('Error parsing SSE message:', parseError, line);
               }
+            } catch (parseError) {
+              console.warn('Error parsing SSE message:', parseError, line);
             }
           }
-          
-          setIsStreaming(false);
-          setIsLoading(false);
-          setAbortController(null);
-          
-          return { choices: [{ message: { content: fullText } }] };
-        } else {
-          // Use the provided onStreamChunk callback
-          let fullText = '';
-          const reader = data.getReader();
-          const decoder = new TextDecoder();
-          
-          while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-            
-            // Process the chunk data
-            const chunk = decoder.decode(value, { stream: true });
-            
-            // Split by "data: " to get individual SSE messages
-            const lines = chunk.split('\n').filter(line => line.startsWith('data: '));
-            
-            for (const line of lines) {
-              try {
-                const cleanedLine = line.replace(/^data: /, '');
-                
-                // Skip "[DONE]" message
-                if (cleanedLine.trim() === '[DONE]') continue;
-                
-                const json = JSON.parse(cleanedLine);
-                
-                if (json.choices && json.choices[0] && json.choices[0].delta && json.choices[0].delta.content) {
-                  const textChunk = json.choices[0].delta.content;
-                  fullText += textChunk;
-                  finalOptions.onStreamChunk(textChunk);
-                }
-              } catch (parseError) {
-                console.warn('Error parsing SSE message:', parseError, line);
-              }
-            }
-          }
-          
-          setIsStreaming(false);
-          setIsLoading(false);
-          setAbortController(null);
-          
-          return { choices: [{ message: { content: fullText } }] };
         }
+        
+        setIsStreaming(false);
+        setIsLoading(false);
+        setAbortController(null);
+        
+        return { choices: [{ message: { content: fullText } }] };
+        
       } else {
         // Non-streaming request
         const { data, error } = await supabase.functions.invoke('deepseek-call', {
