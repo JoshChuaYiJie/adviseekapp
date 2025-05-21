@@ -111,10 +111,8 @@ export const ChatWithAI = () => {
                 educationItems += `
                   Education ${index + 1}:
                   - Institution: ${item.institution || 'N/A'}
-                  - Degree: ${item.degree || 'N/A'}
-                  - Field: ${item.fieldOfStudy || 'N/A'}
-                  - Date: ${item.startDate || ''} - ${item.endDate || ''}
-                  ${item.description ? `- Description: ${item.description}` : ''}
+                  - Qualification: ${item.qualifications || 'N/A'}
+                  - Date: ${item.dates || ''}
                 `;
               });
             }
@@ -123,6 +121,26 @@ export const ChatWithAI = () => {
           }
           
           // Format work experience items
+          let awards = '';
+          try {
+            const awarditems = typeof latestResume.awards === 'string'
+              ? JSON.parse(latestResume.awards)
+              : latestResume.awards;
+              
+            if (Array.isArray(awarditems)) {
+              awarditems.forEach((item, index) => {
+                awards += `
+                  Award ${index + 1}:
+                  - Award: ${item.title || 'N/A'}
+                  - Date: ${item.date || ''}
+                `;
+              });
+            }
+          } catch (error) {
+            console.error("Error parsing awards:", error);
+          }
+
+          // Format awards
           let workExperienceItems = '';
           try {
             const workItems = typeof latestResume.work_experience === 'string'
@@ -133,9 +151,9 @@ export const ChatWithAI = () => {
               workItems.forEach((item, index) => {
                 workExperienceItems += `
                   Work Experience ${index + 1}:
-                  - Company: ${item.company || 'N/A'}
-                  - Position: ${item.position || 'N/A'}
-                  - Date: ${item.startDate || ''} - ${item.endDate || ''}
+                  - Organisation: ${item.organisation || 'N/A'}
+                  - Role: ${item.role || 'N/A'}
+                  - Date: ${item.dates || ''}
                   ${item.description ? `- Description: ${item.description}` : ''}
                 `;
               });
@@ -155,7 +173,7 @@ export const ChatWithAI = () => {
             
             ${workExperienceItems ? `Work Experience:\n${workExperienceItems}` : ''}
             
-            ${latestResume.awards ? `Awards: ${latestResume.awards}` : ''}
+            ${latestResume.awards ? `Awards:\n${awards}` : ''}
             
             ${latestResume.languages ? `Languages: ${latestResume.languages}` : ''}
             
