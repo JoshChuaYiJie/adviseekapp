@@ -52,7 +52,7 @@ export const ApplyNow = () => {
   const [isLoadingResponses, setIsLoadingResponses] = useState(false);
   const { isCurrentlyDark } = useTheme();
   const { t } = useTranslation();
-  const { callDeepseek, loading: aiLoading } = useDeepseek();
+  const { callDeepseek, isLoading: aiLoading } = useDeepseek();
   
   // New states for the adviseek chat functionality
   const [activeChatQuestion, setActiveChatQuestion] = useState<string | null>(null);

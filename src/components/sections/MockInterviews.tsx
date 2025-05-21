@@ -1,11 +1,10 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { useDeepseek } from "@/hooks/useDeepseek";
 import { Loader2 } from "lucide-react";
 
@@ -31,10 +30,8 @@ export const MockInterviews = ({ user }: MockInterviewsProps) => {
   const [generatingQuestions, setGeneratingQuestions] = useState(false);
   const { isCurrentlyDark } = useTheme();
   const { t } = useTranslation();
-  const { toast } = useToast();
   const { callDeepseek } = useDeepseek();
 
-  // Fetch user's applied programs from Supabase
   useEffect(() => {
     const fetchUserApplications = async () => {
       try {
@@ -57,11 +54,7 @@ export const MockInterviews = ({ user }: MockInterviewsProps) => {
 
         if (error) {
           console.error("Error fetching applied programs:", error);
-          toast({
-            title: "Error",
-            description: "Failed to load your applications",
-            variant: "destructive"
-          });
+          toast.error("Failed to load your applications");
           return;
         }
 
@@ -96,11 +89,7 @@ export const MockInterviews = ({ user }: MockInterviewsProps) => {
       const session = sessionData?.session;
       
       if (!session?.user?.id) {
-        toast({
-          title: "Error",
-          description: "You must be logged in to generate interview questions",
-          variant: "destructive"
-        });
+        toast.error("You must be logged in to generate interview questions");
         return;
       }
       
@@ -186,27 +175,15 @@ export const MockInterviews = ({ user }: MockInterviewsProps) => {
         } else {
           // If parsing failed, show an error
           console.error("Failed to parse AI-generated questions");
-          toast({
-            title: "Error",
-            description: "Failed to generate interview questions. Please try again.",
-            variant: "destructive"
-          });
+          toast.error("Failed to generate interview questions. Please try again.");
         }
       } else {
         console.error("AI did not return expected response format");
-        toast({
-          title: "Error",
-          description: "Failed to generate interview questions. Please try again.",
-          variant: "destructive"
-        });
+        toast.error("Failed to generate interview questions. Please try again.");
       }
     } catch (error) {
       console.error("Error generating interview questions:", error);
-      toast({
-        title: "Error",
-        description: "Failed to generate interview questions",
-        variant: "destructive"
-      });
+      toast.error("Failed to generate interview questions");
     } finally {
       setGeneratingQuestions(false);
     }
@@ -244,22 +221,14 @@ export const MockInterviews = ({ user }: MockInterviewsProps) => {
       const session = sessionData?.session;
       
       if (!session?.user?.id) {
-        toast({
-          title: "Authentication Error",
-          description: "You must be logged in to save responses",
-          variant: "destructive"
-        });
+        toast.error("You must be logged in to save responses");
         return;
       }
 
       // Find the selected application
       const selectedApp = userApplications.find(app => app.id === selectedApplication);
       if (!selectedApp) {
-        toast({
-          title: "Error",
-          description: "Selected application not found",
-          variant: "destructive"
-        });
+        toast.error("Selected application not found");
         return;
       }
 
@@ -273,17 +242,10 @@ export const MockInterviews = ({ user }: MockInterviewsProps) => {
         responses: responses
       });
 
-      toast({
-        title: "Success",
-        description: t("interview.responses_saved", "Your responses have been saved!"),
-      });
+      toast.success(t("interview.responses_saved", "Your responses have been saved!"));
     } catch (error) {
       console.error("Error saving responses:", error);
-      toast({
-        title: "Error",
-        description: "Failed to save your responses",
-        variant: "destructive"
-      });
+      toast.error("Failed to save your responses");
     }
   };
 

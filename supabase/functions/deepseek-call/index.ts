@@ -93,7 +93,7 @@ async function callDeepseekAPI(apiKey: string, prompt: string, options: any, cor
       headers.set("Cache-Control", "no-cache");
       headers.set("Connection", "keep-alive");
       
-      // Create a TransformStream to process the response
+      // Create a ReadableStream to pass through the data from Deepseek
       const { readable, writable } = new TransformStream();
       const writer = writable.getWriter();
       
@@ -112,7 +112,11 @@ async function callDeepseekAPI(apiKey: string, prompt: string, options: any, cor
         try {
           while (true) {
             const { done, value } = await reader.read();
-            if (done) break;
+            if (done) {
+              // Send [DONE] signal when the stream is complete
+              writer.write(encoder.encode('data: [DONE]\n\n'));
+              break;
+            }
             
             // Convert the Uint8Array to text and forward it
             const chunk = decoder.decode(value, { stream: true });

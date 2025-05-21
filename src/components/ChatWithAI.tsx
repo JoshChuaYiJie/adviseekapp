@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { MessageSquare, Send, Loader2, X } from 'lucide-react';
@@ -15,7 +14,7 @@ export const ChatWithAI = () => {
     {role: 'assistant', content: 'Hi there! I\'m your Adviseek AI assistant. How can I help you with your university applications today?'}
   ]);
   const [input, setInput] = useState('');
-  const { callDeepseek, loading } = useDeepseek();
+  const { callDeepseek, isLoading } = useDeepseek();
   const [userId, setUserId] = useState<string | null>(null);
   const [streamingContent, setStreamingContent] = useState('');
   const scrollAreaRef = useRef<HTMLDivElement>(null);
@@ -40,7 +39,7 @@ export const ChatWithAI = () => {
   }, []);
 
   const handleSendMessage = async () => {
-    if (!input.trim() || loading) return;
+    if (!input.trim() || isLoading) return;
     
     // Add user message
     const userMessage = {role: 'user' as const, content: input};
@@ -269,7 +268,7 @@ export const ChatWithAI = () => {
                   </div>
                 </div>
               )}
-              {loading && !streamingContent && (
+              {isLoading && !streamingContent && (
                 <div className="flex justify-start">
                   <div className="bg-gray-100 text-gray-800 max-w-[80%] rounded-lg p-3">
                     <div className="flex space-x-1 items-center">
@@ -291,15 +290,15 @@ export const ChatWithAI = () => {
               onKeyPress={(e) => {
                 if (e.key === 'Enter') handleSendMessage();
               }}
-              disabled={loading}
+              disabled={isLoading}
               className="flex-grow"
             />
             <Button 
               onClick={handleSendMessage} 
-              disabled={!input.trim() || loading}
+              disabled={!input.trim() || isLoading}
               size="icon"
             >
-              {loading ? (
+              {isLoading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
                 <Send className="h-4 w-4" />

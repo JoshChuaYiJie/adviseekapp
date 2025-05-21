@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Slider } from "@/components/ui/slider";
-import { toast } from "@/components/ui/sonner";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useTheme } from "@/contexts/ThemeContext";
 
@@ -45,10 +45,8 @@ export const ConsultantApplicationForm = ({ isOpen, onClose, userId }: Consultan
       const actualUserId = session?.user?.id || userId;
       
       if (!actualUserId) {
-        toast({
-          title: "Authentication Error",
-          description: "You must be logged in to submit an application",
-          variant: "destructive"
+        toast.error("Authentication Error", {
+          description: "You must be logged in to submit an application"
         });
         setIsSubmitting(false);
         return;
@@ -69,9 +67,8 @@ export const ConsultantApplicationForm = ({ isOpen, onClose, userId }: Consultan
         throw new Error(error.message || 'Failed to submit application');
       }
       
-      toast({
-        title: "Application Submitted",
-        description: "Thank you for your application. We'll review it and get back to you soon.",
+      toast.success("Application Submitted", {
+        description: "Thank you for your application. We'll review it and get back to you soon."
       });
       
       // Reset form and close dialog
@@ -84,10 +81,8 @@ export const ConsultantApplicationForm = ({ isOpen, onClose, userId }: Consultan
       onClose();
     } catch (error) {
       console.error('Error submitting application:', error);
-      toast({
-        title: "Submission Failed",
-        description: error instanceof Error ? error.message : "An unknown error occurred",
-        variant: "destructive"
+      toast.error("Submission Failed", {
+        description: error instanceof Error ? error.message : "An unknown error occurred"
       });
     } finally {
       setIsSubmitting(false);

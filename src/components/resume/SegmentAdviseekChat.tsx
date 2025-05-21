@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -22,7 +21,7 @@ export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: Segmen
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
-  const { callDeepseek, loading } = useDeepseek();
+  const { callDeepseek, isLoading } = useDeepseek();
   const [userId, setUserId] = useState<string | null>(null);
   const [profileData, setProfileData] = useState<any>(null);
   const [resumeData, setResumeData] = useState<any>(null);
@@ -104,7 +103,7 @@ export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: Segmen
   };
 
   const sendMessage = async () => {
-    if (!input.trim() || loading) return;
+    if (!input.trim() || isLoading) return;
 
     // Add user message to chat
     const userMessage = {
@@ -308,7 +307,7 @@ export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: Segmen
               onChange={(e) => setInput(e.target.value)}
               placeholder={`Ask about your ${segmentType.toLowerCase()} section...`}
               className="flex-1 resize-none"
-              disabled={loading}
+              disabled={isLoading}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
                   e.preventDefault();
@@ -318,10 +317,10 @@ export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: Segmen
             />
             <Button
               onClick={sendMessage}
-              disabled={loading || !input.trim()}
+              disabled={isLoading || !input.trim()}
               className="self-end"
             >
-              {loading ? (
+              {isLoading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
                 <Send className="h-4 w-4" />
