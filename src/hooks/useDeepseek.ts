@@ -71,15 +71,22 @@ export function useDeepseek(options: DeepseekOptions = {}): UseDeepseekReturn {
             prompt,
             options: finalOptions
           },
-          abortSignal: controller.signal,
+          // Supabase client doesn't directly support abortSignal in its type definition
+          // We'll remove this property as it's causing the TypeScript error
         });
         
         if (error) {
+          toast.error('AI Error', {
+            description: error.message || 'Failed to call AI'
+          });
           throw new Error(error.message || 'Failed to call AI');
         }
         
         // If we're streaming but no data handler was provided
         if (!data) {
+          toast.error('AI Error', {
+            description: 'No data received from stream'
+          });
           throw new Error('No data received from stream');
         }
         
@@ -176,6 +183,9 @@ export function useDeepseek(options: DeepseekOptions = {}): UseDeepseekReturn {
         });
 
         if (error) {
+          toast.error('AI Error', {
+            description: error.message || 'Failed to call AI'
+          });
           throw new Error(error.message || 'Failed to call AI');
         }
 
