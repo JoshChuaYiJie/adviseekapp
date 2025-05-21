@@ -162,8 +162,9 @@ export const MockInterviews = ({ user }: MockInterviewsProps) => {
         - Skills: ${resume.it_skills || 'Not available'}
         `;
       }
-      
+      console.log("PROFILE DATA IS AVALIBLE IN MOCK INTERVIEW", profileData);
       console.log("Generating interview questions with prompt:", prompt);
+      console.log("RESUME DATA IS AVLAIBLE IN MOCK INTERVIEW", resumeData);
       
       // Call the AI to generate questions
       const aiResponse = await callAI(prompt);

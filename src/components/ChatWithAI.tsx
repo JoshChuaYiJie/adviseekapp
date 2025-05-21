@@ -186,6 +186,7 @@ export const ChatWithAI = () => {
         - If the user's message is vague, ask a targeted clarifying question based on their profile or resume.
         - Prioritize readability with whitespace, short sentences, and clear section breaks.
         - End with a clear call-to-action (e.g., a question or invitation) to engage the user further.
+        - There is no need to explicitly state the user's profile or resume (unless relevant)
 
         Example response structure:
         ## [Relevant Topic]
