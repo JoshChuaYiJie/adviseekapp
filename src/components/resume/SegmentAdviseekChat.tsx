@@ -152,7 +152,7 @@ export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: Segmen
       `;
     }
 
-    if segmentType === "Education Details"{
+    if (segmentType === "Education Details"){
       contextualPrompt += `
       There are two fields to respond to: 
       - Institution
