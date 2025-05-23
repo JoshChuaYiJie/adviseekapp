@@ -12,51 +12,65 @@ const AuthSection = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   return (
-    <div className="w-full md:w-5/12 lg:w-4/12 xl:w-1/3 flex flex-col justify-between p-6 md:p-10 lg:p-12 bg-black/5">
-      <div>
-        {/* Logo */}
-        <AuthHeader />
+    <div className="min-h-screen flex">
+      {/* Left side - Auth form */}
+      <div className="w-full md:w-5/12 lg:w-4/12 xl:w-1/3 flex flex-col justify-between p-6 md:p-10 lg:p-12 bg-black/5">
+        <div>
+          {/* Logo */}
+          <AuthHeader />
 
-        {/* Auth Section */}
-        <div className="space-y-8">
-          <h2 className="text-lg font-semibold">Sign up or Login with</h2>
+          {/* Auth Section */}
+          <div className="space-y-8">
+            <h2 className="text-lg font-semibold">Sign up or Login with</h2>
 
-          {!isEmailContinue ? (
-            <>
-              {/* Social Login Buttons */}
-              <SocialAuthOptions onEmailContinue={() => setIsEmailContinue(true)} />
+            {!isEmailContinue ? (
+              <>
+                {/* Social Login Buttons */}
+                <SocialAuthOptions onEmailContinue={() => setIsEmailContinue(true)} />
 
-              {/* Divider */}
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-300/30"></div>
+                {/* Divider */}
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-gray-300/30"></div>
+                  </div>
+                  <div className="relative flex justify-center">
+                    <span className="bg-black/5 px-4 text-xs text-gray-500">OR</span>
+                  </div>
                 </div>
-                <div className="relative flex justify-center">
-                  <span className="bg-black/5 px-4 text-xs text-gray-500">OR</span>
-                </div>
-              </div>
 
-              {/* Email Input */}
-              <EmailInput
-                email={email}
-                setEmail={setEmail}
-                onContinue={() => setIsEmailContinue(true)}
-                isLoading={isLoading}
+                {/* Email Input */}
+                <EmailInput
+                  email={email}
+                  setEmail={setEmail}
+                  onContinue={() => setIsEmailContinue(true)}
+                  isLoading={isLoading}
+                />
+              </>
+            ) : (
+              /* Email Login/Signup Form */
+              <EmailAuthForm 
+                email={email} 
+                onBack={() => setIsEmailContinue(false)} 
+                mode="signin"
               />
-            </>
-          ) : (
-            /* Email Login/Signup Form */
-            <EmailAuthForm 
-              email={email} 
-              onBack={() => setIsEmailContinue(false)} 
-              mode="signin"  // Add the required mode property with a default value
-            />
-          )}
+            )}
+          </div>
+        </div>
+        
+        {/* Footer */}
+        <AuthFooter />
+      </div>
+
+      {/* Right side - Image */}
+      <div className="hidden md:flex w-7/12 lg:w-8/12 xl:w-2/3 bg-gradient-to-br from-blue-50 to-indigo-100">
+        <div className="flex items-center justify-center w-full p-8">
+          <img 
+            src="https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=800&h=600&fit=crop&crop=center"
+            alt="Students working on laptops"
+            className="max-w-full max-h-full object-contain rounded-lg shadow-lg"
+          />
         </div>
       </div>
-      
-      {/* Footer */}
-      <AuthFooter />
     </div>
   );
 };
