@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -370,26 +369,21 @@ export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: Segmen
               {isLoading && (
                 <div className="p-3 rounded-lg bg-muted text-foreground mr-8">
                   <p className="mb-1 text-xs font-medium">Adviseek</p>
-                  <div className="flex items-center space-x-1">
-                    {loadingTexts[loadingTextIndex].split(' ').map((word, wordIndex) => (
-                      <span key={wordIndex} className="flex">
-                        {word.split('').map((char, charIndex) => (
-                          <span 
-                            key={charIndex} 
-                            className="inline-block animate-bounce" 
-                            style={{ 
-                              animationDuration: '1s', 
-                              animationDelay: `${(wordIndex * word.length + charIndex) * 0.1}s`
-                            }}
-                          >
-                            {char}
-                          </span>
-                        ))}
-                        {wordIndex < loadingTexts[loadingTextIndex].split(' ').length - 1 && (
-                          <span className="w-1"></span>
-                        )}
-                      </span>
-                    ))}
+                  <div className="flex items-center">
+                    <span className="text-sm">
+                      {loadingTexts[loadingTextIndex].split('').map((char, charIndex) => (
+                        <span 
+                          key={charIndex} 
+                          className="inline-block animate-bounce" 
+                          style={{ 
+                            animationDuration: '1s', 
+                            animationDelay: `${charIndex * 0.1}s`
+                          }}
+                        >
+                          {char}
+                        </span>
+                      ))}
+                    </span>
                   </div>
                 </div>
               )}

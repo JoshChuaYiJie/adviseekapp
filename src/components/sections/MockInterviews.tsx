@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -29,6 +30,20 @@ interface EducationItem {
   dates: string;
 }
 
+interface WorkExperience {
+  organisation?: string;
+  role?: string;
+  description?: string;
+  date?: string;
+}
+
+interface RecommendedMajor {
+  exactMatches?: string[];
+  riasecMatches?: string[];
+  workValueMatches?: string[];
+  permutationMatches?: string[];
+}
+
 export const MockInterviews = ({ user }: MockInterviewsProps) => {
   const [selectedApplication, setSelectedApplication] = useState("");
   const [questions, setQuestions] = useState<string[]>([]);
@@ -47,7 +62,7 @@ export const MockInterviews = ({ user }: MockInterviewsProps) => {
     'Taking a coffee break'
   ];
 
-  // Rotate loading messages
+  // Rotate loading messages with proper spacing
   useInterval(() => {
     if (generatingQuestions) {
       setLoadingTextIndex((prevIndex) => (prevIndex + 1) % loadingTexts.length);
@@ -138,7 +153,18 @@ export const MockInterviews = ({ user }: MockInterviewsProps) => {
       `;
 
       if (profileData) {
-        const recommendedMajor = profileData.recommended_major || {};
+        // Safely handle recommended_major with proper type checking
+        let recommendedMajor: RecommendedMajor = {};
+        try {
+          if (typeof profileData.recommended_major === 'string') {
+            recommendedMajor = JSON.parse(profileData.recommended_major);
+          } else if (profileData.recommended_major && typeof profileData.recommended_major === 'object') {
+            recommendedMajor = profileData.recommended_major as RecommendedMajor;
+          }
+        } catch (error) {
+          console.error("Error parsing recommended_major:", error);
+        }
+
         const matches = [
           ...(recommendedMajor.exactMatches || []),
           ...(recommendedMajor.riasecMatches || []),
@@ -150,8 +176,20 @@ export const MockInterviews = ({ user }: MockInterviewsProps) => {
         let idString = `${profileData.id} (Matches: ${matchesString})`;
 
         if (resumeData && resumeData.length > 0 && resumeData[0].educationItems) {
-          const qualifications = resumeData[0].educationItems
-            .map((item: EducationItem) => item.qualifications)
+          // Safely handle educationItems array
+          let educationItems: any[] = [];
+          try {
+            if (Array.isArray(resumeData[0].educationItems)) {
+              educationItems = resumeData[0].educationItems;
+            } else if (typeof resumeData[0].educationItems === 'string') {
+              educationItems = JSON.parse(resumeData[0].educationItems);
+            }
+          } catch (error) {
+            console.error("Error parsing educationItems:", error);
+          }
+
+          const qualifications = educationItems
+            .map((item: any) => item.qualifications)
             .filter(Boolean)
             .join(', ');
           if (qualifications) {
@@ -172,45 +210,77 @@ export const MockInterviews = ({ user }: MockInterviewsProps) => {
 
       if (resumeData && resumeData.length > 0) {
         const resume = resumeData[0];
-        const education = resume.educationItems
-          ? resume.educationItems
-              .map((item: EducationItem) => 
-                `${item.qualifications} from ${item.institution} during ${item.dates ? ` (${item.dates})` : ''}`
+        
+        // Safely handle educationItems
+        let educationItems: any[] = [];
+        try {
+          if (Array.isArray(resume.educationItems)) {
+            educationItems = resume.educationItems;
+          } else if (typeof resume.educationItems === 'string') {
+            educationItems = JSON.parse(resume.educationItems);
+          }
+        } catch (error) {
+          console.error("Error parsing educationItems:", error);
+        }
+
+        const education = educationItems
+          .map((item: any) => 
+            `${item.qualifications || 'N/A'} from ${item.institution || 'N/A'}${item.dates ? ` (${item.dates})` : ''}`
+          )
+          .filter(Boolean)
+          .join('; ') || 'Not available';
+
+        // Safely handle awards
+        let awards = 'Not available';
+        try {
+          if (resume.awards) {
+            let awardsArray: any[] = [];
+            if (Array.isArray(resume.awards)) {
+              awardsArray = resume.awards;
+            } else if (typeof resume.awards === 'string') {
+              awardsArray = JSON.parse(resume.awards);
+            }
+            
+            awards = awardsArray
+              .map((award: any) => 
+                award.title ? `${award.title}${award.date ? ` (${award.date})` : ''}` : null
               )
               .filter(Boolean)
-              .join('; ') || 'Not available'
-          : 'Not available';
-        const awards = resume.awards
-          ? JSON.parse(resume.awards)
-              .map((award: { title: string; date?: string }) => 
-                award.title ? `${award.title} at ${award.date ? ` (${award.date})` : ''}` : null
-              )
+              .join('; ') || 'Not available';
+          }
+        } catch (error) {
+          console.error("Error parsing awards:", error);
+        }
+
+        // Safely handle work_experience
+        let work_experience = 'Not available';
+        try {
+          if (resume.work_experience) {
+            let workArray: WorkExperience[] = [];
+            if (Array.isArray(resume.work_experience)) {
+              workArray = resume.work_experience;
+            } else if (typeof resume.work_experience === 'string') {
+              workArray = JSON.parse(resume.work_experience);
+            } else if (resume.work_experience && typeof resume.work_experience === 'object') {
+              workArray = [resume.work_experience as WorkExperience];
+            }
+            
+            work_experience = workArray
+              .map((work: WorkExperience) => {
+                if (!work.organisation && !work.role) return null;
+                const parts = [];
+                if (work.role) parts.push(work.role);
+                if (work.organisation) parts.push(`at ${work.organisation}`);
+                if (work.description) parts.push(`: ${work.description}`);
+                if (work.date) parts.push(` (${work.date})`);
+                return parts.join('');
+              })
               .filter(Boolean)
-              .join('; ') || 'Not available'
-          : 'Not available';
-        const work_experience = resume.work_experience
-          ? (() => {
-              try {
-                const parsed = JSON.parse(resume.work_experience);
-                if (!Array.isArray(parsed)) return 'Not available';
-                return parsed
-                  .map((work: WorkExperience) => {
-                    if (!work.organisation && !work.role) return null;
-                    const parts = [];
-                    if (work.role) parts.push(work.role);
-                    if (work.organisation) parts.push(`at ${work.organisation}`);
-                    if (work.description) parts.push(`: ${work.description}`);
-                    if (work.date) parts.push(` (${work.date})`);
-                    return parts.join('');
-                  })
-                  .filter(Boolean)
-                  .join('; ') || 'Not available';
-              } catch (error) {
-                console.error("Error parsing work_experience:", error);
-                return 'Not available';
-              }
-            })()
-          : 'Not available';
+              .join('; ') || 'Not available';
+          }
+        } catch (error) {
+          console.error("Error parsing work_experience:", error);
+        }
 
         prompt += `
         
@@ -218,7 +288,7 @@ export const MockInterviews = ({ user }: MockInterviewsProps) => {
         - Education: ${education}
         - Work experience: ${work_experience}
         - Awards: ${awards}
-        - Skills: it_skills: ${resume.it_skills || 'None'}, interests: ${resume.interests || 'None'}, languages spoken:${resume.languages || 'None'}
+        - Skills: IT skills: ${resume.it_skills || 'None'}, Interests: ${resume.interests || 'None'}, Languages: ${resume.languages || 'None'}
         `;
       }
 
@@ -333,20 +403,20 @@ export const MockInterviews = ({ user }: MockInterviewsProps) => {
       {generatingQuestions ? (
         <div className="flex flex-col items-center justify-center p-12">
           <div className="mb-4 flex items-center">
-            {loadingTexts[loadingTextIndex].split('').map((char, i) => (
-              <span 
-                key={i} 
-                className="inline-block animate-bounce" 
-                style={{ 
-                  animationDuration: '1s', 
-                  animationDelay: `${i * 0.1}s`,
-                  marginRight: '1px',
-                  fontSize: '1.25rem'
-                }}
-              >
-                {char}
-              </span>
-            ))}
+            <span className="text-lg">
+              {loadingTexts[loadingTextIndex].split('').map((char, i) => (
+                <span 
+                  key={i} 
+                  className="inline-block animate-bounce" 
+                  style={{ 
+                    animationDuration: '1s', 
+                    animationDelay: `${i * 0.1}s`
+                  }}
+                >
+                  {char}
+                </span>
+              ))}
+            </span>
           </div>
           <p className="text-center text-muted-foreground">
             Generating interview questions tailored to your application...

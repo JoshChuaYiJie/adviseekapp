@@ -37,9 +37,11 @@ export const useRecommendations = () => {
   // Log the recommendations for debugging
   console.log("Recommendations in useRecommendations:", recommendations.length);
 
-  // Load user feedback (ratings)
+  // Load user feedback (ratings) - temporarily disabled until user_feedback table types are available
   const loadUserFeedback = async (userId: string) => {
     try {
+      // TODO: Uncomment when user_feedback table types are available
+      /*
       const { data, error } = await supabase
         .from('user_feedback')
         .select('module_id, rating')
@@ -57,6 +59,8 @@ export const useRecommendations = () => {
       
       setUserFeedback(feedback);
       return feedback;
+      */
+      return {};
     } catch (error) {
       console.error("Error loading user feedback:", error);
       return {};
