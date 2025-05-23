@@ -178,17 +178,26 @@ export const AppSidebar = ({ selectedSection, setSelectedSection, user, onReplay
               </DropdownMenuContent>
             </DropdownMenu>
           )}
-          <Button 
-            onClick={() => navigate("/pricing")} 
-            className="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 rounded-md"
-            data-tutorial="upgrade-button"
-          >
-            <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M7 11l5-5 5 5"/>
-              <path d="M7 17l5-5 5 5"/>
-            </svg>
-            {t("upgrade")}
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div>
+                <Button 
+                  disabled
+                  className="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-white bg-gray-400 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-600 rounded-md cursor-not-allowed"
+                  data-tutorial="upgrade-button"
+                >
+                  <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M7 11l5-5 5 5"/>
+                    <path d="M7 17l5-5 5 5"/>
+                  </svg>
+                  {t("upgrade")}
+                </Button>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent side="top">
+              <p>BETA Version is FREE</p>
+            </TooltipContent>
+          </Tooltip>
         </div>
       </SidebarFooter>
       <SidebarRail />

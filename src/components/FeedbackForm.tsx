@@ -23,13 +23,52 @@ const FeedbackForm = () => {
     setIsSubmitting(true);
 
     try {
-      // Send the feedback via the Edge Function
-      const { error } = await supabase.functions.invoke('send-feedback', {
-        body: { feedback, type }
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      // Get user profile for additional info
+      let userName = 'Anonymous User';
+      let userEmail = 'No email provided';
+      
+      if (user) {
+        try {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('username')
+            .eq('id', user.id)
+            .single();
+          
+          userName = profile?.username || user.email || 'Anonymous User';
+          userEmail = user.email || 'No email provided';
+        } catch (profileError) {
+          console.error("Error fetching profile:", profileError);
+        }
+      }
+
+      // Save feedback to user_app_feedback table
+      const { error: dbError } = await supabase
+        .from('user_app_feedback')
+        .insert({
+          user_id: user?.id || null,
+          type: type,
+          feedback: feedback.trim(),
+          user_email: userEmail,
+          user_name: userName
+        });
+
+      if (dbError) {
+        console.error('Database error:', dbError);
+        throw new Error('Failed to save feedback to database');
+      }
+
+      // Also send email notification via existing edge function
+      const { error: emailError } = await supabase.functions.invoke('send-feedback', {
+        body: { feedback: feedback.trim(), type }
       });
 
-      if (error) {
-        throw new Error(error.message || 'Failed to send feedback');
+      if (emailError) {
+        console.error('Email error:', emailError);
+        // Don't throw here since database save succeeded
       }
       
       toast.success('Thank you for your feedback!');
