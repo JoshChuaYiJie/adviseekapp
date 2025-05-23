@@ -1,5 +1,5 @@
 
-import { School, FileText, BookOpen, Video, DollarSign, Settings, Play, LogOut, UserRound } from "lucide-react";
+import { School, FileText, BookOpen, Video, DollarSign, Settings, Play, LogOut, UserRound, Instagram, MessageCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
@@ -144,7 +144,30 @@ export const AppSidebar = ({ selectedSection, setSelectedSection, user, onReplay
       </SidebarContent>
 
       <SidebarFooter className="mt-auto border-t border-gray-200 dark:border-gray-800">
-        <div className="p-4 space-y-2">
+        <div className="p-4 space-y-3">
+          {/* Follow us section */}
+          <div className="px-2 py-1">
+            <p className="text-xs text-gray-500 mb-2">Follow us on</p>
+            <div className="flex space-x-3">
+              <a 
+                href="https://instagram.com/adviseek" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+              >
+                <Instagram className="w-4 h-4 text-gray-600" />
+              </a>
+              <a 
+                href="https://t.me/adviseek" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+              >
+                <MessageCircle className="w-4 h-4 text-gray-600" />
+              </a>
+            </div>
+          </div>
+
           {user && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

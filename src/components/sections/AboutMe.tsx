@@ -405,6 +405,10 @@ const generateWorkPreferencesFromWorkValues = (code: string): string[] => {
     navigate("/open-ended");
   };
 
+  const handleNarrowDownFurther = () => {
+    navigate("/recommendations");
+  };
+
   // Helper function to format major name (removes university suffix if present)
   const formatMajorName = (major: string): string => {
     return major.replace(/ at (NUS|NTU|SMU)$/, '');
@@ -489,7 +493,12 @@ const generateWorkPreferencesFromWorkValues = (code: string): string[] => {
                   
                   {/* Recommended Majors Section */}
                   <div className="mb-6">
-                    <h3 className="text-lg font-semibold mb-3">Recommended Majors</h3>
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className="text-lg font-semibold">Recommended Majors</h3>
+                      <Button onClick={handleNarrowDownFurther} variant="outline" size="sm">
+                        Narrow down further
+                      </Button>
+                    </div>
                     <p className="mb-4">Based on your RIASEC code ({riasecCode}) and Work Values code ({workValueCode}):</p>
                     
                     {/* Exact Matches */}
