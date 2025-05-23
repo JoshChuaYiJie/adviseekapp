@@ -1,6 +1,7 @@
+
 import { useTheme } from "@/contexts/ThemeContext";
 import { useTranslation } from "react-i18next";
-import { MajorRecommendations } from "./majors/MajorRecommendations";
+import { MajorRecommendations } from "./MajorRecommendations";
 import { UserProfileDisplay } from "./majors/UserProfileDisplay";
 import { AboutMeProps } from "./types";
 import { Button } from "@/components/ui/button";
@@ -10,7 +11,7 @@ import { Sparkles } from "lucide-react";
 export const AboutMe = ({ user }: AboutMeProps) => {
   const { t } = useTranslation();
   const { isCurrentlyDark } = useTheme();
-  const navigate = useNavigate(); // Add this line
+  const navigate = useNavigate();
 
   return (
     <div className={`space-y-6 w-full max-w-full ${isCurrentlyDark ? 'text-white' : ''}`}>
@@ -42,8 +43,8 @@ export const AboutMe = ({ user }: AboutMeProps) => {
           </Button>
         </div>
         <MajorRecommendations
-          riasecCode={user?.profile?.riasec_code}
-          workValueCode={user?.profile?.work_value_code}
+          topRiasec={[]}
+          topWorkValues={[]}
         />
       </div>
     </div>
