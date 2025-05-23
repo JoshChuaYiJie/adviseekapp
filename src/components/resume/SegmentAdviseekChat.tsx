@@ -30,9 +30,9 @@ export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: Segmen
   const [loadingTextIndex, setLoadingTextIndex] = useState(0);
   
   const loadingTexts = [
-    'Nice resume',
-    'Maybe you could...',
-    'I think you should...'
+    'Resumeing?',
+    ':()()()()()()()()',
+    'Caterpillar'
   ];
 
   // Define which segments should show the Adviseek chat

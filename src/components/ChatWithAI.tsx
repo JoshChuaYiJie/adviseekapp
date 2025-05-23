@@ -21,9 +21,9 @@ export const ChatWithAI = () => {
   const [loadingTextIndex, setLoadingTextIndex] = useState(0);
   
   const loadingTexts = [
-    'Adviseek is thinking',
-    'Seeking Advice',
-    'Speaking to pros'
+    'Thinking...',
+    'Dreaming...',
+    'Clarifying...'
   ];
 
   // Auto-scroll to bottom when new messages arrive
