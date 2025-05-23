@@ -304,28 +304,6 @@ export const MockInterviews = ({ user }: MockInterviewsProps) => {
     }
   };
 
-  // Add this function to save feedback
-  const saveFeedback = async (interviewData: {university: string, major: string, questions: string[]}) => {
-    try {
-      const { data: sessionData } = await supabase.auth.getSession();
-      const session = sessionData?.session;
-
-      if (!session?.user?.id) return;
-
-      await supabase.from('user_feedback')
-        .insert({
-          user_id: session.user.id,
-          feedback_type: 'mock_interview_questions',
-          feedback_text: JSON.stringify(interviewData),
-          page_context: 'mock_interviews'
-        });
-      
-      console.log('Mock interview questions saved to feedback');
-    } catch (error) {
-      console.error('Error saving interview questions feedback:', error);
-    }
-  };
-
   return (
     <div className="space-y-6 w-full max-w-full">
       <div className={`mb-8 p-6 ${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg shadow w-full`}>
@@ -354,7 +332,7 @@ export const MockInterviews = ({ user }: MockInterviewsProps) => {
 
       {generatingQuestions ? (
         <div className="flex flex-col items-center justify-center p-12">
-          <div className="mb-4 flex items-center gap-1">
+          <div className="mb-4 flex items-center">
             {loadingTexts[loadingTextIndex].split('').map((char, i) => (
               <span 
                 key={i} 
@@ -362,6 +340,7 @@ export const MockInterviews = ({ user }: MockInterviewsProps) => {
                 style={{ 
                   animationDuration: '1s', 
                   animationDelay: `${i * 0.1}s`,
+                  marginRight: '1px',
                   fontSize: '1.25rem'
                 }}
               >
