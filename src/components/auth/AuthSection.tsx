@@ -5,7 +5,6 @@ import SocialAuthOptions from "./SocialAuthOptions";
 import EmailInput from "./EmailInput";
 import EmailAuthForm from "./EmailAuthForm";
 import AuthFooter from "./AuthFooter";
-import CountdownTimer from "./CountdownTimer";
 
 const AuthSection = () => {
   const [email, setEmail] = useState("");
@@ -62,10 +61,14 @@ const AuthSection = () => {
         <AuthFooter />
       </div>
 
-      {/* Right side - Countdown Timer */}
-      <div className="hidden md:flex w-7/12 lg:w-8/12 xl:w-2/3 bg-black/5">
+      {/* Right side - Image */}
+      <div className="hidden md:flex w-7/12 lg:w-8/12 xl:w-2/3 bg-gradient-to-br from-blue-50 to-indigo-100">
         <div className="flex items-center justify-center w-full p-8">
-          <CountdownTimer />
+          <img 
+            src="https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=800&h=600&fit=crop&crop=center"
+            alt="Students working on laptops"
+            className="max-w-full max-h-full object-contain rounded-lg shadow-lg"
+          />
         </div>
       </div>
     </div>

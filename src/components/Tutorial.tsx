@@ -13,8 +13,6 @@ interface Step {
   position?: "top" | "bottom" | "left" | "right";
   requireClick?: boolean;
   autoSelectValue?: string;
-  autoFillValues?: Record<string, string>;
-  scrollToElement?: string;
 }
 
 interface TutorialProps {
@@ -33,97 +31,67 @@ export const Tutorial = ({ isOpen, onClose, onSkip }: TutorialProps) => {
 
   const tutorialSteps: Step[] = [
     {
-      target: '[data-id="about-me"]',
-      content: "Click on About Me to edit your profile",
-      requireClick: true,
-    },
-    {
-      target: '[data-tutorial="take-quiz"]',
-      content: "Take the personality quizzes for us to find out more about you",
-    },
-    {
-      target: '[data-tutorial="my-profile-button"]',
-      content: "Click here to see in-depth analysis of your profile",
-      requireClick: true,
-    },
-    {
-      target: '[data-tutorial="profiles-section"]',
-      content: "Your Profiles will be displayed once the quizzes are completed!",
-      scrollToElement: '[data-tutorial="recommended-majors"]'
-    },
-    {
-      target: '[data-tutorial="narrow-down-button"]',
-      content: "After our AI determines your recommended majors, you can go ahead and narrow it further by rating the modules each major consists of",
-    },
-    {
       target: '[data-id="my-resume"]',
-      content: "Need a resume?",
+      content: t("tutorial.my_resume", "Click on My Resume to upload or start building your resume"),
       requireClick: true,
+    },
+    {
+      target: '[data-tutorial="drop-resume"]',
+      content: t("tutorial.upload_resume", "Upload your resume here"),
     },
     {
       target: '[data-tutorial="build-resume"]',
-      content: "Powered by the quizzes, Adviseek AI will help you craft the resume that best represents you! (You can download and save the resume as well)",
+      content: t("tutorial.build_resume", "Alternatively, build your resume with our top-notch templates and proprietary AI"),
     },
     {
-      target: '[data-id="applied-programmes"]',
-      content: "Track your Applied Programmes here",
-      requireClick: true,
-    },
-    {
-      target: '[data-tutorial="university-select"], [data-tutorial="degree-select"]',
-      content: "Simply pick your university and all its available programmes will be reflected in the dropdown",
+      target: 'table',
+      content: t("tutorial.view_resumes", "View your resumes here, a separate resume for separate programmes maximises your chances!"),
     },
     {
       target: '[data-id="apply-now"]',
-      content: "Don't know how to write the best application?",
+      content: t("tutorial.apply_now", "Click on Apply Now to start your application"),
       requireClick: true,
-      autoFillValues: {
-        university: "National University of Singapore",
-        degree: "Bachelor of Arts",
-        major: "Anthropology"
-      }
     },
     {
-      target: '[data-tutorial="chat-with-adviseek"]',
-      content: "Armed with your resume and personality, Adviseek AI can help you write an application to maximise your university enrollment chances",
+      target: '[data-tutorial="university-select"]',
+      content: t("tutorial.university_select", "Pick which university you want to apply to"),
+      autoSelectValue: "National University of Singapore"
+    },
+    {
+      target: '[data-tutorial="program-select"]',
+      content: t("tutorial.program_select", "Pick your desired programme"),
+      autoSelectValue: "Computer Science"
+    },
+    {
+      target: '[data-tutorial="application-questions"]',
+      content: t("tutorial.application_questions", "Our AI will help you write the best applications!"),
     },
     {
       target: '[data-id="mock-interviews"]',
-      content: "Afraid of the interview?",
+      content: t("tutorial.mock_interviews", "Click on Mock Interviews to prepare for your interviews"),
       requireClick: true,
     },
     {
-      target: '[data-tutorial="select-application"]',
-      content: "Adviseek's got your back, Adviseek AI will dynamically make questions according to your profile and resume. Simply select one of your applications and Adviseek will do the rest!",
+      target: '[data-tutorial="program-select-interview"]',
+      content: t("tutorial.program_select_interview", "Pick your application"),
+      autoSelectValue: "Default NUS Application"
+    },
+    {
+      target: '[data-tutorial="interview-questions"]',
+      content: t("tutorial.interview_questions", "Adviseek AI will create practice questions for you to prepare!"),
     },
     {
       target: '[data-id="get-paid"]',
-      content: "Already a university student?",
+      content: t("tutorial.get_paid", "Want to earn money?"),
       requireClick: true,
     },
     {
       target: '[data-tutorial="apply-consultant"]',
-      content: "Help out a junior in need and you might just be rewarded ;)",
+      content: t("tutorial.apply_consultant", "Apply to be a consultant to help others and earn at the same time!"),
     },
     {
-      target: '[data-tutorial="chat-with-ai"]',
-      content: "Unsure about anything? Click right here to talk to Adviseek about anything under the sun",
-    },
-    {
-      target: '[data-tutorial="feedback-button"]',
-      content: "Unhappy about anything? Click here to tell us about any issues or suggestions, we appreciate all feedback",
-    },
-    {
-      target: '[data-tutorial="follow-us"]',
-      content: "Be sure to follow us on Instagram and Telegram for updates, giveaways and a community!",
-    },
-    {
-      target: '[data-tutorial="user-profile"]',
-      content: "Change your settings here, customize the display/functionality of the app to your own liking!",
-    },
-    {
-      target: '[data-tutorial="adviseek-logo"]',
-      content: "Don't leave your future to chance. Adviseek AI helps you figure out what you really want — and gives you the edge to get there. With aptitude-based admissions on the rise, your application needs more than just grades. It needs insight. Allow us to be the advise you seek",
+      target: '[data-tutorial="upgrade-button"]',
+      content: t("tutorial.upgrade", "Upgrade for advanced features!"),
     },
   ];
 
@@ -195,36 +163,32 @@ export const Tutorial = ({ isOpen, onClose, onSkip }: TutorialProps) => {
     }
   }, [targetElement]);
 
-  // Function to auto-fill form values
-  const autoFillFormValues = useCallback((values: Record<string, string>) => {
-    Object.entries(values).forEach(([key, value]) => {
-      const selector = `[data-tutorial="${key}-select"], [name="${key}"], [data-name="${key}"]`;
-      const element = document.querySelector(selector);
-      
-      if (element instanceof HTMLSelectElement) {
-        for (let i = 0; i < element.options.length; i++) {
-          if (element.options[i].text === value || element.options[i].value === value) {
-            element.selectedIndex = i;
+  // Function to auto-select a value in a dropdown
+  const autoSelectDropdownValue = useCallback((value: string) => {
+    if (!targetElement) return false;
+    
+    try {
+      if (targetElement instanceof HTMLSelectElement) {
+        const selectElement = targetElement as HTMLSelectElement;
+        
+        // Find the option with the matching value
+        for (let i = 0; i < selectElement.options.length; i++) {
+          if (selectElement.options[i].text === value) {
+            selectElement.selectedIndex = i;
+            
+            // Trigger change event
             const event = new Event('change', { bubbles: true });
-            element.dispatchEvent(event);
-            break;
+            selectElement.dispatchEvent(event);
+            return true;
           }
         }
-      } else if (element instanceof HTMLInputElement) {
-        element.value = value;
-        const event = new Event('input', { bubbles: true });
-        element.dispatchEvent(event);
       }
-    });
-  }, []);
-
-  // Function to scroll to element
-  const scrollToElement = useCallback((selector: string) => {
-    const element = document.querySelector(selector);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return false;
+    } catch (error) {
+      console.error("Error auto-selecting value:", error);
+      return false;
     }
-  }, []);
+  }, [targetElement]);
 
   // Handle next button click
   const handleNext = () => {
@@ -235,14 +199,9 @@ export const Tutorial = ({ isOpen, onClose, onSkip }: TutorialProps) => {
       simulateElementClick();
     }
     
-    // If this step requires auto-filling values, do it
-    if (currentStepData?.autoFillValues) {
-      autoFillFormValues(currentStepData.autoFillValues);
-    }
-
-    // If this step requires scrolling to an element, do it
-    if (currentStepData?.scrollToElement) {
-      scrollToElement(currentStepData.scrollToElement);
+    // If this step requires selecting a value, auto-select it
+    if (currentStepData?.autoSelectValue) {
+      autoSelectDropdownValue(currentStepData.autoSelectValue);
     }
     
     // Advance to next step
