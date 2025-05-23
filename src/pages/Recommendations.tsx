@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -45,6 +46,33 @@ const usePrefixMajorMappings = () => {
   return mappings;
 };
 
+// Function to load all mappings from mappings.json
+const useAllMappings = () => {
+  const [allMappings, setAllMappings] = useState<any>({});
+
+  useEffect(() => {
+    const loadMappings = async () => {
+      try {
+        const response = await fetch('/school-data/mappings.json');
+        if (!response.ok) {
+          console.error('Failed to load mappings:', response.statusText);
+          return;
+        }
+        
+        const data = await response.json();
+        setAllMappings(data);
+        console.log('Loaded all mappings:', data);
+      } catch (error) {
+        console.error('Error loading all mappings:', error);
+      }
+    };
+    
+    loadMappings();
+  }, []);
+
+  return allMappings;
+};
+
 const Recommendations = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -55,6 +83,9 @@ const Recommendations = () => {
   
   // Load prefix to major mappings
   const prefixMajorMappings = usePrefixMajorMappings();
+  
+  // Load all mappings for degree lookup
+  const allMappings = useAllMappings();
   
   // Use our hook for recommendations
   const { 
@@ -182,6 +213,52 @@ const Recommendations = () => {
   const extractPrefix = (courseCode: string): string => {
     const match = courseCode.match(/^[A-Z]+/);
     return match ? match[0] : 'OTHER';
+  };
+
+  // Function to get degree for a major
+  const getDegreeForMajor = (major: string): string => {
+    if (!allMappings.nus_major_to_degree && !allMappings.ntu_major_to_degree && !allMappings.smu_major_to_degree) {
+      return "Bachelor's Degree";
+    }
+
+    // Check NUS mappings
+    if (allMappings.nus_major_to_degree && allMappings.nus_major_to_degree[major]) {
+      return allMappings.nus_major_to_degree[major];
+    }
+
+    // Check NTU mappings
+    if (allMappings.ntu_major_to_degree && allMappings.ntu_major_to_degree[major]) {
+      return allMappings.ntu_major_to_degree[major];
+    }
+
+    // Check SMU mappings
+    if (allMappings.smu_major_to_degree && allMappings.smu_major_to_degree[major]) {
+      return allMappings.smu_major_to_degree[major];
+    }
+
+    return "Bachelor's Degree"; // Default fallback
+  };
+
+  // Function to get university for a prefix
+  const getUniversityForPrefix = (prefix: string): string => {
+    if (!allMappings.nus_prefix_to_major && !allMappings.ntu_prefix_to_major && !allMappings.smu_prefix_to_major) {
+      return "NUS";
+    }
+
+    // Check which university this prefix belongs to
+    if (allMappings.nus_prefix_to_major && allMappings.nus_prefix_to_major[prefix]) {
+      return "NUS";
+    }
+
+    if (allMappings.ntu_prefix_to_major && allMappings.ntu_prefix_to_major[prefix]) {
+      return "NTU";
+    }
+
+    if (allMappings.smu_prefix_to_major && allMappings.smu_prefix_to_major[prefix]) {
+      return "SMU";
+    }
+
+    return "NUS"; // Default fallback
   };
 
   const aggregateModuleScores = async () => {
@@ -449,13 +526,27 @@ const Recommendations = () => {
 
         {showProgramme && !allModulesRated && (
           <div className="text-center animate-fade-in bg-white/80 shadow-lg p-8 rounded-2xl max-w-2xl mx-auto">
-            <h2 className="text-3xl font-bold mb-4 text-purple-700">
-              Your recommended programme is a degree in computer science in NUS with an optional major in economics
-            </h2>
-            <p className="text-lg mb-8 text-gray-700">
-              Based on your responses, you demonstrate strong analytical skills and interest in technology.
-              Your learning style and career goals align well with the computer science program at NUS.
-            </p>
+            {topPrefixes.length > 0 && topPrefixes[0].recommendedMajors && topPrefixes[0].recommendedMajors.length > 0 ? (
+              <>
+                <h2 className="text-3xl font-bold mb-4 text-purple-700">
+                  Your recommended programme is a {getDegreeForMajor(topPrefixes[0].recommendedMajors[0])} in {topPrefixes[0].recommendedMajors[0]} at {getUniversityForPrefix(topPrefixes[0].prefix)}
+                </h2>
+                <p className="text-lg mb-8 text-gray-700">
+                  Based on your module ratings, you scored highest in {topPrefixes[0].prefix} modules ({topPrefixes[0].averageScore.toFixed(1)}/10 average).
+                  This suggests a strong interest in {topPrefixes[0].recommendedMajors[0]} at {getUniversityForPrefix(topPrefixes[0].prefix)}.
+                </p>
+              </>
+            ) : (
+              <>
+                <h2 className="text-3xl font-bold mb-4 text-purple-700">
+                  Your recommended programme is based on your highest-rated modules
+                </h2>
+                <p className="text-lg mb-8 text-gray-700">
+                  Based on your responses, you demonstrate strong analytical skills and diverse interests.
+                  Your learning style and preferences align well with multiple program areas.
+                </p>
+              </>
+            )}
             <div className="space-x-4">
               <Button 
                 onClick={handleAcceptSuggestion} 

@@ -1,5 +1,5 @@
 
-import { School, FileText, BookOpen, Video, DollarSign, Settings, Play, LogOut, UserRound, Instagram, MessageCircle } from "lucide-react";
+import { School, FileText, BookOpen, Video, DollarSign, Settings, Play, LogOut, UserRound, Instagram, Send } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
@@ -163,7 +163,7 @@ export const AppSidebar = ({ selectedSection, setSelectedSection, user, onReplay
                 rel="noopener noreferrer"
                 className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
               >
-                <MessageCircle className="w-4 h-4 text-gray-600" />
+                <Send className="w-4 h-4 text-gray-600" />
               </a>
             </div>
           </div>
