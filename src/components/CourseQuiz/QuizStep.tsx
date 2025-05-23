@@ -26,21 +26,22 @@ export const QuizStep: React.FC<QuizStepProps> = ({ questions }) => {
   
   // Render a single-select question
   const renderSingleSelect = (question: QuizQuestion) => {
-    const currentResponse = responses[question.id] as string || '';
-    console.log(`Question ${question.id} response:`, currentResponse);
+    const questionId = String(question.id); // Convert to string
+    const currentResponse = responses[questionId] as string || '';
+    console.log(`Question ${questionId} response:`, currentResponse);
     
     return (
       <div className="mb-6">
         <h4 className="font-medium mb-2">{question.question_text}</h4>
         <RadioGroup
           value={currentResponse}
-          onValueChange={(value) => handleResponse(question.id, value)}
+          onValueChange={(value) => handleResponse(questionId, value)}
           className="space-y-2"
         >
           {question.options?.map((option) => (
             <div key={option} className="flex items-center space-x-2">
-              <RadioGroupItem id={`q${question.id}-${option}`} value={option} />
-              <Label htmlFor={`q${question.id}-${option}`}>{option}</Label>
+              <RadioGroupItem id={`q${questionId}-${option}`} value={option} />
+              <Label htmlFor={`q${questionId}-${option}`}>{option}</Label>
             </div>
           ))}
         </RadioGroup>
@@ -50,15 +51,21 @@ export const QuizStep: React.FC<QuizStepProps> = ({ questions }) => {
   
   // Render a multi-select question
   const renderMultiSelect = (question: QuizQuestion) => {
-    const currentResponse = (responses[question.id] as string[]) || [];
-    console.log(`Question ${question.id} multi-select response:`, currentResponse);
+    const questionId = String(question.id); // Convert to string
+    const currentResponseString = responses[questionId] as string || '';
+    // Split the comma-separated string into an array, or use empty array
+    const currentResponse = currentResponseString ? currentResponseString.split(',') : [];
+    console.log(`Question ${questionId} multi-select response:`, currentResponse);
     
     const handleCheckboxChange = (option: string, checked: boolean) => {
+      let newResponse: string[];
       if (checked) {
-        handleResponse(question.id, [...currentResponse, option]);
+        newResponse = [...currentResponse, option];
       } else {
-        handleResponse(question.id, currentResponse.filter(r => r !== option));
+        newResponse = currentResponse.filter(r => r !== option);
       }
+      // Join array back to comma-separated string for storage
+      handleResponse(questionId, newResponse.join(','));
     };
     
     return (
@@ -68,11 +75,11 @@ export const QuizStep: React.FC<QuizStepProps> = ({ questions }) => {
           {question.options?.map((option) => (
             <div key={option} className="flex items-center space-x-2">
               <Checkbox 
-                id={`q${question.id}-${option}`} 
+                id={`q${questionId}-${option}`} 
                 checked={currentResponse.includes(option)}
                 onCheckedChange={(checked) => handleCheckboxChange(option, checked === true)} 
               />
-              <Label htmlFor={`q${question.id}-${option}`}>{option}</Label>
+              <Label htmlFor={`q${questionId}-${option}`}>{option}</Label>
             </div>
           ))}
         </div>
@@ -82,8 +89,9 @@ export const QuizStep: React.FC<QuizStepProps> = ({ questions }) => {
   
   // Render a text question
   const renderTextQuestion = (question: QuizQuestion) => {
-    const currentResponse = responses[question.id] as string || '';
-    console.log(`Question ${question.id} text response:`, currentResponse);
+    const questionId = String(question.id); // Convert to string
+    const currentResponse = responses[questionId] as string || '';
+    console.log(`Question ${questionId} text response:`, currentResponse);
     
     return (
       <div className="mb-6">
@@ -91,7 +99,7 @@ export const QuizStep: React.FC<QuizStepProps> = ({ questions }) => {
         <Input
           type="text"
           value={currentResponse}
-          onChange={(e) => handleResponse(question.id, e.target.value)}
+          onChange={(e) => handleResponse(questionId, e.target.value)}
           placeholder=""
           className="w-full"
         />
