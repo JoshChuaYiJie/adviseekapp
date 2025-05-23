@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { SidebarProvider } from "@/components/ui/sidebar";
@@ -45,26 +46,17 @@ const Index = () => {
         // Save user to localStorage for reference by other components
         localStorage.setItem('user', JSON.stringify(currentUser));
         
-        // Check if this is a new user by looking for existing selections
-        const { data: existingSelections } = await supabase
-          .from('user_selections')
-          .select('id, created_at')
-          .eq('user_id', currentUser.id)
-          .limit(1);
-          
-        // If no selections exist, assume this is a new user
-        if (!existingSelections || existingSelections.length === 0) {
+        // Check if this is a new user (created within the last 5 minutes)
+        const userCreatedAt = new Date(currentUser.created_at);
+        const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+        const isNewUser = userCreatedAt > fiveMinutesAgo;
+        
+        if (isNewUser) {
           // Check if tutorial has been shown before
           const tutorialCompleted = localStorage.getItem(`tutorial_completed_${currentUser.id}`);
           
           if (!tutorialCompleted) {
             setShowTutorial(true);
-            
-            // Create a record for this user
-            await supabase.from('user_selections').insert({
-              user_id: currentUser.id,
-              module_id: 0 // Using a placeholder value since module_id is required
-            });
           }
         } else {
           // For returning users, we'll show a welcome back message if it's been more than 7 days
@@ -97,6 +89,20 @@ const Index = () => {
         
         if (newUser) {
           localStorage.setItem('user', JSON.stringify(newUser));
+          
+          // Check if this is a sign up event for new users
+          if (event === 'SIGNED_IN') {
+            const userCreatedAt = new Date(newUser.created_at);
+            const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+            const isNewUser = userCreatedAt > fiveMinutesAgo;
+            
+            if (isNewUser) {
+              const tutorialCompleted = localStorage.getItem(`tutorial_completed_${newUser.id}`);
+              if (!tutorialCompleted) {
+                setShowTutorial(true);
+              }
+            }
+          }
         } else {
           localStorage.removeItem('user');
         }

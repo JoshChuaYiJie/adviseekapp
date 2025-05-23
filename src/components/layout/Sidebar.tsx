@@ -102,7 +102,7 @@ export const AppSidebar = ({ selectedSection, setSelectedSection, user, onReplay
     <ShadcnSidebar>
       <div className="p-4 border-b border-gray-200 dark:border-gray-800">
         <div className="flex items-center">
-          <span className="text-2xl font-bold text-foreground">Adviseek</span>
+          <span className="text-2xl font-bold text-foreground" data-tutorial="adviseek-logo">Adviseek</span>
           <span className="ml-1 px-2 py-0.5 text-xs font-semibold bg-yellow-400 text-yellow-800 dark:bg-yellow-500 dark:text-yellow-900 rounded">
             FREE
           </span>
@@ -146,7 +146,7 @@ export const AppSidebar = ({ selectedSection, setSelectedSection, user, onReplay
       <SidebarFooter className="mt-auto border-t border-gray-200 dark:border-gray-800">
         <div className="p-4 space-y-3">
           {/* Follow us section */}
-          <div className="px-2 py-1">
+          <div className="px-2 py-1" data-tutorial="follow-us">
             <p className="text-xs text-gray-500 mb-2">Follow us on</p>
             <div className="flex space-x-3">
               <a 
@@ -171,7 +171,7 @@ export const AppSidebar = ({ selectedSection, setSelectedSection, user, onReplay
           {user && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="w-full justify-start">
+                <Button variant="ghost" className="w-full justify-start" data-tutorial="profile-section">
                   <div className="flex items-center">
                     <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center mr-2">
                       {user.email?.charAt(0).toUpperCase() || "U"}

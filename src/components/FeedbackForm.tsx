@@ -89,6 +89,7 @@ const FeedbackForm = () => {
           className="fixed bottom-4 right-4 rounded-full shadow-lg z-40"
           size="icon"
           aria-label="Send feedback"
+          data-tutorial="send-feedback"
         >
           <MessageSquarePlus className="h-5 w-5" />
         </Button>
