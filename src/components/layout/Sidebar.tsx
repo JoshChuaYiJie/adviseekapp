@@ -155,7 +155,7 @@ export const AppSidebar = ({ selectedSection, setSelectedSection, user, onReplay
                 rel="noopener noreferrer"
                 className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
               >
-                <Instagram className="w-4 h-4" />
+                <Instagram className="w-4 h-4 text-pink-500" />
               </a>
               <a 
                 href="https://t.me/adviseek" 
@@ -163,7 +163,7 @@ export const AppSidebar = ({ selectedSection, setSelectedSection, user, onReplay
                 rel="noopener noreferrer"
                 className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
               >
-                <Send className="w-4 h-4" />
+                <Send className="w-4 h-4 text-blue-500" />
               </a>
             </div>
           </div>
