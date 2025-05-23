@@ -53,6 +53,25 @@ export const ChatWithAI = () => {
     getUserId();
   }, []);
 
+  // Save feedback to Supabase
+  const saveFeedback = async (conversationData: {question: string, answer: string}) => {
+    if (!userId) return;
+    
+    try {
+      await supabase.from('user_feedback')
+        .insert({
+          user_id: userId,
+          feedback_type: 'chat_interaction',
+          feedback_text: JSON.stringify(conversationData),
+          page_context: 'main_chat'
+        });
+      
+      console.log('Chat interaction saved to feedback');
+    } catch (error) {
+      console.error('Error saving chat feedback:', error);
+    }
+  };
+
   const handleSendMessage = async () => {
     if (!input.trim() || isLoading) return;
     
@@ -223,6 +242,13 @@ export const ChatWithAI = () => {
         role: 'assistant',
         content: aiResponse
       }]);
+      
+      // Save the conversation to feedback
+      saveFeedback({
+        question: userInput,
+        answer: aiResponse
+      });
+      
     } catch (error) {
       console.error("Error calling Deepseek API:", error);
       toast.error("Error connecting to the AI service. Please try again.");
@@ -284,15 +310,14 @@ export const ChatWithAI = () => {
               {isLoading && (
                 <div className="flex justify-start">
                   <div className="bg-gray-100 text-gray-800 max-w-[80%] rounded-lg p-3">
-                    <div className="flex items-center">
+                    <div className="flex items-center gap-1">
                       {loadingTexts[loadingTextIndex].split('').map((char, i) => (
                         <span 
                           key={i} 
                           className="inline-block animate-bounce" 
                           style={{ 
                             animationDuration: '1s', 
-                            animationDelay: `${i * 0.1}s`,
-                            marginRight: '1px' 
+                            animationDelay: `${i * 0.1}s`
                           }}
                         >
                           {char}

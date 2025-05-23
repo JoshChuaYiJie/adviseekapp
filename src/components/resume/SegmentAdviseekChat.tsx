@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -114,6 +113,24 @@ export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: Segmen
           content: `Hi there! I'm Adviseek. How can I help you improve your ${segmentType.toLowerCase()} section?`
         }
       ]);
+    }
+  };
+
+  const saveFeedback = async (conversationData: {question: string, answer: string}) => {
+    if (!userId) return;
+    
+    try {
+      await supabase.from('user_feedback')
+        .insert({
+          user_id: userId,
+          feedback_type: 'resume_segment_advice',
+          feedback_text: JSON.stringify(conversationData),
+          page_context: `resume_${segmentType.toLowerCase().replace(/\s+/g, '_')}`
+        });
+      
+      console.log('Resume advice interaction saved to feedback');
+    } catch (error) {
+      console.error('Error saving resume advice feedback:', error);
     }
   };
 
@@ -322,6 +339,12 @@ export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: Segmen
         }
       ]);
       
+      // Save the conversation to feedback
+      saveFeedback({
+        question: userQuery,
+        answer: aiResponse
+      });
+      
     } catch (error) {
       console.error("Error calling Deepseek:", error);
       setMessages(prev => [
@@ -370,15 +393,14 @@ export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: Segmen
               {isLoading && (
                 <div className="p-3 rounded-lg bg-muted text-foreground mr-8">
                   <p className="mb-1 text-xs font-medium">Adviseek</p>
-                  <div className="flex items-center">
+                  <div className="flex items-center gap-1">
                     {loadingTexts[loadingTextIndex].split('').map((char, i) => (
                       <span 
                         key={i} 
                         className="inline-block animate-bounce" 
                         style={{ 
                           animationDuration: '1s', 
-                          animationDelay: `${i * 0.1}s`,
-                          marginRight: '1px' 
+                          animationDelay: `${i * 0.1}s`
                         }}
                       >
                         {char}
