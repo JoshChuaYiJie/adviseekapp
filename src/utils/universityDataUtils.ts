@@ -92,13 +92,13 @@ export const loadUniversityData = async (university: string): Promise<University
     // We'll try different path strategies to load the file
     const fileStrategies = [
       // Strategy 1: Using the base URL of the site with no leading slash
-      `${window.location.origin}/school-data/Standardized%20weights/standardized_${shortName}_majors.json`,
+      `${window.location.origin}/school-data/Standardized-weights/standardized_${shortName}_majors.json`,
       
       // Strategy 2: Relative path with just a leading slash
-      `/school-data/Standardized%20weights/standardized_${shortName}_majors.json`,
+      `/school-data/Standardized-weights/standardized_${shortName}_majors.json`,
       
       // Strategy 3: Just the file path with no leading slash
-      `school-data/Standardized%20weights/standardized_${shortName}_majors.json`
+      `school-data/Standardized-weights/standardized_${shortName}_majors.json`
     ];
     
     let data = null;
