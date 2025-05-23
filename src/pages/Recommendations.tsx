@@ -317,12 +317,7 @@ const Recommendations = () => {
   };
 
   const handleAcceptSuggestion = () => {
-    navigate("/university-selection", { 
-      state: { 
-        university: "nus",
-        school: "computing"
-      } 
-    });
+    navigate("/dashboard")
   };
 
   const handleRateMore = async () => {
