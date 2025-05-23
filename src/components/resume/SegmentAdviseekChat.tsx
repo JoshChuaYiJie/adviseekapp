@@ -99,6 +99,29 @@ export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: Segmen
     getUserData();
   }, []);
 
+  // Save user feedback to database
+  const saveFeedback = async (feedbackText: string, type: string) => {
+    if (!userId) return;
+    
+    try {
+      const { error } = await supabase
+        .from('user_feedback')
+        .insert({
+          user_id: userId,
+          feedback_type: type,
+          feedback_text: feedbackText,
+          page_context: `segment_chat_${segmentType}`,
+          rating: 5 // Default rating for segment chat feedback
+        });
+
+      if (error) {
+        console.error('Error saving feedback:', error);
+      }
+    } catch (error) {
+      console.error('Error saving feedback:', error);
+    }
+  };
+
   // If current segment is not in the allowed list, don't render anything
   if (!allowedSegments.includes(segmentType)) {
     return null;
@@ -321,6 +344,9 @@ export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: Segmen
           content: aiResponse
         }
       ]);
+
+      // Save feedback for successful interaction
+      await saveFeedback(`Segment: ${segmentType}, Query: ${userQuery}`, 'segment_chat');
       
     } catch (error) {
       console.error("Error calling Deepseek:", error);
@@ -331,6 +357,9 @@ export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: Segmen
           content: "I'm sorry, I encountered an error. Please try again."
         }
       ]);
+
+      // Save feedback for error
+      await saveFeedback(`Error in segment chat: ${error}`, 'segment_chat_error');
     }
   };
 
@@ -370,18 +399,24 @@ export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: Segmen
               {isLoading && (
                 <div className="p-3 rounded-lg bg-muted text-foreground mr-8">
                   <p className="mb-1 text-xs font-medium">Adviseek</p>
-                  <div className="flex items-center">
-                    {loadingTexts[loadingTextIndex].split('').map((char, i) => (
-                      <span 
-                        key={i} 
-                        className="inline-block animate-bounce" 
-                        style={{ 
-                          animationDuration: '1s', 
-                          animationDelay: `${i * 0.1}s`,
-                          marginRight: '1px' 
-                        }}
-                      >
-                        {char}
+                  <div className="flex items-center space-x-1">
+                    {loadingTexts[loadingTextIndex].split(' ').map((word, wordIndex) => (
+                      <span key={wordIndex} className="flex">
+                        {word.split('').map((char, charIndex) => (
+                          <span 
+                            key={charIndex} 
+                            className="inline-block animate-bounce" 
+                            style={{ 
+                              animationDuration: '1s', 
+                              animationDelay: `${(wordIndex * 3 + charIndex) * 0.1}s`
+                            }}
+                          >
+                            {char}
+                          </span>
+                        ))}
+                        {wordIndex < loadingTexts[loadingTextIndex].split(' ').length - 1 && (
+                          <span className="w-1"></span>
+                        )}
                       </span>
                     ))}
                   </div>

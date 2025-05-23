@@ -53,6 +53,29 @@ export const ChatWithAI = () => {
     getUserId();
   }, []);
 
+  // Save user feedback to database
+  const saveFeedback = async (feedbackText: string, type: string) => {
+    if (!userId) return;
+    
+    try {
+      const { error } = await supabase
+        .from('user_feedback')
+        .insert({
+          user_id: userId,
+          feedback_type: type,
+          feedback_text: feedbackText,
+          page_context: 'chat_with_ai',
+          rating: 5 // Default rating for chat feedback
+        });
+
+      if (error) {
+        console.error('Error saving feedback:', error);
+      }
+    } catch (error) {
+      console.error('Error saving feedback:', error);
+    }
+  };
+
   const handleSendMessage = async () => {
     if (!input.trim() || isLoading) return;
     
@@ -223,6 +246,9 @@ export const ChatWithAI = () => {
         role: 'assistant',
         content: aiResponse
       }]);
+
+      // Save feedback for successful interaction
+      await saveFeedback(`User query: ${userInput}`, 'chat_interaction');
     } catch (error) {
       console.error("Error calling Deepseek API:", error);
       toast.error("Error connecting to the AI service. Please try again.");
@@ -230,6 +256,9 @@ export const ChatWithAI = () => {
         role: 'assistant', 
         content: "I'm having trouble connecting to my brain. Please try again in a moment."
       }]);
+
+      // Save feedback for error
+      await saveFeedback(`Error in chat: ${error}`, 'chat_error');
     }
   };
 
@@ -284,18 +313,24 @@ export const ChatWithAI = () => {
               {isLoading && (
                 <div className="flex justify-start">
                   <div className="bg-gray-100 text-gray-800 max-w-[80%] rounded-lg p-3">
-                    <div className="flex items-center">
-                      {loadingTexts[loadingTextIndex].split('').map((char, i) => (
-                        <span 
-                          key={i} 
-                          className="inline-block animate-bounce" 
-                          style={{ 
-                            animationDuration: '1s', 
-                            animationDelay: `${i * 0.1}s`,
-                            marginRight: '1px' 
-                          }}
-                        >
-                          {char}
+                    <div className="flex items-center space-x-1">
+                      {loadingTexts[loadingTextIndex].split(' ').map((word, wordIndex) => (
+                        <span key={wordIndex} className="flex">
+                          {word.split('').map((char, charIndex) => (
+                            <span 
+                              key={charIndex} 
+                              className="inline-block animate-bounce" 
+                              style={{ 
+                                animationDuration: '1s', 
+                                animationDelay: `${(wordIndex * 3 + charIndex) * 0.1}s`
+                              }}
+                            >
+                              {char}
+                            </span>
+                          ))}
+                          {wordIndex < loadingTexts[loadingTextIndex].split(' ').length - 1 && (
+                            <span className="w-1"></span>
+                          )}
                         </span>
                       ))}
                     </div>

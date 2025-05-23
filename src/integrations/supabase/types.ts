@@ -407,22 +407,31 @@ export type Database = {
       user_feedback: {
         Row: {
           created_at: string
+          feedback_text: string | null
+          feedback_type: string | null
           id: number
-          module_id: number
+          module_id: number | null
+          page_context: string | null
           rating: number
           user_id: string
         }
         Insert: {
           created_at?: string
+          feedback_text?: string | null
+          feedback_type?: string | null
           id?: number
-          module_id: number
+          module_id?: number | null
+          page_context?: string | null
           rating: number
           user_id: string
         }
         Update: {
           created_at?: string
+          feedback_text?: string | null
+          feedback_type?: string | null
           id?: number
-          module_id?: number
+          module_id?: number | null
+          page_context?: string | null
           rating?: number
           user_id?: string
         }

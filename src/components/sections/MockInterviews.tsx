@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -27,6 +28,13 @@ interface EducationItem {
   qualifications: string;
   institution: string;
   dates: string;
+}
+
+interface WorkExperience {
+  organisation?: string;
+  role?: string;
+  description?: string;
+  date?: string;
 }
 
 export const MockInterviews = ({ user }: MockInterviewsProps) => {
@@ -99,6 +107,32 @@ export const MockInterviews = ({ user }: MockInterviewsProps) => {
     fetchUserApplications();
   }, [toast]);
 
+  // Save user feedback to database
+  const saveFeedback = async (feedbackText: string, type: string) => {
+    const { data: sessionData } = await supabase.auth.getSession();
+    const session = sessionData?.session;
+    
+    if (!session?.user?.id) return;
+    
+    try {
+      const { error } = await supabase
+        .from('user_feedback')
+        .insert({
+          user_id: session.user.id,
+          feedback_type: type,
+          feedback_text: feedbackText,
+          page_context: 'mock_interviews',
+          rating: 5 // Default rating for interview feedback
+        });
+
+      if (error) {
+        console.error('Error saving feedback:', error);
+      }
+    } catch (error) {
+      console.error('Error saving feedback:', error);
+    }
+  };
+
   const generateInterviewQuestions = async (application: AppliedProgram) => {
     setGeneratingQuestions(true);
 
@@ -139,23 +173,37 @@ export const MockInterviews = ({ user }: MockInterviewsProps) => {
 
       if (profileData) {
         const recommendedMajor = profileData.recommended_major || {};
-        const matches = [
-          ...(recommendedMajor.exactMatches || []),
-          ...(recommendedMajor.riasecMatches || []),
-          ...(recommendedMajor.workValueMatches || []),
-          ...(recommendedMajor.permutationMatches || []),
-        ].filter(Boolean);
+        
+        // Type-safe access to recommendedMajor properties
+        let matches: string[] = [];
+        
+        if (typeof recommendedMajor === 'object' && recommendedMajor !== null) {
+          const exactMatches = (recommendedMajor as any).exactMatches;
+          const riasecMatches = (recommendedMajor as any).riasecMatches;
+          const workValueMatches = (recommendedMajor as any).workValueMatches;
+          const permutationMatches = (recommendedMajor as any).permutationMatches;
+          
+          matches = [
+            ...(Array.isArray(exactMatches) ? exactMatches : []),
+            ...(Array.isArray(riasecMatches) ? riasecMatches : []),
+            ...(Array.isArray(workValueMatches) ? workValueMatches : []),
+            ...(Array.isArray(permutationMatches) ? permutationMatches : []),
+          ].filter(Boolean);
+        }
+        
         const matchesString = matches.join(', ');
-
         let idString = `${profileData.id} (Matches: ${matchesString})`;
 
-        if (resumeData && resumeData.length > 0 && resumeData[0].educationItems) {
-          const qualifications = resumeData[0].educationItems
-            .map((item: EducationItem) => item.qualifications)
-            .filter(Boolean)
-            .join(', ');
-          if (qualifications) {
-            idString += `; Qualifications: ${qualifications}`;
+        if (resumeData && resumeData.length > 0) {
+          const educationItems = resumeData[0].educationItems;
+          if (Array.isArray(educationItems)) {
+            const qualifications = educationItems
+              .map((item: EducationItem) => item.qualifications)
+              .filter(Boolean)
+              .join(', ');
+            if (qualifications) {
+              idString += `; Qualifications: ${qualifications}`;
+            }
           }
         }
 
@@ -172,7 +220,9 @@ export const MockInterviews = ({ user }: MockInterviewsProps) => {
 
       if (resumeData && resumeData.length > 0) {
         const resume = resumeData[0];
-        const education = resume.educationItems
+        
+        // Safe handling of education items
+        const education = Array.isArray(resume.educationItems)
           ? resume.educationItems
               .map((item: EducationItem) => 
                 `${item.qualifications} from ${item.institution} during ${item.dates ? ` (${item.dates})` : ''}`
@@ -180,37 +230,51 @@ export const MockInterviews = ({ user }: MockInterviewsProps) => {
               .filter(Boolean)
               .join('; ') || 'Not available'
           : 'Not available';
-        const awards = resume.awards
-          ? JSON.parse(resume.awards)
-              .map((award: { title: string; date?: string }) => 
-                award.title ? `${award.title} at ${award.date ? ` (${award.date})` : ''}` : null
-              )
-              .filter(Boolean)
-              .join('; ') || 'Not available'
-          : 'Not available';
-        const work_experience = resume.work_experience
-          ? (() => {
-              try {
-                const parsed = JSON.parse(resume.work_experience);
-                if (!Array.isArray(parsed)) return 'Not available';
-                return parsed
-                  .map((work: WorkExperience) => {
-                    if (!work.organisation && !work.role) return null;
-                    const parts = [];
-                    if (work.role) parts.push(work.role);
-                    if (work.organisation) parts.push(`at ${work.organisation}`);
-                    if (work.description) parts.push(`: ${work.description}`);
-                    if (work.date) parts.push(` (${work.date})`);
-                    return parts.join('');
-                  })
-                  .filter(Boolean)
-                  .join('; ') || 'Not available';
-              } catch (error) {
-                console.error("Error parsing work_experience:", error);
-                return 'Not available';
-              }
-            })()
-          : 'Not available';
+          
+        // Safe handling of awards
+        let awards = 'Not available';
+        try {
+          if (resume.awards) {
+            const parsedAwards = typeof resume.awards === 'string' ? JSON.parse(resume.awards) : resume.awards;
+            if (Array.isArray(parsedAwards)) {
+              awards = parsedAwards
+                .map((award: { title: string; date?: string }) => 
+                  award.title ? `${award.title} at ${award.date ? ` (${award.date})` : ''}` : null
+                )
+                .filter(Boolean)
+                .join('; ') || 'Not available';
+            }
+          }
+        } catch (error) {
+          console.error("Error parsing awards:", error);
+        }
+        
+        // Safe handling of work experience
+        let work_experience = 'Not available';
+        try {
+          if (resume.work_experience) {
+            const parsedWork = typeof resume.work_experience === 'string' 
+              ? JSON.parse(resume.work_experience) 
+              : resume.work_experience;
+              
+            if (Array.isArray(parsedWork)) {
+              work_experience = parsedWork
+                .map((work: WorkExperience) => {
+                  if (!work.organisation && !work.role) return null;
+                  const parts = [];
+                  if (work.role) parts.push(work.role);
+                  if (work.organisation) parts.push(`at ${work.organisation}`);
+                  if (work.description) parts.push(`: ${work.description}`);
+                  if (work.date) parts.push(` (${work.date})`);
+                  return parts.join('');
+                })
+                .filter(Boolean)
+                .join('; ') || 'Not available';
+            }
+          }
+        } catch (error) {
+          console.error("Error parsing work_experience:", error);
+        }
 
         prompt += `
         
@@ -239,6 +303,9 @@ export const MockInterviews = ({ user }: MockInterviewsProps) => {
         });
         setResponses(initialResponses);
         console.log("Generated questions:", questionLines);
+
+        // Save feedback for successful question generation
+        await saveFeedback(`Generated ${questionLines.length} questions for ${application.major} at ${application.university}`, 'questions_generated');
       } else {
         console.error("Failed to parse AI-generated questions");
         toast.error("Failed to generate interview questions. Please try again.");
@@ -246,6 +313,9 @@ export const MockInterviews = ({ user }: MockInterviewsProps) => {
     } catch (error) {
       console.error("Error generating interview questions:", error);
       toast.error("Failed to generate interview questions");
+      
+      // Save feedback for error
+      await saveFeedback(`Error generating questions: ${error}`, 'questions_error');
     } finally {
       setGeneratingQuestions(false);
     }
@@ -297,6 +367,9 @@ export const MockInterviews = ({ user }: MockInterviewsProps) => {
         responses: responses
       });
 
+      // Save feedback for saved responses
+      await saveFeedback(`Saved responses for ${selectedApp.major} at ${selectedApp.university}`, 'responses_saved');
+
       toast.success(t("interview.responses_saved", "Your responses have been saved!"));
     } catch (error) {
       console.error("Error saving responses:", error);
@@ -332,19 +405,25 @@ export const MockInterviews = ({ user }: MockInterviewsProps) => {
 
       {generatingQuestions ? (
         <div className="flex flex-col items-center justify-center p-12">
-          <div className="mb-4 flex items-center">
-            {loadingTexts[loadingTextIndex].split('').map((char, i) => (
-              <span 
-                key={i} 
-                className="inline-block animate-bounce" 
-                style={{ 
-                  animationDuration: '1s', 
-                  animationDelay: `${i * 0.1}s`,
-                  marginRight: '1px',
-                  fontSize: '1.25rem'
-                }}
-              >
-                {char}
+          <div className="mb-4 flex items-center space-x-1">
+            {loadingTexts[loadingTextIndex].split(' ').map((word, wordIndex) => (
+              <span key={wordIndex} className="flex">
+                {word.split('').map((char, charIndex) => (
+                  <span 
+                    key={charIndex} 
+                    className="inline-block animate-bounce" 
+                    style={{ 
+                      animationDuration: '1s', 
+                      animationDelay: `${(wordIndex * 3 + charIndex) * 0.1}s`,
+                      fontSize: '1.25rem'
+                    }}
+                  >
+                    {char}
+                  </span>
+                ))}
+                {wordIndex < loadingTexts[loadingTextIndex].split(' ').length - 1 && (
+                  <span className="w-1"></span>
+                )}
               </span>
             ))}
           </div>
