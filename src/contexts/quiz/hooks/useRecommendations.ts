@@ -4,8 +4,6 @@ import { Module } from '@/integrations/supabase/client';
 import { getUserId } from '../utils/databaseHelpers';
 import { useToast } from '@/hooks/use-toast';
 import { Recommendation, ModuleSelection } from '../types/recommendationTypes';
-import { supabase } from '@/integrations/supabase/client';
-import { rateModuleUtil, getFinalSelectionsUtil } from '@/utils/recommendationUtils';
 import { useModuleRecommendations } from '@/hooks/useModuleRecommendations';
 
 // Fix: Changed 'export { Recommendation }' to 'export type { Recommendation }'
@@ -40,26 +38,8 @@ export const useRecommendations = () => {
   // Load user feedback (ratings) - temporarily disabled until user_feedback table types are available
   const loadUserFeedback = async (userId: string) => {
     try {
-      // TODO: Uncomment when user_feedback table types are available
-      /*
-      const { data, error } = await supabase
-        .from('user_feedback')
-        .select('module_id, rating')
-        .eq('user_id', userId);
-      
-      if (error) throw error;
-      
-      // Convert to Record<number, number>
-      const feedback: Record<number, number> = {};
-      if (data) {
-        data.forEach(item => {
-          feedback[item.module_id] = item.rating;
-        });
-      }
-      
-      setUserFeedback(feedback);
-      return feedback;
-      */
+      // TODO: Implement when user_feedback table types are available
+      console.log("Loading user feedback for:", userId);
       return {};
     } catch (error) {
       console.error("Error loading user feedback:", error);
@@ -108,8 +88,8 @@ export const useRecommendations = () => {
         [moduleId]: rating
       }));
       
-      // Save rating to database
-      await rateModuleUtil(moduleId, rating);
+      // TODO: Implement actual rating save when user_feedback table types are available
+      console.log("Rating module:", moduleId, "with rating:", rating);
     } catch (err) {
       console.error("Error rating module:", err);
       // Revert state change if there was an error
@@ -160,15 +140,26 @@ export const useRecommendations = () => {
         throw new Error("You must be logged in to get course selections");
       }
       
-      const selections = await getFinalSelectionsUtil(userId, recommendations, userFeedback);
+      // Filter to highly rated modules (7+)
+      const highlyRated = recommendations.filter(rec => 
+        userFeedback[rec.module_id] >= 7
+      );
       
-      if (selections.length < 5) {
+      if (highlyRated.length < 5) {
         toast({
           title: "Not Enough Ratings",
           description: "Please rate more modules highly (7+) to get course selections.",
         });
         return [];
       }
+      
+      // Sort by rating (highest first)
+      highlyRated.sort((a, b) => 
+        (userFeedback[b.module_id] || 0) - (userFeedback[a.module_id] || 0)
+      );
+      
+      // Take top 5 and convert to modules
+      const selections = highlyRated.slice(0, 5).map(rec => rec.module);
       
       // Convert selections to ModuleSelection format
       const formattedSelections: ModuleSelection[] = selections.map(module => ({

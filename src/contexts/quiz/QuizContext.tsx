@@ -1,313 +1,217 @@
-import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
-import { Module } from '@/integrations/supabase/client';
-import { QuizContextType } from './types';
-import { useResponses } from './hooks/useResponses';
-import { useModules } from './hooks/useModules';
-import { useToast } from '@/hooks/use-toast';
+
+import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { McqQuestion } from '@/utils/quizQuestions';
-import { useModuleRecommendations } from '@/hooks/useModuleRecommendations';
+import { Question, QuizState, QuizAction, QuizResponse } from './types';
 
-// Create the context with default values
-const QuizContext = createContext<QuizContextType>({
-  currentStep: 1,
+const initialState: QuizState = {
   responses: {},
-  questions: [],
-  isLoading: true,
-  isSubmitting: false,
+  completedQuizzes: new Set(),
+  currentQuiz: null,
+  questions: {},
+  results: {},
+  loading: false,
   error: null,
-  recommendations: [],
-  userFeedback: {},
-  modules: [],
-  finalSelections: [],
-  completedQuizzes: [],
-  debugInfo: null,
-  setCurrentStep: () => {},
-  handleResponse: () => {},
-  submitResponses: async () => {},
-  rateModule: async () => Promise.resolve(),
-  refineRecommendations: async () => Promise.resolve(),
-  getFinalSelections: async () => [],
-  resetQuiz: () => {},
-});
+};
 
-// Hook to use the Quiz context
-export const useQuiz = () => useContext(QuizContext);
+function quizReducer(state: QuizState, action: QuizAction): QuizState {
+  switch (action.type) {
+    case 'SET_LOADING':
+      return { ...state, loading: action.payload };
+    case 'SET_ERROR':
+      return { ...state, error: action.payload };
+    case 'SET_RESPONSE':
+      return {
+        ...state,
+        responses: {
+          ...state.responses,
+          [action.payload.questionId]: action.payload.response,
+        },
+      };
+    case 'SET_RESPONSES':
+      return { ...state, responses: action.payload };
+    case 'SET_QUESTIONS':
+      return {
+        ...state,
+        questions: {
+          ...state.questions,
+          [action.payload.quizType]: action.payload.questions,
+        },
+      };
+    case 'COMPLETE_QUIZ':
+      return {
+        ...state,
+        completedQuizzes: new Set([...state.completedQuizzes, action.payload]),
+      };
+    case 'SET_CURRENT_QUIZ':
+      return { ...state, currentQuiz: action.payload };
+    case 'SET_RESULTS':
+      return {
+        ...state,
+        results: {
+          ...state.results,
+          [action.payload.quizType]: action.payload.results,
+        },
+      };
+    case 'RESET_QUIZ':
+      return initialState;
+    default:
+      return state;
+  }
+}
 
-// Provider component
-export const QuizProvider: React.FC<{children: React.ReactNode}> = ({ children }) => {
-  const { toast } = useToast();
-  
-  // State
-  const [currentStep, setCurrentStep] = useState(1);
-  const [error, setError] = useState<string | null>(null);
-  const [userId, setUserId] = useState<string | null>(null);
-  const [completedQuizzes, setCompletedQuizzes] = useState<string[]>([]);
-  const [userFeedback, setUserFeedback] = useState<Record<number, number>>({});
-  const [finalSelections, setFinalSelections] = useState<Module[]>([]);
-  const [questions, setQuestions] = useState<McqQuestion[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [debugInfo, setDebugInfo] = useState<any>(null);
-  
-  // Use our new module recommendations hook
-  const { 
-    recommendedModules, 
-    loadingModules, 
-    refetchRecommendations 
-  } = useModuleRecommendations();
-  
-  // Add console log for debugging
-  console.log("QuizContext using recommendedModules:", recommendedModules.length);
-  
-  // Custom hooks
-  const { modules, error: modulesError } = useModules();
-  const { 
-    responses, 
-    isSubmitting, 
-    handleResponse, 
-    submitResponses: submitUserResponses,
-    loadResponses
-  } = useResponses();
-  
-  // Combine errors
-  useEffect(() => {
-    const combinedError = modulesError;
-    setError(combinedError);
-  }, [modulesError]);
-  
-  // Check for authenticated user and load their data
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        const currentUserId = session?.user?.id || null;
-        setUserId(currentUserId);
-        
-        if (currentUserId) {
-          // Load user's responses
-          await loadResponses();
-          
-          // Load completed quizzes
-          const { data: completions, error: completionsError } = await supabase
-            .from('quiz_completion')
-            .select('quiz_type')
-            .eq('user_id', currentUserId);
-            
-          if (completionsError) {
-            console.error('Error loading quiz completions:', completionsError);
-          } else if (completions) {
-            const completed = completions.map(c => c.quiz_type);
-            setCompletedQuizzes(completed);
-            
-            // Update localStorage for compatibility
-            localStorage.setItem('completed_quiz_segments', JSON.stringify(completed));
-          }
-        }
-      } catch (err) {
-        console.error('Error checking authentication:', err);
-      }
-    };
-    
-    checkAuth();
-    
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      const newUserId = session?.user?.id || null;
-      
-      if (newUserId !== userId) {
-        setUserId(newUserId);
-        
-        if (newUserId) {
-          // If user just logged in, load their data
-          loadResponses();
-        }
-      }
-    });
-    
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
-  
-  // Submit responses
-  const submitResponses = async (quizType?: string) => {
+const QuizContext = createContext<{
+  state: QuizState;
+  dispatch: React.Dispatch<QuizAction>;
+  submitResponse: (questionId: string, response: string | string[], quizType?: string) => Promise<void>;
+  loadResponses: () => Promise<void>;
+  saveResponses: () => Promise<void>;
+  calculateResults: (quizType: string) => Promise<void>;
+  completeQuiz: (quizType: string) => Promise<void>;
+} | null>(null);
+
+export function QuizProvider({ children }: { children: ReactNode }) {
+  const [state, dispatch] = useReducer(quizReducer, initialState);
+
+  const submitResponse = async (questionId: string, response: string | string[], quizType?: string) => {
     try {
-      // Submit user responses and get user ID
-      const currentUserId = await submitUserResponses(quizType, questions);
-      if (!currentUserId) {
-        throw new Error("You must be logged in to submit responses");
-      }
+      dispatch({ type: 'SET_LOADING', payload: true });
       
-      // Save quiz completion status
-      if (quizType && currentUserId) {
-        // Update local state
-        setCompletedQuizzes(prev => {
-          if (!prev.includes(quizType)) {
-            return [...prev, quizType];
-          }
-          return prev;
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+
+      const responseValue = Array.isArray(response) ? response.join(',') : response;
+      
+      const { error } = await supabase
+        .from('user_responses')
+        .upsert({
+          user_id: user.id,
+          question_id: questionId,
+          response: responseValue,
+          quiz_type: quizType || 'unknown',
+          response_array: Array.isArray(response) ? response : null,
+        }, {
+          onConflict: 'user_id,question_id'
         });
-        
-        // Update localStorage for compatibility
-        const localCompletions = JSON.parse(localStorage.getItem('completed_quiz_segments') || '[]');
-        if (!localCompletions.includes(quizType)) {
-          localCompletions.push(quizType);
-          localStorage.setItem("completed_quiz_segments", JSON.stringify(localCompletions));
-        }
-      }
-    } catch (err) {
-      console.error("Error submitting responses:", err);
-      setError(err instanceof Error ? err.message : "Failed to submit responses");
-      toast({
-        title: "Error",
-        description: "Failed to submit your responses. Please try again.",
-        variant: "destructive",
+
+      if (error) throw error;
+
+      dispatch({
+        type: 'SET_RESPONSE',
+        payload: { questionId, response: responseValue },
       });
-    }
-  };
-  
-  // Rate module
-  const rateModule = async (moduleId: number, rating: number): Promise<void> => {
-    try {
-      // Update local state for immediate feedback
-      setUserFeedback(prev => ({
-        ...prev,
-        [moduleId]: rating
-      }));
-      
-      // Store in database if user is logged in
-      if (userId) {
-        const { error: ratingError } = await supabase
-          .from('user_feedback')
-          .upsert({
-            user_id: userId,
-            module_id: moduleId,
-            rating
-          }, {
-            onConflict: 'user_id,module_id'
-          });
-          
-        if (ratingError) {
-          throw new Error(`Failed to save rating: ${ratingError.message}`);
-        }
-      }
-    } catch (err) {
-      console.error("Error rating module:", err);
-      toast({
-        title: "Error",
-        description: "Failed to save your rating. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
-  
-  // Refine recommendations by refetching them using the hook
-  const refineRecommendations = async (selectedModuleIds: number[] = []): Promise<void> => {
-    try {
-      setIsLoading(true);
-      await refetchRecommendations(); // Use the hook's refetch function
-      setIsLoading(false);
-    } catch (err) {
-      console.error("Error refining recommendations:", err);
-      setError("Failed to load recommendations. Please try again.");
-      setIsLoading(false);
-      toast({
-        title: "Error",
-        description: "Failed to refine recommendations. Please try again later.",
-        variant: "destructive",
-      });
+    } catch (error) {
+      console.error('Error submitting response:', error);
+      dispatch({ type: 'SET_ERROR', payload: error instanceof Error ? error.message : 'Unknown error' });
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false });
     }
   };
 
-  // Get final selections
-  const getFinalSelections = async () => {
+  const loadResponses = async () => {
     try {
-      // Map recommendedModules to match the expected format
-      const recommendations = recommendedModules.map(rec => ({
-        module: rec.module,
-        module_id: rec.module.id,
-        reason: rec.reasoning[0] || "Recommended based on your major preferences"
-      }));
+      dispatch({ type: 'SET_LOADING', payload: true });
       
-      // Filter to highly rated modules (7+)
-      const highlyRated = recommendations.filter(rec => 
-        userFeedback[rec.module_id] >= 7
-      );
-      
-      // Sort by rating (highest first)
-      highlyRated.sort((a, b) => 
-        (userFeedback[b.module_id] || 0) - (userFeedback[a.module_id] || 0)
-      );
-      
-      // Take top 5 or fewer
-      return highlyRated.slice(0, 5).map(rec => rec.module);
-    } catch (err) {
-      console.error("Error getting final selections:", err);
-      toast({
-        title: "Error",
-        description: "Failed to generate course selections. Please try again.",
-        variant: "destructive",
-      });
-      return [];
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from('user_responses')
+        .select('question_id, response')
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      const responses = data?.reduce((acc, curr) => {
+        acc[curr.question_id] = curr.response;
+        return acc;
+      }, {} as Record<string, string>) || {};
+
+      dispatch({ type: 'SET_RESPONSES', payload: responses });
+    } catch (error) {
+      console.error('Error loading responses:', error);
+      dispatch({ type: 'SET_ERROR', payload: error instanceof Error ? error.message : 'Unknown error' });
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false });
     }
   };
-  
-  // Reset quiz
-  const resetQuiz = () => {
-    setCurrentStep(1);
+
+  const saveResponses = async () => {
+    try {
+      dispatch({ type: 'SET_LOADING', payload: true });
+      
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+
+      // Temporarily disabled - implement when needed
+      console.log('Saving responses for user:', user.id);
+      
+    } catch (error) {
+      console.error('Error saving responses:', error);
+      dispatch({ type: 'SET_ERROR', payload: error instanceof Error ? error.message : 'Unknown error' });
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false });
+    }
   };
-  
-  // Format recommendations to match the expected format in the context
-  const recommendations = recommendedModules.map(rec => ({
-    module_id: rec.module.id,
-    user_id: userId || '',
-    module: rec.module,
-    reason: "Recommended based on your major preferences",
-    created_at: new Date().toISOString(),
-    reasoning: rec.reasoning
-  }));
-  
-  // Memoize the context value to prevent unnecessary rerenders
-  const contextValue = useMemo<QuizContextType>(() => ({
-    currentStep,
-    responses,
-    questions,
-    isLoading: isLoading || loadingModules,
-    isSubmitting,
-    error: error || null,
-    recommendations,
-    userFeedback,
-    modules,
-    finalSelections,
-    completedQuizzes,
-    debugInfo,
-    setCurrentStep,
-    handleResponse,
-    submitResponses,
-    rateModule,
-    refineRecommendations,
-    getFinalSelections,
-    resetQuiz,
-  }), [
-    currentStep, 
-    responses, 
-    questions, 
-    isLoading, 
-    loadingModules,
-    isSubmitting, 
-    error,
-    recommendedModules,
-    recommendations,
-    userFeedback,
-    modules,
-    finalSelections,
-    completedQuizzes,
-    debugInfo
-  ]);
-  
+
+  const calculateResults = async (quizType: string) => {
+    try {
+      dispatch({ type: 'SET_LOADING', payload: true });
+      
+      // Implementation would depend on quiz type and scoring logic
+      console.log('Calculating results for quiz type:', quizType);
+      
+    } catch (error) {
+      console.error('Error calculating results:', error);
+      dispatch({ type: 'SET_ERROR', payload: error instanceof Error ? error.message : 'Unknown error' });
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false });
+    }
+  };
+
+  const completeQuiz = async (quizType: string) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+
+      const { error } = await supabase
+        .from('quiz_completion')
+        .insert({
+          user_id: user.id,
+          quiz_type: quizType,
+        });
+
+      if (error) throw error;
+
+      dispatch({ type: 'COMPLETE_QUIZ', payload: quizType });
+    } catch (error) {
+      console.error('Error completing quiz:', error);
+      dispatch({ type: 'SET_ERROR', payload: error instanceof Error ? error.message : 'Unknown error' });
+    }
+  };
+
+  useEffect(() => {
+    loadResponses();
+  }, []);
+
   return (
-    <QuizContext.Provider value={contextValue}>
+    <QuizContext.Provider value={{
+      state,
+      dispatch,
+      submitResponse,
+      loadResponses,
+      saveResponses,
+      calculateResults,
+      completeQuiz,
+    }}>
       {children}
     </QuizContext.Provider>
   );
-};
+}
+
+export function useQuiz() {
+  const context = useContext(QuizContext);
+  if (!context) {
+    throw new Error('useQuiz must be used within a QuizProvider');
+  }
+  return context;
+}

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -35,6 +34,8 @@ interface WorkExperience {
   role?: string;
   description?: string;
   date?: string;
+  organization?: string;
+  dates?: string;
 }
 
 interface RecommendedMajor {
@@ -182,7 +183,7 @@ export const MockInterviews = ({ user }: MockInterviewsProps) => {
             if (Array.isArray(resumeData[0].educationItems)) {
               educationItems = resumeData[0].educationItems;
             } else if (typeof resumeData[0].educationItems === 'string') {
-              educationItems = JSON.parse(resumeData[0].educationItems);
+              educationItems = JSON.parse(resumeData[0].educationItems as string);
             }
           } catch (error) {
             console.error("Error parsing educationItems:", error);
@@ -217,7 +218,7 @@ export const MockInterviews = ({ user }: MockInterviewsProps) => {
           if (Array.isArray(resume.educationItems)) {
             educationItems = resume.educationItems;
           } else if (typeof resume.educationItems === 'string') {
-            educationItems = JSON.parse(resume.educationItems);
+            educationItems = JSON.parse(resume.educationItems as string);
           }
         } catch (error) {
           console.error("Error parsing educationItems:", error);
@@ -238,7 +239,7 @@ export const MockInterviews = ({ user }: MockInterviewsProps) => {
             if (Array.isArray(resume.awards)) {
               awardsArray = resume.awards;
             } else if (typeof resume.awards === 'string') {
-              awardsArray = JSON.parse(resume.awards);
+              awardsArray = JSON.parse(resume.awards as string);
             }
             
             awards = awardsArray
@@ -258,21 +259,21 @@ export const MockInterviews = ({ user }: MockInterviewsProps) => {
           if (resume.work_experience) {
             let workArray: WorkExperience[] = [];
             if (Array.isArray(resume.work_experience)) {
-              workArray = resume.work_experience;
+              workArray = resume.work_experience as WorkExperience[];
             } else if (typeof resume.work_experience === 'string') {
-              workArray = JSON.parse(resume.work_experience);
+              workArray = JSON.parse(resume.work_experience as string);
             } else if (resume.work_experience && typeof resume.work_experience === 'object') {
               workArray = [resume.work_experience as WorkExperience];
             }
             
             work_experience = workArray
               .map((work: WorkExperience) => {
-                if (!work.organisation && !work.role) return null;
+                if (!work.organisation && !work.organization && !work.role) return null;
                 const parts = [];
                 if (work.role) parts.push(work.role);
-                if (work.organisation) parts.push(`at ${work.organisation}`);
+                if (work.organisation || work.organization) parts.push(`at ${work.organisation || work.organization}`);
                 if (work.description) parts.push(`: ${work.description}`);
-                if (work.date) parts.push(` (${work.date})`);
+                if (work.date || work.dates) parts.push(` (${work.date || work.dates})`);
                 return parts.join('');
               })
               .filter(Boolean)
