@@ -13,7 +13,7 @@ import SegmentedQuiz from "./pages/SegmentedQuiz";
 import Recommendations from "./pages/Recommendations";
 import { QuizProvider } from "@/contexts/QuizContext";
 import Pricing from "./pages/Pricing";
-import FeedbackForm from "./components/FeedbackForm";
+import { FeedbackForm } from "./components/FeedbackForm";
 import Settings from "./pages/Settings";
 import ResumeBuilder from "./pages/ResumeBuilder";
 import BasicResume from "./pages/BasicResume";

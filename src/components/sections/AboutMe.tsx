@@ -1,13 +1,14 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { BookOpen, User, Target } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "@/contexts/ThemeContext";
 import { supabase } from "@/integrations/supabase/client";
-import MajorRecommendations from "./MajorRecommendations";
+import { MajorRecommendations } from "./MajorRecommendations";
 
 export const AboutMe = () => {
-  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
   const [user, setUser] = useState<any>(null);
   const [showProfile, setShowProfile] = useState(false);
   const navigate = useNavigate();
@@ -21,12 +22,12 @@ export const AboutMe = () => {
       if (currentUser?.id) {
         const { data: profile } = await supabase
           .from('profiles')
-          .select('name')
+          .select('username')
           .eq('id', currentUser.id)
           .single();
 
         if (profile) {
-          setName(profile.name || '');
+          setUsername(profile.username || '');
         }
       }
     };
@@ -42,7 +43,6 @@ export const AboutMe = () => {
 
     const updates = {
       [field]: value,
-      updated_at: new Date(),
     };
 
     try {
@@ -67,14 +67,14 @@ export const AboutMe = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           <div>
-            <label className="block text-sm font-medium mb-1">Name</label>
+            <label className="block text-sm font-medium mb-1">Username</label>
             <input
               type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              onBlur={() => handleUpdateProfile('name', name)}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              onBlur={() => handleUpdateProfile('username', username)}
               className={`w-full p-2 border rounded-md ${isCurrentlyDark ? 'bg-gray-700 border-gray-600 text-white' : 'bg-white border-gray-300'}`}
-              placeholder="Enter your name"
+              placeholder="Enter your username"
             />
           </div>
           
@@ -148,7 +148,7 @@ export const AboutMe = () => {
           
           <div data-tutorial="recommended-majors">
             <h3 className="text-lg font-medium mb-4">Recommended Majors</h3>
-            <MajorRecommendations />
+            <MajorRecommendations topRiasec={[]} topWorkValues={[]} />
           </div>
         </div>
       )}
