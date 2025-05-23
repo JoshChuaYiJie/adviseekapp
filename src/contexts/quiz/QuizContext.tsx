@@ -11,6 +11,10 @@ const initialState: QuizState = {
   results: {},
   loading: false,
   error: null,
+  currentStep: 1,
+  isSubmitting: false,
+  userFeedback: {},
+  debugInfo: null,
 };
 
 function quizReducer(state: QuizState, action: QuizAction): QuizState {
@@ -52,6 +56,14 @@ function quizReducer(state: QuizState, action: QuizAction): QuizState {
           [action.payload.quizType]: action.payload.results,
         },
       };
+    case 'SET_CURRENT_STEP':
+      return { ...state, currentStep: action.payload };
+    case 'SET_SUBMITTING':
+      return { ...state, isSubmitting: action.payload };
+    case 'SET_USER_FEEDBACK':
+      return { ...state, userFeedback: action.payload };
+    case 'SET_DEBUG_INFO':
+      return { ...state, debugInfo: action.payload };
     case 'RESET_QUIZ':
       return initialState;
     default:
@@ -62,15 +74,68 @@ function quizReducer(state: QuizState, action: QuizAction): QuizState {
 const QuizContext = createContext<{
   state: QuizState;
   dispatch: React.Dispatch<QuizAction>;
+  // Expose state properties directly for compatibility
+  isLoading: boolean;
+  error: string | null;
+  recommendations: any[];
+  currentStep: number;
+  questions: Question[];
+  isSubmitting: boolean;
+  responses: Record<string, string>;
+  debugInfo: any;
+  userFeedback: Record<number, number>;
+  // Methods
+  setCurrentStep: (step: number) => void;
   submitResponse: (questionId: string, response: string | string[], quizType?: string) => Promise<void>;
   loadResponses: () => Promise<void>;
   saveResponses: () => Promise<void>;
   calculateResults: (quizType: string) => Promise<void>;
   completeQuiz: (quizType: string) => Promise<void>;
+  submitResponses: (quizType?: string) => Promise<void>;
+  handleResponse: (questionId: string, response: string | string[]) => void;
+  rateModule: (moduleId: number, rating: number) => Promise<void>;
+  getFinalSelections: () => Promise<any[]>;
 } | null>(null);
 
 export function QuizProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(quizReducer, initialState);
+
+  // Load sample questions for testing
+  useEffect(() => {
+    const sampleQuestions: Question[] = [
+      {
+        id: 'q1',
+        question_text: 'What is your preferred learning style?',
+        question_type: 'single-select',
+        options: ['Visual', 'Auditory', 'Kinesthetic', 'Reading/Writing'],
+        section: 'Learning Preferences'
+      },
+      {
+        id: 'q2',
+        question_text: 'Which subjects interest you most?',
+        question_type: 'multi-select',
+        options: ['Mathematics', 'Science', 'Literature', 'History', 'Arts'],
+        section: 'Academic Interests'
+      }
+    ];
+
+    dispatch({
+      type: 'SET_QUESTIONS',
+      payload: { quizType: 'general', questions: sampleQuestions }
+    });
+  }, []);
+
+  const setCurrentStep = (step: number) => {
+    dispatch({ type: 'SET_CURRENT_STEP', payload: step });
+  };
+
+  const handleResponse = (questionId: string, response: string | string[]) => {
+    const responseValue = Array.isArray(response) ? response.join(',') : response;
+    dispatch({
+      type: 'SET_RESPONSE',
+      payload: { questionId, response: responseValue },
+    });
+  };
 
   const submitResponse = async (questionId: string, response: string | string[], quizType?: string) => {
     try {
@@ -104,6 +169,25 @@ export function QuizProvider({ children }: { children: ReactNode }) {
       dispatch({ type: 'SET_ERROR', payload: error instanceof Error ? error.message : 'Unknown error' });
     } finally {
       dispatch({ type: 'SET_LOADING', payload: false });
+    }
+  };
+
+  const submitResponses = async (quizType?: string) => {
+    try {
+      dispatch({ type: 'SET_SUBMITTING', payload: true });
+      
+      // Process all responses
+      const responseEntries = Object.entries(state.responses);
+      for (const [questionId, response] of responseEntries) {
+        await submitResponse(questionId, response, quizType);
+      }
+      
+      console.log('All responses submitted successfully');
+    } catch (error) {
+      console.error('Error submitting responses:', error);
+      dispatch({ type: 'SET_ERROR', payload: error instanceof Error ? error.message : 'Unknown error' });
+    } finally {
+      dispatch({ type: 'SET_SUBMITTING', payload: false });
     }
   };
 
@@ -168,6 +252,27 @@ export function QuizProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const rateModule = async (moduleId: number, rating: number) => {
+    try {
+      const newFeedback = { ...state.userFeedback, [moduleId]: rating };
+      dispatch({ type: 'SET_USER_FEEDBACK', payload: newFeedback });
+      console.log(`Rating module ${moduleId} with rating ${rating}`);
+    } catch (error) {
+      console.error('Error rating module:', error);
+    }
+  };
+
+  const getFinalSelections = async () => {
+    try {
+      // Mock implementation - return empty array for now
+      console.log('Getting final selections');
+      return [];
+    } catch (error) {
+      console.error('Error getting final selections:', error);
+      return [];
+    }
+  };
+
   const completeQuiz = async (quizType: string) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -193,15 +298,34 @@ export function QuizProvider({ children }: { children: ReactNode }) {
     loadResponses();
   }, []);
 
+  // Get current questions array
+  const currentQuestions = state.currentQuiz ? state.questions[state.currentQuiz] || [] : state.questions['general'] || [];
+
   return (
     <QuizContext.Provider value={{
       state,
       dispatch,
+      // Expose state properties directly
+      isLoading: state.loading,
+      error: state.error,
+      recommendations: [], // Mock empty array
+      currentStep: state.currentStep,
+      questions: currentQuestions,
+      isSubmitting: state.isSubmitting,
+      responses: state.responses,
+      debugInfo: state.debugInfo,
+      userFeedback: state.userFeedback,
+      // Methods
+      setCurrentStep,
       submitResponse,
       loadResponses,
       saveResponses,
       calculateResults,
       completeQuiz,
+      submitResponses,
+      handleResponse,
+      rateModule,
+      getFinalSelections,
     }}>
       {children}
     </QuizContext.Provider>
