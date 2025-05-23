@@ -93,17 +93,9 @@ const Index = () => {
         if (newUser) {
           localStorage.setItem('user', JSON.stringify(newUser));
           
-          // If this is a sign-in event for a new user, show tutorial
-          if (event === 'SIGNED_IN') {
-            const userCreatedAt = new Date(newUser.created_at);
-            const now = new Date();
-            const timeDiff = now.getTime() - userCreatedAt.getTime();
-            const minutesDiff = timeDiff / (1000 * 60);
-            
-            // If user was created within the last 5 minutes, show tutorial
-            if (minutesDiff < 5) {
-              setShowTutorial(true);
-            }
+          // If this is a sign-up event, show tutorial
+          if (event === 'SIGNED_UP') {
+            setShowTutorial(true);
           }
         } else {
           localStorage.removeItem('user');
