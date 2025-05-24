@@ -91,7 +91,7 @@ const TermsOfService = () => {
           <section>
             <h2 className="text-xl font-semibold mb-3">10. Contact Us</h2>
             <p>
-              If you have any questions about these Terms, please contact us at terms@adviseek.sg.
+              If you have any questions about these Terms, please contact us at adviseek.official@gmail.com.
             </p>
           </section>
         </div>
