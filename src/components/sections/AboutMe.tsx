@@ -435,7 +435,7 @@ const generateWorkPreferencesFromWorkValues = (code: string): string[] => {
           <Button variant={activeTab === "profile" ? "default" : "outline"} onClick={() => setActiveTab("profile")} data-tutorial="my-profile">
             My Profile
           </Button>
-          <Button variant={activeTab === "resume" ? "default" : "outline"} onClick={() => setActiveTab("resume")}>
+          <Button variant={activeTab === "resume" ? "default" : "outline"} onClick={() => setActiveTab("resume")} data-tutorial="my-resume">
             <FileText className="mr-2 h-4 w-4" />
             My Resume
           </Button>
@@ -494,8 +494,8 @@ const generateWorkPreferencesFromWorkValues = (code: string): string[] => {
                   {/* Recommended Majors Section */}
                   <div className="mb-6">
                     <div className="flex items-center justify-between mb-3">
-                      <h3 className="text-lg font-semibold">Recommended Majors</h3>
-                      <Button onClick={handleNarrowDownFurther} variant="outline" size="sm">
+                      <h3 className="text-lg font-semibold" data-tutorial="recommended-majors">Recommended Majors</h3>
+                      <Button onClick={handleNarrowDownFurther} variant="outline" size="sm" data-tutorial="narrow-down-further">
                         Narrow down further
                       </Button>
                     </div>
