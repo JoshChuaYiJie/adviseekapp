@@ -152,6 +152,7 @@ export const WorkValuesChart = () => {
             <PieChart>
               <Pie
                 data={workValuesData}
+                data-tutorial="work-values-chart"
                 cx="50%"
                 cy="50%"
                 labelLine={false}

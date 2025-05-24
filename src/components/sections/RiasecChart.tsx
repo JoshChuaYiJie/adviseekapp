@@ -147,6 +147,7 @@ export const RiasecChart = () => {
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
+                data-tutorial="riasec-chart"
                 data={riasecData}
                 cx="50%"
                 cy="50%"

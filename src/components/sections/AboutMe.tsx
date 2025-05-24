@@ -432,7 +432,7 @@ const generateWorkPreferencesFromWorkValues = (code: string): string[] => {
           <Button variant={activeTab === "quiz" ? "default" : "outline"} onClick={() => setActiveTab("quiz")}>
             Quizzes
           </Button>
-          <Button variant={activeTab === "profile" ? "default" : "outline"} onClick={() => setActiveTab("profile")}>
+          <Button variant={activeTab === "profile" ? "default" : "outline"} onClick={() => setActiveTab("profile")} data-tutorial="my-profile">
             My Profile
           </Button>
           <Button variant={activeTab === "resume" ? "default" : "outline"} onClick={() => setActiveTab("resume")}>
