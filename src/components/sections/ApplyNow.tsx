@@ -616,7 +616,7 @@ export const ApplyNow = () => {
               disabled={isLoading}
             >
               <SelectTrigger className={`w-full ${isCurrentlyDark ? 'bg-gray-700 text-white border-gray-600' : ''}`}>
-                <SelectValue placeholder={t("apply.select_university", "Select University")} />
+                <SelectValue placeholder={t("apply.select_university", "Select University")} data-tutorial="select-university" />
               </SelectTrigger>
               <SelectContent className={isCurrentlyDark ? 'bg-gray-700 text-white border-gray-600' : ''}>
                 {universities.map(uni => (

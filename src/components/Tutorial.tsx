@@ -85,7 +85,7 @@ export const Tutorial = ({ isOpen, onClose, onSkip }: TutorialProps) => {
       }
     },
     {
-      target: '[data-tutorial="chat-with-adviseek"]',
+      target: '[data-tutorial="select-university"]',
       content: "Armed with your resume and personality, Adviseek AI can help you write an application to maximise your university enrollment chances",
     },
     {
