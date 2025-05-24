@@ -237,7 +237,7 @@ export const AppliedProgrammes = () => {
     <div className="space-y-6 w-full max-w-full">
       <div className={`space-y-4 p-6 ${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg shadow w-full`}>
         <Select value={selectedUniversity} onValueChange={handleUniversityChange} disabled={isLoading}>
-          <SelectTrigger className={`w-full ${isCurrentlyDark ? 'bg-gray-700 text-white border-gray-600' : ''}`}>
+          <SelectTrigger className={`w-full ${isCurrentlyDark ? 'bg-gray-700 text-white border-gray-600' : ''}`} data-tutorial="university-select">
             <SelectValue placeholder={t("university.select", "Select a university")} />
           </SelectTrigger>
           <SelectContent className={isCurrentlyDark ? 'bg-gray-700 text-white border-gray-600' : ''}>

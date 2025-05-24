@@ -58,6 +58,7 @@ export const Tutorial = ({ isOpen, onClose, onSkip }: TutorialProps) => {
     {
       target: '[data-tutorial="my-resume"]',
       content: "Need a resume?",
+      scrollTarget: '[data-tutorial="my-resume"]',
       requireClick: true,
     },
     {
@@ -70,7 +71,7 @@ export const Tutorial = ({ isOpen, onClose, onSkip }: TutorialProps) => {
       requireClick: true,
     },
     {
-      target: '[data-tutorial="university-select"], [data-tutorial="degree-select"]',
+      target: '[data-tutorial="university-select"]',
       content: "Simply pick your university and all its available programmes will be reflected in the dropdown",
     },
     {
