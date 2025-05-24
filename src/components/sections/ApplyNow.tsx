@@ -46,12 +46,12 @@ export const ApplyNow = () => {
   const [isLoadingResponses, setIsLoadingResponses] = useState(false);
   const { isCurrentlyDark } = useTheme();
   const { t } = useTranslation();
-  const { callAI, isLoading: aiLoading } = useDeepseek();
+  const { callAI, isLoading: aiLoading } = useDeepseek;
   
   // Chat states
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState<Record<string, boolean>>({});
   const [input, setInput] = useState("");
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Record<string, Message[]>>({});
   const [userId, setUserId] = useState<string | null>(null);
   const [profileData, setProfileData] = useState<any>(null);
   const [resumeData, setResumeData] = useState<any>(null);
@@ -120,19 +120,28 @@ export const ApplyNow = () => {
     getUserData();
   }, []);
 
-  const toggleChat = () => {
-    setIsOpen(!isOpen);
-    if (!isOpen && messages.length === 0) {
-      setMessages([
-        {
-          role: "assistant",
-          content: `Hi there! I'm Adviseek. How can I help you with your university application?`
-        }
-      ]);
-    }
+  const toggleChat = (questionId: string) => {
+    setIsOpen(prev => {
+      const newState = { ...prev, [questionId]: !prev[questionId] };
+      
+      // Initialize messages for this question if not already done
+      if (!messages[questionId] && newState[questionId]) {
+        setMessages(prevMessages => ({
+          ...prevMessages,
+          [questionId]: [
+            {
+              role: "assistant",
+              content: `Hi there! I'm Adviseek. How can I help you with this application question?`
+            }
+          ]
+        }));
+      }
+      
+      return newState;
+    });
   };
 
-  const sendMessage = async () => {
+  const sendMessage = async (questionId: string) => {
     if (!input.trim() || aiLoading) return;
 
     const userMessage = {
@@ -140,7 +149,11 @@ export const ApplyNow = () => {
       content: input.trim()
     };
     
-    setMessages(prev => [...prev, userMessage]);
+    setMessages(prev => ({
+      ...prev,
+      [questionId]: [...(prev[questionId] || []), userMessage]
+    }));
+    
     const userQuery = input;
     setInput("");
 
@@ -153,6 +166,12 @@ export const ApplyNow = () => {
       - University: ${selectedUniversity || 'Not selected'}
       - Degree: ${selectedDegree || 'Not selected'}
       - Major: ${selectedMajor || 'Not selected'}
+      
+      They are currently working on this specific question:
+      "${questions.find(q => q.id === questionId)?.text || 'Unknown question'}"
+      
+      Current response to this question:
+      "${responses[questionId] || '[Not answered yet]'}"
       
       Application responses so far:
     `;
@@ -212,7 +231,7 @@ export const ApplyNow = () => {
       let workExperienceItems = '';
       try {
         const workItems = typeof resumeData.work_experience === 'string'
-          ? JSON.parse(workExperienceItems)
+          ? JSON.parse(resumeData.work_experience)
           : resumeData.work_experience;
           
         if (Array.isArray(workItems)) {
@@ -262,23 +281,29 @@ export const ApplyNow = () => {
     try {
       const aiResponse = await callAI(contextualPrompt);
       
-      setMessages(prev => [
+      setMessages(prev => ({
         ...prev,
-        {
-          role: "assistant",
-          content: aiResponse
-        }
-      ]);
+        [questionId]: [
+          ...(prev[questionId] || []),
+          {
+            role: "assistant",
+            content: aiResponse
+          }
+        ]
+      }));
       
     } catch (error) {
       console.error("Error calling Deepseek:", error);
-      setMessages(prev => [
+      setMessages(prev => ({
         ...prev,
-        {
-          role: "assistant",
-          content: "I'm sorry, I encountered an error. Please try again."
-        }
-      ]);
+        [questionId]: [
+          ...(prev[questionId] || []),
+          {
+            role: "assistant",
+            content: "I'm sorry, I encountered an error. Please try again."
+          }
+        ]
+      }));
     }
   };
 
@@ -679,30 +704,35 @@ export const ApplyNow = () => {
                       onChange={(e) => handleResponseChange(question.id, e.target.value)}
                       placeholder={t("apply.response_placeholder", "Type your response here...")}
                       onFocus={() => setFocusedQuestionId(question.id)}
-                      onBlur={() => setFocusedQuestionId(null)}
+                      onBlur={() => {
+                        // Only hide if chat is not open for this question
+                        if (!isOpen[question.id]) {
+                          setFocusedQuestionId(null);
+                        }
+                      }}
                     />
                     
-                    {/* Chat with Adviseek button - only shows when this textarea is focused */}
-                    {focusedQuestionId === question.id && (
-                      <div className="mt-2">
+                    {/* Chat with Adviseek button - shows when focused or chat is open */}
+                    {(focusedQuestionId === question.id || isOpen[question.id]) && (
+                      <div className="mt-2 space-y-2">
                         <Button 
                           type="button" 
                           variant="outline" 
-                          onClick={toggleChat}
+                          onClick={() => toggleChat(question.id)}
                           className="flex items-center gap-2"
                           data-tutorial="chat-with-adviseek"
                         >
                           <MessageSquare className="h-4 w-4" />
-                          Chat with Adviseek
+                          {isOpen[question.id] ? 'Hide Chat' : 'Chat with Adviseek'}
                         </Button>
 
-                        {isOpen && (
-                          <Card className="mt-4 p-4">
+                        {isOpen[question.id] && (
+                          <Card className="p-4">
                             <h4 className="font-medium mb-2">Adviseek Assistant: University Application</h4>
                             
                             <ScrollArea className="h-60 mb-4 border rounded-md p-2" ref={scrollAreaRef}>
                               <div className="space-y-3">
-                                {messages.map((msg, i) => (
+                                {(messages[question.id] || []).map((msg, i) => (
                                   <div
                                     key={i}
                                     className={`p-3 rounded-lg ${
@@ -751,12 +781,12 @@ export const ApplyNow = () => {
                                 onKeyDown={(e) => {
                                   if (e.key === "Enter" && !e.shiftKey) {
                                     e.preventDefault();
-                                    sendMessage();
+                                    sendMessage(question.id);
                                   }
                                 }}
                               />
                               <Button
-                                onClick={sendMessage}
+                                onClick={() => sendMessage(question.id)}
                                 disabled={aiLoading || !input.trim()}
                                 className="self-end"
                               >
