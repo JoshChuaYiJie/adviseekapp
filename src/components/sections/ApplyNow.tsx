@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -48,10 +49,10 @@ export const ApplyNow = () => {
   const { t } = useTranslation();
   const { callAI, isLoading: aiLoading } = useDeepseek();
   
-  // Chat states
-  const [isOpen, setIsOpen] = useState(false);
-  const [input, setInput] = useState("");
-  const [messages, setMessages] = useState<Message[]>([]);
+  // Chat states - now per question
+  const [openChatQuestionId, setOpenChatQuestionId] = useState<string | null>(null);
+  const [inputByQuestion, setInputByQuestion] = useState<Record<string, string>>({});
+  const [messagesByQuestion, setMessagesByQuestion] = useState<Record<string, Message[]>>({});
   const [userId, setUserId] = useState<string | null>(null);
   const [profileData, setProfileData] = useState<any>(null);
   const [resumeData, setResumeData] = useState<any>(null);
@@ -75,7 +76,7 @@ export const ApplyNow = () => {
         scrollContainer.scrollTop = scrollContainer.scrollHeight;
       }
     }
-  }, [messages]);
+  }, [messagesByQuestion, openChatQuestionId]);
 
   // Rotate loading messages
   useInterval(() => {
@@ -120,33 +121,65 @@ export const ApplyNow = () => {
     getUserData();
   }, []);
 
-  const toggleChat = () => {
-    setIsOpen(!isOpen);
-    if (!isOpen && messages.length === 0) {
-      setMessages([
-        {
-          role: "assistant",
-          content: `Hi there! I'm Adviseek. How can I help you with your university application?`
-        }
-      ]);
+  const toggleChat = (questionId: string) => {
+    if (openChatQuestionId === questionId) {
+      // Close the current chat
+      setOpenChatQuestionId(null);
+    } else {
+      // Open chat for this question
+      setOpenChatQuestionId(questionId);
+      
+      // Initialize messages for this question if not already done
+      if (!messagesByQuestion[questionId]) {
+        setMessagesByQuestion(prev => ({
+          ...prev,
+          [questionId]: [{
+            role: "assistant",
+            content: `Hi there! I'm Adviseek. How can I help you with this application question?`
+          }]
+        }));
+      }
+      
+      // Initialize input for this question if not already done
+      if (!inputByQuestion[questionId]) {
+        setInputByQuestion(prev => ({
+          ...prev,
+          [questionId]: ""
+        }));
+      }
     }
   };
 
-  const sendMessage = async () => {
-    if (!input.trim() || aiLoading) return;
+  const sendMessage = async (questionId: string) => {
+    const currentInput = inputByQuestion[questionId];
+    if (!currentInput?.trim() || aiLoading) return;
 
     const userMessage = {
       role: "user" as const,
-      content: input.trim()
+      content: currentInput.trim()
     };
     
-    setMessages(prev => [...prev, userMessage]);
-    const userQuery = input;
-    setInput("");
+    // Add user message to this question's chat
+    setMessagesByQuestion(prev => ({
+      ...prev,
+      [questionId]: [...(prev[questionId] || []), userMessage]
+    }));
+    
+    const userQuery = currentInput;
+    
+    // Clear input for this question
+    setInputByQuestion(prev => ({
+      ...prev,
+      [questionId]: ""
+    }));
+
+    // Find the current question text
+    const currentQuestion = questions.find(q => q.id === questionId);
+    const currentResponse = responses[questionId] || "";
 
     // Build comprehensive context for AI
     let contextualPrompt = `
-      The user is working on university applications and has the following question:
+      The user is working on university applications and has the following question about this specific application question:
       "${userQuery}"
       
       Current application context:
@@ -154,19 +187,12 @@ export const ApplyNow = () => {
       - Degree: ${selectedDegree || 'Not selected'}
       - Major: ${selectedMajor || 'Not selected'}
       
-      Application responses so far:
+      Current application question:
+      "${currentQuestion?.text || 'Unknown question'}"
+      
+      User's current response to this question:
+      "${currentResponse || '[Not answered yet]'}"
     `;
-
-    // Add current responses context
-    if (questions.length > 0) {
-      questions.forEach((question, index) => {
-        const response = responses[question.id] || "";
-        contextualPrompt += `
-        Question ${index + 1}: ${question.text}
-        Response: ${response || '[Not answered yet]'}
-        `;
-      });
-    }
 
     // Add profile context if available
     if (profileData) {
@@ -212,7 +238,7 @@ export const ApplyNow = () => {
       let workExperienceItems = '';
       try {
         const workItems = typeof resumeData.work_experience === 'string'
-          ? JSON.parse(workExperienceItems)
+          ? JSON.parse(resumeData.work_experience)
           : resumeData.work_experience;
           
         if (Array.isArray(workItems)) {
@@ -252,7 +278,7 @@ export const ApplyNow = () => {
 
     contextualPrompt += `
     
-    Please provide helpful, specific advice for their university application.
+    Please provide helpful, specific advice for this particular university application question.
     Focus on best practices, content suggestions, and what admissions committees look for.
     Keep your response concise and actionable.
     `;
@@ -262,23 +288,29 @@ export const ApplyNow = () => {
     try {
       const aiResponse = await callAI(contextualPrompt);
       
-      setMessages(prev => [
+      setMessagesByQuestion(prev => ({
         ...prev,
-        {
-          role: "assistant",
-          content: aiResponse
-        }
-      ]);
+        [questionId]: [
+          ...(prev[questionId] || []),
+          {
+            role: "assistant",
+            content: aiResponse
+          }
+        ]
+      }));
       
     } catch (error) {
       console.error("Error calling Deepseek:", error);
-      setMessages(prev => [
+      setMessagesByQuestion(prev => ({
         ...prev,
-        {
-          role: "assistant",
-          content: "I'm sorry, I encountered an error. Please try again."
-        }
-      ]);
+        [questionId]: [
+          ...(prev[questionId] || []),
+          {
+            role: "assistant",
+            content: "I'm sorry, I encountered an error. Please try again."
+          }
+        ]
+      }));
     }
   };
 
@@ -380,6 +412,10 @@ export const ApplyNow = () => {
     setSelectedMajor("");
     setQuestions([]);
     setResponses({});
+    // Clear chat states when university changes
+    setOpenChatQuestionId(null);
+    setMessagesByQuestion({});
+    setInputByQuestion({});
   };
 
   const handleDegreeChange = (degree: string) => {
@@ -388,6 +424,10 @@ export const ApplyNow = () => {
     setSelectedMajor("");
     setQuestions([]);
     setResponses({});
+    // Clear chat states when degree changes
+    setOpenChatQuestionId(null);
+    setMessagesByQuestion({});
+    setInputByQuestion({});
   };
 
   const handleMajorChange = async (major: string) => {
@@ -404,6 +444,11 @@ export const ApplyNow = () => {
       initialResponses[q.id] = "";
     });
     setResponses(initialResponses);
+    
+    // Clear chat states when major changes
+    setOpenChatQuestionId(null);
+    setMessagesByQuestion({});
+    setInputByQuestion({});
     
     // Try to load saved responses from Supabase
     await loadSavedResponses(selectedUniversity, selectedDegree, major, universityQuestions);
@@ -667,6 +712,10 @@ export const ApplyNow = () => {
                 undefined
               );
               
+              const isThisChatOpen = openChatQuestionId === question.id;
+              const questionMessages = messagesByQuestion[question.id] || [];
+              const questionInput = inputByQuestion[question.id] || "";
+              
               return (
                 <Card key={index} className={`p-4 ${isCurrentlyDark ? 'bg-gray-700 border-gray-600' : ''}`}>
                   <h4 className="font-medium mb-2">{question.text}</h4>
@@ -682,12 +731,13 @@ export const ApplyNow = () => {
                       onBlur={() => setFocusedQuestionId(null)}
                     />
                     
-                    {/* Chat with Adviseek button - only shows when this textarea is focused */}
+                    {/* Chat with Adviseek button - only shows when this textarea is focused or chat is open */}
+                    {(focusedQuestionId === question.id || isThisChatOpen) && (
                       <div className="mt-2">
                         <Button 
                           type="button" 
                           variant="outline" 
-                          onClick={toggleChat}
+                          onClick={() => toggleChat(question.id)}
                           className="flex items-center gap-2"
                           data-tutorial="chat-with-adviseek"
                         >
@@ -695,13 +745,13 @@ export const ApplyNow = () => {
                           Chat with Adviseek
                         </Button>
 
-                        {isOpen && (
+                        {isThisChatOpen && (
                           <Card className="mt-4 p-4">
                             <h4 className="font-medium mb-2">Adviseek Assistant: University Application</h4>
                             
                             <ScrollArea className="h-60 mb-4 border rounded-md p-2" ref={scrollAreaRef}>
                               <div className="space-y-3">
-                                {messages.map((msg, i) => (
+                                {questionMessages.map((msg, i) => (
                                   <div
                                     key={i}
                                     className={`p-3 rounded-lg ${
@@ -742,21 +792,24 @@ export const ApplyNow = () => {
                             
                             <div className="flex gap-2">
                               <Textarea
-                                value={input}
-                                onChange={(e) => setInput(e.target.value)}
+                                value={questionInput}
+                                onChange={(e) => setInputByQuestion(prev => ({
+                                  ...prev,
+                                  [question.id]: e.target.value
+                                }))}
                                 placeholder="Ask about your application..."
                                 className="flex-1 resize-none"
                                 disabled={aiLoading}
                                 onKeyDown={(e) => {
                                   if (e.key === "Enter" && !e.shiftKey) {
                                     e.preventDefault();
-                                    sendMessage();
+                                    sendMessage(question.id);
                                   }
                                 }}
                               />
                               <Button
-                                onClick={sendMessage}
-                                disabled={aiLoading || !input.trim()}
+                                onClick={() => sendMessage(question.id)}
+                                disabled={aiLoading || !questionInput.trim()}
                                 className="self-end"
                               >
                                 {aiLoading ? (
@@ -770,6 +823,7 @@ export const ApplyNow = () => {
                           </Card>
                         )}
                       </div>
+                    )}
 
                   </div>
                   
