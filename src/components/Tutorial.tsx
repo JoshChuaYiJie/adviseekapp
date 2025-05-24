@@ -78,11 +78,6 @@ export const Tutorial = ({ isOpen, onClose, onSkip }: TutorialProps) => {
       target: '[data-id="apply-now"]',
       content: "Don't know how to write the best application?",
       requireClick: true,
-      autoFill: {
-        university: "National University of Singapore",
-        degree: "Bachelor of Arts",
-        major: "Anthropology"
-      }
     },
     {
       target: '[data-tutorial="select-university"]',
@@ -94,7 +89,7 @@ export const Tutorial = ({ isOpen, onClose, onSkip }: TutorialProps) => {
       requireClick: true,
     },
     {
-      target: '[data-tutorial="select-application"]',
+      target: '[data-tutorial="program-select-interview"]',
       content: "Adviseek's got your back, Adviseek AI will dynamically make questions according to your profile and resume. Simply select one of your applications and Adviseek will do the rest!",
     },
     {
