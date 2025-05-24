@@ -321,6 +321,7 @@ export const QuizSegments = () => {
                         <p className="text-green-600 dark:text-green-400">You've completed this section!</p>
                         <Button 
                           variant="outline" 
+                          data-tutorial="take-quiz"
                           onClick={() => handleStartQuiz(segment.id)}
                         >
                           Retake Quiz
