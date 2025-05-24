@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useTranslation } from "react-i18next";
@@ -18,6 +18,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Loader2, MessageSquare } from "lucide-react";
 import { useDeepseek } from "@/hooks/useDeepseek";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useInterval } from "@/hooks/useInterval";
 
 interface ApplicationQuestion {
   id: string;
@@ -25,16 +26,9 @@ interface ApplicationQuestion {
   wordLimit?: number;
 }
 
-// Define an interface for the chat message
-interface ChatMessage {
+interface Message {
   role: "user" | "assistant";
   content: string;
-}
-
-// Define an interface for the chat state with inputValue
-interface QuestionChatState {
-  messages: ChatMessage[];
-  inputValue: string;
 }
 
 export const ApplyNow = () => {
@@ -52,18 +46,240 @@ export const ApplyNow = () => {
   const [isLoadingResponses, setIsLoadingResponses] = useState(false);
   const { isCurrentlyDark } = useTheme();
   const { t } = useTranslation();
-  const { callDeepseek, isLoading: aiLoading } = useDeepseek();
+  const { callAI, isLoading: aiLoading } = useDeepseek();
   
-  // New states for the adviseek chat functionality
-  const [activeChatQuestion, setActiveChatQuestion] = useState<string | null>(null);
-  const [chatMessages, setChatMessages] = useState<Record<string, QuestionChatState>>({});
-  const [userProfileData, setUserProfileData] = useState<any>(null);
-  const [previousApplications, setPreviousApplications] = useState<any[]>([]);
+  // Chat states - simplified from SegmentAdviseekChat pattern
+  const [isOpen, setIsOpen] = useState(false);
+  const [input, setInput] = useState("");
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [profileData, setProfileData] = useState<any>(null);
+  const [resumeData, setResumeData] = useState<any>(null);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const [loadingTextIndex, setLoadingTextIndex] = useState(0);
   
-  // New state to track which textarea is focused
-  const [focusedQuestionId, setFocusedQuestionId] = useState<string | null>(null);
+  const loadingTexts = [
+    'Applying...',
+    'Writing essays...',
+    'Getting accepted...'
+  ];
 
   const universities = ["National University of Singapore", "Nanyang Technological University", "Singapore Management University"];
+
+  // Auto-scroll to bottom when new messages arrive
+  useEffect(() => {
+    if (scrollAreaRef.current) {
+      const scrollContainer = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]');
+      if (scrollContainer) {
+        scrollContainer.scrollTop = scrollContainer.scrollHeight;
+      }
+    }
+  }, [messages]);
+
+  // Rotate loading messages
+  useInterval(() => {
+    if (aiLoading) {
+      setLoadingTextIndex((prevIndex) => (prevIndex + 1) % loadingTexts.length);
+    }
+  }, 2000);
+
+  // Get user data and profile information
+  useEffect(() => {
+    const getUserData = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      const currentUserId = session?.user?.id;
+      setUserId(currentUserId);
+      
+      if (currentUserId) {
+        // Get profile data
+        const { data } = await supabase
+          .from('profiles')
+          .select('riasec_code, work_value_code, personality_traits, work_environment_preferences, likes, dislikes, recommended_major')
+          .eq('id', currentUserId)
+          .single();
+          
+        if (data) {
+          setProfileData(data);
+        }
+        
+        // Get resume data
+        const { data: resumes } = await supabase
+          .from('resumes')
+          .select('*')
+          .eq('user_id', currentUserId)
+          .order('updated_at', { ascending: false })
+          .limit(1);
+          
+        if (resumes && resumes.length > 0) {
+          setResumeData(resumes[0]);
+        }
+      }
+    };
+    
+    getUserData();
+  }, []);
+
+  const toggleChat = () => {
+    setIsOpen(!isOpen);
+    if (!isOpen && messages.length === 0) {
+      setMessages([
+        {
+          role: "assistant",
+          content: `Hi there! I'm Adviseek. How can I help you with your university application?`
+        }
+      ]);
+    }
+  };
+
+  const sendMessage = async () => {
+    if (!input.trim() || aiLoading) return;
+
+    const userMessage = {
+      role: "user" as const,
+      content: input.trim()
+    };
+    
+    setMessages(prev => [...prev, userMessage]);
+    const userQuery = input;
+    setInput("");
+
+    // Build comprehensive context for AI
+    let contextualPrompt = `
+      The user is working on university applications and has the following question:
+      "${userQuery}"
+      
+      Current application context:
+      - University: ${selectedUniversity || 'Not selected'}
+      - Degree: ${selectedDegree || 'Not selected'}
+      - Major: ${selectedMajor || 'Not selected'}
+      
+      Application responses so far:
+    `;
+
+    // Add current responses context
+    if (questions.length > 0) {
+      questions.forEach((question, index) => {
+        const response = responses[question.id] || "";
+        contextualPrompt += `
+        Question ${index + 1}: ${question.text}
+        Response: ${response || '[Not answered yet]'}
+        `;
+      });
+    }
+
+    // Add profile context if available
+    if (profileData) {
+      contextualPrompt += `
+      
+      User's profile information:
+      - RIASEC personality type: ${profileData.riasec_code || 'Unknown'}
+      - Work values: ${profileData.work_value_code || 'Unknown'}
+      - Personality traits: ${profileData.personality_traits || 'Unknown'}
+      - Work preferences: ${profileData.work_environment_preferences || 'Unknown'}
+      - Likes: ${profileData.likes || 'Unknown'}
+      - Dislikes: ${profileData.dislikes || 'Unknown'}
+      ${profileData.recommended_major ? `- Recommended majors: ${profileData.recommended_major}` : ''}
+      
+      Tailor your advice to match their profile.
+      `;
+    }
+    
+    // Add resume context if available
+    if (resumeData) {
+      // Format education items
+      let educationItems = '';
+      try {
+        const eduItems = typeof resumeData.educationItems === 'string' 
+          ? JSON.parse(resumeData.educationItems) 
+          : resumeData.educationItems;
+          
+        if (Array.isArray(eduItems)) {
+          eduItems.forEach((item, index) => {
+            educationItems += `
+              Education ${index + 1}:
+              - Institution: ${item.institution || 'N/A'}
+              - Qualification: ${item.qualifications || 'N/A'}
+              - Date: ${item.dates || ''}
+            `;
+          });
+        }
+      } catch (error) {
+        console.error("Error parsing education items:", error);
+      }
+
+      // Format work experience
+      let workExperienceItems = '';
+      try {
+        const workItems = typeof resumeData.work_experience === 'string'
+          ? JSON.parse(workExperienceItems)
+          : resumeData.work_experience;
+          
+        if (Array.isArray(workItems)) {
+          workItems.forEach((item, index) => {
+            workExperienceItems += `
+              Work Experience ${index + 1}:
+              - Organisation: ${item.organization || 'N/A'}
+              - Role: ${item.role || 'N/A'}
+              - Date: ${item.dates || ''}
+              ${item.description ? `- Description: ${item.description}` : ''}
+            `;
+          });
+        }
+      } catch (error) {
+        console.error("Error parsing work experience:", error);
+      }
+      
+      contextualPrompt += `
+      
+      Resume information:
+      - Name: ${resumeData.name || 'Not specified'}
+      - Email: ${resumeData.email || 'Not specified'}
+      - Phone: ${resumeData.phone || 'Not specified'}
+      - Nationality: ${resumeData.nationality || 'Not specified'}
+      
+      ${educationItems ? `Education:\n${educationItems}` : ''}
+      
+      ${workExperienceItems ? `Work Experience:\n${workExperienceItems}` : ''}
+      
+      ${resumeData.languages ? `Languages: ${resumeData.languages}` : ''}
+      
+      ${resumeData.interests ? `Interests: ${resumeData.interests}` : ''}
+      
+      ${resumeData.it_skills ? `IT Skills: ${resumeData.it_skills}` : ''}
+    `;
+    }
+
+    contextualPrompt += `
+    
+    Please provide helpful, specific advice for their university application.
+    Focus on best practices, content suggestions, and what admissions committees look for.
+    Keep your response concise and actionable.
+    `;
+
+    console.log("Contextual Prompt:", contextualPrompt);
+
+    try {
+      const aiResponse = await callAI(contextualPrompt);
+      
+      setMessages(prev => [
+        ...prev,
+        {
+          role: "assistant",
+          content: aiResponse
+        }
+      ]);
+      
+    } catch (error) {
+      console.error("Error calling Deepseek:", error);
+      setMessages(prev => [
+        ...prev,
+        {
+          role: "assistant",
+          content: "I'm sorry, I encountered an error. Please try again."
+        }
+      ]);
+    }
+  };
 
   // Load university data when university changes
   useEffect(() => {
@@ -128,50 +344,6 @@ export const ApplyNow = () => {
       setSelectedMajor("");
     }
   }, [selectedDegree]);
-
-  // Load user profile data for AI context
-  useEffect(() => {
-    const loadUserProfile = async () => {
-      try {
-        const { data: session } = await supabase.auth.getSession();
-        if (!session.session?.user) return;
-
-        // Load user profile data
-        const { data: profileData, error: profileError } = await supabase
-          .from('profiles')
-          .select(`
-            id, 
-            riasec_code, 
-            work_value_code, 
-            personality_traits, 
-            work_environment_preferences, 
-            likes, 
-            dislikes, 
-            recommended_major
-          `)
-          .eq('id', session.session.user.id)
-          .single();
-
-        if (!profileError && profileData) {
-          setUserProfileData(profileData);
-        }
-
-        // Load previous applications
-        const { data: applications, error: applicationsError } = await supabase
-          .from('applied_programs')
-          .select('university, school, major, degree')
-          .eq('user_id', session.session.user.id);
-
-        if (!applicationsError && applications) {
-          setPreviousApplications(applications);
-        }
-      } catch (error) {
-        console.error("Error loading user profile data:", error);
-      }
-    };
-
-    loadUserProfile();
-  }, []);
 
   const getUniversitySpecificQuestions = (university: string): ApplicationQuestion[] => {
     switch (university) {
@@ -331,7 +503,6 @@ export const ApplyNow = () => {
       const shortName = getUniversityShortName(selectedUniversity);
       const selectedMajorObj = availableMajors.find(m => m.major === selectedMajor);
       
-      // Define programData before using it
       const programData = {
         user_id: session.session.user.id,
         university: selectedUniversity,
@@ -342,7 +513,6 @@ export const ApplyNow = () => {
         college: selectedMajorObj?.college
       };
       
-      // Check if the entry already exists before inserting
       const { data: existingPrograms } = await supabase
         .from('applied_programs')
         .select('id')
@@ -354,14 +524,12 @@ export const ApplyNow = () => {
       let programError = null;
       
       if (existingPrograms && existingPrograms.length > 0) {
-        // Entry exists, update it
         const { error } = await supabase
           .from('applied_programs')
           .update(programData)
           .eq('id', existingPrograms[0].id);
         programError = error;
       } else {
-        // Entry doesn't exist, insert it
         const { error } = await supabase
           .from('applied_programs')
           .insert(programData);
@@ -385,131 +553,6 @@ export const ApplyNow = () => {
 
   const getWordCount = (text: string): number => {
     return text.trim() === '' ? 0 : text.trim().split(/\s+/).length;
-  };
-
-  // New function to toggle chat for a specific question
-  const toggleQuestionChat = (questionId: string) => {
-    if (activeChatQuestion === questionId) {
-      setActiveChatQuestion(null);
-    } else {
-      setActiveChatQuestion(questionId);
-      // Initialize chat messages for this question if it doesn't exist
-      if (!chatMessages[questionId]) {
-        setChatMessages(prev => ({
-          ...prev,
-          [questionId]: {
-            messages: [{
-              role: "assistant",
-              content: "Hi there! I'm Adviseek. How can I help you with your application response?"
-            }],
-            inputValue: ""
-          }
-        }));
-      }
-    }
-  };
-
-  // New function to send message to AI
-  const sendChatMessage = async (questionId: string, questionText: string, userInput: string) => {
-    if (!userInput.trim() || aiLoading) return;
-
-    // Add user message to chat
-    const updatedMessages = [
-      ...(chatMessages[questionId]?.messages || []),
-      { role: "user" as const, content: userInput.trim() }
-    ];
-    
-    setChatMessages(prev => ({
-      ...prev,
-      [questionId]: {
-        messages: updatedMessages,
-        inputValue: ""
-      }
-    }));
-
-    // Prepare all context for the AI
-    const currentResponse = responses[questionId] || "";
-    
-    // Build rich context for the AI
-    let aiContext = `The user is filling out an application for ${selectedUniversity}, ${selectedDegree} degree in ${selectedMajor}.\n\n`;
-    
-    // Add the current question
-    aiContext += `The current question they're responding to is: "${questionText}"\n\n`;
-    
-    // Add their current response draft
-    aiContext += `Their current draft response is: "${currentResponse}"\n\n`;
-    
-    // Add profile information if available
-    if (userProfileData) {
-      aiContext += "USER PROFILE INFORMATION:\n";
-      if (userProfileData.riasec_code) aiContext += `RIASEC code: ${userProfileData.riasec_code}\n`;
-      if (userProfileData.work_value_code) aiContext += `Work value code: ${userProfileData.work_value_code}\n`;
-      if (userProfileData.personality_traits) aiContext += `Personality traits: ${userProfileData.personality_traits}\n`;
-      if (userProfileData.work_environment_preferences) aiContext += `Work environment preferences: ${userProfileData.work_environment_preferences}\n`;
-      if (userProfileData.likes) aiContext += `Likes: ${userProfileData.likes}\n`;
-      if (userProfileData.dislikes) aiContext += `Dislikes: ${userProfileData.dislikes}\n`;
-      if (userProfileData.recommended_major) aiContext += `Recommended major: ${userProfileData.recommended_major}\n`;
-    }
-    
-    // Add previous applications if available
-    if (previousApplications && previousApplications.length > 0) {
-      aiContext += "\nPREVIOUS APPLICATIONS:\n";
-      previousApplications.forEach((app, index) => {
-        aiContext += `${index + 1}. ${app.university} - ${app.degree} in ${app.major}\n`;
-      });
-    }
-    
-    // Add conversation history for context
-    if (updatedMessages.length > 1) {
-      aiContext += "\nRECENT CONVERSATION HISTORY:\n";
-      // Get the last 10 messages or fewer if there aren't that many
-      const recentMessages = updatedMessages.slice(-11, -1); // Exclude the last message which is the current query
-      recentMessages.forEach((msg) => {
-        aiContext += `${msg.role.toUpperCase()}: ${msg.content}\n`;
-      });
-    }
-
-    const prompt = `
-${aiContext}
-
-The user's current query is: "${userInput}"
-
-Please help the user improve their application response, provide advice, or answer their question.
-Focus on helping them create a compelling response that showcases their strengths and aligns with what the university is looking for.
-If there's a word limit mentioned in the question, help them stay within that limit while maximizing impact.
-`;
-
-    try {
-      const response = await callDeepseek(prompt);
-      
-      if (response) {
-        const aiResponse = response.choices?.[0]?.message?.content || 
-                          "I'm sorry, I couldn't generate a response. Please try again.";
-        
-        setChatMessages(prev => ({
-          ...prev,
-          [questionId]: {
-            messages: [
-              ...(prev[questionId]?.messages || []),
-              { role: "assistant", content: aiResponse }
-            ],
-            inputValue: prev[questionId]?.inputValue || ""
-          }
-        }));
-      }
-    } catch (error) {
-      console.error("Error calling Deepseek:", error);
-      setChatMessages(prev => ({
-        ...prev,
-        [questionId]: {
-          messages: [
-            ...(prev[questionId]?.messages || []),
-            { role: "assistant", content: "I'm sorry, I encountered an error. Please try again." }
-          ],
-          inputValue: prev[questionId]?.inputValue || ""
-        }
-      }));
-    }
   };
 
   return (
@@ -598,6 +641,95 @@ If there's a word limit mentioned in the question, help them stay within that li
             </div>
           )}
         </div>
+
+        {/* Chat with Adviseek button */}
+        <div className="mt-6">
+          <Button 
+            type="button" 
+            variant="outline" 
+            onClick={toggleChat}
+            className="flex items-center gap-2"
+            data-tutorial="chat-with-adviseek"
+          >
+            <MessageSquare className="h-4 w-4" />
+            Chat with Adviseek
+          </Button>
+
+          {isOpen && (
+            <Card className="mt-4 p-4">
+              <h4 className="font-medium mb-2">Adviseek Assistant: University Application</h4>
+              
+              <ScrollArea className="h-60 mb-4 border rounded-md p-2" ref={scrollAreaRef}>
+                <div className="space-y-3">
+                  {messages.map((msg, i) => (
+                    <div
+                      key={i}
+                      className={`p-3 rounded-lg ${
+                        msg.role === "assistant"
+                          ? "bg-muted text-foreground mr-8"
+                          : "bg-primary/10 ml-8"
+                      }`}
+                    >
+                      <p className="mb-1 text-xs font-medium">
+                        {msg.role === "assistant" ? "Adviseek" : "You"}
+                      </p>
+                      <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                    </div>
+                  ))}
+                  {aiLoading && (
+                    <div className="p-3 rounded-lg bg-muted text-foreground mr-8">
+                      <p className="mb-1 text-xs font-medium">Adviseek</p>
+                      <div className="flex items-center">
+                        <span className="text-sm">
+                          {loadingTexts[loadingTextIndex].split('').map((char, charIndex) => (
+                            <span 
+                              key={charIndex} 
+                              className="inline-block animate-bounce" 
+                              style={{ 
+                                animationDuration: '1s', 
+                                animationDelay: `${charIndex * 0.1}s`
+                              }}
+                            >
+                              {char}
+                            </span>
+                          ))}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </ScrollArea>
+              
+              <div className="flex gap-2">
+                <Textarea
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  placeholder="Ask about your application..."
+                  className="flex-1 resize-none"
+                  disabled={aiLoading}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault();
+                      sendMessage();
+                    }
+                  }}
+                />
+                <Button
+                  onClick={sendMessage}
+                  disabled={aiLoading || !input.trim()}
+                  className="self-end"
+                >
+                  {aiLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <MessageSquare className="h-4 w-4" />
+                  )}
+                  <span className="sr-only">Send</span>
+                </Button>
+              </div>
+            </Card>
+          )}
+        </div>
       </div>
 
       {isLoadingResponses && (
@@ -626,30 +758,14 @@ If there's a word limit mentioned in the question, help them stay within that li
               return (
                 <Card key={index} className={`p-4 ${isCurrentlyDark ? 'bg-gray-700 border-gray-600' : ''}`}>
                   <h4 className="font-medium mb-2">{question.text}</h4>
-                  <div className="relative">
-                    <Textarea 
-                      className={`w-full border rounded p-2 min-h-[120px] ${
-                        isCurrentlyDark ? 'bg-gray-600 text-white border-gray-500' : ''
-                      }`}
-                      value={responses[question.id] || ""}
-                      onChange={(e) => handleResponseChange(question.id, e.target.value)}
-                      placeholder={t("apply.response_placeholder", "Type your response here...")}
-                      onFocus={() => setFocusedQuestionId(question.id)} 
-                      onBlur={() => setFocusedQuestionId(null)}
-                    />
-                    {/* Show chat button when question is focused */}
-                    {focusedQuestionId === question.id && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="absolute right-2 bottom-2 flex items-center gap-1"
-                        onClick={() => toggleQuestionChat(question.id)}
-                      >
-                        <MessageSquare className="h-3 w-3" />
-                        Chat with Adviseek
-                      </Button>
-                    )}
-                  </div>
+                  <Textarea 
+                    className={`w-full border rounded p-2 min-h-[120px] ${
+                      isCurrentlyDark ? 'bg-gray-600 text-white border-gray-500' : ''
+                    }`}
+                    value={responses[question.id] || ""}
+                    onChange={(e) => handleResponseChange(question.id, e.target.value)}
+                    placeholder={t("apply.response_placeholder", "Type your response here...")}
+                  />
                   {wordLimit && (
                     <div className={`text-xs mt-1 flex justify-end ${
                       wordCount > wordLimit ? 'text-red-500' : 'text-gray-500'
@@ -660,82 +776,6 @@ If there's a word limit mentioned in the question, help them stay within that li
                           Exceeds word limit by {wordCount - wordLimit} words
                         </span>
                       )}
-                    </div>
-                  )}
-                  
-                  {/* Chat area for this question */}
-                  {activeChatQuestion === question.id && (
-                    <div className="mt-4 border p-3 rounded-md">
-                      <h5 className="text-sm font-medium mb-2">Adviseek AI Assistant</h5>
-                      <ScrollArea className="h-60 mb-4 border rounded-md p-2">
-                        <div className="space-y-3">
-                          {chatMessages[question.id]?.messages.map((msg, i) => (
-                            <div
-                              key={i}
-                              className={`p-3 rounded-lg ${
-                                msg.role === "assistant"
-                                  ? "bg-muted text-foreground mr-8"
-                                  : "bg-primary/10 ml-8"
-                              }`}
-                            >
-                              <p className="mb-1 text-xs font-medium">
-                                {msg.role === "assistant" ? "Adviseek" : "You"}
-                              </p>
-                              <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
-                            </div>
-                          ))}
-                          {aiLoading && activeChatQuestion === question.id && (
-                            <div className="p-3 rounded-lg bg-muted text-foreground mr-8">
-                              <p className="mb-1 text-xs font-medium">Adviseek</p>
-                              <div className="flex items-center gap-2">
-                                <Loader2 className="h-3 w-3 animate-spin" />
-                                <p className="text-sm">Thinking...</p>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      </ScrollArea>
-                      
-                      <div className="flex gap-2">
-                        <Textarea
-                          value={chatMessages[question.id]?.inputValue || ""}
-                          onChange={(e) => setChatMessages(prev => ({
-                            ...prev,
-                            [question.id]: {
-                              messages: prev[question.id]?.messages || [],
-                              inputValue: e.target.value
-                            }
-                          }))}
-                          placeholder="Ask Adviseek about your response..."
-                          className="flex-1 resize-none text-sm min-h-[60px]"
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter" && !e.shiftKey) {
-                              e.preventDefault();
-                              const inputValue = chatMessages[question.id]?.inputValue || "";
-                              if (inputValue.trim()) {
-                                sendChatMessage(question.id, question.text, inputValue);
-                              }
-                            }
-                          }}
-                        />
-                        <Button
-                          onClick={() => {
-                            const inputValue = chatMessages[question.id]?.inputValue || "";
-                            if (inputValue.trim()) {
-                              sendChatMessage(question.id, question.text, inputValue);
-                            }
-                          }}
-                          disabled={aiLoading || !(chatMessages[question.id]?.inputValue || "").trim()}
-                          className="self-end"
-                          size="sm"
-                        >
-                          {aiLoading && activeChatQuestion === question.id ? (
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                          ) : (
-                            <span>Send</span>
-                          )}
-                        </Button>
-                      </div>
                     </div>
                   )}
                 </Card>
