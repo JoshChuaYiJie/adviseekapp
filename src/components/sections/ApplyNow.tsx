@@ -48,7 +48,7 @@ export const ApplyNow = () => {
   const { t } = useTranslation();
   const { callAI, isLoading: aiLoading } = useDeepseek();
   
-  // Chat states - simplified from SegmentAdviseekChat pattern
+  // Chat states
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
@@ -57,6 +57,7 @@ export const ApplyNow = () => {
   const [resumeData, setResumeData] = useState<any>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const [loadingTextIndex, setLoadingTextIndex] = useState(0);
+  const [focusedQuestionId, setFocusedQuestionId] = useState<string | null>(null);
   
   const loadingTexts = [
     'Applying...',
@@ -641,95 +642,6 @@ export const ApplyNow = () => {
             </div>
           )}
         </div>
-
-        {/* Chat with Adviseek button */}
-        <div className="mt-6">
-          <Button 
-            type="button" 
-            variant="outline" 
-            onClick={toggleChat}
-            className="flex items-center gap-2"
-            data-tutorial="chat-with-adviseek"
-          >
-            <MessageSquare className="h-4 w-4" />
-            Chat with Adviseek
-          </Button>
-
-          {isOpen && (
-            <Card className="mt-4 p-4">
-              <h4 className="font-medium mb-2">Adviseek Assistant: University Application</h4>
-              
-              <ScrollArea className="h-60 mb-4 border rounded-md p-2" ref={scrollAreaRef}>
-                <div className="space-y-3">
-                  {messages.map((msg, i) => (
-                    <div
-                      key={i}
-                      className={`p-3 rounded-lg ${
-                        msg.role === "assistant"
-                          ? "bg-muted text-foreground mr-8"
-                          : "bg-primary/10 ml-8"
-                      }`}
-                    >
-                      <p className="mb-1 text-xs font-medium">
-                        {msg.role === "assistant" ? "Adviseek" : "You"}
-                      </p>
-                      <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
-                    </div>
-                  ))}
-                  {aiLoading && (
-                    <div className="p-3 rounded-lg bg-muted text-foreground mr-8">
-                      <p className="mb-1 text-xs font-medium">Adviseek</p>
-                      <div className="flex items-center">
-                        <span className="text-sm">
-                          {loadingTexts[loadingTextIndex].split('').map((char, charIndex) => (
-                            <span 
-                              key={charIndex} 
-                              className="inline-block animate-bounce" 
-                              style={{ 
-                                animationDuration: '1s', 
-                                animationDelay: `${charIndex * 0.1}s`
-                              }}
-                            >
-                              {char}
-                            </span>
-                          ))}
-                        </span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </ScrollArea>
-              
-              <div className="flex gap-2">
-                <Textarea
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  placeholder="Ask about your application..."
-                  className="flex-1 resize-none"
-                  disabled={aiLoading}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && !e.shiftKey) {
-                      e.preventDefault();
-                      sendMessage();
-                    }
-                  }}
-                />
-                <Button
-                  onClick={sendMessage}
-                  disabled={aiLoading || !input.trim()}
-                  className="self-end"
-                >
-                  {aiLoading ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <MessageSquare className="h-4 w-4" />
-                  )}
-                  <span className="sr-only">Send</span>
-                </Button>
-              </div>
-            </Card>
-          )}
-        </div>
       </div>
 
       {isLoadingResponses && (
@@ -758,14 +670,110 @@ export const ApplyNow = () => {
               return (
                 <Card key={index} className={`p-4 ${isCurrentlyDark ? 'bg-gray-700 border-gray-600' : ''}`}>
                   <h4 className="font-medium mb-2">{question.text}</h4>
-                  <Textarea 
-                    className={`w-full border rounded p-2 min-h-[120px] ${
-                      isCurrentlyDark ? 'bg-gray-600 text-white border-gray-500' : ''
-                    }`}
-                    value={responses[question.id] || ""}
-                    onChange={(e) => handleResponseChange(question.id, e.target.value)}
-                    placeholder={t("apply.response_placeholder", "Type your response here...")}
-                  />
+                  <div className="relative">
+                    <Textarea 
+                      className={`w-full border rounded p-2 min-h-[120px] ${
+                        isCurrentlyDark ? 'bg-gray-600 text-white border-gray-500' : ''
+                      }`}
+                      value={responses[question.id] || ""}
+                      onChange={(e) => handleResponseChange(question.id, e.target.value)}
+                      placeholder={t("apply.response_placeholder", "Type your response here...")}
+                      onFocus={() => setFocusedQuestionId(question.id)}
+                      onBlur={() => setFocusedQuestionId(null)}
+                    />
+                    
+                    {/* Chat with Adviseek button - only shows when this textarea is focused */}
+                    {focusedQuestionId === question.id && (
+                      <div className="mt-2">
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          onClick={toggleChat}
+                          className="flex items-center gap-2"
+                          data-tutorial="chat-with-adviseek"
+                        >
+                          <MessageSquare className="h-4 w-4" />
+                          Chat with Adviseek
+                        </Button>
+
+                        {isOpen && (
+                          <Card className="mt-4 p-4">
+                            <h4 className="font-medium mb-2">Adviseek Assistant: University Application</h4>
+                            
+                            <ScrollArea className="h-60 mb-4 border rounded-md p-2" ref={scrollAreaRef}>
+                              <div className="space-y-3">
+                                {messages.map((msg, i) => (
+                                  <div
+                                    key={i}
+                                    className={`p-3 rounded-lg ${
+                                      msg.role === "assistant"
+                                        ? "bg-muted text-foreground mr-8"
+                                        : "bg-primary/10 ml-8"
+                                    }`}
+                                  >
+                                    <p className="mb-1 text-xs font-medium">
+                                      {msg.role === "assistant" ? "Adviseek" : "You"}
+                                    </p>
+                                    <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                                  </div>
+                                ))}
+                                {aiLoading && (
+                                  <div className="p-3 rounded-lg bg-muted text-foreground mr-8">
+                                    <p className="mb-1 text-xs font-medium">Adviseek</p>
+                                    <div className="flex items-center">
+                                      <span className="text-sm">
+                                        {loadingTexts[loadingTextIndex].split('').map((char, charIndex) => (
+                                          <span 
+                                            key={charIndex} 
+                                            className="inline-block animate-bounce" 
+                                            style={{ 
+                                              animationDuration: '1s', 
+                                              animationDelay: `${charIndex * 0.1}s`
+                                            }}
+                                          >
+                                            {char}
+                                          </span>
+                                        ))}
+                                      </span>
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            </ScrollArea>
+                            
+                            <div className="flex gap-2">
+                              <Textarea
+                                value={input}
+                                onChange={(e) => setInput(e.target.value)}
+                                placeholder="Ask about your application..."
+                                className="flex-1 resize-none"
+                                disabled={aiLoading}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter" && !e.shiftKey) {
+                                    e.preventDefault();
+                                    sendMessage();
+                                  }
+                                }}
+                              />
+                              <Button
+                                onClick={sendMessage}
+                                disabled={aiLoading || !input.trim()}
+                                className="self-end"
+                              >
+                                {aiLoading ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <MessageSquare className="h-4 w-4" />
+                                )}
+                                <span className="sr-only">Send</span>
+                              </Button>
+                            </div>
+                          </Card>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  
                   {wordLimit && (
                     <div className={`text-xs mt-1 flex justify-end ${
                       wordCount > wordLimit ? 'text-red-500' : 'text-gray-500'
