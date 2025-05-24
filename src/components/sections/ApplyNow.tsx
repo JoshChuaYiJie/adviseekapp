@@ -732,7 +732,6 @@ export const ApplyNow = () => {
                     />
                     
                     {/* Chat with Adviseek button - only shows when this textarea is focused or chat is open */}
-                    {(focusedQuestionId === question.id || isThisChatOpen) && (
                       <div className="mt-2">
                         <Button 
                           type="button" 
@@ -823,7 +822,6 @@ export const ApplyNow = () => {
                           </Card>
                         )}
                       </div>
-                    )}
 
                   </div>
                   
