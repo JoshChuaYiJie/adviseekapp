@@ -38,7 +38,7 @@ export const Tutorial = ({ isOpen, onClose, onSkip }: TutorialProps) => {
       requireClick: true,
     },
     {
-      target: '[data-tutorial="take-quiz"]',
+      target: '[data-lov-id="src/components/sections/QuizSegments.tsx:322:24"]',
       content: "Take the personality quizzes for us to find out more about you",
     },
     {
