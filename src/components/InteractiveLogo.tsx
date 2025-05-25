@@ -31,7 +31,7 @@ const InteractiveLogo = ({ src, alt, className = "" }: InteractiveLogoProps) => 
     setSparkle(true);
     if (audio) {
       audio.currentTime = 0;
-      audio.play().catch(e => 
+      audio.play().catch(e => console.log("Audio play failed:", e));
     }
     
     // Reset sparkle animation after it completes
