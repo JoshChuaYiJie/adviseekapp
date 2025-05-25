@@ -104,7 +104,7 @@ export const AppSidebar = ({ selectedSection, setSelectedSection, user, onReplay
         <div className="flex items-center">
           <span className="text-2xl font-bold text-foreground" data-tutorial="adviseek-logo">Adviseek</span>
           <span className="ml-1 px-2 py-0.5 text-xs font-semibold bg-yellow-400 text-yellow-800 dark:bg-yellow-500 dark:text-yellow-900 rounded">
-            FREE
+            BETA
           </span>
         </div>
       </div>

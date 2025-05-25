@@ -8,8 +8,10 @@ import { toast } from 'sonner';
 import { useDeepseek } from '@/hooks/useDeepseek';
 import { supabase } from '@/integrations/supabase/client';
 import { useInterval } from '@/hooks/useInterval';
+import { useAuth } from "@/hooks/useAuth";
 
 export const ChatWithAI = () => {
+  const { isAuthenticated } = useAuth(); 
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<{role: 'user' | 'assistant', content: string}[]>([
     {role: 'assistant', content: 'Hi there! I\'m your Adviseek AI assistant. How can I help you with your university applications today?'}
@@ -231,7 +233,7 @@ export const ChatWithAI = () => {
       }]);
     }
   };
-
+  if (!isAuthenticated) return null;
   return (
     <>
       <Button 
