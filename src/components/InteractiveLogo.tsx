@@ -56,7 +56,7 @@ const InteractiveLogo = ({ src, alt, className = "" }: InteractiveLogoProps) => 
             
             {/* Base image */}
             <img 
-              src='/public/images/logo.png' 
+              src={src} 
               alt={alt} 
               className="h-full w-full object-cover group-hover:opacity-0" 
             />
