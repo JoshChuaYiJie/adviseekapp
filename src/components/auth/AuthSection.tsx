@@ -63,7 +63,7 @@ const AuthSection = () => {
       </div>
 
       {/* Right side - Countdown Timer */}
-      <div className="hidden md:flex w-7/12 lg:w-8/12 xl:w-2/3 bg-gradient-to-br from-blue-50 to-indigo-100">
+      <div className="hidden md:flex w-7/12 lg:w-8/12 xl:w-2/3 bg-black/5">
         <div className="flex items-center justify-center w-full p-8">
           <CountdownTimer />
         </div>
