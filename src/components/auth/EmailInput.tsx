@@ -39,9 +39,6 @@ const EmailInput = ({ email, setEmail, onContinue, isLoading }: EmailInputProps)
         Continue
       </Button>
       
-      <div className="text-center">
-        <a href="#" className="text-sm text-accent hover:underline">Need help?</a>
-      </div>
     </div>
   );
 };
