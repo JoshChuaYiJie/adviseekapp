@@ -14,7 +14,9 @@ export type Database = {
           achievement_key: string
           created_at: string
           id: number
+          max_progress: string | null
           progress: number | null
+          type: string | null
           unlocked: boolean | null
           unlocked_at: string | null
           user_id: string | null
@@ -23,7 +25,9 @@ export type Database = {
           achievement_key: string
           created_at?: string
           id?: number
+          max_progress?: string | null
           progress?: number | null
+          type?: string | null
           unlocked?: boolean | null
           unlocked_at?: string | null
           user_id?: string | null
@@ -32,7 +36,9 @@ export type Database = {
           achievement_key?: string
           created_at?: string
           id?: number
+          max_progress?: string | null
           progress?: number | null
+          type?: string | null
           unlocked?: boolean | null
           unlocked_at?: string | null
           user_id?: string | null
@@ -543,6 +549,10 @@ export type Database = {
       check_unique_constraint: {
         Args: { table_name: string; column_names: string[] }
         Returns: boolean
+      }
+      delete_user_data: {
+        Args: { target_user_id: string }
+        Returns: undefined
       }
     }
     Enums: {

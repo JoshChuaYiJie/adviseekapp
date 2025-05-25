@@ -8,11 +8,11 @@ import { DeepseekApiSettings } from "@/components/settings/DeepseekApiSettings";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import DeleteAccountDialog from "@/components/DeleteAccountDialog";
 
 const Settings = () => {
   const { isCurrentlyDark, setTheme } = useTheme();
   const [activeTab, setActiveTab] = useState("general");
-  const [openSection, setOpenSection] = useState<string | null>(null);
   const navigate = useNavigate();
   
   // Function to toggle between dark and light mode
@@ -93,7 +93,6 @@ const Settings = () => {
             <div className="bg-card p-6 rounded-lg border shadow-sm">
               <h2 className="text-xl font-semibold mb-6">Personal Information</h2>
               
-              {/* Placeholder for account settings */}
               <p className="text-muted-foreground">
                 You can update your personal information and manage your account here.
                 This section is under development.
@@ -103,7 +102,7 @@ const Settings = () => {
             <div className="bg-destructive/10 p-6 rounded-lg border border-destructive/20">
               <h2 className="text-xl font-semibold text-destructive mb-6">Danger Zone</h2>
               <div className="flex flex-col space-y-4">
-                <Button variant="destructive">Delete My Account</Button>
+                <DeleteAccountDialog />
                 <p className="text-sm text-muted-foreground">
                   This will permanently delete your account and all associated data.
                   This action cannot be undone.
