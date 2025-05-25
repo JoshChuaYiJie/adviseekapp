@@ -15,6 +15,8 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/contexts/ThemeContext";
+import { ChatWithAI } from "@/components/ChatWithAI";
+import FeedbackForm from "@/components/FeedbackForm";
 import OpenEndedQuiz from "./OpenEndedQuiz";
 
 const Index = () => {
@@ -200,6 +202,10 @@ const Index = () => {
             {renderContent()}
           </div>
         </main>
+        
+        {/* Only show floating buttons when user is logged in */}
+        <ChatWithAI />
+        <FeedbackForm />
         
         {showTutorial && (
           <Tutorial isOpen={true} onClose={handleCloseTutorial} onSkip={handleCloseTutorial} />
