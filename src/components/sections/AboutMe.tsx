@@ -95,8 +95,8 @@ export const AboutMe = () => {
           setRiasecCode(generatedRiasecCode || "RSI");
         } else {
           // Fallback if no data
-          generatedRiasecCode = "RSI";
-          setRiasecCode("RSI");
+          generatedRiasecCode = "N/A";
+          setRiasecCode("N/A");
         }
 
         // Generate Work Values code if data exists
@@ -111,8 +111,8 @@ export const AboutMe = () => {
           setWorkValueCode(generatedWorkValueCode || "ARS");
         } else {
           // Fallback if no data
-          generatedWorkValueCode = "ARS";
-          setWorkValueCode("ARS");
+          generatedWorkValueCode = "N/A";
+          setWorkValueCode("N/A");
         }
 
         // Generate dynamic profile information based on RIASEC and Work Values
