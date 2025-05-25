@@ -13,7 +13,7 @@ interface QuizStepProps {
 
 export const QuizStep: React.FC<QuizStepProps> = ({ questions }) => {
   const { responses, handleResponse } = useQuiz();
-  console.log("Current quiz responses:", responses);
+  
   
   // Group questions by section
   const sections = questions.reduce((acc: Record<string, QuizQuestion[]>, question) => {
@@ -28,7 +28,7 @@ export const QuizStep: React.FC<QuizStepProps> = ({ questions }) => {
   const renderSingleSelect = (question: QuizQuestion) => {
     const questionId = String(question.id); // Convert to string
     const currentResponse = responses[questionId] as string || '';
-    console.log(`Question ${questionId} response:`, currentResponse);
+    
     
     return (
       <div className="mb-6">
@@ -55,7 +55,7 @@ export const QuizStep: React.FC<QuizStepProps> = ({ questions }) => {
     const currentResponseString = responses[questionId] as string || '';
     // Split the comma-separated string into an array, or use empty array
     const currentResponse = currentResponseString ? currentResponseString.split(',') : [];
-    console.log(`Question ${questionId} multi-select response:`, currentResponse);
+    
     
     const handleCheckboxChange = (option: string, checked: boolean) => {
       let newResponse: string[];
@@ -91,7 +91,7 @@ export const QuizStep: React.FC<QuizStepProps> = ({ questions }) => {
   const renderTextQuestion = (question: QuizQuestion) => {
     const questionId = String(question.id); // Convert to string
     const currentResponse = responses[questionId] as string || '';
-    console.log(`Question ${questionId} text response:`, currentResponse);
+    
     
     return (
       <div className="mb-6">

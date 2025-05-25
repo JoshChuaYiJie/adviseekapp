@@ -21,7 +21,7 @@ export const useResponses = () => {
 
   // Format responses for database
   const formatResponsesForDb = async (quizType?: string, questions?: any[] | null) => {
-    console.log("Fetching current user ID for response formatting...");
+    
     const userId = await getUserId();
     
     if (!userId) {
@@ -31,7 +31,7 @@ export const useResponses = () => {
       throw authError;
     }
     
-    console.log(`Formatting responses for user ${userId}, quiz type: ${quizType || 'general'}`);
+    
 
     const formattedResponses = Object.entries(responses).map(([questionId, response]) => {
       const isArray = Array.isArray(response);
@@ -96,8 +96,8 @@ export const useResponses = () => {
         return null;
       }
       
-      console.log("User authenticated with ID:", session.user.id);
-      console.log("Preparing to save responses for quiz:", quizType);
+      
+      
       
       const formattedResponses = await formatResponsesForDb(quizType, questions);
       
@@ -109,8 +109,8 @@ export const useResponses = () => {
       }
       
       // Save responses to Supabase database table
-      console.log(`Submitting ${formattedResponses.length} responses for quiz type: ${quizType || 'general'}`);
-      console.log('Response data sample:', JSON.stringify(formattedResponses[0]));
+      
+      
 
       // Using individual upserts for more reliable error handling
       let successCount = 0;
@@ -118,7 +118,7 @@ export const useResponses = () => {
       const debugDetails = [];
       
       for (const response of formattedResponses) {
-        console.log(`Upserting response for question ${response.question_id}:`, response);
+        
         
         const { data, error } = await supabase
           .from('user_responses')
@@ -188,13 +188,13 @@ export const useResponses = () => {
         }
       }
 
-      console.log(`Successfully saved ${successCount} of ${formattedResponses.length} responses for quiz type: ${quizType || 'general'}`);
+      
 
       // Save quiz completion status
       if (quizType && successCount > 0) {
         const userId = await getUserId();
         if (userId) {
-          console.log(`Saving completion status for quiz: ${quizType}`);
+          
           
           const { error: completionError } = await supabase
             .from('quiz_completion')
@@ -214,7 +214,7 @@ export const useResponses = () => {
               completion_error: completionError
             }));
           } else {
-            console.log(`Saved completion status for quiz: ${quizType}`);
+            
           }
         }
       }
@@ -248,11 +248,11 @@ export const useResponses = () => {
     try {
       const userId = await getUserId();
       if (!userId) {
-        console.log("Cannot load responses: No authenticated user");
+        
         return;
       }
 
-      console.log("Loading responses for user:", userId);
+      
 
       // Using the supabase client directly
       const { data, error } = await supabase
@@ -276,7 +276,7 @@ export const useResponses = () => {
       }
 
       if (data && data.length > 0) {
-        console.log(`Loaded ${data.length} responses from database`);
+        
         const loadedResponses: Record<number, string | string[]> = {};
         
         data.forEach(item => {
@@ -304,7 +304,7 @@ export const useResponses = () => {
           );
         }
       } else {
-        console.log("No responses found for user");
+        
       }
     } catch (error) {
       console.error('Error in loadResponses:', error);

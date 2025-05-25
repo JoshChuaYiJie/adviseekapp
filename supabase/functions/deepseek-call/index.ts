@@ -33,7 +33,7 @@ serve(async (req) => {
       throw new Error("No Deepseek API key available");
     }
     
-    console.log("Using project-wide Deepseek API key");
+    
     
     // Call the Deepseek API with the project-wide key
     return await callDeepseekAPI(apiKey, prompt, options, corsHeaders);
@@ -53,7 +53,7 @@ serve(async (req) => {
 });
 
 async function callDeepseekAPI(apiKey: string, prompt: string, options: any, corsHeaders: any) {
-  console.log("Calling Deepseek API...");
+  
   
   // Force stream to false
   options.stream = false;
@@ -70,7 +70,7 @@ async function callDeepseekAPI(apiKey: string, prompt: string, options: any, cor
     stream: false
   };
 
-  console.log("Request body:", JSON.stringify(requestBody));
+  
 
   try {
     const deepseekResponse = await fetch("https://api.deepseek.com/v1/chat/completions", {

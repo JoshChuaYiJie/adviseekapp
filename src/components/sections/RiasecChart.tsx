@@ -10,7 +10,7 @@ import { Bug } from 'lucide-react';
 export const processRiasecData = async (userId: string) => {
   try {
     const profile = await calculateRiasecProfile(userId);
-    console.log('Raw RIASEC Profile:', profile);
+    
     
     // Calculate total for percentages
     const totalValue = Object.values(profile).reduce((sum, val) => sum + val, 0);
@@ -24,7 +24,7 @@ export const processRiasecData = async (userId: string) => {
       .filter(item => item.value > 0)
       .sort((a, b) => b.value - a.value); // Sort by value descending
 
-    console.log('Processed RIASEC Chart Data:', chartData);
+    
     return chartData;
   } catch (error) {
     console.error("Error processing RIASEC data:", error);
@@ -50,12 +50,12 @@ export const RiasecChart = () => {
         const userId = await getUserId();
         
         if (userId) {
-          console.log("Got user ID for RIASEC chart:", userId);
+          
           
           // For debugging, inspect responses directly
           if (process.env.NODE_ENV !== 'production') {
             const responses = await inspectResponses(userId, 'RIASEC');
-            console.log("RIASEC-related responses:", responses);
+            
           }
           
           const chartData = await processRiasecData(userId);
@@ -69,7 +69,7 @@ export const RiasecChart = () => {
           }
         } else {
           setError("Please log in to see your RIASEC profile.");
-          console.log("No user ID available for RIASEC chart");
+          
         }
       } catch (error) {
         console.error("Error loading RIASEC profile:", error);

@@ -70,7 +70,7 @@ const OpenEndedQuiz = () => {
       responsesRef.current = responses;
       try {
         localStorage.setItem('openEndedQuizResponses', JSON.stringify(responses));
-        console.log("Cached responses to localStorage");
+        
       } catch (error) {
         console.error("Error caching responses:", error);
       }
@@ -83,7 +83,7 @@ const OpenEndedQuiz = () => {
       const cachedResponses = localStorage.getItem('openEndedQuizResponses');
       if (cachedResponses) {
         const parsedResponses = JSON.parse(cachedResponses);
-        console.log("Loaded cached responses from localStorage");
+        
         setResponses(parsedResponses);
       }
     } catch (error) {
@@ -139,13 +139,13 @@ const OpenEndedQuiz = () => {
     for (const school of schools) {
       try {
         const formattedFileName = formatMajorForFile(majorName, school);
-        console.log(`Trying to load questions for ${formattedFileName}.json`);
+        
         
         const response = await fetch(`/quiz_refer/Open_ended_quiz_questions/${formattedFileName}.json`);
         
         if (response.ok) {
           const allQuestions = await response.json();
-          console.log(`Found ${allQuestions.length} questions for ${majorName} at ${school}`);
+          
           
           // Categorize questions by type
           const interestQuestions = allQuestions.filter((q: any) => 
@@ -186,7 +186,7 @@ const OpenEndedQuiz = () => {
           // We found questions for this major/school, no need to try other schools
           break;
         } else {
-          console.log(`No questions found for ${majorName} at ${school}`);
+          
         }
       } catch (error) {
         console.error(`Error loading questions for ${majorName} at ${school}:`, error);
@@ -198,7 +198,7 @@ const OpenEndedQuiz = () => {
   // Prepare quiz questions from list of majors
   const prepareQuizQuestions = async (majors: string[]) => {
     try {
-      console.log("Preparing quiz questions for majors:", majors);
+      
       
       // Limit to 5 majors for the quiz
       const selectedMajors = majors.slice(0, 5);
@@ -209,7 +209,7 @@ const OpenEndedQuiz = () => {
         try {
           // Split major name and school
           const [majorName, school] = major.split(' at ');
-          console.log(`Loading questions for ${majorName} at ${school || 'any school'}`);
+          
           
           // Try to load questions with specific school or try all schools
           await loadQuestionsForMajor(majorName, school, quizQuestions);
@@ -227,7 +227,7 @@ const OpenEndedQuiz = () => {
         uniqueId: generateUniqueId(question, index)
       }));
       
-      console.log(`Generated ${questionsWithIds.length} questions for the quiz`);
+      
       
       if (questionsWithIds.length === 0) {
         toast({
@@ -261,7 +261,7 @@ const OpenEndedQuiz = () => {
         const currentUserId = session?.user?.id || null;
         setUserId(currentUserId);
         
-        console.log("Authentication check:", { currentUserId });
+        
         
         if (!currentUserId) {
           toast({
@@ -330,7 +330,7 @@ const OpenEndedQuiz = () => {
         }
         
         // We passed all checks, now use the global major recommendations
-        console.log("Using global major recommendations:", majorRecommendations);
+        
         
         // Extract all recommended majors from context
         if (majorRecommendations) {
@@ -345,7 +345,7 @@ const OpenEndedQuiz = () => {
           const uniqueMajors = [...new Set(allRecommendedMajors)];
           
           // Debug log
-          console.log("Extracted majors from context:", uniqueMajors);
+          
           
           // Update debug info
           setDebugInfo(prev => ({
@@ -357,7 +357,7 @@ const OpenEndedQuiz = () => {
             // We have majors, prepare quiz questions
             await prepareQuizQuestions(uniqueMajors);
           } else {
-            console.log("No majors found in context");
+            
             toast({
               title: "No Majors Found",
               description: "We couldn't find any recommended majors. Please complete your profile first.",
@@ -366,7 +366,7 @@ const OpenEndedQuiz = () => {
             navigate('/');
           }
         } else {
-          console.log("Major recommendations context is null or undefined");
+          
           toast({
             title: "No Recommendations",
             description: "We couldn't find your major recommendations. Please complete your profile first.",
@@ -414,7 +414,7 @@ const OpenEndedQuiz = () => {
       const questionId = currentQuestion.uniqueId || currentQuestion.question.id;
       const savedResponse = responses[questionId];
       
-      console.log("Loading current response for question:", questionId, savedResponse);
+      
       
       if (savedResponse) {
         setCurrentResponse(savedResponse.response);
@@ -428,7 +428,7 @@ const OpenEndedQuiz = () => {
   
   // Save response to parent state
   const saveResponse = (questionId: string, responseText: string, isSkipped: boolean) => {
-    console.log(`Saving response for ${questionId}:`, { responseText, isSkipped });
+    
     
     // Update the responses state
     setResponses(prev => ({
@@ -530,7 +530,7 @@ const OpenEndedQuiz = () => {
         );
         
         if (!questionInfo) {
-          console.log(`Question not found for ID: ${questionId}`);
+          
           return null;
         }
         
@@ -546,14 +546,14 @@ const OpenEndedQuiz = () => {
           question: questionInfo?.question?.question || ''
         };
         
-        console.log(`Preparing to submit response for ${questionId}:`, dataToSave);
+        
         return dataToSave;
       }).filter(item => item !== null) as any[]; // Filter out null entries
       
       // Filter out any undefined responses (shouldn't happen but just in case)
       const validResponses = responsesToSubmit.filter(r => r !== undefined);
       
-      console.log("Submitting responses to open_ended_responses table:", validResponses);
+      
       
       // Upload responses to Supabase open_ended_responses table
       const { error, data } = await supabase
@@ -565,7 +565,7 @@ const OpenEndedQuiz = () => {
         throw new Error(error.message);
       }
       
-      console.log("Responses saved successfully:", data);
+      
       
       // Update quiz completion status
       const { error: completionError } = await supabase
@@ -593,7 +593,7 @@ const OpenEndedQuiz = () => {
         
         // Clear cached responses after successful submission
         localStorage.removeItem('openEndedQuizResponses');
-        console.log("Cleared cached responses after successful submission");
+        
       } catch (error) {
         console.error("Error updating local storage:", error);
       }

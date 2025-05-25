@@ -20,7 +20,7 @@ export const useModuleRecommendations = () => {
 
   // Convert the global modules to the RecommendedModule format
   useEffect(() => {
-    console.log("useModuleRecommendations: Converting global modules, count:", moduleRecommendations.length);
+    
     
     if (moduleRecommendations.length > 0) {
       const formattedModules: RecommendedModule[] = moduleRecommendations.map(module => ({
@@ -32,9 +32,9 @@ export const useModuleRecommendations = () => {
       }));
       
       setRecommendedModules(formattedModules);
-      console.log("useModuleRecommendations: Formatted modules count:", formattedModules.length);
+      
     } else {
-      console.log("No modules available in global context");
+      
       setRecommendedModules([]);
     }
   }, [moduleRecommendations]);

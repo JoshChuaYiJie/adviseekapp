@@ -16,7 +16,7 @@ export function findExactMatches(
     occupation.work_value_code !== null
   );
   
-  console.log(`Found ${exactMatches.length} exact matches`);
+  
   
   // Take up to 3 occupation objects for exact matches
   const limitedExactMatches = exactMatches.slice(0, 3);
@@ -58,7 +58,7 @@ export function findRiasecMatches(
     return riasecMatch && !alreadyFound;
   });
   
-  console.log(`Found ${riasecMatches.length} RIASEC-only matches (including short code matches)`);
+  
   
   // Take up to 3 occupation objects for RIASEC matches
   const limitedRiasecMatches = riasecMatches.slice(0, 3);
@@ -93,7 +93,7 @@ export function findWorkValueMatches(
     )
   );
   
-  console.log(`Found ${workValueMatches.length} Work Value-only matches`);
+  
   
   // Take up to 3 occupation objects for Work Value matches
   const limitedWorkValueMatches = workValueMatches.slice(0, 3);

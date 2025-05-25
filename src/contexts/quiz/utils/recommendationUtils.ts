@@ -200,7 +200,7 @@ export const generateRecommendations = async (userId: string): Promise<any[]> =>
   try {
     // This is a mock function that doesn't rely on database tables
     // that might not exist in the schema
-    console.log("Generating mock recommendations for user:", userId);
+    
     
     return [
       {

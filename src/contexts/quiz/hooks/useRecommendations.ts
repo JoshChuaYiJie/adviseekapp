@@ -33,13 +33,13 @@ export const useRecommendations = () => {
   }));
 
   // Log the recommendations for debugging
-  console.log("Recommendations in useRecommendations:", recommendations.length);
+  
 
   // Load user feedback (ratings) - temporarily disabled until user_feedback table types are available
   const loadUserFeedback = async (userId: string) => {
     try {
       // TODO: Implement when user_feedback table types are available
-      console.log("Loading user feedback for:", userId);
+      
       return {};
     } catch (error) {
       console.error("Error loading user feedback:", error);
@@ -89,7 +89,7 @@ export const useRecommendations = () => {
       }));
       
       // TODO: Implement actual rating save when user_feedback table types are available
-      console.log("Rating module:", moduleId, "with rating:", rating);
+      
     } catch (err) {
       console.error("Error rating module:", err);
       // Revert state change if there was an error

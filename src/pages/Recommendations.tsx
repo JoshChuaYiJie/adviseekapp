@@ -33,7 +33,7 @@ const usePrefixMajorMappings = () => {
         const data = await response.json();
         if (data && data.prefix_to_majors) {
           setMappings(data.prefix_to_majors);
-          console.log('Loaded prefix to major mappings:', data.prefix_to_majors);
+          
         }
       } catch (error) {
         console.error('Error loading prefix to major mappings:', error);
@@ -61,7 +61,7 @@ const useAllMappings = () => {
         
         const data = await response.json();
         setAllMappings(data);
-        console.log('Loaded all mappings:', data);
+        
       } catch (error) {
         console.error('Error loading all mappings:', error);
       }
@@ -96,7 +96,7 @@ const Recommendations = () => {
   } = useModuleRecommendations();
 
   // Log recommendations for debugging
-  console.log("Recommendations in /recommendations page:", recommendedModules.length);
+  
 
   // Convert recommendedModules to the same format as recommendations
   const recommendations = recommendedModules.map((rec) => ({
@@ -149,7 +149,7 @@ const Recommendations = () => {
 
         // If user is retaking the quiz and has previous ratings, delete them
         if (existingRatings && existingRatings.length > 0) {
-          console.log("Found previous ratings, deleting them...");
+          
           const { error: deleteError } = await supabase
             .from('recommendations_score')
             .delete()
@@ -163,7 +163,7 @@ const Recommendations = () => {
               variant: "destructive",
             });
           } else {
-            console.log("Previous ratings deleted successfully");
+            
             toast({
               title: "Previous Ratings Reset",
               description: "Your previous module ratings have been cleared. Start fresh!",
@@ -180,14 +180,14 @@ const Recommendations = () => {
 
   // Ensure recommendations are loaded when the page loads
   useEffect(() => {
-    console.log("Trying to fetch recommendations...");
+    
     refetchRecommendations();
   }, [refetchRecommendations]);
 
   useEffect(() => {
     setShowAnimation(true);
     // Log whenever recommendations change
-    console.log("Recommendations updated in effect:", recommendations.length, recommendations);
+    
   }, [recommendations.length]);
 
   useEffect(() => {
@@ -277,11 +277,11 @@ const Recommendations = () => {
       }
 
       if (!userRatings || userRatings.length === 0) {
-        console.log("No ratings found for aggregation");
+        
         return;
       }
 
-      console.log("Retrieved user ratings for aggregation:", userRatings.length);
+      
 
       // Aggregate scores by prefix
       const prefixScores: Record<string, { totalScore: number, count: number }> = {};
@@ -313,7 +313,7 @@ const Recommendations = () => {
         })
         .sort((a, b) => b.averageScore - a.averageScore);
 
-      console.log("Top prefixes calculated with major recommendations:", results);
+      
       setTopPrefixes(results.slice(0, 3));  // Keep top 3
       
       // Show the program suggestion

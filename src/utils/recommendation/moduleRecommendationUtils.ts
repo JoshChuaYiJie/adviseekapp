@@ -34,11 +34,11 @@ export const fetchModuleRecommendations = async (
     const topMajors = limit > 0 ? uniqueMajors.slice(0, limit) : uniqueMajors;
     
     if (topMajors.length === 0) {
-      console.log('No recommended majors found');
+      
       return [];
     }
     
-    console.log('Top recommended majors:', topMajors);
+    
     
     // Load the mappings file
     const mappingsResponse = await fetch('/school-data/mappings.json');
@@ -62,7 +62,7 @@ export const fetchModuleRecommendations = async (
         school = "SMU";
       } else {
         // If school is not specified, skip this major
-        console.log(`School not specified for major: ${major}`);
+        
         continue;
       }
       
@@ -80,11 +80,11 @@ export const fetchModuleRecommendations = async (
       }
       
       if (prefixes.length === 0) {
-        console.log(`No prefixes found for major: ${majorName} at ${school}`);
+        
         continue;
       }
       
-      console.log(`Found prefixes for ${majorName} at ${school}:`, prefixes);
+      
       
       try {
         // Load the appropriate module data file with correct path
@@ -102,7 +102,7 @@ export const fetchModuleRecommendations = async (
           return prefixes.some(prefix => moduleCode.startsWith(prefix.trim().toUpperCase()));
         });
         
-        console.log(`Found ${matchingModules.length} matching modules for ${majorName}`);
+        
         
         // Add all matching modules for this major to our recommendations
         const majorModules = matchingModules.map((module: any) => ({
@@ -122,7 +122,7 @@ export const fetchModuleRecommendations = async (
       [module.modulecode, module]
     )).values()];
     
-    console.log(`Total unique modules found: ${uniqueModules.length}`);
+    
     return uniqueModules;
   } catch (error) {
     console.error('Error fetching module recommendations:', error);

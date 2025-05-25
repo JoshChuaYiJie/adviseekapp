@@ -27,8 +27,8 @@ export const MajorRecommendations: React.FC<MajorRecommendationsProps> = ({
   const [activeTab, setActiveTab] = useState('all');
   
   // Debug the incoming data
-  console.log("MajorRecommendations - Received topRiasec:", topRiasec);
-  console.log("MajorRecommendations - Received topWorkValues:", topWorkValues);
+  
+  
   
   // Use recommendation logic
   const { loading, riasecCode, workValueCode, userId, recommendations } = useRecommendationLogic({

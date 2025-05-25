@@ -64,7 +64,7 @@ export const loadUniversityData = async (university: string): Promise<University
   
   // Check cache first
   if (dataCache[normalizedName]) {
-    console.log(`Using cached data for ${university}`);
+    
     return dataCache[normalizedName];
   }
   
@@ -107,18 +107,18 @@ export const loadUniversityData = async (university: string): Promise<University
     // Try each file loading strategy
     for (const filePath of fileStrategies) {
       try {
-        console.log(`Attempting to fetch from: ${filePath}`);
+        
         const response = await fetch(filePath);
         
         if (!response.ok) {
-          console.log(`Strategy failed for ${filePath} with status: ${response.status}`);
+          
           continue;
         }
         
         const fetchedData = await response.json();
         
         if (!fetchedData || !fetchedData.programs || !Array.isArray(fetchedData.programs)) {
-          console.log(`Invalid data format from ${filePath}`);
+          
           continue;
         }
         
@@ -127,13 +127,13 @@ export const loadUniversityData = async (university: string): Promise<University
         successPath = filePath;
         break;
       } catch (error) {
-        console.log(`Error with strategy ${filePath}:`, error);
+        
         // Continue to next strategy
       }
     }
     
     if (data) {
-      console.log(`Successfully loaded data from ${successPath} for ${university}`);
+      
       dataCache[normalizedName] = data;
       return data;
     }
@@ -150,7 +150,7 @@ export const loadUniversityData = async (university: string): Promise<University
 // Extract all degrees from university data
 export const getDegrees = (data: UniversityData | null): string[] => {
   if (!data?.programs) {
-    console.log('No valid programs array in data:', data);
+    
     return [];
   }
 
@@ -159,14 +159,14 @@ export const getDegrees = (data: UniversityData | null): string[] => {
   
   data.programs.forEach(program => {
     if (program.degree) {
-      console.log(`Found degree: ${program.degree}`);
+      
       degrees.add(program.degree);
     }
   });
 
   // Convert Set to sorted array
   const uniqueDegrees = Array.from(degrees).sort();
-  console.log('Total unique degrees found:', uniqueDegrees.length);
+  
   
   return uniqueDegrees;
 };

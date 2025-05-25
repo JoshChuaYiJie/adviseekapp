@@ -67,19 +67,19 @@ export const AboutMe = () => {
         const { data: { session } } = await supabase.auth.getSession();
         const userId = session?.user?.id;
         if (!userId) {
-          console.log("No user ID found");
+          
           setIsLoading(false);
           return;
         }
-        console.log(`Loading user profiles for ${userId}`);
+        
 
         // Get RIASEC data from chart processing function
         const riasecChartData = await processRiasecData(userId);
 
         // Get Work Values data from chart processing function
         const workValuesChartData = await processWorkValuesData(userId);
-        console.log("RIASEC data:", riasecChartData);
-        console.log("Work Value data:", workValuesChartData);
+        
+        
         let generatedRiasecCode = "";
         let generatedWorkValueCode = "";
 
@@ -141,7 +141,7 @@ export const AboutMe = () => {
             variant: "destructive"
           });
         } else {
-          console.log("Updated profile data in database:", upsertData);
+          
         }
         
         // Get completed quiz segments from database
@@ -150,13 +150,13 @@ export const AboutMe = () => {
         } = await supabase.from('quiz_completion').select('quiz_type').eq('user_id', userId);
         if (completions) {
           const completedSegments = completions.map(c => c.quiz_type);
-          console.log("Completed quiz segments from database:", completedSegments);
+          
         }
 
         // Fetch recommended majors based on the profile codes
         if (generatedRiasecCode && generatedWorkValueCode) {
           const majorRecommendations = await getMatchingMajors(generatedRiasecCode, generatedWorkValueCode);
-          console.log("Recommended majors:", majorRecommendations);
+          
           setRecommendedMajors(majorRecommendations);
           
           // NEW: Store recommended major in database
@@ -176,7 +176,7 @@ export const AboutMe = () => {
           if (majorError) {
             console.error("Error storing recommended majors:", majorError);
           } else {
-            console.log("Stored recommended majors in database");
+            
           }
           
           // IMPORTANT: Update the global context with major recommendations
@@ -186,7 +186,7 @@ export const AboutMe = () => {
           setLoadingModules(true);
           try {
             const modules = await fetchModuleRecommendations(majorRecommendations);
-            console.log("Recommended modules:", modules);
+            
             setRecommendedModules(modules);
             
             // Update the global module recommendations with the fetched modules
@@ -200,7 +200,7 @@ export const AboutMe = () => {
               semester: "1"
             })));
             
-            console.log("Updated global module recommendations in context");
+            
             
           } catch (error) {
             console.error("Error fetching module recommendations:", error);

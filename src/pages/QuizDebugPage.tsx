@@ -25,11 +25,11 @@ const QuizDebugPage = () => {
         if (session?.user) {
           setUserId(session.user.id);
           setAuthStatus('authenticated');
-          console.log("User authenticated:", session.user.id);
+          
         } else {
           setUserId(null);
           setAuthStatus('unauthenticated');
-          console.log("User not authenticated");
+          
         }
       } catch (err) {
         console.error("Error checking authentication:", err);

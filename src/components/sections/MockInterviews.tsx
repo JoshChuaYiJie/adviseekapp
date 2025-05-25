@@ -78,7 +78,7 @@ export const MockInterviews = ({ user }: MockInterviewsProps) => {
         const session = sessionData?.session;
 
         if (!session?.user?.id) {
-          console.log("No user logged in");
+          
           setLoading(false);
           return;
         }
@@ -95,10 +95,10 @@ export const MockInterviews = ({ user }: MockInterviewsProps) => {
         }
 
         if (applications && applications.length > 0) {
-          console.log("Fetched applications:", applications);
+          
           setUserApplications(applications);
         } else {
-          console.log("No applications found for user");
+          
           setUserApplications([
             { id: "default", university: "NUS", major: "Computer Science", school: "School of Computing" },
             { id: "default2", university: "NTU", major: "Business", school: "Business School" },
@@ -293,7 +293,7 @@ export const MockInterviews = ({ user }: MockInterviewsProps) => {
         `;
       }
 
-      console.log("Generating interview questions with prompt:", prompt);
+      
 
       const aiResponse = await callAI(prompt);
 
@@ -309,7 +309,7 @@ export const MockInterviews = ({ user }: MockInterviewsProps) => {
           initialResponses[q] = "";
         });
         setResponses(initialResponses);
-        console.log("Generated questions:", questionLines);
+        
       } else {
         console.error("Failed to parse AI-generated questions");
         toast.error("Failed to generate interview questions. Please try again.");

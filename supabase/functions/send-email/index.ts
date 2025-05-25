@@ -54,7 +54,7 @@ serve(async (req) => {
     };
 
     // For demonstration purposes, log the email we're supposed to send
-    console.log('Sending email:', emailParams);
+    
     
     // In a real implementation, we'd use a service like SendGrid, Postmark, etc.
     // For example with SendGrid:

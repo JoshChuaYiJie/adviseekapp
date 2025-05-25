@@ -25,14 +25,14 @@ export const useResumeManager = () => {
   const loadSavedResumes = async () => {
     try {
       setLoading(true);
-      console.log("[Resume Manager] Loading saved resumes");
+      
       
       // Get the current user session
       const { data: sessionData } = await supabase.auth.getSession();
-      console.log("[Resume Manager] Auth session for resume loading:", sessionData);
+      
       
       if (!sessionData.session?.user) {
-        console.log("[Resume Manager] No user session found for resume loading");
+        
         setLoading(false);
         return;
       }
@@ -61,10 +61,10 @@ export const useResumeManager = () => {
           file_path: resume.file_path
         }));
         
-        console.log(`[Resume Manager] Loaded ${formattedResumes.length} resumes from Supabase:`, formattedResumes);
+        
         setSavedResumes(formattedResumes);
       } else {
-        console.log("[Resume Manager] No resumes found");
+        
       }
     } catch (error) {
       console.error("[Resume Manager] Error loading resumes:", error);
@@ -86,7 +86,7 @@ export const useResumeManager = () => {
       
       // Use the first file if multiple files were uploaded
       const file = files[0];
-      console.log("[Resume Manager] Processing uploaded file:", file.name, file.type);
+      
       
       // Validate file type
       if (!file.type.includes('pdf')) {
@@ -98,7 +98,7 @@ export const useResumeManager = () => {
       const { data: sessionData } = await supabase.auth.getSession();
       
       if (!sessionData.session?.user) {
-        console.log("[Resume Manager] No user session found for file upload");
+        
         toast("You must be logged in to upload a resume.");
         return;
       }
@@ -120,7 +120,7 @@ export const useResumeManager = () => {
         return;
       }
 
-      console.log("[Resume Manager] File uploaded successfully:", uploadData);
+      
       
       // Save the resume record in the database
       const { data: resumeData, error: resumeError } = await supabase
@@ -140,7 +140,7 @@ export const useResumeManager = () => {
         return;
       }
 
-      console.log("[Resume Manager] Resume data saved:", resumeData);
+      
       
       // Refresh the resumes list
       loadSavedResumes();
@@ -154,7 +154,7 @@ export const useResumeManager = () => {
 
   const handleViewResume = async (resumeId: string, templateType: string) => {
     try {
-      console.log(`[Resume Manager] Navigating to view resume: ${resumeId} with template: ${templateType}`);
+      
       navigate(`/resumebuilder/${templateType.toLowerCase()}?id=${resumeId}&mode=view`);
     } catch (error) {
       console.error("[Resume Manager] Navigation error:", error);
@@ -164,7 +164,7 @@ export const useResumeManager = () => {
 
   const handleEditResume = async (resumeId: string, templateType: string) => {
     try {
-      console.log(`[Resume Manager] Navigating to edit resume: ${resumeId} with template: ${templateType}`);
+      
       navigate(`/resumebuilder/${templateType.toLowerCase()}?id=${resumeId}&mode=edit`);
     } catch (error) {
       console.error("[Resume Manager] Navigation error:", error);
@@ -184,7 +184,7 @@ export const useResumeManager = () => {
       const fileUrl = URL.createObjectURL(file);
       localStorage.setItem('uploadedPDF', file.name);
       localStorage.setItem('uploadedPDFUrl', fileUrl);
-      console.log("[Resume Manager] PDF set in localStorage, navigating to resume builder");
+      
       
       navigate('/resumebuilder/basic?source=pdf&mode=edit');
     } catch (error) {
@@ -200,7 +200,7 @@ export const useResumeManager = () => {
         return;
       }
 
-      console.log(`[Resume Manager] Downloading resume at path: ${resumePath}`);
+      
       
       const { data, error } = await supabase.storage
         .from('resume_files')
@@ -231,13 +231,13 @@ export const useResumeManager = () => {
 
   const handleDeleteResume = async (resumeId: string, filePath?: string) => {
     try {
-      console.log(`[Resume Manager] Deleting resume: ${resumeId}`);
+      
       
       // Get the current user session
       const { data: sessionData } = await supabase.auth.getSession();
       
       if (!sessionData.session?.user) {
-        console.log("[Resume Manager] No user session found for resume deletion");
+        
         toast("You must be logged in to delete a resume.");
         return;
       }

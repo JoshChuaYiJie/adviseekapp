@@ -283,7 +283,7 @@ export const ApplyNow = () => {
     Keep your response concise and actionable.
     `;
 
-    console.log("Contextual Prompt:", contextualPrompt);
+    
 
     try {
       const aiResponse = await callAI(contextualPrompt);
@@ -328,15 +328,15 @@ export const ApplyNow = () => {
       setError(null);
       
       try {
-        console.log(`Loading university data for: ${selectedUniversity}`);
+        
         const data = await loadUniversityData(selectedUniversity);
         setUniversityData(data);
         
         if (data && data.programs && data.programs.length > 0) {
-          console.log(`Data loaded successfully with ${data.programs.length} programs`);
+          
           const degrees = getDegrees(data);
           setAvailableDegrees(degrees);
-          console.log(`${degrees.length} degrees found:`, degrees);
+          
         } else {
           setError("No programs found in the data");
           toast.error("No programs found for this university");
@@ -362,7 +362,7 @@ export const ApplyNow = () => {
 
     const majors = getMajorsForDegree(universityData, selectedDegree);
     setAvailableMajors(majors);
-    console.log(`Found ${majors.length} majors for ${selectedDegree}:`, majors);
+    
   }, [universityData, selectedDegree]);
 
   // Reset selections when dependencies change
@@ -406,7 +406,7 @@ export const ApplyNow = () => {
   };
 
   const handleUniversityChange = (university: string) => {
-    console.log(`University selected: ${university}`);
+    
     setSelectedUniversity(university);
     setSelectedDegree("");
     setSelectedMajor("");
@@ -419,7 +419,7 @@ export const ApplyNow = () => {
   };
 
   const handleDegreeChange = (degree: string) => {
-    console.log(`Degree selected: ${degree}`);
+    
     setSelectedDegree(degree);
     setSelectedMajor("");
     setQuestions([]);
@@ -431,7 +431,7 @@ export const ApplyNow = () => {
   };
 
   const handleMajorChange = async (major: string) => {
-    console.log(`Major selected: ${major}`);
+    
     setSelectedMajor(major);
     
     // Load university-specific questions
@@ -487,11 +487,11 @@ export const ApplyNow = () => {
           savedResponses[q.id] = savedResponse ? savedResponse.response : "";
         });
         
-        console.log("Loaded saved responses:", savedResponses);
+        
         setResponses(savedResponses);
         toast.success("Loaded your previously saved responses.");
       } else {
-        console.log("No saved responses found");
+        
       }
     } catch (error) {
       console.error("Error in loadSavedResponses:", error);
@@ -528,7 +528,7 @@ export const ApplyNow = () => {
         response: responses[question.id] || ""
       }));
       
-      console.log("Saving responses:", responsesToSave);
+      
       
       for (const response of responsesToSave) {
         const { error } = await supabase

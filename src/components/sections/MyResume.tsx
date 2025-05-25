@@ -27,7 +27,7 @@ export const MyResume = () => {
   useEffect(() => {
     const checkAuthStatus = async () => {
       const { data } = await supabase.auth.getSession();
-      console.log("Auth session data:", data);
+      
       setIsUserAuthenticated(!!data.session);
     };
     
@@ -35,7 +35,7 @@ export const MyResume = () => {
     
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        console.log("Auth state change:", event, session?.user?.id);
+        
         setIsUserAuthenticated(!!session);
       }
     );
@@ -47,7 +47,7 @@ export const MyResume = () => {
 
   // Adapter function to handle file upload from UploadResumeCard
   const handleFileUploadAdapter = (file: File) => {
-    console.log("File received in adapter:", file.name);
+    
     // Convert single file to array for handleFileUpload
     handleFileUpload([file]);
   };

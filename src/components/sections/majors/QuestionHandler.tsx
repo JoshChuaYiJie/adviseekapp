@@ -25,7 +25,7 @@ export const QuestionHandler = ({ questions, majorName }: QuestionHandlerProps) 
   
   // Initialize responses state for all questions
   useEffect(() => {
-    console.log("Initializing responses for questions:", questions.length);
+    
     const initialResponses: Record<number, string> = {};
     const initialSkipped: Record<number, boolean> = {};
     
@@ -40,7 +40,7 @@ export const QuestionHandler = ({ questions, majorName }: QuestionHandlerProps) 
         questions.forEach((question) => {
           initialResponses[question.id] = parsedResponses[question.id] || '';
         });
-        console.log("Loaded cached responses:", initialResponses);
+        
       } else {
         questions.forEach((question) => {
           initialResponses[question.id] = '';
@@ -53,7 +53,7 @@ export const QuestionHandler = ({ questions, majorName }: QuestionHandlerProps) 
         questions.forEach((question) => {
           initialSkipped[question.id] = parsedSkipped[question.id] || false;
         });
-        console.log("Loaded cached skipped statuses:", initialSkipped);
+        
       } else {
         questions.forEach((question) => {
           initialSkipped[question.id] = false;
@@ -77,15 +77,15 @@ export const QuestionHandler = ({ questions, majorName }: QuestionHandlerProps) 
     try {
       localStorage.setItem('openEndedResponses', JSON.stringify(responses));
       localStorage.setItem('openEndedSkipped', JSON.stringify(skippedQuestions));
-      console.log("Cached responses to localStorage:", responses);
-      console.log("Cached skipped statuses to localStorage:", skippedQuestions);
+      
+      
     } catch (error) {
       console.error("Error caching responses:", error);
     }
   }, [responses, skippedQuestions]);
 
   const handleResponseChange = (response: string) => {
-    console.log(`Response changed for question ${currentQuestionIndex}:`, response);
+    
     
     const currentQuestion = questions[currentQuestionIndex];
     if (!currentQuestion) return;
@@ -132,8 +132,8 @@ export const QuestionHandler = ({ questions, majorName }: QuestionHandlerProps) 
   const handleFinish = async () => {
     setIsSubmitting(true);
     
-    console.log("Finishing question responses:", responses);
-    console.log("Skipped questions:", skippedQuestions);
+    
+    
     
     // Verify user is logged in
     const { data: { session } } = await supabase.auth.getSession();
@@ -167,7 +167,7 @@ export const QuestionHandler = ({ questions, majorName }: QuestionHandlerProps) 
           };
         });
       
-      console.log("Saving responses to database:", responsesToSave);
+      
       
       if (responsesToSave.length > 0) {
         // Save valid responses to database
@@ -191,7 +191,7 @@ export const QuestionHandler = ({ questions, majorName }: QuestionHandlerProps) 
           // Clear cached responses after successful submission
           localStorage.removeItem('openEndedResponses');
           localStorage.removeItem('openEndedSkipped');
-          console.log("Cleared cached responses after successful submission");
+          
         }
       } else {
         toast({

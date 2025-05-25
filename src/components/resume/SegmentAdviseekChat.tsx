@@ -306,7 +306,7 @@ export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: Segmen
       ${resumeData.it_skills ? `IT Skills: ${resumeData.it_skills}` : ''}
     `;
     }
-    console.log("Contextual Prompt:", contextualPrompt);
+    
 
     try {
       // Call AI with non-streaming

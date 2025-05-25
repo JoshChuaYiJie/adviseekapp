@@ -134,7 +134,7 @@ const SegmentedQuiz = () => {
       message, 
       data 
     };
-    console.log(`DEBUG: ${message}`, data);
+    
     setDebugLog(prev => [...prev, entry]);
   };
   

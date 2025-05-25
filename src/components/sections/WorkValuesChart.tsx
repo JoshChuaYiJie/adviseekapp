@@ -10,7 +10,7 @@ import { Bug } from 'lucide-react';
 export const processWorkValuesData = async (userId: string) => {
   try {
     const profile = await calculateWorkValuesProfile(userId);
-    console.log('Raw Work Values Profile:', profile);
+    
     
     // Calculate total for percentages
     const totalValue = Object.values(profile).reduce((sum, val) => sum + val, 0);
@@ -30,7 +30,7 @@ export const processWorkValuesData = async (userId: string) => {
       .filter(item => item.value > 0)
       .sort((a, b) => b.value - a.value); // Sort by value descending
 
-    console.log('Processed Work Values Chart Data:', chartData);
+    
     return chartData;
   } catch (error) {
     console.error("Error processing Work Values data:", error);
@@ -56,12 +56,12 @@ export const WorkValuesChart = () => {
         const userId = await getUserId();
         
         if (userId) {
-          console.log("Got user ID for Work Values chart:", userId);
+          
           
           // For debugging, inspect responses directly
           if (process.env.NODE_ENV !== 'production') {
             const responses = await inspectResponses(userId, 'work');
-            console.log("Work Values-related responses:", responses);
+            
           }
           
           const chartData = await processWorkValuesData(userId);
@@ -75,7 +75,7 @@ export const WorkValuesChart = () => {
           }
         } else {
           setError("Please log in to see your Work Values profile.");
-          console.log("No user ID available for Work Values chart");
+          
         }
       } catch (error) {
         console.error("Error loading Work Values profile:", error);

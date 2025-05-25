@@ -37,7 +37,7 @@ export const QuizSegments = () => {
   // Function to load user profiles
   const loadUserProfiles = async (userId: string) => {
     try {
-      console.log("Loading user profiles for", userId);
+      
       
       // Fetch RIASEC profile from user_responses table
       const { data: riasecData, error: riasecError } = await supabase
@@ -49,7 +49,7 @@ export const QuizSegments = () => {
       if (riasecError) {
         console.error('Error fetching RIASEC profile:', riasecError);
       } else {
-        console.log("RIASEC data:", riasecData);
+        
         if (riasecData && riasecData.length > 0) {
           // Transform data to match expected format with average property
           // Then sort by score in descending order to get highest percentages first
@@ -61,7 +61,7 @@ export const QuizSegments = () => {
             }))
             .sort((a, b) => b.score - a.score); // Sort by score descending
             
-          console.log("Transformed RIASEC data:", transformedData);
+          
           setRiasecProfile(transformedData);
         }
       }
@@ -76,7 +76,7 @@ export const QuizSegments = () => {
       if (workValueError) {
         console.error('Error fetching Work Value profile:', workValueError);
       } else {
-        console.log("Work Value data:", workValueData);
+        
         if (workValueData && workValueData.length > 0) {
           // Transform data to match expected format with average property
           // Then sort by score in descending order to get highest percentages first
@@ -88,14 +88,14 @@ export const QuizSegments = () => {
             }))
             .sort((a, b) => b.score - a.score); // Sort by score descending
             
-          console.log("Transformed Work Value data:", transformedData);
+          
           setWorkValueProfile(transformedData);
         }
       }
       
       // For debugging: Log both profiles after loading
-      console.log("Final RIASEC profile state:", riasecProfile);
-      console.log("Final Work Value profile state:", workValueProfile);
+      
+      
     } catch (error) {
       console.error('Error loading user profiles:', error);
     }
@@ -130,7 +130,7 @@ export const QuizSegments = () => {
             completed = getCompletedSegmentsFromLocalStorage();
           } else if (data) {
             completed = data.map(item => item.quiz_type);
-            console.log("Completed quiz segments from database:", completed);
+            
             // Update localStorage for consistency
             localStorage.setItem('completed_quiz_segments', JSON.stringify(completed));
           }
@@ -189,7 +189,7 @@ export const QuizSegments = () => {
       
       if (data) {
         const completed = data.map(item => item.quiz_type);
-        console.log("Fetched completed quiz segments:", completed);
+        
         setCompletedSegments(completed);
         // Update localStorage for consistency
         localStorage.setItem('completed_quiz_segments', JSON.stringify(completed));

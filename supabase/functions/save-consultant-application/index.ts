@@ -92,7 +92,7 @@ async function sendEmailNotification(supabaseClient: any, applicationData: Consu
         replyTo: 'adviseek.official@gmail.com'
       },
     });
-    console.log('Email notification sent successfully');
+    
   } catch (error) {
     console.error('Failed to send email notification:', error);
     // We don't throw here to avoid failing the main function if email fails

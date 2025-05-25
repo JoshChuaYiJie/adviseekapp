@@ -104,30 +104,30 @@ export const RecommendationProvider: React.FC<{children: React.ReactNode}> = ({ 
         // Get Work Value components
         const workValueComponents = JSON.parse(localStorage.getItem('top_work_values') || '[]');
         
-        console.log("Loaded from localStorage - RIASEC:", riasecComponents);
-        console.log("Loaded from localStorage - Work Values:", workValueComponents);
+        
+        
         
         // Generate codes using the exact same logic as before
         if (riasecComponents && riasecComponents.length > 0) {
           const generatedRiasecCode = formCode(riasecComponents, mapRiasecToCode);
           setRiasecCode(generatedRiasecCode);
-          console.log("Generated RIASEC code:", generatedRiasecCode);
+          
         } else {
           // Default fallback
           const defaultRiasecCode = 'SAE';
           setRiasecCode(defaultRiasecCode);
-          console.log("Using default RIASEC code:", defaultRiasecCode);
+          
         }
         
         if (workValueComponents && workValueComponents.length > 0) {
           const generatedWorkValueCode = formCode(workValueComponents, mapWorkValueToCode);
           setWorkValueCode(generatedWorkValueCode);
-          console.log("Generated Work Values code:", generatedWorkValueCode);
+          
         } else {
           // Default fallback
           const defaultWorkValueCode = 'ARS';
           setWorkValueCode(defaultWorkValueCode);
-          console.log("Using default Work Values code:", defaultWorkValueCode);
+          
         }
         
         setCodesLoaded(true);
@@ -152,9 +152,9 @@ export const RecommendationProvider: React.FC<{children: React.ReactNode}> = ({ 
     const loadMajorRecommendations = async () => {
       try {
         setIsLoading(true);
-        console.log("Fetching major recommendations with codes:", riasecCode, workValueCode);
+        
         const majors = await getMatchingMajors(riasecCode, workValueCode);
-        console.log("Loaded major recommendations:", majors);
+        
         setMajorRecommendations(majors);
         
         // Store in localStorage for persistence
@@ -177,12 +177,12 @@ export const RecommendationProvider: React.FC<{children: React.ReactNode}> = ({ 
       setIsLoading(true);
       setError(null);
       
-      console.log("Fetching module recommendations based on majors:", majorRecommendations);
+      
       
       // Use the fetchModuleRecommendations utility
       const modules = await fetchModuleRecommendations(majorRecommendations, 0);
       
-      console.log("Raw modules from fetchModuleRecommendations:", modules.length);
+      
       
       // Generate consistent module IDs - keeping the same logic
       const modulesWithIds = modules.map(module => ({
@@ -198,7 +198,7 @@ export const RecommendationProvider: React.FC<{children: React.ReactNode}> = ({ 
       // Diversify modules to ensure we have a good mix of prefixes
       const diverseModules = diversifyModules(modulesWithIds);
       
-      console.log("Loaded and diversified module recommendations:", diverseModules.length);
+      
       setModuleRecommendations(diverseModules);
     } catch (error) {
       console.error("Error loading module recommendations:", error);
@@ -221,20 +221,20 @@ export const RecommendationProvider: React.FC<{children: React.ReactNode}> = ({ 
 
   // Function to update module recommendations directly (for use in AboutMe.tsx)
   const updateModuleRecommendations = useCallback((modules: Module[]) => {
-    console.log("Updating global module recommendations:", modules.length);
+    
     setModuleRecommendations(modules);
   }, []);
   
   // New function to update major recommendations directly
   const updateMajorRecommendations = useCallback((recommendations: MajorRecommendationsType) => {
-    console.log("Updating global major recommendations:", recommendations);
+    
     setMajorRecommendations(recommendations);
   }, []);
 
   // Refresh all recommendations - but avoid unnecessary recalculations
   const refreshRecommendations = useCallback(async () => {
     try {
-      console.log("Refreshing all recommendations...");
+      
       setIsLoading(true);
       
       // Reload codes from localStorage (in case they were updated)

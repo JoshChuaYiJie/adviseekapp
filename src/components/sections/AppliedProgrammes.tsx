@@ -78,7 +78,7 @@ export const AppliedProgrammes = () => {
             college: program.college
           }));
           
-          console.log("Loaded applied programmes:", formattedPrograms);
+          
           setAppliedProgrammes(formattedPrograms);
         }
       } catch (error) {
@@ -105,15 +105,15 @@ export const AppliedProgrammes = () => {
       setError(null);
       
       try {
-        console.log(`Loading university data for: ${selectedUniversity}`);
+        
         const data = await loadUniversityData(selectedUniversity);
         setUniversityData(data);
         
         if (data && data.programs && data.programs.length > 0) {
-          console.log(`Data loaded successfully with ${data.programs.length} programs`);
+          
           const degrees = getDegrees(data);
           setAvailableDegrees(degrees);
-          console.log(`${degrees.length} degrees found:`, degrees);
+          
         } else {
           setError("No programs found in the data");
           toast.error("No programs found for this university");
@@ -139,7 +139,7 @@ export const AppliedProgrammes = () => {
 
     const majors = getMajorsForDegree(universityData, selectedDegree);
     setAvailableMajors(majors);
-    console.log(`Found ${majors.length} majors for ${selectedDegree}:`, majors);
+    
   }, [universityData, selectedDegree]);
 
   // Reset selections when dependencies change
@@ -156,14 +156,14 @@ export const AppliedProgrammes = () => {
   }, [selectedDegree]);
 
   const handleUniversityChange = (value: string) => {
-    console.log(`University selected: ${value}`);
+    
     setSelectedUniversity(value);
     setSelectedDegree("");
     setSelectedMajor("");
   };
 
   const handleDegreeChange = (value: string) => {
-    console.log(`Degree selected: ${value}`);
+    
     setSelectedDegree(value);
     setSelectedMajor("");
   };

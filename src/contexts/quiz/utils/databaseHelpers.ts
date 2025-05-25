@@ -9,7 +9,7 @@ export const getUserId = async (): Promise<string | null> => {
 // Calculate RIASEC profile from user responses
 export const calculateRiasecProfile = async (userId: string) => {
   try {
-    console.log(`Calculating RIASEC profile for user ${userId}`);
+    
     
     // Get all responses for RIASEC-related quiz types
     const { data: responses, error } = await supabase
@@ -25,11 +25,11 @@ export const calculateRiasecProfile = async (userId: string) => {
     }
 
     if (!responses || responses.length === 0) {
-      console.log('No RIASEC responses found');
+      
       return { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 };
     }
 
-    console.log(`Found ${responses.length} RIASEC-related responses`);
+    
     
     // Group responses by component
     const componentGroups: Record<string, { totalScore: number, count: number }> = {};
@@ -73,7 +73,7 @@ export const calculateRiasecProfile = async (userId: string) => {
       C: averageScores.C || 0
     };
     
-    console.log('RIASEC scores calculated:', riasecProfile);
+    
     return riasecProfile;
   } catch (error) {
     console.error('Error in calculateRiasecProfile:', error);
@@ -84,7 +84,7 @@ export const calculateRiasecProfile = async (userId: string) => {
 // Calculate Work Values profile from user responses
 export const calculateWorkValuesProfile = async (userId: string) => {
   try {
-    console.log(`Calculating Work Values profile for user ${userId}`);
+    
     
     // Get all responses for Work Values quiz type
     const { data: responses, error } = await supabase
@@ -100,7 +100,7 @@ export const calculateWorkValuesProfile = async (userId: string) => {
     }
 
     if (!responses || responses.length === 0) {
-      console.log('No responses found for quiz type work_values');
+      
       return {
         Achievement: 0,
         Independence: 0,
@@ -111,7 +111,7 @@ export const calculateWorkValuesProfile = async (userId: string) => {
       };
     }
 
-    console.log(`Total Work Values responses found: ${responses.length}`);
+    
     
     // Group responses by component
     const componentGroups: Record<string, { totalScore: number, count: number }> = {};
@@ -149,7 +149,7 @@ export const calculateWorkValuesProfile = async (userId: string) => {
       WorkingConditions: averageScores['Working Conditions'] || averageScores.WorkingConditions || 0
     };
     
-    console.log('Work Values scores calculated:', workValuesProfile);
+    
     return workValuesProfile;
   } catch (error) {
     console.error('Error in calculateWorkValuesProfile:', error);

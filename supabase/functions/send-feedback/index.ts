@@ -64,7 +64,7 @@ serve(async (req) => {
       }
     }
     
-    console.log(`Sending feedback from ${userName} (${userEmail}) - Type: ${type}`);
+    
     
     // Send email using the sender function
     const { data, error: emailError } = await supabaseClient.functions.invoke('send-email', {

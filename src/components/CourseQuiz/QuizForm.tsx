@@ -41,11 +41,11 @@ export const QuizForm: React.FC<QuizFormProps> = ({ onSubmit, onCancel, quizType
         if (session?.user) {
           setAuthStatus('authenticated');
           setUserId(session.user.id);
-          console.log("User authenticated:", session.user.id);
+          
         } else {
           setAuthStatus('unauthenticated');
           setUserId(null);
-          console.log("User not authenticated");
+          
         }
       } catch (err) {
         console.error("Error checking authentication:", err);
@@ -102,13 +102,13 @@ export const QuizForm: React.FC<QuizFormProps> = ({ onSubmit, onCancel, quizType
         });
       }
       
-      console.log(`Submitting quiz responses with type: ${quizType || 'general'}`);
-      console.log('Current responses:', responses);
-      console.log('Response count:', Object.keys(responses).length);
+      
+      
+      
       
       // Log current authentication state
       const { data: { session } } = await supabase.auth.getSession();
-      console.log("Auth session before submit:", session ? `User ID: ${session.user.id}` : "No active session");
+      
       
       await submitResponses(quizType);
       

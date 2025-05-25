@@ -46,18 +46,18 @@ export const formCode = (
 ): string => {
   // We use the components array which is already sorted by score in descending order
   // Important: Log the input components to debug the order
-  console.log("formCode input components:", components);
+  
   
   // Take top 3 and map them to their codes
   const code = components
     .slice(0, 3) // Take top 3 highest scoring components
     .map(item => {
       const mappedCode = mapper(item.component);
-      console.log(`Mapping component ${item.component} (score: ${item.score}) to code: ${mappedCode}`);
+      
       return mappedCode;
     })
     .join('');
     
-  console.log("Generated code:", code);
+  
   return code;
 };

@@ -13,7 +13,7 @@ export const getMatchingMajors = async (
   workValueCode: string
 ): Promise<MajorRecommendations> => {
   try {
-    console.log(`Searching for majors matching RIASEC: ${riasecCode}, Work Values: ${workValueCode}`);
+    
     
     // Fetch the occupation-major mappings
     const response = await fetch('/quiz_refer/occupation_major_mappings.json');
@@ -22,7 +22,7 @@ export const getMatchingMajors = async (
     }
 
     const mappings = await response.json() as OccupationMajorMapping[];
-    console.log(`Loaded ${mappings.length} occupation-major mappings`);
+    
     
     // Initialize result object
     const result: MajorRecommendations = {

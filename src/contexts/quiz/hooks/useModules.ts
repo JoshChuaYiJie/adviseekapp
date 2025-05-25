@@ -18,7 +18,7 @@ export const useModules = (university?: string) => {
         let usingFallback = false;
         
         try {
-          console.log('Attempting to fetch modules from Supabase edge function');
+          
           const { data: edgeFunctionData, error: edgeFunctionError } = await supabase.functions.invoke('get_all_modules');
           
           if (edgeFunctionError) {
@@ -28,7 +28,7 @@ export const useModules = (university?: string) => {
           
           if (edgeFunctionData && Array.isArray(edgeFunctionData)) {
             data = edgeFunctionData;
-            console.log('Successfully loaded modules from edge function:', data.length, 'modules');
+            
           } else {
             console.warn('Edge function returned invalid data format, falling back to local JSON');
             throw new Error('Invalid data format from edge function');
@@ -42,7 +42,7 @@ export const useModules = (university?: string) => {
             const response = await fetch('/data/modules.json');
             if (response.ok) {
               data = await response.json();
-              console.log('Successfully loaded modules data from local file:', data.length, 'modules');
+              
             } else {
               throw new Error('Failed to load modules data from local file');
             }
@@ -55,7 +55,7 @@ export const useModules = (university?: string) => {
         // Filter by university if specified
         if (university && data.length > 0) {
           data = data.filter(mod => mod.university === university);
-          console.log(`Filtered to ${data.length} modules for university: ${university}`);
+          
         }
         
         // Update state with the modules

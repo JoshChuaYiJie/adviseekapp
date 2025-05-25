@@ -29,7 +29,7 @@ export const generateRecommendationsUtil = async (
 export const loadUserFeedbackUtil = async (userId: string): Promise<Record<number, number>> => {
   try {
     // TODO: Implement when user_feedback table types are available
-    console.log("Loading user feedback for:", userId);
+    
     return {};
   } catch (error) {
     console.error("Error loading user feedback:", error);
@@ -59,7 +59,7 @@ export const rateModuleUtil = async (moduleId: number, rating: number): Promise<
     }
     
     // TODO: Implement when user_feedback table types are available
-    console.log("Rating module:", moduleId, "with rating:", rating, "for user:", userId);
+    
   } catch (error) {
     console.error("Error rating module:", error);
     throw error;
@@ -73,7 +73,7 @@ export const refineRecommendationsUtil = async (
   excludeModuleIds: number[] = []
 ): Promise<void> => {
   // In a real implementation, this would use algorithm to refine recommendations
-  console.log(`Refining recommendations for ${userId}, excluding ${excludeModuleIds.length} modules`);
+  
 };
 
 // Get final selections

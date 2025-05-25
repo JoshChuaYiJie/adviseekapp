@@ -43,13 +43,13 @@ export const useQuestionHandler = ({ userId }: { userId: string | null }) => {
         
         // Use unique majors from context
         majorsToUse = [...new Set(allContextMajors)];
-        console.log("Using majors from context:", majorsToUse);
+        
       }
       
       // If no majors from context, use provided majors or default set
       if (majorsToUse.length === 0) {
         majorsToUse = providedMajors || ['Computer Science', 'Data Science', 'Business Analytics'];
-        console.log("Using provided or default majors:", majorsToUse); 
+         
       }
       
       if (providedMajors && providedMajors.length > 0) {
@@ -107,7 +107,7 @@ export const useQuestionHandler = ({ userId }: { userId: string | null }) => {
       // Shuffle questions for variety
       const shuffledQuestions = allQuestions.sort(() => 0.5 - Math.random());
       
-      console.log(`Loaded ${shuffledQuestions.length} questions from recommended majors`);
+      
       setQuestions(shuffledQuestions);
       
     } catch (error) {
@@ -140,7 +140,7 @@ export const useQuestionHandler = ({ userId }: { userId: string | null }) => {
           
           if (response.ok) {
             const questions = await response.json();
-            console.log(`Found ${questions.length} questions for ${majorName} at ${school}`);
+            
             allQuestions = questions;
             foundQuestions = true;
             break;
@@ -152,7 +152,7 @@ export const useQuestionHandler = ({ userId }: { userId: string | null }) => {
       }
       
       if (!foundQuestions) {
-        console.log(`No questions found for ${majorName}`);
+        
         setQuestions([]);
         setLoadingQuestions(false);
         return;
@@ -200,12 +200,12 @@ export const useQuestionHandler = ({ userId }: { userId: string | null }) => {
             major: questionInfo?.majorName || majorName || ''
           };
           
-          console.log(`Preparing to save response for question ${questionId}:`, dataToSave);
+          
           return dataToSave;
         });
       
       if (responsesToSave.length > 0) {
-        console.log(`Submitting ${responsesToSave.length} responses to Supabase:`, responsesToSave);
+        
         
         // Save valid responses to database
         const { error, data } = await supabase
@@ -220,7 +220,7 @@ export const useQuestionHandler = ({ userId }: { userId: string | null }) => {
             variant: "destructive"
           });
         } else {
-          console.log("Responses saved successfully:", data);
+          
           toast({
             title: "Responses saved successfully",
             description: `Saved ${responsesToSave.length} response(s)`,
@@ -243,7 +243,7 @@ export const useQuestionHandler = ({ userId }: { userId: string | null }) => {
           // Clear cached responses after successful submission
           try {
             localStorage.removeItem('cachedOpenEndedResponses');
-            console.log("Cleared cached open-ended responses after successful submission");
+            
           } catch (e) {
             console.error("Error clearing cached responses:", e);
           }

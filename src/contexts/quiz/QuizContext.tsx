@@ -182,7 +182,7 @@ export function QuizProvider({ children }: { children: ReactNode }) {
         await submitResponse(questionId, response, quizType);
       }
       
-      console.log('All responses submitted successfully');
+      
     } catch (error) {
       console.error('Error submitting responses:', error);
       dispatch({ type: 'SET_ERROR', payload: error instanceof Error ? error.message : 'Unknown error' });
@@ -227,7 +227,7 @@ export function QuizProvider({ children }: { children: ReactNode }) {
       if (!user) throw new Error('User not authenticated');
 
       // Temporarily disabled - implement when needed
-      console.log('Saving responses for user:', user.id);
+      
       
     } catch (error) {
       console.error('Error saving responses:', error);
@@ -242,7 +242,7 @@ export function QuizProvider({ children }: { children: ReactNode }) {
       dispatch({ type: 'SET_LOADING', payload: true });
       
       // Implementation would depend on quiz type and scoring logic
-      console.log('Calculating results for quiz type:', quizType);
+      
       
     } catch (error) {
       console.error('Error calculating results:', error);
@@ -256,7 +256,7 @@ export function QuizProvider({ children }: { children: ReactNode }) {
     try {
       const newFeedback = { ...state.userFeedback, [moduleId]: rating };
       dispatch({ type: 'SET_USER_FEEDBACK', payload: newFeedback });
-      console.log(`Rating module ${moduleId} with rating ${rating}`);
+      
     } catch (error) {
       console.error('Error rating module:', error);
     }
@@ -265,7 +265,7 @@ export function QuizProvider({ children }: { children: ReactNode }) {
   const getFinalSelections = async () => {
     try {
       // Mock implementation - return empty array for now
-      console.log('Getting final selections');
+      
       return [];
     } catch (error) {
       console.error('Error getting final selections:', error);
