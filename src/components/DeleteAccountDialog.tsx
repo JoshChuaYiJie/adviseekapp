@@ -53,17 +53,30 @@ const DeleteAccountDialog = () => {
         return;
       }
 
-      // Sign out the user
+      // Delete the user's authentication account
+      const { error: deleteUserError } = await supabase.auth.admin.deleteUser(user.id);
+      
+      if (deleteUserError) {
+        console.error("Error deleting user from auth:", deleteUserError);
+        // Even if auth deletion fails, we still sign out the user since data is deleted
+        toast({
+          title: "Partial Success",
+          description: "Account data deleted but authentication cleanup failed. You have been signed out.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Account Deleted",
+          description: "Your account and all associated data have been permanently deleted.",
+        });
+      }
+
+      // Sign out the user (this will happen automatically if auth deletion succeeded)
       const { error: signOutError } = await supabase.auth.signOut();
       
       if (signOutError) {
         console.error("Error signing out:", signOutError);
       }
-
-      toast({
-        title: "Account Deleted",
-        description: "Your account and all associated data have been permanently deleted.",
-      });
 
       // Navigate to home page
       navigate("/");
@@ -106,6 +119,7 @@ const DeleteAccountDialog = () => {
               <li>Applied programs and application responses</li>
               <li>Resumes and documents</li>
               <li>Community posts and comments</li>
+              <li>Your authentication account</li>
               <li>All other account data</li>
             </ul>
           </AlertDialogDescription>
