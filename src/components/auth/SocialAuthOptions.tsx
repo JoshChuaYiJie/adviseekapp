@@ -84,16 +84,6 @@ const SocialAuthOptions = ({ onEmailContinue }: SocialAuthOptionsProps) => {
           "Twitter"
         )}
       </SocialLoginButton>
-
-      {onEmailContinue && (
-        <SocialLoginButton
-          provider="email"
-          onClick={onEmailContinue}
-          disabled={isLoading !== null}
-        >
-          Continue with Email
-        </SocialLoginButton>
-      )}
     </div>
   );
 };
