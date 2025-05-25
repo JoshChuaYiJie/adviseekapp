@@ -542,7 +542,7 @@ const generateWorkPreferencesFromWorkValues = (code: string): string[] => {
                   </div>
                   
                   {/* New Module Recommendations Section */}
-                  {(recommendedModules.length > 0 || loadingModules) && (
+                  {/*{(recommendedModules.length > 0 || loadingModules) && (
                     <div className="mt-8 mb-6">
                       <h3 className="text-lg font-semibold mb-3">Recommended Courses</h3>
                       <p className="mb-4">Based on your recommended majors, these courses might interest you:</p>
@@ -583,7 +583,7 @@ const generateWorkPreferencesFromWorkValues = (code: string): string[] => {
                         <p className="text-center py-4 italic">No course recommendations found for your profile.</p>
                       )}
                     </div>
-                  )}
+                  )}*/}
                   
                   <div className="mt-6 p-4 rounded-lg bg-blue-50 dark:bg-blue-900">
                     <h3 className="text-lg font-semibold mb-2">Open-ended Questions</h3>
