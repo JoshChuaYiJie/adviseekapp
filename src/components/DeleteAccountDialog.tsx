@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -24,12 +23,13 @@ const DeleteAccountDialog = () => {
 
   const handleDeleteAccount = async () => {
     setIsDeleting(true);
-    
+
     try {
-      // Get the current user
+      // Get the current user and session
       const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (!user || !session) {
         toast({
           title: "Error",
           description: "No user found. Please log in first.",
@@ -38,30 +38,35 @@ const DeleteAccountDialog = () => {
         return;
       }
 
-      // Call the database function to delete all user data
-      const { error: deleteError } = await supabase.rpc('delete_user_data', {
-        target_user_id: user.id
+      // Call the Edge Function to delete user data
+      const response = await fetch('https://gtatdbpfopsxkrkgvqiv.supabase.co/functions/v1/smart-endpoint', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({ user_id: user.id })
       });
 
-      if (deleteError) {
-        console.error("Error deleting user data:", deleteError);
+      const result = await response.json();
+
+      if (!response.ok) {
+        console.error("Error deleting user data:", result.error);
         toast({
           title: "Error",
-          description: "Failed to delete account data. Please try again.",
+          description: result.error || "Failed to delete account data. Please try again.",
           variant: "destructive",
         });
         return;
       }
 
-      // Delete the user's authentication account
-      const { error: deleteUserError } = await supabase.auth.admin.deleteUser(user.id);
-      
-      if (deleteUserError) {
-        console.error("Error deleting user from auth:", deleteUserError);
-        // Even if auth deletion fails, we still sign out the user since data is deleted
+      // Sign out the user
+      const { error: signOutError } = await supabase.auth.signOut();
+      if (signOutError) {
+        console.error("Error signing out:", signOutError);
         toast({
-          title: "Partial Success",
-          description: "Account data deleted but authentication cleanup failed. You have been signed out.",
+          title: "Warning",
+          description: "Account deleted, but sign-out failed. Please refresh the page.",
           variant: "destructive",
         });
       } else {
@@ -71,16 +76,8 @@ const DeleteAccountDialog = () => {
         });
       }
 
-      // Sign out the user (this will happen automatically if auth deletion succeeded)
-      const { error: signOutError } = await supabase.auth.signOut();
-      
-      if (signOutError) {
-        console.error("Error signing out:", signOutError);
-      }
-
       // Navigate to home page
       navigate("/");
-      
     } catch (error) {
       console.error("Unexpected error:", error);
       toast({
