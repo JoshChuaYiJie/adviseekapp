@@ -44,7 +44,7 @@ const CountdownTimer = () => {
   }, []);
 
   return (
-    <Card className="border border-gray-200">
+    <Card className="border border-gray-200/30 bg-black/5 backdrop-blur-sm">
       <CardHeader className="pb-3">
         <CardTitle className="text-center text-xl text-blue-600">
           Time till A-level results are released
@@ -53,24 +53,24 @@ const CountdownTimer = () => {
       <CardContent>
         <div className="grid grid-cols-4 gap-4 text-center">
           <div className="flex flex-col">
-            <span className="text-3xl font-bold">{timeLeft.days}</span>
-            <span className="text-sm text-muted-foreground">Days</span>
+            <span className="text-3xl font-bold text-gray-800">{timeLeft.days}</span>
+            <span className="text-sm text-gray-600">Days</span>
           </div>
           <div className="flex flex-col">
-            <span className="text-3xl font-bold">{timeLeft.hours}</span>
-            <span className="text-sm text-muted-foreground">Hours</span>
+            <span className="text-3xl font-bold text-gray-800">{timeLeft.hours}</span>
+            <span className="text-sm text-gray-600">Hours</span>
           </div>
           <div className="flex flex-col">
-            <span className="text-3xl font-bold">{timeLeft.minutes}</span>
-            <span className="text-sm text-muted-foreground">Minutes</span>
+            <span className="text-3xl font-bold text-gray-800">{timeLeft.minutes}</span>
+            <span className="text-sm text-gray-600">Minutes</span>
           </div>
           <div className="flex flex-col">
-            <span className="text-3xl font-bold">{timeLeft.seconds}</span>
-            <span className="text-sm text-muted-foreground">Seconds</span>
+            <span className="text-3xl font-bold text-gray-800">{timeLeft.seconds}</span>
+            <span className="text-sm text-gray-600">Seconds</span>
           </div>
         </div>
         
-        <p className="mt-6 text-center text-sm text-muted-foreground">
+        <p className="mt-6 text-center text-sm text-gray-600">
           Start planning your university applications ahead of time to maximize your chances of success.
         </p>
       </CardContent>
