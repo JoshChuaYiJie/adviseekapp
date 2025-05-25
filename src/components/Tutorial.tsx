@@ -362,14 +362,6 @@ export const Tutorial = ({ isOpen, onClose, onSkip }: TutorialProps) => {
         />
       )}
 
-      {/* Arrow pointing to the element */}
-      <div
-        className="absolute w-8 h-8 border-t-2 border-r-2 border-blue-500 transform rotate-45 z-70 pointer-events-none"
-        style={{
-          top: arrowPosition.top - 16,
-          left: arrowPosition.left - 16,
-        }}
-      />
 
       {/* Content box */}
       <div
