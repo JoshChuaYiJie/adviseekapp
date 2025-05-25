@@ -2,10 +2,6 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Open+Sans:wght@300;400;500;600;700&display=swap');
 
-/* ====== Custom Cursor ====== */
-html, body, * {
-  cursor: url('/favicon.svg'), auto; /* Uses favicon.svg as custom cursor for now (can easily swap) */
-}
 
 /* Accessible fallback: if prefers-reduced-motion accessibility is on, revert to default.*/
 @media (prefers-reduced-motion: reduce) {
