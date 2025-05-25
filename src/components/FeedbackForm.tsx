@@ -7,14 +7,17 @@ import { toast } from 'sonner';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from "@/hooks/useAuth";
 
 const FeedbackForm = () => {
   const [open, setOpen] = useState(false);
   const [feedback, setFeedback] = useState('');
   const [type, setType] = useState<'bug' | 'suggestion' | 'other'>('suggestion');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { isAuthenticated } = useAuth(); 
 
   const handleSubmit = async () => {
+    
     if (!feedback.trim()) {
       toast.error('Please enter some feedback');
       return;
@@ -81,7 +84,7 @@ const FeedbackForm = () => {
       setIsSubmitting(false);
     }
   };
-
+  if (!isAuthenticated) return null;
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
