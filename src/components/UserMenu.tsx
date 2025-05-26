@@ -32,7 +32,7 @@ const UserMenu = ({ user }: UserMenuProps) => {
         <p className="text-xs text-gray-500 mb-2">Follow us on</p>
         <div className="flex space-x-3">
           <a 
-            href="https://instagram.com/adviseek" 
+            href="https://instagram.com/adviseek.official" 
             target="_blank" 
             rel="noopener noreferrer"
             className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
