@@ -173,9 +173,6 @@ export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: Segmen
       There are two fields to respond to: 
       - Institution
       - Qualifications
-      Respond in this format:
-      For Institution: (advice)
-      For Qualifications: (advice)
       `;
     } else if (segmentType === "Work Experience Details") {
       contextualPrompt += `
@@ -183,17 +180,11 @@ export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: Segmen
       - Role
       - Organization
       - Description      
-      Respond in this format:
-      For Role: (advice)
-      For Organization: (advice)
-      For Description: (advice)
       `;
     } else if (segmentType === "Awards and Certificates") {
       contextualPrompt += `
       There is one field to respond to:
       - Award title
-      Respond in this format:
-      You should include awards that (advice)
       `
     } else if (segmentType === "Activity Details  ") {
       contextualPrompt += `
@@ -201,10 +192,6 @@ export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: Segmen
       - Role
       - Organization
       - Description      
-      Respond in this format:
-      For Role: (advice)
-      For Organization: (advice)
-      For Description: (advice)
       `;
     } else if (segmentType === "Additional Information") {
       contextualPrompt += `
@@ -212,10 +199,6 @@ export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: Segmen
       - Languages
       - Interests
       - IT Skills     
-      Respond in this format:
-      For Languages: (advice)
-      For Interests: (advice)
-      For IT Skills: (advice)
       `;
     }
     
