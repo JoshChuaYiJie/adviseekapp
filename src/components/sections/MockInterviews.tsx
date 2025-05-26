@@ -97,13 +97,6 @@ export const MockInterviews = ({ user }: MockInterviewsProps) => {
         if (applications && applications.length > 0) {
           
           setUserApplications(applications);
-        } else {
-          
-          setUserApplications([
-            { id: "default", university: "NUS", major: "Computer Science", school: "School of Computing" },
-            { id: "default2", university: "NTU", major: "Business", school: "Business School" },
-            { id: "default3", university: "SMU", major: "Information Systems", school: "School of Information Systems" }
-          ]);
         }
       } catch (error) {
         console.error("Error in fetchUserApplications:", error);
