@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -7,6 +8,7 @@ import { MessageSquare, Send, Loader2 } from "lucide-react";
 import { useDeepseek } from "@/hooks/useDeepseek";
 import { supabase } from "@/integrations/supabase/client";
 import { useInterval } from "@/hooks/useInterval";
+import { useConversationHistory } from "@/hooks/useConversationHistory";
 
 interface Message {
   role: "user" | "assistant";
@@ -28,6 +30,7 @@ export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: Segmen
   const [resumeData, setResumeData] = useState<any>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const [loadingTextIndex, setLoadingTextIndex] = useState(0);
+  const { addMessage, getLastMessages } = useConversationHistory(`segment-chat-${segmentType}`);
   
   const loadingTexts = [
     'Resumeing?',
@@ -126,17 +129,31 @@ export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: Segmen
     };
     
     setMessages(prev => [...prev, userMessage]);
+    addMessage('user', input.trim());
     const userQuery = input;
     setInput("");
 
+    // Get conversation history for context
+    const lastMessages = getLastMessages(10);
+    let conversationContext = '';
+    if (lastMessages.length > 0) {
+      conversationContext = `
+        Recent conversation history:
+        ${lastMessages.map(msg => `${msg.role}: ${msg.content}`).join('\n')}
+      `;
+    }
+
     // Create a context-aware prompt
     let contextualPrompt = `
+      ${conversationContext}
+      
       The user is working on the ${segmentType} section of their resume and has the following question:
       "${userQuery}"
       
       Please provide helpful, specific advice for improving this section of their resume.
       Focus on best practices, formatting tips, content suggestions, and what recruiters look for.
       Keep your response concise (under 150 words) and tailored to the ${segmentType} section.
+      Reference the conversation history to maintain context and avoid repeating information.
     `;
     
     // Add current field content as context if available
@@ -293,12 +310,6 @@ export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: Segmen
       - Phone: ${resumeData.phone || 'Not specified'}
       - Nationality: ${resumeData.nationality || 'Not specified'}
       
-      ${educationItems ? `Education:\n${educationItems}` : ''}
-      
-      ${workExperienceItems ? `Work Experience:\n${workExperienceItems}` : ''}
-      
-      ${resumeData.awards ? `Awards:\n${awards}` : ''}
-      
       ${resumeData.languages ? `Languages: ${resumeData.languages}` : ''}
       
       ${resumeData.interests ? `Interests: ${resumeData.interests}` : ''}
@@ -312,7 +323,7 @@ export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: Segmen
       // Call AI with non-streaming
       const aiResponse = await callAI(contextualPrompt);
       
-      // Add the response to the chat history
+      // Add the response to the chat history and conversation history
       setMessages(prev => [
         ...prev,
         {
@@ -320,16 +331,19 @@ export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: Segmen
           content: aiResponse
         }
       ]);
+      addMessage('assistant', aiResponse);
       
     } catch (error) {
       console.error("Error calling Deepseek:", error);
+      const errorMessage = "I'm sorry, I encountered an error. Please try again.";
       setMessages(prev => [
         ...prev,
         {
           role: "assistant",
-          content: "I'm sorry, I encountered an error. Please try again."
+          content: errorMessage
         }
       ]);
+      addMessage('assistant', errorMessage);
     }
   };
 

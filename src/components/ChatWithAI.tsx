@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { MessageSquare, Send, Loader2, X } from 'lucide-react';
@@ -9,6 +10,7 @@ import { useDeepseek } from '@/hooks/useDeepseek';
 import { supabase } from '@/integrations/supabase/client';
 import { useInterval } from '@/hooks/useInterval';
 import { useAuth } from "@/hooks/useAuth";
+import { useConversationHistory } from '@/hooks/useConversationHistory';
 
 export const ChatWithAI = () => {
   const { isAuthenticated } = useAuth(); 
@@ -21,6 +23,7 @@ export const ChatWithAI = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const [loadingTextIndex, setLoadingTextIndex] = useState(0);
+  const { addMessage, getLastMessages } = useConversationHistory('chat-with-ai-history');
   
   const loadingTexts = [
     'Thinking...',
@@ -60,6 +63,8 @@ export const ChatWithAI = () => {
     // Add user message
     const userMessage = {role: 'user' as const, content: input};
     setMessages(prev => [...prev, userMessage]);
+    addMessage('user', input);
+    
     const userInput = input;
     setInput('');
     
@@ -185,8 +190,20 @@ export const ChatWithAI = () => {
         }
       }
       
-      // Create context-enriched prompt with both profile and resume data
+      // Get conversation history for context
+      const lastMessages = getLastMessages(10);
+      let conversationContext = '';
+      if (lastMessages.length > 0) {
+        conversationContext = `
+          Recent conversation history:
+          ${lastMessages.map(msg => `${msg.role}: ${msg.content}`).join('\n')}
+        `;
+      }
+      
+      // Create context-enriched prompt with profile, resume, and conversation data
       const contextualPrompt = `
+        ${conversationContext}
+        
         User profile context: ${profileContext}
         User resume context: ${resumeContext}
         User message: ${userInput}
@@ -206,6 +223,7 @@ export const ChatWithAI = () => {
         - Prioritize readability with whitespace, short sentences, and clear section breaks.
         - End with a clear call-to-action (e.g., a question or invitation) to engage the user further.
         - There is no need to explicitly state the user's profile or resume (unless relevant)
+        - Reference the conversation history to maintain context and avoid repeating information.
 
         Example response structure:
         ## [Relevant Topic]
@@ -219,21 +237,26 @@ export const ChatWithAI = () => {
       // Call AI with complete context
       const aiResponse = await callAI(contextualPrompt);
       
-      // Add AI response to messages
+      // Add AI response to messages and conversation history
       setMessages(prev => [...prev, {
         role: 'assistant',
         content: aiResponse
       }]);
+      addMessage('assistant', aiResponse);
     } catch (error) {
       console.error("Error calling Deepseek API:", error);
       toast.error("Error connecting to the AI service. Please try again.");
+      const errorMessage = "I'm having trouble connecting to my brain. Please try again in a moment.";
       setMessages(prev => [...prev, {
         role: 'assistant', 
-        content: "I'm having trouble connecting to my brain. Please try again in a moment."
+        content: errorMessage
       }]);
+      addMessage('assistant', errorMessage);
     }
   };
+
   if (!isAuthenticated) return null;
+
   return (
     <>
       <Button 
