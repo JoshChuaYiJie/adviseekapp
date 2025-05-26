@@ -9,16 +9,51 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import DeleteAccountDialog from "@/components/DeleteAccountDialog";
+import { useUserSettings } from "@/hooks/useUserSettings";
 
 const Settings = () => {
   const { isCurrentlyDark, setTheme } = useTheme();
   const [activeTab, setActiveTab] = useState("general");
   const navigate = useNavigate();
+  const { settings, updateSetting, isLoading } = useUserSettings();
   
   // Function to toggle between dark and light mode
   const toggleTheme = () => {
-    setTheme(isCurrentlyDark ? "light" : "dark");
+    const newTheme = isCurrentlyDark ? "light" : "dark";
+    setTheme(newTheme);
+    updateSetting("theme", newTheme);
   };
+
+  const handleEmailNotificationsChange = (checked: boolean) => {
+    updateSetting("email_notifications", checked);
+  };
+
+  const handleDeadlineRemindersChange = (checked: boolean) => {
+    updateSetting("deadline_reminders", checked);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background p-6">
+        <div className="container max-w-4xl mx-auto">
+          <div className="mb-8 flex items-center">
+            <Button 
+              variant="ghost" 
+              onClick={() => navigate(-1)}
+              className="mr-4"
+            >
+              <ArrowLeft className="h-5 w-5 mr-1" />
+              Back
+            </Button>
+            <h1 className="text-3xl font-bold">Settings</h1>
+          </div>
+          <div className="flex items-center justify-center">
+            <p>Loading settings...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background p-6">
@@ -73,7 +108,11 @@ const Settings = () => {
                       Receive updates about your applications and account via email
                     </p>
                   </div>
-                  <Switch id="email-notifications" defaultChecked />
+                  <Switch 
+                    id="email-notifications" 
+                    checked={settings.email_notifications}
+                    onCheckedChange={handleEmailNotificationsChange}
+                  />
                 </div>
                 
                 <div className="flex items-center justify-between">
@@ -83,7 +122,11 @@ const Settings = () => {
                       Get notifications before important application deadlines
                     </p>
                   </div>
-                  <Switch id="deadline-reminders" defaultChecked />
+                  <Switch 
+                    id="deadline-reminders" 
+                    checked={settings.deadline_reminders}
+                    onCheckedChange={handleDeadlineRemindersChange}
+                  />
                 </div>
               </div>
             </div>

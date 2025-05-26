@@ -502,33 +502,30 @@ export type Database = {
       }
       user_settings: {
         Row: {
-          app_notifications: boolean | null
-          bio: string | null
           created_at: string | null
+          deadline_reminders: boolean | null
           email_notifications: boolean | null
           id: string
           name: string | null
-          newsletter_subscription: boolean | null
+          theme: string | null
           updated_at: string | null
         }
         Insert: {
-          app_notifications?: boolean | null
-          bio?: string | null
           created_at?: string | null
+          deadline_reminders?: boolean | null
           email_notifications?: boolean | null
           id: string
           name?: string | null
-          newsletter_subscription?: boolean | null
+          theme?: string | null
           updated_at?: string | null
         }
         Update: {
-          app_notifications?: boolean | null
-          bio?: string | null
           created_at?: string | null
+          deadline_reminders?: boolean | null
           email_notifications?: boolean | null
           id?: string
           name?: string | null
-          newsletter_subscription?: boolean | null
+          theme?: string | null
           updated_at?: string | null
         }
         Relationships: []

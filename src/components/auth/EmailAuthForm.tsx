@@ -1,213 +1,235 @@
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { AlertCircle, ArrowLeft, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
+import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
+import AuthFooter from "./AuthFooter";
 
 interface EmailAuthFormProps {
+  email: string;
+  onBack: () => void;
   mode: "signin" | "signup";
-  email?: string;
-  onBack?: () => void;
 }
 
-const EmailAuthForm = ({ mode: initialMode, email, onBack }: EmailAuthFormProps) => {
+const EmailAuthForm = ({ email, onBack, mode: initialMode }: EmailAuthFormProps) => {
+  const [mode, setMode] = useState(initialMode);
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [isSignUp, setIsSignUp] = useState(initialMode === "signup");
-  const [error, setError] = useState<string | null>(null);
-  const [emailInput, setEmailInput] = useState(email || "");
-  const [showPasswordForm, setShowPasswordForm] = useState(Boolean(email));
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const handleEmailContinue = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!emailInput.trim()) {
-      setError("Please enter your email address");
-      return;
-    }
-    setShowPasswordForm(true);
-  };
-
-  const handleSignIn = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-    setIsLoading(true);
-
+  const createDefaultUserSettings = async (userId: string) => {
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: emailInput,
-        password,
-      });
+      const { error } = await supabase
+        .from('user_settings')
+        .insert({
+          id: userId,
+          theme: "dark",
+          email_notifications: true,
+          deadline_reminders: true,
+        });
 
       if (error) {
-        if (error.message.includes("Invalid login credentials")) {
-          setError("Invalid email or password. Please try again.");
-        } else {
-          setError(error.message);
-        }
-        return;
+        console.error('Error creating default user settings:', error);
       }
-
-      if (data?.user) {
-        toast({
-          title: "Success!",
-          description: "You have successfully signed in.",
-        });
-        navigate("/"); // Redirect to home page after successful login
-      }
-    } catch (error: any) {
-      setError(error.message || "An unexpected error occurred");
-    } finally {
-      setIsLoading(false);
+    } catch (error) {
+      console.error('Error creating default user settings:', error);
     }
   };
 
-  const handleSignUp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
+  const handleSignUp = async () => {
+    if (password !== confirmPassword) {
+      toast({
+        title: "Error",
+        description: "Passwords do not match",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (password.length < 6) {
+      toast({
+        title: "Error",
+        description: "Password must be at least 6 characters long",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsLoading(true);
 
     try {
       const { data, error } = await supabase.auth.signUp({
-        email: emailInput,
+        email,
         password,
-        options: {
-          emailRedirectTo: window.location.origin,
-        },
       });
 
       if (error) {
-        setError(error.message);
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
         return;
       }
 
-      if (data?.user) {
+      if (data.user) {
+        // Create default user settings
+        await createDefaultUserSettings(data.user.id);
+
         toast({
-          title: "Account created!",
-          description: data.user.identities?.length === 0
-            ? "You already have an account. Please sign in."
-            : "Your account has been created successfully.",
+          title: "Success",
+          description: "Account created successfully! Please check your email to verify your account.",
         });
         
-        if (data.user.identities?.length !== 0) {
-          navigate("/"); // Redirect to home page after successful signup
-        } else {
-          setIsSignUp(false); // Switch back to signin if account already exists
-        }
+        // Navigate to dashboard after successful signup
+        navigate("/dashboard");
       }
-    } catch (error: any) {
-      setError(error.message || "An unexpected error occurred");
+    } catch (error) {
+      console.error("Sign up error:", error);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
-  if (!showPasswordForm) {
-    return (
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold">Sign in or create an account</h3>
-        
-        {error && (
-          <div className="bg-red-50 p-3 rounded-md flex items-start">
-            <AlertCircle className="h-5 w-5 text-red-600 mr-2 flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-red-600">{error}</p>
-          </div>
-        )}
+  const handleSignIn = async () => {
+    setIsLoading(true);
 
-        <form onSubmit={handleEmailContinue} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              value={emailInput}
-              onChange={(e) => setEmailInput(e.target.value)}
-              placeholder="you@example.com"
-              required
-              autoFocus
-            />
-          </div>
-          <Button type="submit" className="w-full">
-            Continue with Email
-          </Button>
-        </form>
-      </div>
-    );
-  }
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (data.user) {
+        toast({
+          title: "Success",
+          description: "Signed in successfully!",
+        });
+        
+        // Navigate to dashboard after successful signin
+        navigate("/dashboard");
+      }
+    } catch (error) {
+      console.error("Sign in error:", error);
+      toast({
+        title: "Error",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (mode === "signup") {
+      await handleSignUp();
+    } else {
+      await handleSignIn();
+    }
+  };
+
+  const toggleMode = () => {
+    setMode(mode === "signin" ? "signup" : "signin");
+    setPassword("");
+    setConfirmPassword("");
+  };
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center">
-        {onBack && (
-          <Button
-            variant="ghost"
-            size="sm"
-            className="mr-2 p-0 h-auto"
-            onClick={onBack}
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-        )}
-        <h3 className="text-lg font-semibold">{isSignUp ? "Create Account" : "Sign In"}</h3>
+    <div className="space-y-6">
+      <div className="flex items-center space-x-4">
+        <Button variant="ghost" size="sm" onClick={onBack}>
+          <ArrowLeft className="h-4 w-4" />
+        </Button>
+        <div>
+          <h2 className="text-lg font-semibold">
+            {mode === "signin" ? "Sign in" : "Create account"}
+          </h2>
+          <p className="text-sm text-gray-600">{email}</p>
+        </div>
       </div>
 
-      {error && (
-        <div className="bg-red-50 p-3 rounded-md flex items-start">
-          <AlertCircle className="h-5 w-5 text-red-600 mr-2 flex-shrink-0 mt-0.5" />
-          <p className="text-sm text-red-600">{error}</p>
-        </div>
-      )}
-
-      <form onSubmit={isSignUp ? handleSignUp : handleSignIn} className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
-          <Input
-            id="email"
-            type="email"
-            value={emailInput}
-            disabled={Boolean(onBack)}
-            className={Boolean(onBack) ? "bg-gray-50" : ""}
-          />
-        </div>
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="password">Password</Label>
-          <Input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="••••••••"
-            required
-            autoFocus
-          />
+          <div className="relative">
+            <Input
+              id="password"
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter your password"
+              required
+              disabled={isLoading}
+            />
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="absolute right-2 top-1/2 transform -translate-y-1/2 h-7 w-7 p-0"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </Button>
+          </div>
         </div>
+
+        {mode === "signup" && (
+          <div className="space-y-2">
+            <Label htmlFor="confirmPassword">Confirm Password</Label>
+            <div className="relative">
+              <Input
+                id="confirmPassword"
+                type={showConfirmPassword ? "text" : "password"}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Confirm your password"
+                required
+                disabled={isLoading}
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 h-7 w-7 p-0"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              >
+                {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </Button>
+            </div>
+          </div>
+        )}
+
         <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              {isSignUp ? "Creating Account..." : "Signing In..."}
-            </>
-          ) : (
-            <>{isSignUp ? "Create Account" : "Sign In"}</>
-          )}
+          {isLoading ? "Loading..." : mode === "signin" ? "Sign in" : "Create account"}
         </Button>
       </form>
 
-      <div className="text-center pt-2">
-        <button
-          onClick={() => setIsSignUp(!isSignUp)}
-          className="text-sm text-blue-600 hover:underline"
-        >
-          {isSignUp
-            ? "Already have an account? Sign In"
-            : "Don't have an account? Sign Up"}
-        </button>
-      </div>
+      <AuthFooter mode={mode} onToggleMode={toggleMode} />
     </div>
   );
 };
