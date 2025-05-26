@@ -73,17 +73,6 @@ const SocialAuthOptions = ({ onEmailContinue }: SocialAuthOptionsProps) => {
         )}
       </SocialLoginButton>
 
-      <SocialLoginButton
-        provider="twitter"
-        onClick={() => handleSocialLogin("twitter")}
-        disabled={isLoading !== null}
-      >
-        {isLoading === "twitter" ? (
-          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-        ) : (
-          "Twitter"
-        )}
-      </SocialLoginButton>
     </div>
   );
 };
