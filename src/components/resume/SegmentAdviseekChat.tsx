@@ -154,6 +154,7 @@ export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: Segmen
       Focus on best practices, formatting tips, content suggestions, and what recruiters look for.
       Keep your response concise (under 150 words) and tailored to the ${segmentType} section.
       Reference the conversation history to maintain context and avoid repeating information.
+      Converse with the user in a friendly, professional tone.
     `;
     
     // Add current field content as context if available
