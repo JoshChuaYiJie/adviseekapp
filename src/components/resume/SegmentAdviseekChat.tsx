@@ -161,40 +161,6 @@ export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: Segmen
       (Always start with 'I noticed that you (insert something related to their current content here))'
       `;
     }
-
-    if (segmentType === "Education Details"){
-      contextualPrompt += `
-      There are two fields to respond to: 
-      - Institution
-      - Qualifications
-      `;
-    } else if (segmentType === "Work Experience Details") {
-      contextualPrompt += `
-      There are three fields to respond to: 
-      - Role
-      - Organization
-      - Description      
-      `;
-    } else if (segmentType === "Awards and Certificates") {
-      contextualPrompt += `
-      There is one field to respond to:
-      - Award title
-      `
-    } else if (segmentType === "Activity Details  ") {
-      contextualPrompt += `
-      There are three fields to respond to: 
-      - Role
-      - Organization
-      - Description      
-      `;
-    } else if (segmentType === "Additional Information") {
-      contextualPrompt += `
-            There are three fields to respond to: 
-      - Languages
-      - Interests
-      - IT Skills     
-      `;
-    }
     
     // Add profile context if available
     if (profileData) {
