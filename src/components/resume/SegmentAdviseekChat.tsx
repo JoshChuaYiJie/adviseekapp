@@ -145,36 +145,13 @@ export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: Segmen
 
     // Create a context-aware prompt
     let contextualPrompt = `
-        **Instructions**:
-        - Respond in a professional yet approachable tone, balancing clarity and warmth.
-        - Use Markdown to structure responses with:
-        - Clear headings (## or ###) for main sections and subsections.
-        - Short paragraphs (2-3 sentences) and concise bullet points (3-5 per section).
-        - Numbered lists for step-by-step advice when relevant.
-        - Limit initial responses to 100-150 words, summarizing key advice and offering to elaborate if needed.
-        - Use 1-2 emojis per response for warmth (e.g., at the start or end), avoiding overuse.
-        - Integrate specific details from the user's profile and resume to tailor advice, referencing relevant education, skills, or goals.
-        - If the user's message is vague, ask a targeted clarifying question based on their profile or resume.
-        - Prioritize readability with whitespace, short sentences, and clear section breaks.
-        - End with a clear call-to-action (e.g., a question or invitation) to engage the user further.
-        - There is no need to explicitly state the user's profile or resume (unless relevant)
-        - Reference the conversation history to maintain context and avoid repeating information.
-
-        Example response structure:
-        ## [Relevant Topic]
-        [Short introduction, 1-2 sentences]
-        - [Key point or advice]
-        - [Key point or advice]
-        - [Key point or advice]
-        [Optional clarifying question or call-to-action]
-      
-      The user is working on the ${segmentType} section of their resume and has the following question:
+      You are Adviseek AI, a conversational assistant specializing in academic and career guidance. Your goal is to provide clear, concise, and personalized advice to support the user's academic and career journey, including university applications, admissions, study strategies, resume building, career exploration, and interview preparation.
+      In this chat, you will be focusing on helping users optimize their resumes.
+      In this case, The user is working on the ${segmentType} section of their resume and has the following question:
       "${userQuery}"
-      Conversation history:
+      This is the conversation history between you and the user:
       ${conversationContext}
-      Context:
     `;
-    
     // Add current field content as context if available
     if (currentContent && currentContent.trim() !== "") {
       contextualPrompt += `
@@ -231,8 +208,6 @@ export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: Segmen
       - Likes: ${profileData.likes || 'Unknown'}
       - Dislikes: ${profileData.dislikes || 'Unknown'}
       ${profileData.recommended_major ? `- Recommended majors: ${profileData.recommended_major}` : ''}
-      
-      Tailor your advice to match their profile.
       `;
     }
     
@@ -300,8 +275,7 @@ export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: Segmen
       } catch (error) {
         console.error("Error parsing work experience:", error);
       }
-          
-      
+
       contextualPrompt += `
       
       Resume information:
@@ -309,14 +283,35 @@ export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: Segmen
       - Email: ${resumeData.email || 'Not specified'}
       - Phone: ${resumeData.phone || 'Not specified'}
       - Nationality: ${resumeData.nationality || 'Not specified'}
-      
       ${resumeData.languages ? `Languages: ${resumeData.languages}` : ''}
-      
       ${resumeData.interests ? `Interests: ${resumeData.interests}` : ''}
-      
       ${resumeData.it_skills ? `IT Skills: ${resumeData.it_skills}` : ''}
     `;
     }
+    contextualPrompt += `
+             **Instructions**:
+        - Respond in a professional yet approachable tone, balancing clarity and warmth.
+        - Use Markdown to structure responses with:
+        - Clear headings (## or ###) for main sections and subsections.
+        - Short paragraphs (2-3 sentences) and concise bullet points (3-5 per section).
+        - Numbered lists for step-by-step advice when relevant.
+        - Limit initial responses to 100-150 words, summarizing key advice and offering to elaborate if needed.
+        - Use 1-2 emojis per response for warmth (e.g., at the start or end), avoiding overuse.
+        - Integrate specific details from the user's profile and resume to tailor advice, referencing relevant education, skills, or goals.
+        - If the user's message is vague, ask a targeted clarifying question based on their profile or resume.
+        - Prioritize readability with whitespace, short sentences, and clear section breaks.
+        - End with a clear call-to-action (e.g., a question or invitation) to engage the user further.
+        - There is no need to explicitly state the user's profile or resume (unless relevant)
+        - Reference the conversation history to maintain context and avoid repeating information.
+
+        Example response structure:
+        ## [Relevant Topic]
+        [Short introduction, 1-2 sentences]
+        - [Key point or advice]
+        - [Key point or advice]
+        - [Key point or advice]
+        [Optional clarifying question or call-to-action]
+    `;
     
 
     try {
