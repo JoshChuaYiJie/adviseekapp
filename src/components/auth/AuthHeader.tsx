@@ -5,7 +5,7 @@ const AuthHeader = () => {
   return (
     <div className="flex items-center gap-3 mb-12">
       <InteractiveLogo 
-        src="/images/Logo.png" 
+        src="/images/favicon.png" 
         alt="Adviseek Logo" 
         className="h-10 w-10 rounded-full overflow-hidden" 
       />
