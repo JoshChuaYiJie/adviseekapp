@@ -16,16 +16,26 @@ export const useUserSettings = () => {
     deadline_reminders: true,
   });
   const [isLoading, setIsLoading] = useState(true);
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const { toast } = useToast();
 
-  // Load user settings
-  const loadUserSettings = async (userId: string) => {
+  // Load user settings on mount
+  useEffect(() => {
+    loadUserSettings();
+  }, []);
+
+  const loadUserSettings = async () => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        setIsLoading(false);
+        return;
+      }
+
       const { data, error } = await supabase
         .from('user_settings')
         .select('*')
-        .eq('id', userId)
+        .eq('id', user.id)
         .single();
 
       if (error && error.code !== 'PGRST116') {
@@ -43,44 +53,14 @@ export const useUserSettings = () => {
         });
       } else {
         // No settings found, create default settings
-        await createDefaultSettings(userId);
+        await createDefaultSettings(user.id);
       }
     } catch (error) {
       console.error('Error loading user settings:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
-
-  // Listen for auth changes
-  useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (session?.user) {
-          setCurrentUserId(session.user.id);
-          await loadUserSettings(session.user.id);
-        } else {
-          setCurrentUserId(null);
-          // Reset to default settings when user logs out
-          setSettings({
-            theme: "dark",
-            email_notifications: true,
-            deadline_reminders: true,
-          });
-        }
-        setIsLoading(false);
-      }
-    );
-
-    // Check for existing session on mount
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      if (session?.user) {
-        setCurrentUserId(session.user.id);
-        await loadUserSettings(session.user.id);
-      }
-      setIsLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
 
   const createDefaultSettings = async (userId: string) => {
     try {
@@ -106,23 +86,25 @@ export const useUserSettings = () => {
   };
 
   const updateSetting = async (key: keyof UserSettings, value: any) => {
-    if (!currentUserId) {
-      toast({
-        title: "Error",
-        description: "You must be logged in to update settings",
-        variant: "destructive",
-      });
-      return;
-    }
-
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast({
+          title: "Error",
+          description: "You must be logged in to update settings",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const updatedSettings = { ...settings, [key]: value };
       setSettings(updatedSettings);
 
       const { error } = await supabase
         .from('user_settings')
         .upsert({
-          id: currentUserId,
+          id: user.id,
           [key]: value,
           updated_at: new Date().toISOString(),
         });

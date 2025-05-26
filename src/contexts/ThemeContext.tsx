@@ -1,6 +1,5 @@
 
 import React, { createContext, useState, useContext, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
 
 type Theme = "light" | "dark" | "system";
 
@@ -20,59 +19,12 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   });
   
   const [isCurrentlyDark, setIsCurrentlyDark] = useState<boolean>(false);
-  const [userLoaded, setUserLoaded] = useState(false);
   
   // Function to update the theme
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);
     localStorage.setItem("theme", newTheme);
   };
-
-  // Load user theme preference from Supabase
-  const loadUserTheme = async (userId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('user_settings')
-        .select('theme')
-        .eq('id', userId)
-        .single();
-
-      if (data && data.theme && !error) {
-        const userTheme = data.theme as Theme;
-        setThemeState(userTheme);
-        localStorage.setItem("theme", userTheme);
-      }
-    } catch (error) {
-      console.error('Error loading user theme:', error);
-    }
-  };
-
-  // Listen for auth changes and load user theme
-  useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (session?.user && !userLoaded) {
-          await loadUserTheme(session.user.id);
-          setUserLoaded(true);
-        } else if (!session?.user) {
-          setUserLoaded(false);
-          // Reset to system theme when user logs out
-          const systemTheme = localStorage.getItem("theme") || "system";
-          setThemeState(systemTheme as Theme);
-        }
-      }
-    );
-
-    // Check for existing session on mount
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user && !userLoaded) {
-        loadUserTheme(session.user.id);
-        setUserLoaded(true);
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, [userLoaded]);
 
   // Effect to apply theme classes
   useEffect(() => {
