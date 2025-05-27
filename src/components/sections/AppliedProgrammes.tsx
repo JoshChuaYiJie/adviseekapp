@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -39,8 +38,39 @@ export const AppliedProgrammes = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingPrograms, setIsLoadingPrograms] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [hasRecommendedMajors, setHasRecommendedMajors] = useState(false);
   const { isCurrentlyDark } = useTheme();
   const { t } = useTranslation();
+
+  // Check if user has recommended majors
+  useEffect(() => {
+    const checkRecommendedMajors = async () => {
+      try {
+        const { data: session } = await supabase.auth.getSession();
+        if (!session.session?.user) {
+          return;
+        }
+        
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('recommended_major, riasec_code, work_value_code')
+          .eq('id', session.session.user.id)
+          .single();
+          
+        if (profile) {
+          // Check if user has both codes and recommended majors
+          const hasValidCodes = profile.riasec_code && profile.work_value_code;
+          const hasRecommendations = profile.recommended_major && profile.recommended_major.trim().length > 0;
+          
+          setHasRecommendedMajors(hasValidCodes && hasRecommendations);
+        }
+      } catch (error) {
+        console.error("Error checking recommended majors:", error);
+      }
+    };
+    
+    checkRecommendedMajors();
+  }, []);
 
   // Load applied programmes from Supabase when component mounts
   useEffect(() => {
@@ -78,7 +108,6 @@ export const AppliedProgrammes = () => {
             college: program.college
           }));
           
-          
           setAppliedProgrammes(formattedPrograms);
         }
       } catch (error) {
@@ -105,15 +134,12 @@ export const AppliedProgrammes = () => {
       setError(null);
       
       try {
-        
         const data = await loadUniversityData(selectedUniversity);
         setUniversityData(data);
         
         if (data && data.programs && data.programs.length > 0) {
-          
           const degrees = getDegrees(data);
           setAvailableDegrees(degrees);
-          
         } else {
           setError("No programs found in the data");
           toast.error("No programs found for this university");
@@ -139,7 +165,6 @@ export const AppliedProgrammes = () => {
 
     const majors = getMajorsForDegree(universityData, selectedDegree);
     setAvailableMajors(majors);
-    
   }, [universityData, selectedDegree]);
 
   // Reset selections when dependencies change
@@ -156,14 +181,12 @@ export const AppliedProgrammes = () => {
   }, [selectedDegree]);
 
   const handleUniversityChange = (value: string) => {
-    
     setSelectedUniversity(value);
     setSelectedDegree("");
     setSelectedMajor("");
   };
 
   const handleDegreeChange = (value: string) => {
-    
     setSelectedDegree(value);
     setSelectedMajor("");
   };
@@ -233,6 +256,14 @@ export const AppliedProgrammes = () => {
     }
   };
 
+  const handleIdealProgrammeClick = () => {
+    if (!hasRecommendedMajors) {
+      toast.error("Please complete the personality and work values quizzes first to get recommendations.");
+      return;
+    }
+    navigate("/recommendations");
+  };
+
   return (
     <div className="space-y-6 w-full max-w-full">
       <div className={`space-y-4 p-6 ${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg shadow w-full`}>
@@ -299,8 +330,10 @@ export const AppliedProgrammes = () => {
         </Button>
         <Button 
           variant="outline" 
-          onClick={() => navigate("/recommendations")}
-          className="ml-4"
+          onClick={handleIdealProgrammeClick}
+          disabled={!hasRecommendedMajors}
+          className={`ml-4 ${!hasRecommendedMajors ? 'opacity-50 cursor-not-allowed' : ''}`}
+          title={!hasRecommendedMajors ? "Complete personality and work values quizzes first" : ""}
         >
           {t("university.ideal_programme", "What is my ideal programme?")}
         </Button>

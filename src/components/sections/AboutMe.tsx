@@ -57,6 +57,11 @@ export const AboutMe = () => {
     likes: [] as string[],
     dislikes: [] as string[]
   });
+
+  // Check if user has recommended majors for button state
+  const hasRecommendedMajors = recommendedMajors.exactMatches.length > 0 || 
+                               recommendedMajors.riasecMatches.length > 0 || 
+                               recommendedMajors.workValueMatches.length > 0;
   
   useEffect(() => {
     const loadUserProfiles = async () => {
@@ -67,18 +72,15 @@ export const AboutMe = () => {
         const { data: { session } } = await supabase.auth.getSession();
         const userId = session?.user?.id;
         if (!userId) {
-          
           setIsLoading(false);
           return;
         }
-        
 
         // Get RIASEC data from chart processing function
         const riasecChartData = await processRiasecData(userId);
 
         // Get Work Values data from chart processing function
         const workValuesChartData = await processWorkValuesData(userId);
-        
         
         let generatedRiasecCode = "";
         let generatedWorkValueCode = "";
@@ -140,8 +142,6 @@ export const AboutMe = () => {
             description: "There was an error saving your profile information.",
             variant: "destructive"
           });
-        } else {
-          
         }
         
         // Get completed quiz segments from database
@@ -150,7 +150,6 @@ export const AboutMe = () => {
         } = await supabase.from('quiz_completion').select('quiz_type').eq('user_id', userId);
         if (completions) {
           const completedSegments = completions.map(c => c.quiz_type);
-          
         }
 
         // Fetch recommended majors based on the profile codes
@@ -160,7 +159,6 @@ export const AboutMe = () => {
           setRecommendedMajors(majorRecommendations);
           
           // NEW: Store recommended major in database
-          
           const { error: majorError } = await supabase
             .from('profiles')
             .upsert({
@@ -175,8 +173,6 @@ export const AboutMe = () => {
             
           if (majorError) {
             console.error("Error storing recommended majors:", majorError);
-          } else {
-            
           }
           
           // IMPORTANT: Update the global context with major recommendations
@@ -199,8 +195,6 @@ export const AboutMe = () => {
               aus_cus: 4,
               semester: "1"
             })));
-            
-            
             
           } catch (error) {
             console.error("Error fetching module recommendations:", error);
@@ -232,8 +226,6 @@ export const AboutMe = () => {
     }
     return Math.abs(hash);
   };
-
-  // ... keep existing code (generateStrengthsFromRIASEC, generateLikesFromRIASEC, generateDislikesFromRIASEC, generateWorkPreferencesFromWorkValues functions)
 
   const generateStrengthsFromRIASEC = (code: string): string[] => {
     const traits: Record<string, string[]> = {
@@ -388,7 +380,6 @@ const generateWorkPreferencesFromWorkValues = (code: string): string[] => {
   return result.slice(0, 4); // Return up to 4 preferences
 };
 
-
   const handleResumeClick = () => {
     navigate("/resumebuilder");
   };
@@ -398,6 +389,14 @@ const generateWorkPreferencesFromWorkValues = (code: string): string[] => {
   };
 
   const handleNarrowDownFurther = () => {
+    if (!hasRecommendedMajors) {
+      toast({
+        title: "No Recommendations Available",
+        description: "Please complete the personality and work values quizzes first to get major recommendations.",
+        variant: "destructive"
+      });
+      return;
+    }
     navigate("/recommendations");
   };
 
@@ -487,7 +486,15 @@ const generateWorkPreferencesFromWorkValues = (code: string): string[] => {
                   <div className="mb-6">
                     <div className="flex items-center justify-between mb-3">
                       <h3 className="text-lg font-semibold" data-tutorial="recommended-majors">Recommended Majors</h3>
-                      <Button onClick={handleNarrowDownFurther} variant="outline" size="sm" data-tutorial="narrow-down-further">
+                      <Button 
+                        onClick={handleNarrowDownFurther} 
+                        variant="outline" 
+                        size="sm" 
+                        data-tutorial="narrow-down-further"
+                        disabled={!hasRecommendedMajors}
+                        className={!hasRecommendedMajors ? 'opacity-50 cursor-not-allowed' : ''}
+                        title={!hasRecommendedMajors ? "Complete personality and work values quizzes first" : ""}
+                      >
                         Narrow down further
                       </Button>
                     </div>
@@ -540,50 +547,6 @@ const generateWorkPreferencesFromWorkValues = (code: string): string[] => {
                         <p>No major recommendations found for your profile. Please complete all quizzes or contact support.</p>
                       </div>}
                   </div>
-                  
-                  {/* New Module Recommendations Section */}
-                  {/*{(recommendedModules.length > 0 || loadingModules) && (
-                    <div className="mt-8 mb-6">
-                      <h3 className="text-lg font-semibold mb-3">Recommended Courses</h3>
-                      <p className="mb-4">Based on your recommended majors, these courses might interest you:</p>
-                      
-                      {loadingModules ? (
-                        <div className="flex justify-center py-4">
-                          <div className="animate-spin h-8 w-8 border-t-2 border-b-2 border-purple-500 rounded-full"></div>
-                        </div>
-                      ) : recommendedModules.length > 0 ? (
-                        <div className="space-y-6">
-                          {recommendedModules.map((module, index) => (
-                            <div key={`module-${index}`} className={`p-4 rounded-lg ${isCurrentlyDark ? 'bg-gray-800' : 'bg-gray-50'}`}>
-                              <div className="flex justify-between items-start mb-2">
-                                <div>
-                                  <span className="font-medium text-sm text-blue-500">{module.institution}</span>
-                                  <h4 className="text-lg font-bold">{module.modulecode}: {module.title}</h4>
-                                </div>
-                                <Badge className="ml-2">{module.institution}</Badge>
-                              </div>
-                              <p className="text-sm mt-2">
-                                {module.description.length > 200
-                                  ? `${module.description.substring(0, 200)}...`
-                                  : module.description}
-                              </p>
-                              {module.description.length > 200 && (
-                                <Button variant="link" className="p-0 h-auto text-sm mt-1" onClick={() => {
-                                  // You could implement a modal or expand functionality here
-                                  // For now we'll just show an alert with the full description
-                                  alert(module.description);
-                                }}>
-                                  Read more
-                                </Button>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <p className="text-center py-4 italic">No course recommendations found for your profile.</p>
-                      )}
-                    </div>
-                  )}*/}
                   
                   <div className="mt-6 p-4 rounded-lg bg-blue-50 dark:bg-blue-900">
                     <h3 className="text-lg font-semibold mb-2">Open-ended Questions</h3>
