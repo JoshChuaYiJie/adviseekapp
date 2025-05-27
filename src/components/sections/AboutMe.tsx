@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { QuizSegments } from "./QuizSegments";
 import { RiasecChart } from "./RiasecChart";
 import { WorkValuesChart } from "./WorkValuesChart";
@@ -411,156 +412,177 @@ const generateWorkPreferencesFromWorkValues = (code: string): string[] => {
     return match ? match[1] : '';
   };
   
-  return <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight">About Me</h2>
-          <p className="text-muted-foreground">
-            Complete quizzes to learn more about your interests and strengths
-          </p>
+  return (
+    <TooltipProvider>
+      <div className="space-y-8">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-3xl font-bold tracking-tight">About Me</h2>
+            <p className="text-muted-foreground">
+              Complete quizzes to learn more about your interests and strengths
+            </p>
+          </div>
+          <div className="flex space-x-2">
+            <Button variant={activeTab === "quiz" ? "default" : "outline"} onClick={() => setActiveTab("quiz")}>
+              Quizzes
+            </Button>
+            <Button variant={activeTab === "profile" ? "default" : "outline"} onClick={() => setActiveTab("profile")} data-tutorial="my-profile">
+              My Profile
+            </Button>
+            <Button variant={activeTab === "resume" ? "default" : "outline"} onClick={() => setActiveTab("resume")} data-tutorial="my-resume">
+              <FileText className="mr-2 h-4 w-4" />
+              My Resume
+            </Button>
+          </div>
         </div>
-        <div className="flex space-x-2">
-          <Button variant={activeTab === "quiz" ? "default" : "outline"} onClick={() => setActiveTab("quiz")}>
-            Quizzes
-          </Button>
-          <Button variant={activeTab === "profile" ? "default" : "outline"} onClick={() => setActiveTab("profile")} data-tutorial="my-profile">
-            My Profile
-          </Button>
-          <Button variant={activeTab === "resume" ? "default" : "outline"} onClick={() => setActiveTab("resume")} data-tutorial="my-resume">
-            <FileText className="mr-2 h-4 w-4" />
-            My Resume
-          </Button>
-        </div>
-      </div>
 
-      {activeTab === "quiz" ? <QuizSegments /> : activeTab === "profile" ? <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <RiasecChart />
-          <WorkValuesChart />
-          
-          <Card className="col-span-1 lg:col-span-2">
-            <CardHeader>
-              <CardTitle>My Competencies and Preferences</CardTitle>
-              <CardDescription>Based on your quiz responses</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {isLoading ? <div className="flex justify-center py-8">
-                  <div className="animate-spin h-8 w-8 border-t-2 border-b-2 border-purple-500 rounded-full"></div>
-                </div> : <>
-                  {/* Display profile codes */}
-                  <UserProfileDisplay riasecCode={riasecCode} workValueCode={workValueCode} />
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <h3 className="text-lg font-semibold mb-2">Personality traits</h3>
-                      <ul className="list-disc pl-5 space-y-1">
-                        {profileInfo.strengths.map((strength, index) => <li key={`strength-${index}`}>{strength}</li>)}
-                      </ul>
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold mb-2">Work Environment Preferences</h3>
-                      <ul className="list-disc pl-5 space-y-1">
-                        {profileInfo.workPreferences.map((preference, index) => <li key={`pref-${index}`}>{preference}</li>)}
-                      </ul>
-                    </div>
-                    
-                    {/* New Likes section */}
-                    <div>
-                      <h3 className="text-lg font-semibold mb-2">Likes</h3>
-                      <ul className="list-disc pl-5 space-y-1">
-                        {profileInfo.likes.map((like, index) => <li key={`like-${index}`}>{like}</li>)}
-                      </ul>
-                    </div>
-                    
-                    {/* New Dislikes section */}
-                    <div>
-                      <h3 className="text-lg font-semibold mb-2">Dislikes</h3>
-                      <ul className="list-disc pl-5 space-y-1">
-                        {profileInfo.dislikes.map((dislike, index) => <li key={`dislike-${index}`}>{dislike}</li>)}
-                      </ul>
-                    </div>
+        {activeTab === "quiz" ? (
+          <QuizSegments />
+        ) : activeTab === "profile" ? (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <RiasecChart />
+            <WorkValuesChart />
+            
+            <Card className="col-span-1 lg:col-span-2">
+              <CardHeader>
+                <CardTitle>My Competencies and Preferences</CardTitle>
+                <CardDescription>Based on your quiz responses</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {isLoading ? (
+                  <div className="flex justify-center py-8">
+                    <div className="animate-spin h-8 w-8 border-t-2 border-b-2 border-purple-500 rounded-full"></div>
                   </div>
-                  
-                  <Separator className="my-6" />
-                  
-                  {/* Recommended Majors Section */}
-                  <div className="mb-6">
-                    <div className="flex items-center justify-between mb-3">
-                      <h3 className="text-lg font-semibold" data-tutorial="recommended-majors">Recommended Majors</h3>
-                      <Button 
-                        onClick={handleNarrowDownFurther} 
-                        variant="outline" 
-                        size="sm" 
-                        data-tutorial="narrow-down-further"
-                        disabled={!hasRecommendedMajors}
-                        className={!hasRecommendedMajors ? 'opacity-50 cursor-not-allowed' : ''}
-                        title={!hasRecommendedMajors ? "Complete personality and work values quizzes first" : ""}
-                      >
-                        Narrow down further
-                      </Button>
+                ) : (
+                  <>
+                    {/* Display profile codes */}
+                    <UserProfileDisplay riasecCode={riasecCode} workValueCode={workValueCode} />
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <h3 className="text-lg font-semibold mb-2">Personality traits</h3>
+                        <ul className="list-disc pl-5 space-y-1">
+                          {profileInfo.strengths.map((strength, index) => <li key={`strength-${index}`}>{strength}</li>)}
+                        </ul>
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold mb-2">Work Environment Preferences</h3>
+                        <ul className="list-disc pl-5 space-y-1">
+                          {profileInfo.workPreferences.map((preference, index) => <li key={`pref-${index}`}>{preference}</li>)}
+                        </ul>
+                      </div>
+                      
+                      {/* New Likes section */}
+                      <div>
+                        <h3 className="text-lg font-semibold mb-2">Likes</h3>
+                        <ul className="list-disc pl-5 space-y-1">
+                          {profileInfo.likes.map((like, index) => <li key={`like-${index}`}>{like}</li>)}
+                        </ul>
+                      </div>
+                      
+                      {/* New Dislikes section */}
+                      <div>
+                        <h3 className="text-lg font-semibold mb-2">Dislikes</h3>
+                        <ul className="list-disc pl-5 space-y-1">
+                          {profileInfo.dislikes.map((dislike, index) => <li key={`dislike-${index}`}>{dislike}</li>)}
+                        </ul>
+                      </div>
                     </div>
-                    <p className="mb-4">Based on your RIASEC code ({riasecCode}) and Work Values code ({workValueCode}):</p>
                     
-                    {/* Exact Matches */}
-                    {recommendedMajors.exactMatches.length > 0 && <div className="mb-4">
-                        <h4 className="font-medium text-md mb-2 flex items-center">
-                          <Badge className="mr-2 bg-green-600">Exact Match</Badge>
-                          Best match for your profile
-                        </h4>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-                          {recommendedMajors.exactMatches.map((major, index) => <div key={`exact-${index}`} className={`p-3 rounded-md ${isCurrentlyDark ? 'bg-gray-700' : 'bg-gray-100'}`}>
-                              <p className="font-medium">{formatMajorName(major)}</p>
-                              <p className="text-xs opacity-70">{getUniversityFromMajor(major) || 'University not specified'}</p>
-                            </div>)}
-                        </div>
-                      </div>}
+                    <Separator className="my-6" />
                     
-                    {/* RIASEC Matches */}
-                    {recommendedMajors.riasecMatches.length > 0 && <div className="mb-4">
-                        <h4 className="font-medium text-md mb-2 flex items-center">
-                          <Badge className="mr-2 bg-purple-600">RIASEC Match</Badge>
-                          Matches based on your personality type
-                        </h4>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-                          {recommendedMajors.riasecMatches.map((major, index) => <div key={`riasec-${index}`} className={`p-3 rounded-md ${isCurrentlyDark ? 'bg-gray-700' : 'bg-gray-100'}`}>
-                              <p className="font-medium">{formatMajorName(major)}</p>
-                              <p className="text-xs opacity-70">{getUniversityFromMajor(major) || 'University not specified'}</p>
-                            </div>)}
-                        </div>
-                      </div>}
+                    {/* Recommended Majors Section */}
+                    <div className="mb-6">
+                      <div className="flex items-center justify-between mb-3">
+                        <h3 className="text-lg font-semibold" data-tutorial="recommended-majors">Recommended Majors</h3>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div>
+                              <Button 
+                                onClick={handleNarrowDownFurther} 
+                                variant="outline" 
+                                size="sm" 
+                                data-tutorial="narrow-down-further"
+                                disabled={!hasRecommendedMajors}
+                                className={!hasRecommendedMajors ? 'opacity-50 cursor-not-allowed' : ''}
+                              >
+                                Narrow down further
+                              </Button>
+                            </div>
+                          </TooltipTrigger>
+                          {!hasRecommendedMajors && (
+                            <TooltipContent>
+                              <p>Complete the quizzes to get major recommendations first</p>
+                            </TooltipContent>
+                          )}
+                        </Tooltip>
+                      </div>
+                      <p className="mb-4">Based on your RIASEC code ({riasecCode}) and Work Values code ({workValueCode}):</p>
+                      
+                      {/* Exact Matches */}
+                      {recommendedMajors.exactMatches.length > 0 && <div className="mb-4">
+                          <h4 className="font-medium text-md mb-2 flex items-center">
+                            <Badge className="mr-2 bg-green-600">Exact Match</Badge>
+                            Best match for your profile
+                          </h4>
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                            {recommendedMajors.exactMatches.map((major, index) => <div key={`exact-${index}`} className={`p-3 rounded-md ${isCurrentlyDark ? 'bg-gray-700' : 'bg-gray-100'}`}>
+                                <p className="font-medium">{formatMajorName(major)}</p>
+                                <p className="text-xs opacity-70">{getUniversityFromMajor(major) || 'University not specified'}</p>
+                              </div>)}
+                          </div>
+                        </div>}
+                      
+                      {/* RIASEC Matches */}
+                      {recommendedMajors.riasecMatches.length > 0 && <div className="mb-4">
+                          <h4 className="font-medium text-md mb-2 flex items-center">
+                            <Badge className="mr-2 bg-purple-600">RIASEC Match</Badge>
+                            Matches based on your personality type
+                          </h4>
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                            {recommendedMajors.riasecMatches.map((major, index) => <div key={`riasec-${index}`} className={`p-3 rounded-md ${isCurrentlyDark ? 'bg-gray-700' : 'bg-gray-100'}`}>
+                                <p className="font-medium">{formatMajorName(major)}</p>
+                                <p className="text-xs opacity-70">{getUniversityFromMajor(major) || 'University not specified'}</p>
+                              </div>)}
+                          </div>
+                        </div>}
+                      
+                      {/* Work Value Matches */}
+                      {recommendedMajors.workValueMatches.length > 0 && <div className="mb-4">
+                          <h4 className="font-medium text-md mb-2 flex items-center">
+                            <Badge className="mr-2 bg-amber-600">Work Values Match</Badge>
+                            Matches based on your work preferences
+                          </h4>
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                            {recommendedMajors.workValueMatches.map((major, index) => <div key={`wv-${index}`} className={`p-3 rounded-md ${isCurrentlyDark ? 'bg-gray-700' : 'bg-gray-100'}`}>
+                                <p className="font-medium">{formatMajorName(major)}</p>
+                                <p className="text-xs opacity-70">{getUniversityFromMajor(major) || 'University not specified'}</p>
+                              </div>)}
+                          </div>
+                        </div>}
+                      
+                      {/* No matches found */}
+                      {recommendedMajors.exactMatches.length === 0 && recommendedMajors.riasecMatches.length === 0 && recommendedMajors.workValueMatches.length === 0 && <div className="p-4 rounded-lg bg-gray-100 dark:bg-gray-700 text-center">
+                          <p>No major recommendations found for your profile. Please complete all quizzes or contact support.</p>
+                        </div>}
+                    </div>
                     
-                    {/* Work Value Matches */}
-                    {recommendedMajors.workValueMatches.length > 0 && <div className="mb-4">
-                        <h4 className="font-medium text-md mb-2 flex items-center">
-                          <Badge className="mr-2 bg-amber-600">Work Values Match</Badge>
-                          Matches based on your work preferences
-                        </h4>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-                          {recommendedMajors.workValueMatches.map((major, index) => <div key={`wv-${index}`} className={`p-3 rounded-md ${isCurrentlyDark ? 'bg-gray-700' : 'bg-gray-100'}`}>
-                              <p className="font-medium">{formatMajorName(major)}</p>
-                              <p className="text-xs opacity-70">{getUniversityFromMajor(major) || 'University not specified'}</p>
-                            </div>)}
-                        </div>
-                      </div>}
-                    
-                    {/* No matches found */}
-                    {recommendedMajors.exactMatches.length === 0 && recommendedMajors.riasecMatches.length === 0 && recommendedMajors.workValueMatches.length === 0 && <div className="p-4 rounded-lg bg-gray-100 dark:bg-gray-700 text-center">
-                        <p>No major recommendations found for your profile. Please complete all quizzes or contact support.</p>
-                      </div>}
-                  </div>
-                  
-                  <div className="mt-6 p-4 rounded-lg bg-blue-50 dark:bg-blue-900">
-                    <h3 className="text-lg font-semibold mb-2">Open-ended Questions</h3>
-                    <p className="mb-4">
-                      Take our specialized quiz to answer questions about specific majors based on your RIASEC and Work Values profile. This also lets Adviseek AI understand you better.
-                    </p>
-                    <Button onClick={handleOpenEndedQuiz}>Take Open-ended Quiz</Button>
-                  </div>
-                </>}
-            </CardContent>
-            <CardFooter className="flex justify-end">
-              <Button variant="outline" onClick={() => setActiveTab("quiz")}>Take More Quizzes</Button>
-            </CardFooter>
-          </Card>
-        </div> : <MyResume />}
-    </div>;
+                    <div className="mt-6 p-4 rounded-lg bg-blue-50 dark:bg-blue-900">
+                      <h3 className="text-lg font-semibold mb-2">Open-ended Questions</h3>
+                      <p className="mb-4">
+                        Take our specialized quiz to answer questions about specific majors based on your RIASEC and Work Values profile. This also lets Adviseek AI understand you better.
+                      </p>
+                      <Button onClick={handleOpenEndedQuiz}>Take Open-ended Quiz</Button>
+                    </div>
+                  </>
+                )}
+              </CardContent>
+              <CardFooter className="flex justify-end">
+                <Button variant="outline" onClick={() => setActiveTab("quiz")}>Take More Quizzes</Button>
+              </CardFooter>
+            </Card>
+          </div> : <MyResume />}
+      </div>
+    </TooltipProvider>
+  );
 };

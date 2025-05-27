@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -265,114 +266,127 @@ export const AppliedProgrammes = () => {
   };
 
   return (
-    <div className="space-y-6 w-full max-w-full">
-      <div className={`space-y-4 p-6 ${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg shadow w-full`}>
-        <Select value={selectedUniversity} onValueChange={handleUniversityChange} disabled={isLoading}>
-          <SelectTrigger className={`w-full ${isCurrentlyDark ? 'bg-gray-700 text-white border-gray-600' : ''}`} data-tutorial="university-select">
-            <SelectValue placeholder={t("university.select", "Select a university")} />
-          </SelectTrigger>
-          <SelectContent className={isCurrentlyDark ? 'bg-gray-700 text-white border-gray-600' : ''}>
-            <SelectItem value="National University of Singapore">{t("university.nus", "NUS")}</SelectItem>
-            <SelectItem value="Nanyang Technological University">{t("university.ntu", "NTU")}</SelectItem>
-            <SelectItem value="Singapore Management University">{t("university.smu", "SMU")}</SelectItem>
-          </SelectContent>
-        </Select>
-        
-        {error && (
-          <div className="text-red-500 text-sm p-2 rounded bg-red-100 dark:bg-red-900/20">
-            {error}. Please check if the data files are in the correct location.
+    <TooltipProvider>
+      <div className="space-y-6 w-full max-w-full">
+        <div className={`space-y-4 p-6 ${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg shadow w-full`}>
+          <Select value={selectedUniversity} onValueChange={handleUniversityChange} disabled={isLoading}>
+            <SelectTrigger className={`w-full ${isCurrentlyDark ? 'bg-gray-700 text-white border-gray-600' : ''}`} data-tutorial="university-select">
+              <SelectValue placeholder={t("university.select", "Select a university")} />
+            </SelectTrigger>
+            <SelectContent className={isCurrentlyDark ? 'bg-gray-700 text-white border-gray-600' : ''}>
+              <SelectItem value="National University of Singapore">{t("university.nus", "NUS")}</SelectItem>
+              <SelectItem value="Nanyang Technological University">{t("university.ntu", "NTU")}</SelectItem>
+              <SelectItem value="Singapore Management University">{t("university.smu", "SMU")}</SelectItem>
+            </SelectContent>
+          </Select>
+          
+          {error && (
+            <div className="text-red-500 text-sm p-2 rounded bg-red-100 dark:bg-red-900/20">
+              {error}. Please check if the data files are in the correct location.
+            </div>
+          )}
+          
+          {selectedUniversity && (
+            <Select value={selectedDegree} onValueChange={handleDegreeChange} disabled={isLoading || !availableDegrees.length}>
+              <SelectTrigger className={`w-full ${isCurrentlyDark ? 'bg-gray-700 text-white border-gray-600' : ''}`}>
+                <SelectValue placeholder={isLoading ? "Loading..." : t("degree.select", "Select a degree")} />
+              </SelectTrigger>
+              <SelectContent className={isCurrentlyDark ? 'bg-gray-700 text-white border-gray-600' : ''}>
+                {availableDegrees.length > 0 ? (
+                  availableDegrees.map((degree) => (
+                    <SelectItem key={degree} value={degree}>
+                      {degree}
+                    </SelectItem>
+                  ))
+                ) : (
+                  <SelectItem value="no-degrees" disabled>No degrees found</SelectItem>
+                )}
+              </SelectContent>
+            </Select>
+          )}
+          
+          {selectedDegree && (
+            <Select value={selectedMajor} onValueChange={handleMajorChange} disabled={isLoading || !availableMajors.length}>
+              <SelectTrigger className={`w-full ${isCurrentlyDark ? 'bg-gray-700 text-white border-gray-600' : ''}`}>
+                <SelectValue placeholder={isLoading ? "Loading..." : t("major.select", "Select a major")} />
+              </SelectTrigger>
+              <SelectContent className={isCurrentlyDark ? 'bg-gray-700 text-white border-gray-600' : ''}>
+                {availableMajors.length > 0 ? (
+                  availableMajors.map((major) => (
+                    <SelectItem key={major.major} value={major.major}>
+                      {major.major} {major.college ? `(${major.college})` : ''}
+                    </SelectItem>
+                  ))
+                ) : (
+                  <SelectItem value="no-majors" disabled>No majors found</SelectItem>
+                )}
+              </SelectContent>
+            </Select>
+          )}
+          
+          <Button 
+            onClick={handleAddUniversity}
+            disabled={!selectedUniversity || !selectedDegree || !selectedMajor || isLoading}
+          >
+            {t("university.add", "Add University")}
+          </Button>
+          
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="inline-block ml-4">
+                <Button 
+                  variant="outline" 
+                  onClick={handleIdealProgrammeClick}
+                  disabled={!hasRecommendedMajors}
+                  className={`${!hasRecommendedMajors ? 'opacity-50 cursor-not-allowed' : ''}`}
+                >
+                  {t("university.ideal_programme", "What is my ideal programme?")}
+                </Button>
+              </div>
+            </TooltipTrigger>
+            {!hasRecommendedMajors && (
+              <TooltipContent>
+                <p>Complete the quizzes to get major recommendations first</p>
+              </TooltipContent>
+            )}
+          </Tooltip>
+        </div>
+
+        {isLoadingPrograms ? (
+          <div className={`p-6 ${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg shadow w-full flex justify-center`}>
+            <div className="animate-spin h-8 w-8 border-t-2 border-b-2 border-purple-500 rounded-full"></div>
+          </div>
+        ) : appliedProgrammes.length > 0 ? (
+          <div className={`p-6 ${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg shadow w-full`}>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>{t("university.university", "University")}</TableHead>
+                  <TableHead>{t("university.school", "School")}</TableHead>
+                  <TableHead>{t("university.degree", "Degree")}</TableHead>
+                  <TableHead>{t("university.major", "Major")}</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {appliedProgrammes.map((prog, idx) => (
+                  <TableRow key={prog.id || idx}>
+                    <TableCell>
+                      <img src={prog.logo} alt={prog.school} className="h-12 w-12 object-contain" />
+                    </TableCell>
+                    <TableCell>{prog.school}</TableCell>
+                    <TableCell>{prog.degree || "-"}</TableCell>
+                    <TableCell>{prog.course}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        ) : (
+          <div className={`p-6 ${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg shadow w-full text-center`}>
+            <p>No programmes applied yet. Add a university programme above.</p>
           </div>
         )}
-        
-        {selectedUniversity && (
-          <Select value={selectedDegree} onValueChange={handleDegreeChange} disabled={isLoading || !availableDegrees.length}>
-            <SelectTrigger className={`w-full ${isCurrentlyDark ? 'bg-gray-700 text-white border-gray-600' : ''}`}>
-              <SelectValue placeholder={isLoading ? "Loading..." : t("degree.select", "Select a degree")} />
-            </SelectTrigger>
-            <SelectContent className={isCurrentlyDark ? 'bg-gray-700 text-white border-gray-600' : ''}>
-              {availableDegrees.length > 0 ? (
-                availableDegrees.map((degree) => (
-                  <SelectItem key={degree} value={degree}>
-                    {degree}
-                  </SelectItem>
-                ))
-              ) : (
-                <SelectItem value="no-degrees" disabled>No degrees found</SelectItem>
-              )}
-            </SelectContent>
-          </Select>
-        )}
-        
-        {selectedDegree && (
-          <Select value={selectedMajor} onValueChange={handleMajorChange} disabled={isLoading || !availableMajors.length}>
-            <SelectTrigger className={`w-full ${isCurrentlyDark ? 'bg-gray-700 text-white border-gray-600' : ''}`}>
-              <SelectValue placeholder={isLoading ? "Loading..." : t("major.select", "Select a major")} />
-            </SelectTrigger>
-            <SelectContent className={isCurrentlyDark ? 'bg-gray-700 text-white border-gray-600' : ''}>
-              {availableMajors.length > 0 ? (
-                availableMajors.map((major) => (
-                  <SelectItem key={major.major} value={major.major}>
-                    {major.major} {major.college ? `(${major.college})` : ''}
-                  </SelectItem>
-                ))
-              ) : (
-                <SelectItem value="no-majors" disabled>No majors found</SelectItem>
-              )}
-            </SelectContent>
-          </Select>
-        )}
-        
-        <Button 
-          onClick={handleAddUniversity}
-          disabled={!selectedUniversity || !selectedDegree || !selectedMajor || isLoading}
-        >
-          {t("university.add", "Add University")}
-        </Button>
-        <Button 
-          variant="outline" 
-          onClick={handleIdealProgrammeClick}
-          disabled={!hasRecommendedMajors}
-          className={`ml-4 ${!hasRecommendedMajors ? 'opacity-50 cursor-not-allowed' : ''}`}
-          title={!hasRecommendedMajors ? "Complete personality and work values quizzes first" : ""}
-        >
-          {t("university.ideal_programme", "What is my ideal programme?")}
-        </Button>
       </div>
-
-      {isLoadingPrograms ? (
-        <div className={`p-6 ${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg shadow w-full flex justify-center`}>
-          <div className="animate-spin h-8 w-8 border-t-2 border-b-2 border-purple-500 rounded-full"></div>
-        </div>
-      ) : appliedProgrammes.length > 0 ? (
-        <div className={`p-6 ${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg shadow w-full`}>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>{t("university.university", "University")}</TableHead>
-                <TableHead>{t("university.school", "School")}</TableHead>
-                <TableHead>{t("university.degree", "Degree")}</TableHead>
-                <TableHead>{t("university.major", "Major")}</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {appliedProgrammes.map((prog, idx) => (
-                <TableRow key={prog.id || idx}>
-                  <TableCell>
-                    <img src={prog.logo} alt={prog.school} className="h-12 w-12 object-contain" />
-                  </TableCell>
-                  <TableCell>{prog.school}</TableCell>
-                  <TableCell>{prog.degree || "-"}</TableCell>
-                  <TableCell>{prog.course}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      ) : (
-        <div className={`p-6 ${isCurrentlyDark ? 'bg-gray-800 text-white' : 'bg-white'} rounded-lg shadow w-full text-center`}>
-          <p>No programmes applied yet. Add a university programme above.</p>
-        </div>
-      )}
-    </div>
+    </TooltipProvider>
   );
 };
