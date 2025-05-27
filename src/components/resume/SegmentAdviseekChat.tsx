@@ -253,7 +253,7 @@ export const SegmentAdviseekChat = ({ segmentType, currentContent = "" }: Segmen
 
       ${educationItems ? `EDUCTATION\n${educationItems}` : ''}
       ${workExperienceItems ? `WORK EXPERIENCE\n${workExperienceItems}` : ''}
-      ${awards ? `AWARDS\n${awards}
+      ${awards ? `AWARDS\n${awards}` : ''}
     `;
     }
     contextualPrompt += `
